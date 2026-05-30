@@ -4,6 +4,7 @@ namespace App\Domains\Project\Models;
 
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Support\TextUtils;
 use Database\Factories\ProjectModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
-#[Fillable(['id', 'name', 'created_by', 'updated_by'])]
+#[Fillable(['id', 'name', 'prefix', 'created_by', 'updated_by'])]
 class ProjectModel extends Model
 {
     /** @use HasFactory<ProjectModelFactory> */
@@ -25,6 +26,17 @@ class ProjectModel extends Model
     protected function casts(): array
     {
         return [];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (ProjectModel $project): void {
+            if (trim((string) $project->prefix) !== '') {
+                return;
+            }
+
+            $project->prefix = TextUtils::acronym((string) $project->name);
+        });
     }
 
     public function createdBy(): BelongsTo

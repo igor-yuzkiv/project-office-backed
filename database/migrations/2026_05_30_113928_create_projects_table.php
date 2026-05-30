@@ -12,6 +12,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
 
             $table->string('name');
+            $table->string('prefix', 5);
 
             $table->foreignUlid('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignUlid('updated_by')->nullable()->constrained('users')->nullOnDelete();
