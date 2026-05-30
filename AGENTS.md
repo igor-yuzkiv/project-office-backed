@@ -48,3 +48,25 @@ Decision priority:
 - Do not add comments that restate what the code already expresses.
 - Preserve existing comments unless they are incorrect or obsolete.
 - Comments should explain **why**, not **what**.
+
+
+### Backend Domain Structure
+
+- Backend domain code should be organized by domain entity and business operation.
+- Use the following structure as the default convention:
+
+```text
+Domain/
+└── Entity/
+    ├── Actions/
+    │   └── CreateEntity/
+    │       ├── CreateEntityHandler.php
+    │       ├── CreateEntityCommand.php # optional
+    │       └── CreateEntityDTO.php     # optional
+    ├── Queries/
+    ├── Models/
+    ├── Events/
+    ├── Jobs/
+    ├── Enums/
+    └── ValueObjects/
+```
