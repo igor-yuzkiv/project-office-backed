@@ -1,0 +1,39 @@
+services:
+    task_manager_postgres:
+        container_name: task_manager_postgres
+        image: postgres:13
+        restart: always
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+            timeout: 45s
+            interval: 10s
+            retries: 10
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: ${ROOT_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB_NAME}
+            APP_DB_USER: ${DB_USER}
+            APP_DB_PASS: ${DB_USER_PASSWORD}
+            APP_DB_NAME: ${POSTGRES_DB_NAME}
+        volumes:
+            - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d/
+            - ./docker/pg-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+    task_manager_redis:
+        container_name: task_manager_redis
+        image: redis
+        ports:
+            - 6379:6379
+        networks:
+            - app-network
+
+#Docker Networks
+networks:
+    app-network:
+        driver: bridge
+
+#Volumes
+volumes:
+    dbdata:
+        driver: local
