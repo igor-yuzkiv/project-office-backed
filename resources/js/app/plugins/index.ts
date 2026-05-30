@@ -1,5 +1,4 @@
 import type { App } from 'vue'
-import './md-editor-v3.plugin.ts'
 import laravelEchoPlugin from './laravel-echo.plugin'
 import primeVuePlugin from './prime-vue.plugin'
 import vueQueryPlugin from './vue-query.plugin'
