@@ -33,11 +33,11 @@ class PageResult implements Arrayable
     public function getMetadata(): array
     {
         return [
-            'page'     => $this->page,
-            'perPage'  => $this->perPage,
-            'total'    => $this->total,
-            'lastPage' => $this->lastPage,
-            'hasMore'  => $this->hasMore,
+            'page'      => $this->page,
+            'per_page'  => $this->perPage,
+            'total'     => $this->total,
+            'last_page' => $this->lastPage,
+            'has_more'  => $this->hasMore,
         ];
     }
 
