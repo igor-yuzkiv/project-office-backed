@@ -4,7 +4,7 @@ namespace App\Domains\Project\Models;
 
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
-use Database\Factories\ProjectFactory;
+use Database\Factories\ProjectModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +15,7 @@ use Laravel\Scout\Searchable;
 #[Fillable(['id', 'name', 'created_by', 'updated_by'])]
 class ProjectModel extends Model
 {
-    /** @use HasFactory<ProjectFactory> */
+    /** @use HasFactory<ProjectModelFactory> */
     use HasAuditableColumns, HasFactory, HasUlids, Searchable;
 
     protected $table = 'projects';
@@ -37,8 +37,8 @@ class ProjectModel extends Model
         return $this->belongsTo(UserModel::class, 'updated_by');
     }
 
-    public static function newFactory(): ProjectFactory
+    public static function newFactory(): ProjectModelFactory
     {
-        return ProjectFactory::new();
+        return ProjectModelFactory::new();
     }
 }

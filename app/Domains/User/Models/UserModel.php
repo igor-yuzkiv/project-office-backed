@@ -3,7 +3,7 @@
 namespace App\Domains\User\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use Database\Factories\UserModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<UserModelFactory> */
     use HasFactory, Notifiable;
 
     protected $table = 'users';
@@ -32,8 +32,8 @@ class UserModel extends Authenticatable
         ];
     }
 
-    public static function newFactory(): UserFactory
+    public static function newFactory(): UserModelFactory
     {
-        return UserFactory::new();
+        return UserModelFactory::new();
     }
 }
