@@ -6,6 +6,7 @@ namespace App\Domains\User\Models;
 use Database\Factories\UserModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,9 +16,11 @@ use Illuminate\Notifications\Notifiable;
 class UserModel extends Authenticatable
 {
     /** @use HasFactory<UserModelFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasUlids, Notifiable;
 
     protected $table = 'users';
+
+    public $incrementing = false;
 
     /**
      * Get the attributes that should be cast.

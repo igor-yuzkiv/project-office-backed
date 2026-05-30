@@ -1,6 +1,5 @@
 <?php
 
-use App\Domains\User\Models\UserModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +13,8 @@ return new class extends Migration
 
             $table->string('name');
 
-            $table->foreignIdFor(UserModel::class, 'created_by')->nullable()->constrained()->nullOnDelete();
-            $table->foreignIdFor(UserModel::class, 'updated_by')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUlid('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignUlid('updated_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->fullText('name');
 
