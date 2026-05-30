@@ -60,7 +60,23 @@ return [
             'report'                  => false,
         ],
 
+        'attachments' => [
+            'driver'                  => 's3',
+            'key'                     => env('ATTACHMENTS_AWS_ACCESS_KEY_ID'),
+            'secret'                  => env('ATTACHMENTS_AWS_SECRET_ACCESS_KEY'),
+            'region'                  => env('ATTACHMENTS_AWS_DEFAULT_REGION', 'us-east-1'),
+            'bucket'                  => env('ATTACHMENTS_AWS_BUCKET', 'task-manager-attachments'),
+            'endpoint'                => env('ATTACHMENTS_AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('ATTACHMENTS_AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw'                   => false,
+            'report'                  => false,
+        ],
+
     ],
+
+    'attachments_storage' => env('ATTACHMENTS_STORAGE', 's3'),
+
+    'attachments_temporary_url_ttl_minutes' => env('ATTACHMENTS_TEMPORARY_URL_TTL_MINUTES', 15),
 
     /*
     |--------------------------------------------------------------------------
