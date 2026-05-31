@@ -17,7 +17,7 @@
 
 1. Відкрити цей файл.
 2. Ознайомитися з project workspace.
-3. Знайти поточний активний milestone у `.project_office/1_milestones/`.
+3. Знайти поточний активний milestone у ex.: `.project_office/1_milestones/`.
 4. Відкрити `plan.md` поточного milestone.
 5. Знайти поточну активну task у `tasks/` поточного milestone.
 6. Перевірити, чи є пов'язана документація в `implementation_docs/` поточного milestone.
