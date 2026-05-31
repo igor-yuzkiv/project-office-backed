@@ -1,3 +1,5 @@
+export type AppLayoutName = 'default' | 'auth'
+
 export interface SidebarNavItem {
     key: string
     label: string

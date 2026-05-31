@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { AppLayoutComponentMap } from '@/app/layouts'
-import type { AppLayoutName } from '@/app/layouts'
+import { DefaultLayout, AuthLayout } from '@/app/shell'
+import type { AppLayoutName } from '@/app/shell'
 import Toast from 'primevue/toast'
 import ConfirmDialog from 'primevue/confirmdialog'
 
 const route = useRoute()
+
+const AppLayoutComponentMap: Record<AppLayoutName, unknown> = {
+    default: DefaultLayout,
+    auth: AuthLayout,
+}
 
 const layoutComponent = computed(() => {
     const layout = route.meta?.layout as AppLayoutName | undefined

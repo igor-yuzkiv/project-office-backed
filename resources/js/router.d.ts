@@ -1,6 +1,6 @@
 // router.d.ts
 import 'vue-router'
-import type { AppLayoutName } from '@/app/layouts'
+import type { AppLayoutName } from '@/app/shell'
 
 declare module 'vue-router' {
     interface RouteMeta {

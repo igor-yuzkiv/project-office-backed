@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { AppHeader, AppLeftNavigationSidebar } from '@/app/shell'
-import type { SidebarNavItem } from '@/app/shell'
+import AppHeader from '../header/AppHeader.vue'
+import AppLeftNavigationSidebar from '../navigation/AppLeftNavigationSidebar.vue'
+import type { SidebarNavItem } from '../../types'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 
 const store = useAppLayoutStore()

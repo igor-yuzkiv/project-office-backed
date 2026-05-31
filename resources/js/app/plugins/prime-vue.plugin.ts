@@ -7,6 +7,8 @@ import Ripple from 'primevue/ripple'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
 
+import 'primeicons/primeicons.css'
+
 const MyPreset = definePreset(Aura, {
     semantic: {
         colorScheme: {

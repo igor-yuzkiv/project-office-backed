@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
-import type { SidebarNavItem } from '../types'
+import type { SidebarNavItem } from '../../types'
 
 defineProps<{
     items: SidebarNavItem[]

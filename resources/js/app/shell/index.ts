@@ -1,4 +1,5 @@
-export { default as AppHeader } from './ui/AppHeader.vue'
-export { default as AppLeftNavigationSidebar } from './ui/AppLeftNavigationSidebar.vue'
-export { default as UserProfilePopover } from './ui/UserProfilePopover.vue'
+export { default as AppHeader } from './ui/header/AppHeader.vue'
+export { default as AppLeftNavigationSidebar } from './ui/navigation/AppLeftNavigationSidebar.vue'
+export { default as DefaultLayout } from './ui/layouts/DefaultLayout.vue'
+export { default as AuthLayout } from './ui/layouts/AuthLayout.vue'
 export * from './types'
