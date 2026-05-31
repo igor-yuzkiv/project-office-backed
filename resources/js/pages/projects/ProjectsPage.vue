@@ -10,10 +10,14 @@ import { useDeleteProjectMutation } from '@/entities/project/mutations'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { PAGE_SIZE } from '@/app/config'
 import type { IProject } from '@/entities/project/types'
+import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
+import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
+
+const upsertDialog = useProjectUpsertDialog()
 
 const layoutStore = useAppLayoutStore()
 layoutStore.setHeaderActions([
-    { key: 'new-project', title: 'New Project', is_primary: true, action: () => {} },
+    { key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() },
 ])
 
 const page = ref(1)
@@ -26,7 +30,7 @@ const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedProject = ref<IProject>()
 
 const rowMenuItems: MenuItem[] = [
-    { label: 'Edit', icon: 'pi pi-pencil', command: () => {} },
+    { label: 'Edit', icon: 'pi pi-pencil', command: () => upsertDialog.open(selectedProject.value) },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
@@ -87,4 +91,12 @@ function onPageChange(event: { page: number }) {
     </div>
 
     <Menu ref="rowMenu" :model="rowMenuItems" popup />
+    <ProjectUpsertDialog
+        v-model:visible="upsertDialog.visible.value"
+        v-model:name="upsertDialog.name.value"
+        :mode="upsertDialog.mode.value"
+        :validation-errors="upsertDialog.validationErrors.value"
+        :is-pending="upsertDialog.isPending.value"
+        @submit="upsertDialog.submit"
+    />
 </template>

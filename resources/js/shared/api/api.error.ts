@@ -1,8 +1,9 @@
 import type { AxiosError } from 'axios'
+import type { LaravelValidationErrors } from '@/shared/types'
 
 interface ApiErrorResponseData {
     message?: string
-    errors?: Record<string, string[]>
+    errors?: LaravelValidationErrors
 }
 
 export class ApiError extends Error {
@@ -26,7 +27,7 @@ export class ApiError extends Error {
         return this.axiosError.response?.data ?? null
     }
 
-    get validationErrors(): Record<string, string[]> | null {
+    get validationErrors(): LaravelValidationErrors | null {
         return this.isValidationError ? (this.data?.errors ?? null) : null
     }
 
