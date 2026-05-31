@@ -2,21 +2,20 @@
 import { RouterLink, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import type { SidebarNavItem } from '../../types'
+import { APP_NAME } from '@/app/config'
 
 defineProps<{
     items: SidebarNavItem[]
 }>()
 
 const route = useRoute()
-
-const appName = (import.meta.env.VITE_APP_NAME as string | undefined) ?? 'Task Manager'
 </script>
 
 <template>
     <aside class="w-60 bg-surface-900 text-surface-0 flex h-full shrink-0 flex-col">
         <div class="h-14 px-4 gap-2.5 flex items-center">
             <img src="/logo.png" alt="Logo" class="h-7 w-auto shrink-0" />
-            <span class="text-sm font-semibold truncate">{{ appName }}</span>
+            <span class="text-sm font-semibold truncate">{{ APP_NAME }}</span>
         </div>
 
         <nav class="gap-0.5 px-2 flex flex-col">

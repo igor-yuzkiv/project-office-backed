@@ -6,6 +6,7 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { Icon } from '@iconify/vue'
 import { useAuthStore } from '@/app/stores/use.auth.store'
+import { APP_NAME } from '@/app/config'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -15,7 +16,6 @@ const password = ref('')
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
 
-const appName = (import.meta.env.VITE_APP_NAME as string | undefined) ?? 'Task Manager'
 
 const features = [
     'Kanban boards, timelines, and list views',
@@ -44,7 +44,7 @@ async function handleLogin() {
         <div class="hidden w-2/5 shrink-0 flex-col justify-between bg-surface-900 px-12 py-12 lg:flex">
             <div class="flex items-center gap-2.5">
                 <img src="/logo.png" alt="Logo" class="h-8 w-auto" />
-                <span class="text-lg font-semibold tracking-tight text-white">{{ appName }}</span>
+                <span class="text-lg font-semibold tracking-tight text-white">{{ APP_NAME }}</span>
             </div>
 
             <div class="flex flex-col gap-8">
@@ -82,7 +82,7 @@ async function handleLogin() {
             <div class="flex w-full max-w-sm flex-col gap-8">
                 <div class="flex flex-col gap-1.5">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">
-                        Sign in to {{ appName }}
+                        Sign in to {{ APP_NAME }}
                     </h2>
                     <p class="text-sm text-surface-500">
                         Enter your credentials to access your workspace.

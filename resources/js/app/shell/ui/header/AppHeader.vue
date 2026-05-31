@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import SplitButton from 'primevue/splitbutton'
 import Avatar from 'primevue/avatar'
-import type { MenuItem } from 'primevue/menuitem'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { IconButton } from '@/shared/components/button'
 import { getInitials } from '@/shared/utils/string.util'
 import { UserProfilePopover } from '@/widgets/user'
+import HeaderActionButton from './HeaderActionButton.vue'
 import type { HeaderAction } from '../../types'
 
 const props = defineProps<{
@@ -20,18 +19,6 @@ const router = useRouter()
 const profilePopover = ref<InstanceType<typeof UserProfilePopover>>()
 
 const userInitials = computed(() => getInitials(authStore.user?.name ?? ''))
-
-const primaryAction = computed<HeaderAction | undefined>(() => {
-    if (!props.actions?.length) return undefined
-    return props.actions.find((a) => a.is_primary) ?? props.actions[0]
-})
-
-const dropdownItems = computed<MenuItem[]>(() => {
-    if (!props.actions?.length || !primaryAction.value) return []
-    return props.actions
-        .filter((a) => a.key !== primaryAction.value!.key)
-        .map((a) => ({ label: a.title, command: a.action }))
-})
 
 async function handleLogout() {
     await authStore.logout()
@@ -46,13 +33,7 @@ async function handleLogout() {
         <span class="text-base font-medium text-surface-900 dark:text-surface-0">{{ title }}</span>
 
         <div class="gap-2 flex items-center">
-            <SplitButton
-                v-if="primaryAction"
-                :label="primaryAction.title"
-                :model="dropdownItems"
-                size="small"
-                @click="primaryAction.action"
-            />
+            <HeaderActionButton v-if="actions?.length" :actions="actions" />
 
             <IconButton icon="heroicons:bell" size="medium" severity="secondary" />
             <IconButton icon="heroicons:cog-6-tooth" size="medium" severity="secondary" />

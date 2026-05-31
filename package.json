@@ -16,6 +16,7 @@
         "@guolao/vue-monaco-editor": "^1.6.0",
         "@iconify/vue": "^5.0.1",
         "@primeuix/themes": "^2.0.3",
+        "@primevue/forms": "^4.5.5",
         "@tanstack/vue-query": "^5.100.14",
         "@vueuse/core": "^14.3.0",
         "@vueuse/router": "^14.3.0",

@@ -1,8 +1,9 @@
 import axios, { isAxiosError } from 'axios'
 import { ApiError } from './api.error'
+import { API_BASE_URL } from '@/app/config'
 
 const httpClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: API_BASE_URL,
     withCredentials: true,
     withXSRFToken: true,
     headers: {

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Support\TextUtils;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProjectModelFactory extends Factory
 {
+    protected $model = ProjectModel::class;
+
     /**
      * Define the model's default state.
      *
@@ -17,8 +20,11 @@ class ProjectModelFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->words(3, true);
+
         return [
-            'name' => fake()->words(3, true),
+            'name'   => $name,
+            'prefix' => TextUtils::acronym($name),
         ];
     }
 }

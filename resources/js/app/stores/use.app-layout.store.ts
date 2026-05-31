@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import type { HeaderAction } from '@/app/shell'
+import { APP_NAME } from '@/app/config'
 
 export const useAppLayoutStore = defineStore('app-layout', () => {
     const route = useRoute()
@@ -18,8 +19,7 @@ export const useAppLayoutStore = defineStore('app-layout', () => {
     )
 
     watch(pageTitle, (title) => {
-        const appName = (import.meta.env.VITE_APP_NAME as string | undefined) ?? 'Task Manager'
-        document.title = title ? `${title} | ${appName}` : appName
+        document.title = title ? `${title} | ${APP_NAME}` : APP_NAME
     })
 
     function setPageTitle(title: string) {
