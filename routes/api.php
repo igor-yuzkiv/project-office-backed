@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Projects\ProjectsController;
 use App\Http\Controllers\TaskLists\TaskListsController;
+use App\Http\Controllers\Tasks\TasksController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -17,3 +18,5 @@ Route::group([
 Route::apiResource('projects', ProjectsController::class)->middleware(['auth:sanctum']);
 
 Route::apiResource('projects.task-lists', TaskListsController::class)->middleware(['auth:sanctum']);
+
+Route::apiResource('projects.tasks', TasksController::class)->middleware(['auth:sanctum']);
