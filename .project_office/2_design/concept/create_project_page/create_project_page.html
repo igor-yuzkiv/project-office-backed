@@ -1,0 +1,3795 @@
+This is a UI design exported as HTML/CSS from Banani. Integrate it into my project, adapting it to match my existing tech stack, component library, and styles. Preserve the layout, spacing, and visual design as closely as possible.
+
+Instructions:
+- Convert the HTML/CSS into components that fit my project's framework and conventions
+- Replace inline styles with my project's styling approach (e.g., Tailwind classes, CSS modules, styled-components)
+- Use existing UI components from my project where appropriate
+- Ensure the result is responsive and accessible
+- Remove any Banani-specific artifacts (export wrappers, CDN scripts)
+
+```html
+<design>
+    <div
+        class="export-wrapper"
+        style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+    >
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <html>
+        <head>
+            <style>
+                /*! tailwindcss v4.3.0 | MIT License | https://tailwindcss.com */
+                @layer properties;
+                @layer theme, base, components, utilities;
+                @layer theme {
+                    :root,
+                    :root {
+                        --font-sans:
+                            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+                            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                        --font-mono:
+                            ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+                            "Liberation Mono", "Courier New", monospace;
+                        --color-red-50: oklch(97.1% 0.013 17.38);
+                        --color-red-100: oklch(93.6% 0.032 17.717);
+                        --color-red-200: oklch(88.5% 0.062 18.334);
+                        --color-red-500: oklch(63.7% 0.237 25.331);
+                        --color-red-600: oklch(57.7% 0.245 27.325);
+                        --color-amber-50: oklch(98.7% 0.022 95.277);
+                        --color-green-50: oklch(98.2% 0.018 155.826);
+                        --color-green-100: oklch(96.2% 0.044 156.743);
+                        --color-cyan-600: oklch(60.9% 0.126 221.723);
+                        --color-blue-200: oklch(88.2% 0.059 254.128);
+                        --color-indigo-500: oklch(58.5% 0.233 277.117);
+                        --color-purple-500: oklch(62.7% 0.265 303.9);
+                        --color-pink-500: oklch(65.6% 0.241 354.308);
+                        --color-white: #fff;
+                        --spacing: 0.25rem;
+                        --container-sm: 24rem;
+                        --text-xs: 11px;
+                        --text-xs--line-height: calc(1 / 0.75);
+                        --text-sm: 13px;
+                        --text-sm--line-height: calc(1.25 / 0.875);
+                        --text-base: 14px;
+                        --text-base--line-height: calc(1.5 / 1);
+                        --text-lg: 16px;
+                        --text-lg--line-height: calc(1.75 / 1.125);
+                        --text-2xl: 22px;
+                        --text-2xl--line-height: calc(2 / 1.5);
+                        --text-3xl: 28px;
+                        --text-3xl--line-height: calc(2.25 / 1.875);
+                        --font-weight-medium: 500;
+                        --font-weight-semibold: 600;
+                        --font-weight-bold: 700;
+                        --tracking-tight: -0.025em;
+                        --tracking-wide: 0.025em;
+                        --tracking-wider: 0.05em;
+                        --tracking-widest: 0.1em;
+                        --leading-snug: 1.375;
+                        --leading-relaxed: 1.625;
+                        --radius-sm: 4px;
+                        --radius-md: 8px;
+                        --default-font-family: var(--font-sans);
+                        --default-mono-font-family: var(--font-mono);
+                        --radius: var(--radius-sm);
+                        --color-background: #f5f5f4;
+                        --color-foreground: #111110;
+                        --color-border: #e4e4e3;
+                        --color-primary: #2563eb;
+                        --color-primary-foreground: #ffffff;
+                        --color-primary-light: #dbeafe;
+                        --color-secondary: #f0f0ef;
+                        --color-secondary-foreground: #5a5a57;
+                        --color-surface: #ffffff;
+                        --color-surface-raised: #fafaf9;
+                        --color-muted: #e4e4e3;
+                        --color-muted-foreground: #8a8a85;
+                        --color-sidebar: #1a1a18;
+                        --color-sidebar-foreground: #c8c8c4;
+                        --color-sidebar-active: #2c2c2a;
+                        --color-status-todo: #8a8a85;
+                        --color-status-inprogress: #2563eb;
+                        --color-status-review: #d97706;
+                        --color-status-done: #16a34a;
+                        --color-priority-high: #dc2626;
+                        --color-priority-medium: #d97706;
+                        --color-priority-low: #6b7280;
+                        --font-body: Inter;
+                        --font-headings: Inter;
+                    }
+                }
+                @layer base {
+                    *,
+                    ::after,
+                    ::before,
+                    ::backdrop,
+                    ::file-selector-button {
+                        box-sizing: border-box;
+                        margin: 0;
+                        padding: 0;
+                        border: 0 solid;
+                    }
+                    html,
+                    :root {
+                        line-height: 1.5;
+                        -webkit-text-size-adjust: 100%;
+                        tab-size: 4;
+                        font-family: var(
+                            --default-font-family,
+                            ui-sans-serif,
+                            system-ui,
+                            sans-serif,
+                            "Apple Color Emoji",
+                            "Segoe UI Emoji",
+                            "Segoe UI Symbol",
+                            "Noto Color Emoji"
+                        );
+                        font-feature-settings: var(--default-font-feature-settings, normal);
+                        font-variation-settings: var(
+                            --default-font-variation-settings,
+                            normal
+                        );
+                        -webkit-tap-highlight-color: transparent;
+                    }
+                    hr {
+                        height: 0;
+                        color: inherit;
+                        border-top-width: 1px;
+                    }
+                    abbr:where([title]) {
+                        -webkit-text-decoration: underline dotted;
+                        text-decoration: underline dotted;
+                    }
+                    h1,
+                    h2,
+                    h3,
+                    h4,
+                    h5,
+                    h6 {
+                        font-size: inherit;
+                        font-weight: inherit;
+                    }
+                    a {
+                        color: inherit;
+                        -webkit-text-decoration: inherit;
+                        text-decoration: inherit;
+                    }
+                    b,
+                    strong {
+                        font-weight: bolder;
+                    }
+                    code,
+                    kbd,
+                    samp,
+                    pre {
+                        font-family: var(
+                            --default-mono-font-family,
+                            ui-monospace,
+                            SFMono-Regular,
+                            Menlo,
+                            Monaco,
+                            Consolas,
+                            "Liberation Mono",
+                            "Courier New",
+                            monospace
+                        );
+                        font-feature-settings: var(
+                            --default-mono-font-feature-settings,
+                            normal
+                        );
+                        font-variation-settings: var(
+                            --default-mono-font-variation-settings,
+                            normal
+                        );
+                        font-size: 1em;
+                    }
+                    small {
+                        font-size: 80%;
+                    }
+                    sub,
+                    sup {
+                        font-size: 75%;
+                        line-height: 0;
+                        position: relative;
+                        vertical-align: baseline;
+                    }
+                    sub {
+                        bottom: -0.25em;
+                    }
+                    sup {
+                        top: -0.5em;
+                    }
+                    table {
+                        text-indent: 0;
+                        border-color: inherit;
+                        border-collapse: collapse;
+                    }
+                    :-moz-focusring {
+                        outline: auto;
+                    }
+                    progress {
+                        vertical-align: baseline;
+                    }
+                    summary {
+                        display: list-item;
+                    }
+                    ol,
+                    ul,
+                    menu {
+                        list-style: none;
+                    }
+                    img,
+                    svg,
+                    video,
+                    canvas,
+                    audio,
+                    iframe,
+                    embed,
+                    object {
+                        display: block;
+                        vertical-align: middle;
+                    }
+                    img,
+                    video {
+                        max-width: 100%;
+                        height: auto;
+                    }
+                    button,
+                    input,
+                    select,
+                    optgroup,
+                    textarea,
+                    ::file-selector-button {
+                        font: inherit;
+                        font-feature-settings: inherit;
+                        font-variation-settings: inherit;
+                        letter-spacing: inherit;
+                        color: inherit;
+                        border-radius: 0;
+                        background-color: transparent;
+                        opacity: 1;
+                    }
+                    :where(select:is([multiple], [size])) optgroup {
+                        font-weight: bolder;
+                    }
+                    :where(select:is([multiple], [size])) optgroup option {
+                        padding-inline-start: 20px;
+                    }
+                    ::file-selector-button {
+                        margin-inline-end: 4px;
+                    }
+                    ::placeholder {
+                        opacity: 1;
+                    }
+                    @supports (not (-webkit-appearance: -apple-pay-button)) or
+            (contain-intrinsic-size: 1px) {
+                        ::placeholder {
+                            color: currentcolor;
+                            @supports (color: color-mix(in lab, red, red)) {
+                                color: color-mix(in oklab, currentcolor 50%, transparent);
+                            }
+                        }
+                    }
+                    textarea {
+                        resize: vertical;
+                    }
+                    ::-webkit-search-decoration {
+                        -webkit-appearance: none;
+                    }
+                    ::-webkit-date-and-time-value {
+                        min-height: 1lh;
+                        text-align: inherit;
+                    }
+                    ::-webkit-datetime-edit {
+                        display: inline-flex;
+                    }
+                    ::-webkit-datetime-edit-fields-wrapper {
+                        padding: 0;
+                    }
+                    ::-webkit-datetime-edit,
+                    ::-webkit-datetime-edit-year-field,
+                    ::-webkit-datetime-edit-month-field,
+                    ::-webkit-datetime-edit-day-field,
+                    ::-webkit-datetime-edit-hour-field,
+                    ::-webkit-datetime-edit-minute-field,
+                    ::-webkit-datetime-edit-second-field,
+                    ::-webkit-datetime-edit-millisecond-field,
+                    ::-webkit-datetime-edit-meridiem-field {
+                        padding-block: 0;
+                    }
+                    ::-webkit-calendar-picker-indicator {
+                        line-height: 1;
+                    }
+                    :-moz-ui-invalid {
+                        box-shadow: none;
+                    }
+                    button,
+                    input:where([type="button"], [type="reset"], [type="submit"]),
+                    ::file-selector-button {
+                        appearance: button;
+                    }
+                    ::-webkit-inner-spin-button,
+                    ::-webkit-outer-spin-button {
+                        height: auto;
+                    }
+                    [hidden]:where(:not([hidden="until-found"])) {
+                        display: none !important;
+                    }
+                }
+                @layer utilities {
+                    .visible {
+                        visibility: visible;
+                    }
+                    .absolute {
+                        position: absolute;
+                    }
+                    .relative {
+                        position: relative;
+                    }
+                    .top-1\.5 {
+                        top: calc(var(--spacing) * 1.5);
+                    }
+                    .right-0 {
+                        right: calc(var(--spacing) * 0);
+                    }
+                    .right-1\.5 {
+                        right: calc(var(--spacing) * 1.5);
+                    }
+                    .bottom-0 {
+                        bottom: calc(var(--spacing) * 0);
+                    }
+                    .-my-1 {
+                        margin-block: calc(var(--spacing) * -1);
+                    }
+                    .my-1 {
+                        margin-block: calc(var(--spacing) * 1);
+                    }
+                    .mt-0\.5 {
+                        margin-top: calc(var(--spacing) * 0.5);
+                    }
+                    .mt-1 {
+                        margin-top: calc(var(--spacing) * 1);
+                    }
+                    .mt-5 {
+                        margin-top: calc(var(--spacing) * 5);
+                    }
+                    .-mb-px {
+                        margin-bottom: -1px;
+                    }
+                    .mb-1 {
+                        margin-bottom: calc(var(--spacing) * 1);
+                    }
+                    .mb-3 {
+                        margin-bottom: calc(var(--spacing) * 3);
+                    }
+                    .ml-0\.5 {
+                        margin-left: calc(var(--spacing) * 0.5);
+                    }
+                    .ml-1 {
+                        margin-left: calc(var(--spacing) * 1);
+                    }
+                    .ml-auto {
+                        margin-left: auto;
+                    }
+                    .block {
+                        display: block;
+                    }
+                    .flex {
+                        display: flex;
+                    }
+                    .grid {
+                        display: grid;
+                    }
+                    .inline-flex {
+                        display: inline-flex;
+                    }
+                    .table {
+                        display: table;
+                    }
+                    .h-1 {
+                        height: calc(var(--spacing) * 1);
+                    }
+                    .h-1\.5 {
+                        height: calc(var(--spacing) * 1.5);
+                    }
+                    .h-2 {
+                        height: calc(var(--spacing) * 2);
+                    }
+                    .h-3\.5 {
+                        height: calc(var(--spacing) * 3.5);
+                    }
+                    .h-4 {
+                        height: calc(var(--spacing) * 4);
+                    }
+                    .h-5 {
+                        height: calc(var(--spacing) * 5);
+                    }
+                    .h-6 {
+                        height: calc(var(--spacing) * 6);
+                    }
+                    .h-7 {
+                        height: calc(var(--spacing) * 7);
+                    }
+                    .h-8 {
+                        height: calc(var(--spacing) * 8);
+                    }
+                    .h-9 {
+                        height: calc(var(--spacing) * 9);
+                    }
+                    .h-10 {
+                        height: calc(var(--spacing) * 10);
+                    }
+                    .h-14 {
+                        height: calc(var(--spacing) * 14);
+                    }
+                    .h-16 {
+                        height: calc(var(--spacing) * 16);
+                    }
+                    .h-full {
+                        height: 100%;
+                    }
+                    .min-h-24 {
+                        min-height: calc(var(--spacing) * 24);
+                    }
+                    .w-1\.5 {
+                        width: calc(var(--spacing) * 1.5);
+                    }
+                    .w-2 {
+                        width: calc(var(--spacing) * 2);
+                    }
+                    .w-2\/5 {
+                        width: calc(2 / 5 * 100%);
+                    }
+                    .w-3\.5 {
+                        width: calc(var(--spacing) * 3.5);
+                    }
+                    .w-4 {
+                        width: calc(var(--spacing) * 4);
+                    }
+                    .w-5 {
+                        width: calc(var(--spacing) * 5);
+                    }
+                    .w-6 {
+                        width: calc(var(--spacing) * 6);
+                    }
+                    .w-7 {
+                        width: calc(var(--spacing) * 7);
+                    }
+                    .w-8 {
+                        width: calc(var(--spacing) * 8);
+                    }
+                    .w-9 {
+                        width: calc(var(--spacing) * 9);
+                    }
+                    .w-10 {
+                        width: calc(var(--spacing) * 10);
+                    }
+                    .w-14 {
+                        width: calc(var(--spacing) * 14);
+                    }
+                    .w-16 {
+                        width: calc(var(--spacing) * 16);
+                    }
+                    .w-32 {
+                        width: calc(var(--spacing) * 32);
+                    }
+                    .w-40 {
+                        width: calc(var(--spacing) * 40);
+                    }
+                    .w-52 {
+                        width: calc(var(--spacing) * 52);
+                    }
+                    .w-56 {
+                        width: calc(var(--spacing) * 56);
+                    }
+                    .w-60 {
+                        width: calc(var(--spacing) * 60);
+                    }
+                    .w-64 {
+                        width: calc(var(--spacing) * 64);
+                    }
+                    .w-72 {
+                        width: calc(var(--spacing) * 72);
+                    }
+                    .w-full {
+                        width: 100%;
+                    }
+                    .w-px {
+                        width: 1px;
+                    }
+                    .max-w-sm {
+                        max-width: var(--container-sm);
+                    }
+                    .min-w-0 {
+                        min-width: calc(var(--spacing) * 0);
+                    }
+                    .flex-1 {
+                        flex: 1;
+                    }
+                    .shrink-0 {
+                        flex-shrink: 0;
+                    }
+                    .list-disc {
+                        list-style-type: disc;
+                    }
+                    .grid-cols-2 {
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                    }
+                    .grid-cols-4 {
+                        grid-template-columns: repeat(4, minmax(0, 1fr));
+                    }
+                    .flex-col {
+                        flex-direction: column;
+                    }
+                    .flex-wrap {
+                        flex-wrap: wrap;
+                    }
+                    .items-center {
+                        align-items: center;
+                    }
+                    .items-end {
+                        align-items: flex-end;
+                    }
+                    .items-start {
+                        align-items: flex-start;
+                    }
+                    .justify-between {
+                        justify-content: space-between;
+                    }
+                    .justify-center {
+                        justify-content: center;
+                    }
+                    .justify-end {
+                        justify-content: flex-end;
+                    }
+                    .gap-0 {
+                        gap: calc(var(--spacing) * 0);
+                    }
+                    .gap-0\.5 {
+                        gap: calc(var(--spacing) * 0.5);
+                    }
+                    .gap-1 {
+                        gap: calc(var(--spacing) * 1);
+                    }
+                    .gap-1\.5 {
+                        gap: calc(var(--spacing) * 1.5);
+                    }
+                    .gap-2 {
+                        gap: calc(var(--spacing) * 2);
+                    }
+                    .gap-2\.5 {
+                        gap: calc(var(--spacing) * 2.5);
+                    }
+                    .gap-3 {
+                        gap: calc(var(--spacing) * 3);
+                    }
+                    .gap-3\.5 {
+                        gap: calc(var(--spacing) * 3.5);
+                    }
+                    .gap-4 {
+                        gap: calc(var(--spacing) * 4);
+                    }
+                    .gap-5 {
+                        gap: calc(var(--spacing) * 5);
+                    }
+                    .gap-6 {
+                        gap: calc(var(--spacing) * 6);
+                    }
+                    .gap-7 {
+                        gap: calc(var(--spacing) * 7);
+                    }
+                    .gap-8 {
+                        gap: calc(var(--spacing) * 8);
+                    }
+                    .-space-x-1\.5 {
+                        :where(& > :not(:last-child)) {
+                            --tw-space-x-reverse: 0;
+                            margin-inline-start: calc(
+                                calc(var(--spacing) * -1.5) * var(--tw-space-x-reverse)
+                            );
+                            margin-inline-end: calc(
+                                calc(var(--spacing) * -1.5) *
+                                calc(1 - var(--tw-space-x-reverse))
+                            );
+                        }
+                    }
+                    .-space-x-2 {
+                        :where(& > :not(:last-child)) {
+                            --tw-space-x-reverse: 0;
+                            margin-inline-start: calc(
+                                calc(var(--spacing) * -2) * var(--tw-space-x-reverse)
+                            );
+                            margin-inline-end: calc(
+                                calc(var(--spacing) * -2) * calc(1 - var(--tw-space-x-reverse))
+                            );
+                        }
+                    }
+                    .divide-y {
+                        :where(& > :not(:last-child)) {
+                            --tw-divide-y-reverse: 0;
+                            border-bottom-style: var(--tw-border-style);
+                            border-top-style: var(--tw-border-style);
+                            border-top-width: calc(1px * var(--tw-divide-y-reverse));
+                            border-bottom-width: calc(
+                                1px * calc(1 - var(--tw-divide-y-reverse))
+                            );
+                        }
+                    }
+                    .divide-border {
+                        :where(& > :not(:last-child)) {
+                            border-color: var(--color-border);
+                        }
+                    }
+                    .truncate {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                    .overflow-hidden {
+                        overflow: hidden;
+                    }
+                    .overflow-x-auto {
+                        overflow-x: auto;
+                    }
+                    .rounded {
+                        border-radius: var(--radius);
+                    }
+                    .rounded-full {
+                        border-radius: calc(infinity * 1px);
+                    }
+                    .rounded-md {
+                        border-radius: var(--radius-md);
+                    }
+                    .rounded-sm {
+                        border-radius: var(--radius-sm);
+                    }
+                    .border {
+                        border-style: var(--tw-border-style);
+                        border-width: 1px;
+                    }
+                    .border-2 {
+                        border-style: var(--tw-border-style);
+                        border-width: 2px;
+                    }
+                    .border-t {
+                        border-top-style: var(--tw-border-style);
+                        border-top-width: 1px;
+                    }
+                    .border-r {
+                        border-right-style: var(--tw-border-style);
+                        border-right-width: 1px;
+                    }
+                    .border-b {
+                        border-bottom-style: var(--tw-border-style);
+                        border-bottom-width: 1px;
+                    }
+                    .border-b-0 {
+                        border-bottom-style: var(--tw-border-style);
+                        border-bottom-width: 0px;
+                    }
+                    .border-b-2 {
+                        border-bottom-style: var(--tw-border-style);
+                        border-bottom-width: 2px;
+                    }
+                    .border-l {
+                        border-left-style: var(--tw-border-style);
+                        border-left-width: 1px;
+                    }
+                    .border-l-2 {
+                        border-left-style: var(--tw-border-style);
+                        border-left-width: 2px;
+                    }
+                    .border-dashed {
+                        --tw-border-style: dashed;
+                        border-style: dashed;
+                    }
+                    .border-blue-200 {
+                        border-color: var(--color-blue-200);
+                    }
+                    .border-border {
+                        border-color: var(--color-border);
+                    }
+                    .border-green-100 {
+                        border-color: var(--color-green-100);
+                    }
+                    .border-primary {
+                        border-color: var(--color-primary);
+                    }
+                    .border-red-100 {
+                        border-color: var(--color-red-100);
+                    }
+                    .border-red-200 {
+                        border-color: var(--color-red-200);
+                    }
+                    .border-sidebar {
+                        border-color: var(--color-sidebar);
+                    }
+                    .border-sidebar-active {
+                        border-color: var(--color-sidebar-active);
+                    }
+                    .border-surface {
+                        border-color: var(--color-surface);
+                    }
+                    .border-transparent {
+                        border-color: transparent;
+                    }
+                    .bg-amber-50 {
+                        background-color: var(--color-amber-50);
+                    }
+                    .bg-background {
+                        background-color: var(--color-background);
+                    }
+                    .bg-border {
+                        background-color: var(--color-border);
+                    }
+                    .bg-cyan-600 {
+                        background-color: var(--color-cyan-600);
+                    }
+                    .bg-green-50 {
+                        background-color: var(--color-green-50);
+                    }
+                    .bg-indigo-500 {
+                        background-color: var(--color-indigo-500);
+                    }
+                    .bg-muted {
+                        background-color: var(--color-muted);
+                    }
+                    .bg-pink-500 {
+                        background-color: var(--color-pink-500);
+                    }
+                    .bg-primary {
+                        background-color: var(--color-primary);
+                    }
+                    .bg-primary-light {
+                        background-color: var(--color-primary-light);
+                    }
+                    .bg-priority-high {
+                        background-color: var(--color-priority-high);
+                    }
+                    .bg-priority-medium {
+                        background-color: var(--color-priority-medium);
+                    }
+                    .bg-purple-500 {
+                        background-color: var(--color-purple-500);
+                    }
+                    .bg-red-50 {
+                        background-color: var(--color-red-50);
+                    }
+                    .bg-red-500 {
+                        background-color: var(--color-red-500);
+                    }
+                    .bg-red-600 {
+                        background-color: var(--color-red-600);
+                    }
+                    .bg-secondary {
+                        background-color: var(--color-secondary);
+                    }
+                    .bg-sidebar {
+                        background-color: var(--color-sidebar);
+                    }
+                    .bg-sidebar-active {
+                        background-color: var(--color-sidebar-active);
+                    }
+                    .bg-status-done {
+                        background-color: var(--color-status-done);
+                    }
+                    .bg-status-inprogress {
+                        background-color: var(--color-status-inprogress);
+                    }
+                    .bg-status-review {
+                        background-color: var(--color-status-review);
+                    }
+                    .bg-status-todo {
+                        background-color: var(--color-status-todo);
+                    }
+                    .bg-surface {
+                        background-color: var(--color-surface);
+                    }
+                    .bg-surface-raised {
+                        background-color: var(--color-surface-raised);
+                    }
+                    .bg-white {
+                        background-color: var(--color-white);
+                    }
+                    .p-0\.5 {
+                        padding: calc(var(--spacing) * 0.5);
+                    }
+                    .p-1 {
+                        padding: calc(var(--spacing) * 1);
+                    }
+                    .p-1\.5 {
+                        padding: calc(var(--spacing) * 1.5);
+                    }
+                    .p-2 {
+                        padding: calc(var(--spacing) * 2);
+                    }
+                    .p-3\.5 {
+                        padding: calc(var(--spacing) * 3.5);
+                    }
+                    .p-6 {
+                        padding: calc(var(--spacing) * 6);
+                    }
+                    .px-0\.5 {
+                        padding-inline: calc(var(--spacing) * 0.5);
+                    }
+                    .px-1 {
+                        padding-inline: calc(var(--spacing) * 1);
+                    }
+                    .px-1\.5 {
+                        padding-inline: calc(var(--spacing) * 1.5);
+                    }
+                    .px-2 {
+                        padding-inline: calc(var(--spacing) * 2);
+                    }
+                    .px-2\.5 {
+                        padding-inline: calc(var(--spacing) * 2.5);
+                    }
+                    .px-3 {
+                        padding-inline: calc(var(--spacing) * 3);
+                    }
+                    .px-4 {
+                        padding-inline: calc(var(--spacing) * 4);
+                    }
+                    .px-5 {
+                        padding-inline: calc(var(--spacing) * 5);
+                    }
+                    .px-6 {
+                        padding-inline: calc(var(--spacing) * 6);
+                    }
+                    .px-8 {
+                        padding-inline: calc(var(--spacing) * 8);
+                    }
+                    .px-12 {
+                        padding-inline: calc(var(--spacing) * 12);
+                    }
+                    .py-0 {
+                        padding-block: calc(var(--spacing) * 0);
+                    }
+                    .py-0\.5 {
+                        padding-block: calc(var(--spacing) * 0.5);
+                    }
+                    .py-1 {
+                        padding-block: calc(var(--spacing) * 1);
+                    }
+                    .py-1\.5 {
+                        padding-block: calc(var(--spacing) * 1.5);
+                    }
+                    .py-2 {
+                        padding-block: calc(var(--spacing) * 2);
+                    }
+                    .py-2\.5 {
+                        padding-block: calc(var(--spacing) * 2.5);
+                    }
+                    .py-3 {
+                        padding-block: calc(var(--spacing) * 3);
+                    }
+                    .py-4 {
+                        padding-block: calc(var(--spacing) * 4);
+                    }
+                    .py-5 {
+                        padding-block: calc(var(--spacing) * 5);
+                    }
+                    .py-6 {
+                        padding-block: calc(var(--spacing) * 6);
+                    }
+                    .py-7 {
+                        padding-block: calc(var(--spacing) * 7);
+                    }
+                    .py-12 {
+                        padding-block: calc(var(--spacing) * 12);
+                    }
+                    .pt-0\.5 {
+                        padding-top: calc(var(--spacing) * 0.5);
+                    }
+                    .pt-1 {
+                        padding-top: calc(var(--spacing) * 1);
+                    }
+                    .pt-3 {
+                        padding-top: calc(var(--spacing) * 3);
+                    }
+                    .pt-7 {
+                        padding-top: calc(var(--spacing) * 7);
+                    }
+                    .pb-1\.5 {
+                        padding-bottom: calc(var(--spacing) * 1.5);
+                    }
+                    .pb-3 {
+                        padding-bottom: calc(var(--spacing) * 3);
+                    }
+                    .pb-5 {
+                        padding-bottom: calc(var(--spacing) * 5);
+                    }
+                    .pb-6 {
+                        padding-bottom: calc(var(--spacing) * 6);
+                    }
+                    .pl-3 {
+                        padding-left: calc(var(--spacing) * 3);
+                    }
+                    .pl-4 {
+                        padding-left: calc(var(--spacing) * 4);
+                    }
+                    .pl-5 {
+                        padding-left: calc(var(--spacing) * 5);
+                    }
+                    .text-center {
+                        text-align: center;
+                    }
+                    .text-left {
+                        text-align: left;
+                    }
+                    .text-right {
+                        text-align: right;
+                    }
+                    .font-body {
+                        font-family: var(--font-body);
+                    }
+                    .font-headings {
+                        font-family: var(--font-headings);
+                    }
+                    .font-mono {
+                        font-family: var(--font-mono);
+                    }
+                    .text-2xl {
+                        font-size: var(--text-2xl);
+                        line-height: var(--tw-leading, var(--text-2xl--line-height));
+                    }
+                    .text-3xl {
+                        font-size: var(--text-3xl);
+                        line-height: var(--tw-leading, var(--text-3xl--line-height));
+                    }
+                    .text-base {
+                        font-size: var(--text-base);
+                        line-height: var(--tw-leading, var(--text-base--line-height));
+                    }
+                    .text-lg {
+                        font-size: var(--text-lg);
+                        line-height: var(--tw-leading, var(--text-lg--line-height));
+                    }
+                    .text-sm {
+                        font-size: var(--text-sm);
+                        line-height: var(--tw-leading, var(--text-sm--line-height));
+                    }
+                    .text-xs {
+                        font-size: var(--text-xs);
+                        line-height: var(--tw-leading, var(--text-xs--line-height));
+                    }
+                    .leading-none {
+                        --tw-leading: 1;
+                        line-height: 1;
+                    }
+                    .leading-relaxed {
+                        --tw-leading: var(--leading-relaxed);
+                        line-height: var(--leading-relaxed);
+                    }
+                    .leading-snug {
+                        --tw-leading: var(--leading-snug);
+                        line-height: var(--leading-snug);
+                    }
+                    .font-bold {
+                        --tw-font-weight: var(--font-weight-bold);
+                        font-weight: var(--font-weight-bold);
+                    }
+                    .font-medium {
+                        --tw-font-weight: var(--font-weight-medium);
+                        font-weight: var(--font-weight-medium);
+                    }
+                    .font-semibold {
+                        --tw-font-weight: var(--font-weight-semibold);
+                        font-weight: var(--font-weight-semibold);
+                    }
+                    .tracking-tight {
+                        --tw-tracking: var(--tracking-tight);
+                        letter-spacing: var(--tracking-tight);
+                    }
+                    .tracking-wide {
+                        --tw-tracking: var(--tracking-wide);
+                        letter-spacing: var(--tracking-wide);
+                    }
+                    .tracking-wider {
+                        --tw-tracking: var(--tracking-wider);
+                        letter-spacing: var(--tracking-wider);
+                    }
+                    .tracking-widest {
+                        --tw-tracking: var(--tracking-widest);
+                        letter-spacing: var(--tracking-widest);
+                    }
+                    .whitespace-pre {
+                        white-space: pre;
+                    }
+                    .text-foreground {
+                        color: var(--color-foreground);
+                    }
+                    .text-muted-foreground {
+                        color: var(--color-muted-foreground);
+                    }
+                    .text-primary {
+                        color: var(--color-primary);
+                    }
+                    .text-primary-foreground {
+                        color: var(--color-primary-foreground);
+                    }
+                    .text-priority-high {
+                        color: var(--color-priority-high);
+                    }
+                    .text-priority-low {
+                        color: var(--color-priority-low);
+                    }
+                    .text-priority-medium {
+                        color: var(--color-priority-medium);
+                    }
+                    .text-secondary-foreground {
+                        color: var(--color-secondary-foreground);
+                    }
+                    .text-sidebar-foreground {
+                        color: var(--color-sidebar-foreground);
+                    }
+                    .text-status-done {
+                        color: var(--color-status-done);
+                    }
+                    .text-status-inprogress {
+                        color: var(--color-status-inprogress);
+                    }
+                    .text-status-review {
+                        color: var(--color-status-review);
+                    }
+                    .text-white {
+                        color: var(--color-white);
+                    }
+                    .uppercase {
+                        text-transform: uppercase;
+                    }
+                    .italic {
+                        font-style: italic;
+                    }
+                    .line-through {
+                        text-decoration-line: line-through;
+                    }
+                    .underline {
+                        text-decoration-line: underline;
+                    }
+                    .opacity-50 {
+                        opacity: 50%;
+                    }
+                    .opacity-70 {
+                        opacity: 70%;
+                    }
+                    .shadow-sm {
+                        --tw-shadow:
+                            0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+                            0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+                        box-shadow:
+                            var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+                            var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+                            var(--tw-shadow);
+                    }
+                    .filter {
+                        filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+                        var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+                        var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+                    }
+                    .last\:border-b-0 {
+                        &:last-child {
+                            border-bottom-style: var(--tw-border-style);
+                            border-bottom-width: 0px;
+                        }
+                    }
+                }
+                @property --tw-space-x-reverse {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0;
+                }
+                @property --tw-divide-y-reverse {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0;
+                }
+                @property --tw-border-style {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: solid;
+                }
+                @property --tw-leading {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-font-weight {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-tracking {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-shadow {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0 0 #0000;
+                }
+                @property --tw-shadow-color {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-shadow-alpha {
+                    syntax: "<percentage>";
+                    inherits: false;
+                    initial-value: 100%;
+                }
+                @property --tw-inset-shadow {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0 0 #0000;
+                }
+                @property --tw-inset-shadow-color {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-inset-shadow-alpha {
+                    syntax: "<percentage>";
+                    inherits: false;
+                    initial-value: 100%;
+                }
+                @property --tw-ring-color {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-ring-shadow {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0 0 #0000;
+                }
+                @property --tw-inset-ring-color {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-inset-ring-shadow {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0 0 #0000;
+                }
+                @property --tw-ring-inset {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-ring-offset-width {
+                    syntax: "<length>";
+                    inherits: false;
+                    initial-value: 0px;
+                }
+                @property --tw-ring-offset-color {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: #fff;
+                }
+                @property --tw-ring-offset-shadow {
+                    syntax: "*";
+                    inherits: false;
+                    initial-value: 0 0 #0000;
+                }
+                @property --tw-blur {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-brightness {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-contrast {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-grayscale {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-hue-rotate {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-invert {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-opacity {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-saturate {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-sepia {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-drop-shadow {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-drop-shadow-color {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @property --tw-drop-shadow-alpha {
+                    syntax: "<percentage>";
+                    inherits: false;
+                    initial-value: 100%;
+                }
+                @property --tw-drop-shadow-size {
+                    syntax: "*";
+                    inherits: false;
+                }
+                @layer properties {
+                    @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
+            ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+                        *,
+                        ::before,
+                        ::after,
+                        ::backdrop {
+                            --tw-space-x-reverse: 0;
+                            --tw-divide-y-reverse: 0;
+                            --tw-border-style: solid;
+                            --tw-leading: initial;
+                            --tw-font-weight: initial;
+                            --tw-tracking: initial;
+                            --tw-shadow: 0 0 #0000;
+                            --tw-shadow-color: initial;
+                            --tw-shadow-alpha: 100%;
+                            --tw-inset-shadow: 0 0 #0000;
+                            --tw-inset-shadow-color: initial;
+                            --tw-inset-shadow-alpha: 100%;
+                            --tw-ring-color: initial;
+                            --tw-ring-shadow: 0 0 #0000;
+                            --tw-inset-ring-color: initial;
+                            --tw-inset-ring-shadow: 0 0 #0000;
+                            --tw-ring-inset: initial;
+                            --tw-ring-offset-width: 0px;
+                            --tw-ring-offset-color: #fff;
+                            --tw-ring-offset-shadow: 0 0 #0000;
+                            --tw-blur: initial;
+                            --tw-brightness: initial;
+                            --tw-contrast: initial;
+                            --tw-grayscale: initial;
+                            --tw-hue-rotate: initial;
+                            --tw-invert: initial;
+                            --tw-opacity: initial;
+                            --tw-saturate: initial;
+                            --tw-sepia: initial;
+                            --tw-drop-shadow: initial;
+                            --tw-drop-shadow-color: initial;
+                            --tw-drop-shadow-alpha: 100%;
+                            --tw-drop-shadow-size: initial;
+                        }
+                    }
+                }
+            </style>
+            <link
+                rel="preload"
+                as="image"
+                href="https://storage.googleapis.com/banani-avatars/avatar/female/35-50/European/0"
+            />
+            <link
+                rel="preload"
+                as="image"
+                href="https://storage.googleapis.com/banani-avatars/avatar/male/25-35/East Asian/1"
+            />
+            <link
+                rel="preload"
+                as="image"
+                href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/African/2"
+            />
+            <link
+                rel="preload"
+                as="image"
+                href="https://storage.googleapis.com/banani-avatars/avatar/male/25-35/South Asian/4"
+            />
+            <link
+                rel="preload"
+                as="image"
+                href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/Hispanic/9"
+            />
+        </head>
+        <body>
+        <div
+            class="flex bg-background font-body"
+            style="min-height: 1360px"
+            data-component="@screens/new_screen5.jsx"
+        >
+            <div
+                class="flex flex-col bg-sidebar w-56 shrink-0"
+                style="min-height: 900px"
+                data-component="@components/SidebarNav.jsx"
+            >
+                <div
+                    class="flex items-center gap-2.5 px-4 py-4 border-b border-sidebar-active"
+                >
+                    <div
+                        class="w-7 h-7 rounded-md bg-primary flex items-center justify-center"
+                    >
+              <span
+                  class="text-primary-foreground"
+                  style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                  data-icon="layers"
+                  data-component="@globalComponents/Icon.jsx"
+              ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15px"
+                  height="15px"
+                  viewBox="0 0 24 24"
+              >
+                  <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                  >
+                    <path
+                        d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"
+                    ></path>
+                    <path
+                        d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"
+                    ></path>
+                    <path
+                        d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"
+                    ></path>
+                  </g></svg
+              ></span>
+                    </div>
+                    <span
+                        class="font-headings font-semibold text-base text-white tracking-tight"
+                    ><span data-file="/components/SidebarNav.jsx" data-idx="0"
+                    >Meridian</span
+                    ></span
+                    >
+                </div>
+                <nav class="flex flex-col gap-0.5 px-2 pt-3 flex-1">
+                    <a
+                        class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium text-sidebar-foreground"
+                        data-media-type="banani-button"
+                    ><span
+                        class=""
+                        style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                        data-icon="home"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                    >
+                  <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                  >
+                    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
+                    <path
+                        d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                    ></path>
+                  </g></svg></span
+                    ><span>Home</span></a
+                    ><a
+                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium text-sidebar-foreground"
+                    data-media-type="banani-button"
+                ><span
+                    class=""
+                    style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                    data-icon="folder"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15px"
+                    height="15px"
+                    viewBox="0 0 24 24"
+                >
+                  <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                      d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+                  ></path></svg></span
+                ><span>Projects</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium bg-sidebar-active text-white"
+                    data-media-type="banani-button"
+                ><span
+                    class=""
+                    style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                    data-icon="check-square"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15px"
+                    height="15px"
+                    viewBox="0 0 24 24"
+                >
+                  <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                  >
+                    <path
+                        d="M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344"
+                    ></path>
+                    <path d="m9 11l3 3L22 4"></path>
+                  </g></svg></span
+                ><span>Tasks</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium text-sidebar-foreground"
+                    data-media-type="banani-button"
+                ><span
+                    class=""
+                    style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                    data-icon="flag"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15px"
+                    height="15px"
+                    viewBox="0 0 24 24"
+                >
+                  <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                      d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"
+                  ></path></svg></span
+                ><span>Milestones</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium text-sidebar-foreground"
+                    data-media-type="banani-button"
+                ><span
+                    class=""
+                    style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                    data-icon="file-text"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15px"
+                    height="15px"
+                    viewBox="0 0 24 24"
+                >
+                  <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                  >
+                    <path
+                        d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                    ></path>
+                    <path d="M14 2v5a1 1 0 0 0 1 1h5M10 9H8m8 4H8m8 4H8"></path>
+                  </g></svg></span
+                ><span>Documents</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium text-sidebar-foreground"
+                    data-media-type="banani-button"
+                ><span
+                    class=""
+                    style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                    data-icon="bar-chart-2"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15px"
+                    height="15px"
+                    viewBox="0 0 24 24"
+                >
+                  <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                      d="M5 21v-6m7 6V3m7 18V9"
+                  ></path></svg></span
+                ><span>Reports</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-body font-medium text-sidebar-foreground"
+                    data-media-type="banani-button"
+                ><span
+                    class=""
+                    style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                    data-icon="users"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="15px"
+                    height="15px"
+                    viewBox="0 0 24 24"
+                >
+                  <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                  >
+                    <path
+                        d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 3.128a4 4 0 0 1 0 7.744M22 21v-2a4 4 0 0 0-3-3.87"
+                    ></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </g></svg></span
+                ><span>Team</span></a
+                >
+                    <div class="mt-5 mb-1 px-2.5 flex items-center justify-between">
+              <span
+                  class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+              ><span data-file="/components/SidebarNav.jsx" data-idx="1"
+              >Projects</span
+              ></span
+              ><button
+                        class="text-muted-foreground"
+                        data-media-type="banani-button"
+                    >
+                <span
+                    class=""
+                    style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 13px;
+                    height: 13px;
+                  "
+                    data-icon="plus"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="13px"
+                    height="13px"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.6923076923076925"
+                        d="M5 12h14m-7-7v14"
+                    ></path></svg
+                ></span>
+                    </button>
+                    </div>
+                    <a
+                        class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm text-sidebar-foreground font-body"
+                        data-media-type="banani-button"
+                    ><span class="w-2 h-2 rounded-sm bg-primary shrink-0"></span
+                    ><span class="truncate">Atlas Platform</span></a
+                    ><a
+                    class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm text-sidebar-foreground font-body"
+                    data-media-type="banani-button"
+                ><span class="w-2 h-2 rounded-sm bg-status-done shrink-0"></span
+                ><span class="truncate">Horizon CRM</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm text-sidebar-foreground font-body"
+                    data-media-type="banani-button"
+                ><span
+                    class="w-2 h-2 rounded-sm bg-priority-medium shrink-0"
+                ></span
+                ><span class="truncate">Nexus API</span></a
+                ><a
+                    class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm text-sidebar-foreground font-body"
+                    data-media-type="banani-button"
+                ><span
+                    class="w-2 h-2 rounded-sm bg-status-inprogress shrink-0"
+                ></span
+                ><span class="truncate">Vanguard Mobile</span></a
+                >
+                </nav>
+                <div
+                    class="px-2 pb-3 border-t border-sidebar-active pt-3 flex flex-col gap-0.5"
+                >
+                    <a
+                        class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-sidebar-foreground font-body"
+                        data-media-type="banani-button"
+                    ><span
+                        class=""
+                        style="
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  width: 15px;
+                  height: 15px;
+                "
+                        data-icon="settings"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15px"
+                        height="15px"
+                        viewBox="0 0 24 24"
+                    >
+                  <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3.2"
+                  >
+                    <path
+                        d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0a2.34 2.34 0 0 0 3.319 1.915a2.34 2.34 0 0 1 2.33 4.033a2.34 2.34 0 0 0 0 3.831a2.34 2.34 0 0 1-2.33 4.033a2.34 2.34 0 0 0-3.319 1.915a2.34 2.34 0 0 1-4.659 0a2.34 2.34 0 0 0-3.32-1.915a2.34 2.34 0 0 1-2.33-4.033a2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+                    ></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </g></svg></span
+                    ><span
+                    ><span data-file="/components/SidebarNav.jsx" data-idx="2"
+                    >Settings</span
+                    ></span
+                    ></a
+                    >
+                    <div class="flex items-center gap-2.5 px-2.5 py-2 mt-1">
+                        <img
+                            src="https://storage.googleapis.com/banani-avatars/avatar/female/35-50/European/0"
+                            class="w-6 h-6 rounded-full"
+                            data-component="@globalComponents/UserAvatar.jsx"
+                        />
+                        <div class="flex flex-col min-w-0">
+                <span class="text-xs font-medium text-white truncate"
+                ><span data-file="/components/SidebarNav.jsx" data-idx="3"
+                >Sarah Mitchell</span
+                ></span
+                ><span class="text-xs text-muted-foreground truncate"
+                        ><span data-file="/components/SidebarNav.jsx" data-idx="4"
+                        >Admin</span
+                        ></span
+                        >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col flex-1 min-w-0">
+                <div
+                    class="flex items-center justify-between px-8 py-4 border-b border-border bg-surface"
+                >
+                    <div class="flex flex-col gap-1">
+                        <div
+                            class="flex items-center gap-1.5 text-xs font-body text-muted-foreground"
+                        >
+                            <a class="text-primary" data-media-type="banani-button"
+                            ><span data-file="/screens/new_screen5.jsx" data-idx="0"
+                            >Projects</span
+                            ></a
+                            ><span
+                            class=""
+                            style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 12px;
+                    height: 12px;
+                  "
+                            data-icon="chevron-right"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12px"
+                            height="12px"
+                            viewBox="0 0 24 24"
+                        >
+                    <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="4"
+                        d="m9 18l6-6l-6-6"
+                    ></path></svg></span
+                        ><span class="text-foreground font-medium"
+                        ><span data-file="/screens/new_screen5.jsx" data-idx="1"
+                        >Create Project</span
+                        ></span
+                        >
+                        </div>
+                        <h1
+                            class="text-lg font-semibold text-foreground font-headings tracking-tight"
+                        >
+                <span data-file="/screens/new_screen5.jsx" data-idx="2"
+                >Create Project</span
+                >
+                        </h1>
+                        <p class="text-xs text-muted-foreground font-body">
+                <span data-file="/screens/new_screen5.jsx" data-idx="3"
+                >Fill in the details below to set up a new project in your
+                  workspace.</span
+                >
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button
+                            class="px-4 py-2 rounded-md bg-surface border border-border text-sm font-medium text-secondary-foreground font-body"
+                            data-media-type="banani-button"
+                        >
+                <span data-file="/screens/new_screen5.jsx" data-idx="4"
+                >Cancel</span
+                ></button
+                        ><button
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium font-body"
+                        data-media-type="banani-button"
+                    >
+                <span
+                    class=""
+                    style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 13px;
+                    height: 13px;
+                  "
+                    data-icon="save"
+                    data-component="@globalComponents/Icon.jsx"
+                ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="13px"
+                    height="13px"
+                    viewBox="0 0 24 24"
+                >
+                    <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3.6923076923076925"
+                    >
+                      <path
+                          d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+                      ></path>
+                      <path
+                          d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"
+                      ></path>
+                    </g></svg></span
+                ><span data-file="/screens/new_screen5.jsx" data-idx="5"
+                    >Save Project</span
+                    >
+                    </button>
+                    </div>
+                </div>
+                <div class="flex gap-6 px-8 py-7">
+                    <div class="flex flex-col gap-5 flex-1 min-w-0">
+                        <div
+                            class="bg-surface border border-border rounded-md overflow-hidden"
+                        >
+                            <div class="px-6 py-4 border-b border-border">
+                                <h3
+                                    class="text-sm font-semibold text-foreground font-headings"
+                                >
+                    <span data-file="/screens/new_screen5.jsx" data-idx="6"
+                    >General Information</span
+                    >
+                                </h3>
+                                <p class="text-xs text-muted-foreground font-body mt-0.5">
+                    <span data-file="/screens/new_screen5.jsx" data-idx="7"
+                    >Core identity of your project. The project key is used as
+                      a prefix in task IDs.</span
+                    >
+                                </p>
+                            </div>
+                            <div class="px-6 py-5 flex flex-col gap-5">
+                                <div class="grid grid-cols-2 gap-5">
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span data-file="/screens/new_screen5.jsx" data-idx="8"
+                                        >Project Name</span
+                                        ><span class="text-priority-high ml-0.5">*</span></label
+                                        >
+                                        <div
+                                            class="flex items-center border border-border rounded-md bg-surface overflow-hidden text-sm font-body"
+                                        >
+                                            <div class="flex-1 px-3 py-2.5 text-foreground">
+                          <span class="text-muted-foreground"
+                          ><span
+                              data-file="/screens/new_screen5.jsx"
+                              data-idx="10"
+                          >e.g. Atlas Platform</span
+                          ></span
+                          >
+                                            </div>
+                                        </div>
+                                        <p
+                                            class="text-xs text-priority-high font-body flex items-center gap-1"
+                                        >
+                        <span
+                            class=""
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 11px;
+                            height: 11px;
+                          "
+                            data-icon="alert-circle"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="11px"
+                            height="11px"
+                            viewBox="0 0 24 24"
+                        >
+                            <g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.363636363636363"
+                            >
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <path d="M12 8v4m0 4h.01"></path>
+                            </g></svg></span
+                        ><span data-file="/screens/new_screen5.jsx" data-idx="9"
+                                        >Project name is required</span
+                                        >
+                                        </p>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="11"
+                                        >Project Key</span
+                                        ><span class="text-priority-high ml-0.5">*</span></label
+                                        >
+                                        <div
+                                            class="flex items-center border border-border rounded-md bg-surface overflow-hidden text-sm font-body"
+                                        >
+                                            <div class="flex-1 px-3 py-2.5 text-foreground">
+                                                <span class="text-muted-foreground">AT</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-muted-foreground font-body">
+                        <span data-file="/screens/new_screen5.jsx" data-idx="12"
+                        >2–5 uppercase characters. Used as prefix for task IDs
+                          (e.g. AT-124).</span
+                        >
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-medium text-foreground font-body"
+                                    ><span data-file="/screens/new_screen5.jsx" data-idx="13"
+                                    >Status</span
+                                    ><span class="text-priority-high ml-0.5">*</span></label
+                                    >
+                                    <div
+                                        class="flex items-center justify-between border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body"
+                                    >
+                      <span class="text-foreground"
+                      ><span
+                          data-file="/screens/new_screen5.jsx"
+                          data-idx="14"
+                      >Active</span
+                      ></span
+                      ><span
+                                        class="text-muted-foreground shrink-0"
+                                        style="
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          flex-shrink: 0;
+                          width: 14px;
+                          height: 14px;
+                        "
+                                        data-icon="chevron-down"
+                                        data-component="@globalComponents/Icon.jsx"
+                                    ><svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="14px"
+                                        height="14px"
+                                        viewBox="0 0 24 24"
+                                    >
+                          <path
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.4285714285714284"
+                              d="m6 9l6 6l6-6"
+                          ></path></svg
+                                    ></span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-medium text-foreground font-body"
+                                    ><span data-file="/screens/new_screen5.jsx" data-idx="15"
+                                    >Description</span
+                                    ></label
+                                    >
+                                    <div
+                                        class="border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body text-foreground min-h-24 leading-relaxed"
+                                    >
+                      <span data-file="/screens/new_screen5.jsx" data-idx="17"
+                      >The Atlas Platform is the core infrastructure project
+                        for Q1 2026. It includes the redesign of the onboarding
+                        flow, API v3 integration, and enterprise SSO
+                        support.</span
+                      >
+                                    </div>
+                                    <p class="text-xs text-muted-foreground font-body">
+                      <span data-file="/screens/new_screen5.jsx" data-idx="16"
+                      >Describe the project goal, scope, and key outcomes.
+                        Markdown is supported.</span
+                      >
+                                    </p>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-medium text-foreground font-body"
+                                    ><span data-file="/screens/new_screen5.jsx" data-idx="18"
+                                    >Project Color</span
+                                    ></label
+                                    >
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-primary flex items-center justify-center"
+                                        >
+                        <span
+                            class="text-white"
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 12px;
+                            height: 12px;
+                          "
+                            data-icon="check"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12px"
+                            height="12px"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4"
+                                d="M20 6L9 17l-5-5"
+                            ></path></svg
+                        ></span>
+                                        </div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-status-done flex items-center justify-center"
+                                        ></div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-priority-medium flex items-center justify-center"
+                                        ></div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-priority-high flex items-center justify-center"
+                                        ></div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-purple-500 flex items-center justify-center"
+                                        ></div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-cyan-600 flex items-center justify-center"
+                                        ></div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-indigo-500 flex items-center justify-center"
+                                        ></div>
+                                        <div
+                                            class="w-7 h-7 rounded-md bg-pink-500 flex items-center justify-center"
+                                        ></div>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground font-body">
+                      <span data-file="/screens/new_screen5.jsx" data-idx="19"
+                      >Color shown on project avatars and in the
+                        sidebar.</span
+                      >
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface border border-border rounded-md overflow-hidden"
+                        >
+                            <div class="px-6 py-4 border-b border-border">
+                                <h3
+                                    class="text-sm font-semibold text-foreground font-headings"
+                                >
+                    <span data-file="/screens/new_screen5.jsx" data-idx="20"
+                    >Organization</span
+                    >
+                                </h3>
+                                <p class="text-xs text-muted-foreground font-body mt-0.5">
+                    <span data-file="/screens/new_screen5.jsx" data-idx="21"
+                    >Define ownership, team membership, and access control for
+                      this project.</span
+                    >
+                                </p>
+                            </div>
+                            <div class="px-6 py-5 flex flex-col gap-5">
+                                <div class="grid grid-cols-2 gap-5">
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="22"
+                                        >Project Owner</span
+                                        ><span class="text-priority-high ml-0.5">*</span></label
+                                        >
+                                        <div
+                                            class="flex items-center gap-2 border border-border rounded-md bg-surface px-3 py-2.5"
+                                        >
+                                            <img
+                                                src="https://storage.googleapis.com/banani-avatars/avatar/female/35-50/European/0"
+                                                class="w-5 h-5 rounded-full"
+                                                data-component="@globalComponents/UserAvatar.jsx"
+                                            /><span class="text-sm text-foreground font-body flex-1"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="24"
+                                        >Sarah Mitchell</span
+                                        ></span
+                                        ><span
+                                            class="text-muted-foreground"
+                                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                                            data-icon="chevron-down"
+                                            data-component="@globalComponents/Icon.jsx"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14px"
+                                            height="14px"
+                                            viewBox="0 0 24 24"
+                                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                                d="m6 9l6 6l6-6"
+                            ></path></svg
+                                        ></span>
+                                        </div>
+                                        <p class="text-xs text-muted-foreground font-body">
+                        <span data-file="/screens/new_screen5.jsx" data-idx="23"
+                        >Responsible for this project's overall
+                          progress.</span
+                        >
+                                        </p>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="25"
+                                        >Visibility</span
+                                        ></label
+                                        >
+                                        <div
+                                            class="flex items-center justify-between border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body"
+                                        >
+                        <span class="text-foreground"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="27"
+                        >Internal — All members</span
+                        ></span
+                        ><span
+                                            class="text-muted-foreground shrink-0"
+                                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                                            data-icon="chevron-down"
+                                            data-component="@globalComponents/Icon.jsx"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14px"
+                                            height="14px"
+                                            viewBox="0 0 24 24"
+                                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                                d="m6 9l6 6l6-6"
+                            ></path></svg
+                                        ></span>
+                                        </div>
+                                        <p class="text-xs text-muted-foreground font-body">
+                        <span data-file="/screens/new_screen5.jsx" data-idx="26"
+                        >Who can view and join this project.</span
+                        >
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-medium text-foreground font-body"
+                                    ><span data-file="/screens/new_screen5.jsx" data-idx="28"
+                                    >Team Members</span
+                                    ></label
+                                    >
+                                    <div
+                                        class="border border-border rounded-md bg-surface px-3 py-2.5 flex flex-wrap gap-1.5"
+                                    >
+                      <span
+                          class="inline-flex items-center gap-1.5 px-2 py-1 rounded border border-border bg-surface text-xs font-medium text-foreground font-body"
+                      ><img
+                          src="https://storage.googleapis.com/banani-avatars/avatar/male/25-35/East Asian/1"
+                          class="w-4 h-4 rounded-full"
+                          data-component="@globalComponents/UserAvatar.jsx" /><span
+                          data-file="/screens/new_screen5.jsx"
+                          data-idx="30"
+                      >Wei Zhang</span
+                      ><span
+                          class="text-muted-foreground"
+                          style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                          data-icon="x"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="10px"
+                          height="10px"
+                          viewBox="0 0 24 24"
+                      >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span></span
+                      ><span
+                                        class="inline-flex items-center gap-1.5 px-2 py-1 rounded border border-border bg-surface text-xs font-medium text-foreground font-body"
+                                    ><img
+                                        src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/African/2"
+                                        class="w-4 h-4 rounded-full"
+                                        data-component="@globalComponents/UserAvatar.jsx" /><span
+                                        data-file="/screens/new_screen5.jsx"
+                                        data-idx="31"
+                                    >Amara Osei</span
+                                    ><span
+                                        class="text-muted-foreground"
+                                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                                        data-icon="x"
+                                        data-component="@globalComponents/Icon.jsx"
+                                    ><svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10px"
+                                        height="10px"
+                                        viewBox="0 0 24 24"
+                                    >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span></span
+                                    ><span
+                                        class="inline-flex items-center gap-1.5 px-2 py-1 rounded border border-border bg-surface text-xs font-medium text-foreground font-body"
+                                    ><img
+                                        src="https://storage.googleapis.com/banani-avatars/avatar/male/25-35/South Asian/4"
+                                        class="w-4 h-4 rounded-full"
+                                        data-component="@globalComponents/UserAvatar.jsx" /><span
+                                        data-file="/screens/new_screen5.jsx"
+                                        data-idx="32"
+                                    >Arun Kapoor</span
+                                    ><span
+                                        class="text-muted-foreground"
+                                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                                        data-icon="x"
+                                        data-component="@globalComponents/Icon.jsx"
+                                    ><svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10px"
+                                        height="10px"
+                                        viewBox="0 0 24 24"
+                                    >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span></span
+                                    ><span
+                                        class="inline-flex items-center gap-1.5 px-2 py-1 rounded border border-border bg-surface text-xs font-medium text-foreground font-body"
+                                    ><img
+                                        src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/Hispanic/9"
+                                        class="w-4 h-4 rounded-full"
+                                        data-component="@globalComponents/UserAvatar.jsx" /><span
+                                        data-file="/screens/new_screen5.jsx"
+                                        data-idx="33"
+                                    >Lucia Torres</span
+                                    ><span
+                                        class="text-muted-foreground"
+                                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                                        data-icon="x"
+                                        data-component="@globalComponents/Icon.jsx"
+                                    ><svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10px"
+                                        height="10px"
+                                        viewBox="0 0 24 24"
+                                    >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span
+                                    ></span>
+                                        <div
+                                            class="flex items-center gap-1 px-2.5 py-1 rounded border border-dashed border-border text-xs text-muted-foreground font-body"
+                                        >
+                        <span
+                            class=""
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 11px;
+                            height: 11px;
+                          "
+                            data-icon="plus"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="11px"
+                            height="11px"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.363636363636363"
+                                d="M5 12h14m-7-7v14"
+                            ></path></svg></span
+                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="34"
+                                        >Add member</span
+                                        >
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground font-body">
+                      <span data-file="/screens/new_screen5.jsx" data-idx="29"
+                      >Add members who will work on this project. They will be
+                        notified when added.</span
+                      >
+                                    </p>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-medium text-foreground font-body"
+                                    ><span data-file="/screens/new_screen5.jsx" data-idx="35"
+                                    >Tags</span
+                                    ></label
+                                    >
+                                    <div
+                                        class="border border-border rounded-md bg-surface px-3 py-2.5 flex flex-wrap gap-1.5"
+                                    >
+                      <span
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium font-body border border-border bg-secondary text-secondary-foreground"
+                      ><span
+                          data-file="/screens/new_screen5.jsx"
+                          data-idx="37"
+                      >enterprise</span
+                      ><span
+                          class="text-muted-foreground"
+                          style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                          data-icon="x"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="10px"
+                          height="10px"
+                          viewBox="0 0 24 24"
+                      >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span></span
+                      ><span
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium font-body border border-border bg-secondary text-secondary-foreground"
+                                    ><span
+                                        data-file="/screens/new_screen5.jsx"
+                                        data-idx="38"
+                                    >platform</span
+                                    ><span
+                                        class="text-muted-foreground"
+                                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                                        data-icon="x"
+                                        data-component="@globalComponents/Icon.jsx"
+                                    ><svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10px"
+                                        height="10px"
+                                        viewBox="0 0 24 24"
+                                    >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span></span
+                                    ><span
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium font-body border border-border bg-secondary text-secondary-foreground"
+                                    ><span
+                                        data-file="/screens/new_screen5.jsx"
+                                        data-idx="39"
+                                    >q1-2026</span
+                                    ><span
+                                        class="text-muted-foreground"
+                                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 10px;
+                            height: 10px;
+                          "
+                                        data-icon="x"
+                                        data-component="@globalComponents/Icon.jsx"
+                                    ><svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="10px"
+                                        height="10px"
+                                        viewBox="0 0 24 24"
+                                    >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.8"
+                                d="M18 6L6 18M6 6l12 12"
+                            ></path></svg></span
+                                    ></span>
+                                        <div
+                                            class="flex items-center gap-1 px-2.5 py-1 rounded border border-dashed border-border text-xs text-muted-foreground font-body"
+                                        >
+                        <span
+                            class=""
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 11px;
+                            height: 11px;
+                          "
+                            data-icon="plus"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="11px"
+                            height="11px"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="4.363636363636363"
+                                d="M5 12h14m-7-7v14"
+                            ></path></svg></span
+                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="40"
+                                        >Add tag</span
+                                        >
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground font-body">
+                      <span data-file="/screens/new_screen5.jsx" data-idx="36"
+                      >Classify this project for reporting and
+                        filtering.</span
+                      >
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface border border-border rounded-md overflow-hidden"
+                        >
+                            <div class="px-6 py-4 border-b border-border">
+                                <h3
+                                    class="text-sm font-semibold text-foreground font-headings"
+                                >
+                    <span data-file="/screens/new_screen5.jsx" data-idx="41"
+                    >Planning</span
+                    >
+                                </h3>
+                                <p class="text-xs text-muted-foreground font-body mt-0.5">
+                    <span data-file="/screens/new_screen5.jsx" data-idx="42"
+                    >Set timelines, priority, and default workflow for tasks
+                      in this project.</span
+                    >
+                                </p>
+                            </div>
+                            <div class="px-6 py-5 flex flex-col gap-5">
+                                <div class="grid grid-cols-2 gap-5">
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="43"
+                                        >Start Date</span
+                                        ></label
+                                        >
+                                        <div
+                                            class="flex items-center gap-2 border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body text-foreground"
+                                        >
+                        <span
+                            class="text-muted-foreground"
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                            data-icon="calendar"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14px"
+                            height="14px"
+                            viewBox="0 0 24 24"
+                        >
+                            <g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                            >
+                              <path d="M8 2v4m8-4v4"></path>
+                              <rect
+                                  width="18"
+                                  height="18"
+                                  x="3"
+                                  y="4"
+                                  rx="2"
+                              ></rect>
+                              <path d="M3 10h18"></path>
+                            </g></svg></span
+                        ><span
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="44"
+                                        >Dec 1, 2025</span
+                                        ></span
+                                        >
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="45"
+                                        >Due Date</span
+                                        ></label
+                                        >
+                                        <div
+                                            class="flex items-center gap-2 border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body text-foreground"
+                                        >
+                        <span
+                            class="text-muted-foreground"
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                            data-icon="calendar"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14px"
+                            height="14px"
+                            viewBox="0 0 24 24"
+                        >
+                            <g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                            >
+                              <path d="M8 2v4m8-4v4"></path>
+                              <rect
+                                  width="18"
+                                  height="18"
+                                  x="3"
+                                  y="4"
+                                  rx="2"
+                              ></rect>
+                              <path d="M3 10h18"></path>
+                            </g></svg></span
+                        ><span
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="47"
+                                        >Mar 31, 2026</span
+                                        ></span
+                                        >
+                                        </div>
+                                        <p class="text-xs text-muted-foreground font-body">
+                        <span data-file="/screens/new_screen5.jsx" data-idx="46"
+                        >Project hard deadline.</span
+                        >
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-5">
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="48"
+                                        >Priority</span
+                                        ></label
+                                        >
+                                        <div
+                                            class="flex items-center justify-between border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body"
+                                        >
+                        <span class="text-foreground"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="49"
+                        >High</span
+                        ></span
+                        ><span
+                                            class="text-muted-foreground shrink-0"
+                                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                                            data-icon="chevron-down"
+                                            data-component="@globalComponents/Icon.jsx"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14px"
+                                            height="14px"
+                                            viewBox="0 0 24 24"
+                                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                                d="m6 9l6 6l6-6"
+                            ></path></svg
+                                        ></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <label
+                                            class="text-sm font-medium text-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="50"
+                                        >Default Workflow</span
+                                        ></label
+                                        >
+                                        <div
+                                            class="flex items-center justify-between border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body"
+                                        >
+                        <span class="text-foreground"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="52"
+                        >To Do → In Progress → Review → Done</span
+                        ></span
+                        ><span
+                                            class="text-muted-foreground shrink-0"
+                                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                                            data-icon="chevron-down"
+                                            data-component="@globalComponents/Icon.jsx"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14px"
+                                            height="14px"
+                                            viewBox="0 0 24 24"
+                                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                                d="m6 9l6 6l6-6"
+                            ></path></svg
+                                        ></span>
+                                        </div>
+                                        <p class="text-xs text-muted-foreground font-body">
+                        <span data-file="/screens/new_screen5.jsx" data-idx="51"
+                        >Applied to new tasks in this project.</span
+                        >
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-medium text-foreground font-body"
+                                    ><span data-file="/screens/new_screen5.jsx" data-idx="53"
+                                    >Estimated Effort</span
+                                    ></label
+                                    >
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="flex-1 flex items-center gap-2 border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body text-foreground"
+                                        >
+                        <span
+                            class="text-muted-foreground"
+                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                            data-icon="clock"
+                            data-component="@globalComponents/Icon.jsx"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14px"
+                            height="14px"
+                            viewBox="0 0 24 24"
+                        >
+                            <g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                            >
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <path d="M12 6v6l4 2"></path>
+                            </g></svg></span
+                        ><span>200</span>
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-between border border-border rounded-md bg-surface px-3 py-2.5 text-sm font-body"
+                                        >
+                        <span class="text-foreground"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="55"
+                        >Hours</span
+                        ></span
+                        ><span
+                                            class="text-muted-foreground shrink-0"
+                                            style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            width: 14px;
+                            height: 14px;
+                          "
+                                            data-icon="chevron-down"
+                                            data-component="@globalComponents/Icon.jsx"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14px"
+                                            height="14px"
+                                            viewBox="0 0 24 24"
+                                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="3.4285714285714284"
+                                d="m6 9l6 6l6-6"
+                            ></path></svg
+                                        ></span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground font-body">
+                      <span data-file="/screens/new_screen5.jsx" data-idx="54"
+                      >Total story points or hours budgeted for this
+                        project.</span
+                      >
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface border border-border rounded-md overflow-hidden"
+                        >
+                            <div class="px-6 py-4 border-b border-border">
+                                <h3
+                                    class="text-sm font-semibold text-foreground font-headings"
+                                >
+                    <span data-file="/screens/new_screen5.jsx" data-idx="56"
+                    >Additional Settings</span
+                    >
+                                </h3>
+                                <p class="text-xs text-muted-foreground font-body mt-0.5">
+                    <span data-file="/screens/new_screen5.jsx" data-idx="57"
+                    >Enable optional features and configure default behaviors
+                      for this project.</span
+                    >
+                                </p>
+                            </div>
+                            <div class="px-6 py-5 flex flex-col gap-5">
+                                <div class="flex flex-col -my-1">
+                                    <div
+                                        class="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+                                    >
+                                        <div class="flex flex-col gap-0.5">
+                        <span
+                            class="text-sm font-medium text-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="58"
+                        >Email notifications</span
+                        ></span
+                        ><span class="text-xs text-muted-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="59"
+                                        >Send email updates to members on task changes and
+                            milestones</span
+                                        ></span
+                                        >
+                                        </div>
+                                        <div
+                                            class="w-9 h-5 rounded-full flex items-center px-0.5 shrink-0 bg-primary"
+                                        >
+                                            <div
+                                                class="w-4 h-4 rounded-full bg-white ml-auto"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+                                    >
+                                        <div class="flex flex-col gap-0.5">
+                        <span
+                            class="text-sm font-medium text-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="60"
+                        >Time tracking</span
+                        ></span
+                        ><span class="text-xs text-muted-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="61"
+                                        >Allow members to log hours against tasks in this
+                            project</span
+                                        ></span
+                                        >
+                                        </div>
+                                        <div
+                                            class="w-9 h-5 rounded-full flex items-center px-0.5 shrink-0 bg-primary"
+                                        >
+                                            <div
+                                                class="w-4 h-4 rounded-full bg-white ml-auto"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+                                    >
+                                        <div class="flex flex-col gap-0.5">
+                        <span
+                            class="text-sm font-medium text-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="62"
+                        >Document management</span
+                        ></span
+                        ><span class="text-xs text-muted-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="63"
+                                        >Enable the Documents tab for attaching specs and
+                            wikis</span
+                                        ></span
+                                        >
+                                        </div>
+                                        <div
+                                            class="w-9 h-5 rounded-full flex items-center px-0.5 shrink-0 bg-primary"
+                                        >
+                                            <div
+                                                class="w-4 h-4 rounded-full bg-white ml-auto"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+                                    >
+                                        <div class="flex flex-col gap-0.5">
+                        <span
+                            class="text-sm font-medium text-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="64"
+                        >Public roadmap</span
+                        ></span
+                        ><span class="text-xs text-muted-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="65"
+                                        >Expose a read-only roadmap view to external
+                            stakeholders via shareable link</span
+                                        ></span
+                                        >
+                                        </div>
+                                        <div
+                                            class="w-9 h-5 rounded-full flex items-center px-0.5 shrink-0 bg-muted"
+                                        >
+                                            <div class="w-4 h-4 rounded-full bg-white"></div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+                                    >
+                                        <div class="flex flex-col gap-0.5">
+                        <span
+                            class="text-sm font-medium text-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="66"
+                        >Automatic sprint creation</span
+                        ></span
+                        ><span class="text-xs text-muted-foreground font-body"
+                                        ><span
+                                            data-file="/screens/new_screen5.jsx"
+                                            data-idx="67"
+                                        >Automatically roll over incomplete tasks to next
+                            sprint on sprint end</span
+                                        ></span
+                                        >
+                                        </div>
+                                        <div
+                                            class="w-9 h-5 rounded-full flex items-center px-0.5 shrink-0 bg-muted"
+                                        >
+                                            <div class="w-4 h-4 rounded-full bg-white"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-1 pb-6">
+                            <p
+                                class="text-xs text-muted-foreground font-body flex items-center gap-1.5"
+                            >
+                  <span
+                      class=""
+                      style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 12px;
+                      height: 12px;
+                    "
+                      data-icon="info"
+                      data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12px"
+                      height="12px"
+                      viewBox="0 0 24 24"
+                  >
+                      <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="4"
+                      >
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4m0-4h.01"></path>
+                      </g></svg></span
+                  ><span data-file="/screens/new_screen5.jsx" data-idx="68"
+                            >Fields marked with * are required. You can edit all
+                    settings after creation.</span
+                            >
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    class="px-4 py-2 rounded-md bg-surface border border-border text-sm font-medium text-secondary-foreground font-body"
+                                    data-media-type="banani-button"
+                                >
+                    <span data-file="/screens/new_screen5.jsx" data-idx="69"
+                    >Cancel</span
+                    ></button
+                                ><button
+                                class="flex items-center gap-1.5 px-5 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium font-body"
+                                data-media-type="banani-button"
+                            >
+                    <span
+                        class=""
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 13px;
+                        height: 13px;
+                      "
+                        data-icon="save"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13px"
+                        height="13px"
+                        viewBox="0 0 24 24"
+                    >
+                        <g
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3.6923076923076925"
+                        >
+                          <path
+                              d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+                          ></path>
+                          <path
+                              d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"
+                          ></path>
+                        </g></svg></span
+                    ><span data-file="/screens/new_screen5.jsx" data-idx="70"
+                            >Save Project</span
+                            >
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-64 shrink-0 flex flex-col gap-4">
+                        <div
+                            class="bg-surface border border-border rounded-md overflow-hidden"
+                        >
+                            <div class="px-4 py-3 border-b border-border">
+                  <span
+                      class="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body"
+                  ><span data-file="/screens/new_screen5.jsx" data-idx="71"
+                  >Project Preview</span
+                  ></span
+                  >
+                            </div>
+                            <div class="px-4 py-4 flex flex-col gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 rounded-md bg-primary flex items-center justify-center text-white text-sm font-bold font-headings shrink-0"
+                                    >
+                                        AT
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p
+                                            class="text-sm font-semibold text-foreground font-headings truncate"
+                                        >
+                        <span data-file="/screens/new_screen5.jsx" data-idx="72"
+                        >Atlas Platform</span
+                        >
+                                        </p>
+                                        <p class="text-xs text-muted-foreground font-body">
+                        <span data-file="/screens/new_screen5.jsx" data-idx="73"
+                        >Key: AT</span
+                        >
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-2 pt-1 border-t border-border">
+                                    <div class="flex items-start gap-2.5">
+                      <span
+                          class="text-muted-foreground shrink-0 mt-0.5"
+                          style="
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          flex-shrink: 0;
+                          width: 13px;
+                          height: 13px;
+                        "
+                          data-icon="user"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="13px"
+                          height="13px"
+                          viewBox="0 0 24 24"
+                      >
+                          <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.6923076923076925"
+                          >
+                            <path
+                                d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+                            ></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </g></svg
+                      ></span>
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="text-xs text-muted-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="74"
+                        >Owner</span
+                        ></span
+                        >
+                                            <div
+                                                class="text-xs font-medium text-foreground font-body"
+                                            >
+                                                <div class="flex items-center gap-1.5">
+                                                    <img
+                                                        src="https://storage.googleapis.com/banani-avatars/avatar/female/35-50/European/0"
+                                                        class="w-4 h-4 rounded-full"
+                                                        data-component="@globalComponents/UserAvatar.jsx"
+                                                    /><span
+                                                    data-file="/screens/new_screen5.jsx"
+                                                    data-idx="75"
+                                                >Sarah Mitchell</span
+                                                >
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2.5">
+                      <span
+                          class="text-muted-foreground shrink-0 mt-0.5"
+                          style="
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          flex-shrink: 0;
+                          width: 13px;
+                          height: 13px;
+                        "
+                          data-icon="flag"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="13px"
+                          height="13px"
+                          viewBox="0 0 24 24"
+                      >
+                          <path
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.6923076923076925"
+                              d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"
+                          ></path></svg
+                      ></span>
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="text-xs text-muted-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="76"
+                        >Priority</span
+                        ></span
+                        >
+                                            <div
+                                                class="text-xs font-medium text-foreground font-body"
+                                            >
+                          <span class="text-priority-high"
+                          ><span
+                              data-file="/screens/new_screen5.jsx"
+                              data-idx="77"
+                          >High</span
+                          ></span
+                          >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2.5">
+                      <span
+                          class="text-muted-foreground shrink-0 mt-0.5"
+                          style="
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          flex-shrink: 0;
+                          width: 13px;
+                          height: 13px;
+                        "
+                          data-icon="calendar"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="13px"
+                          height="13px"
+                          viewBox="0 0 24 24"
+                      >
+                          <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.6923076923076925"
+                          >
+                            <path d="M8 2v4m8-4v4"></path>
+                            <rect
+                                width="18"
+                                height="18"
+                                x="3"
+                                y="4"
+                                rx="2"
+                            ></rect>
+                            <path d="M3 10h18"></path>
+                          </g></svg
+                      ></span>
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="text-xs text-muted-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="78"
+                        >Due Date</span
+                        ></span
+                        >
+                                            <div
+                                                class="text-xs font-medium text-foreground font-body"
+                                            >
+                          <span
+                              data-file="/screens/new_screen5.jsx"
+                              data-idx="79"
+                          >Mar 31, 2026</span
+                          >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2.5">
+                      <span
+                          class="text-muted-foreground shrink-0 mt-0.5"
+                          style="
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          flex-shrink: 0;
+                          width: 13px;
+                          height: 13px;
+                        "
+                          data-icon="users"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="13px"
+                          height="13px"
+                          viewBox="0 0 24 24"
+                      >
+                          <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.6923076923076925"
+                          >
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 3.128a4 4 0 0 1 0 7.744M22 21v-2a4 4 0 0 0-3-3.87"
+                            ></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                          </g></svg
+                      ></span>
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="text-xs text-muted-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="80"
+                        >Team size</span
+                        ></span
+                        >
+                                            <div
+                                                class="text-xs font-medium text-foreground font-body"
+                                            >
+                          <span
+                              data-file="/screens/new_screen5.jsx"
+                              data-idx="81"
+                          >5 members</span
+                          >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2.5">
+                      <span
+                          class="text-muted-foreground shrink-0 mt-0.5"
+                          style="
+                          display: inline-flex;
+                          align-items: center;
+                          justify-content: center;
+                          flex-shrink: 0;
+                          width: 13px;
+                          height: 13px;
+                        "
+                          data-icon="tag"
+                          data-component="@globalComponents/Icon.jsx"
+                      ><svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="13px"
+                          height="13px"
+                          viewBox="0 0 24 24"
+                      >
+                          <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="3.6923076923076925"
+                          >
+                            <path
+                                d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+                            ></path>
+                            <circle
+                                cx="7.5"
+                                cy="7.5"
+                                r=".5"
+                                fill="currentColor"
+                            ></circle>
+                          </g></svg
+                      ></span>
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="text-xs text-muted-foreground font-body"
+                        ><span
+                            data-file="/screens/new_screen5.jsx"
+                            data-idx="82"
+                        >Tags</span
+                        ></span
+                        >
+                                            <div
+                                                class="text-xs font-medium text-foreground font-body"
+                                            >
+                                                <div class="flex flex-wrap gap-1 mt-0.5">
+                            <span
+                                class="text-xs px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border font-body"
+                            ><span
+                                data-file="/screens/new_screen5.jsx"
+                                data-idx="83"
+                            >enterprise</span
+                            ></span
+                            ><span
+                                                    class="text-xs px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border font-body"
+                                                ><span
+                                                    data-file="/screens/new_screen5.jsx"
+                                                    data-idx="84"
+                                                >platform</span
+                                                ></span
+                                                ><span
+                                                    class="text-xs px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border font-body"
+                                                ><span
+                                                    data-file="/screens/new_screen5.jsx"
+                                                    data-idx="85"
+                                                >q1-2026</span
+                                                ></span
+                                                >
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface border border-border rounded-md overflow-hidden"
+                        >
+                            <div class="px-4 py-3 border-b border-border">
+                  <span
+                      class="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body"
+                  ><span data-file="/screens/new_screen5.jsx" data-idx="86"
+                  >Form Info</span
+                  ></span
+                  >
+                            </div>
+                            <div class="px-4 py-4 flex flex-col gap-3">
+                                <div class="flex items-start gap-2.5">
+                    <span
+                        class="text-muted-foreground shrink-0 mt-0.5"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 13px;
+                        height: 13px;
+                      "
+                        data-icon="user"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13px"
+                        height="13px"
+                        viewBox="0 0 24 24"
+                    >
+                        <g
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3.6923076923076925"
+                        >
+                          <path
+                              d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+                          ></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </g></svg
+                    ></span>
+                                    <div class="flex flex-col gap-0.5 min-w-0">
+                      <span class="text-xs text-muted-foreground font-body"
+                      ><span
+                          data-file="/screens/new_screen5.jsx"
+                          data-idx="87"
+                      >Creating as</span
+                      ></span
+                      >
+                                        <div
+                                            class="text-xs font-medium text-foreground font-body"
+                                        >
+                                            <div class="flex items-center gap-1.5">
+                                                <img
+                                                    src="https://storage.googleapis.com/banani-avatars/avatar/female/35-50/European/0"
+                                                    class="w-4 h-4 rounded-full"
+                                                    data-component="@globalComponents/UserAvatar.jsx"
+                                                /><span
+                                                data-file="/screens/new_screen5.jsx"
+                                                data-idx="88"
+                                            >Sarah Mitchell</span
+                                            >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2.5">
+                    <span
+                        class="text-muted-foreground shrink-0 mt-0.5"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 13px;
+                        height: 13px;
+                      "
+                        data-icon="clock"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13px"
+                        height="13px"
+                        viewBox="0 0 24 24"
+                    >
+                        <g
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3.6923076923076925"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M12 6v6l4 2"></path>
+                        </g></svg
+                    ></span>
+                                    <div class="flex flex-col gap-0.5 min-w-0">
+                      <span class="text-xs text-muted-foreground font-body"
+                      ><span
+                          data-file="/screens/new_screen5.jsx"
+                          data-idx="89"
+                      >Draft started</span
+                      ></span
+                      >
+                                        <div
+                                            class="text-xs font-medium text-foreground font-body"
+                                        >
+                        <span data-file="/screens/new_screen5.jsx" data-idx="90"
+                        >Nov 30, 2025 · 09:42 AM</span
+                        >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2.5">
+                    <span
+                        class="text-muted-foreground shrink-0 mt-0.5"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 13px;
+                        height: 13px;
+                      "
+                        data-icon="globe"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13px"
+                        height="13px"
+                        viewBox="0 0 24 24"
+                    >
+                        <g
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3.6923076923076925"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path
+                              d="M12 2a14.5 14.5 0 0 0 0 20a14.5 14.5 0 0 0 0-20M2 12h20"
+                          ></path>
+                        </g></svg
+                    ></span>
+                                    <div class="flex flex-col gap-0.5 min-w-0">
+                      <span class="text-xs text-muted-foreground font-body"
+                      ><span
+                          data-file="/screens/new_screen5.jsx"
+                          data-idx="91"
+                      >Workspace</span
+                      ></span
+                      >
+                                        <div
+                                            class="text-xs font-medium text-foreground font-body"
+                                        >
+                        <span data-file="/screens/new_screen5.jsx" data-idx="92"
+                        >Meridian · Enterprise</span
+                        >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-raised border border-border rounded-md px-4 py-4 flex flex-col gap-3"
+                        >
+                            <div class="flex items-center gap-1.5">
+                  <span
+                      class="text-priority-medium"
+                      style="
+                      display: inline-flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                      width: 13px;
+                      height: 13px;
+                    "
+                      data-icon="lightbulb"
+                      data-component="@globalComponents/Icon.jsx"
+                  ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="13px"
+                      height="13px"
+                      viewBox="0 0 24 24"
+                  >
+                      <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3.6923076923076925"
+                          d="M15 14c.2-1 .7-1.7 1.5-2.5c1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5c.7.7 1.3 1.5 1.5 2.5m0 4h6m-5 4h4"
+                      ></path></svg></span
+                  ><span class="text-xs font-semibold text-foreground font-body"
+                            ><span data-file="/screens/new_screen5.jsx" data-idx="93"
+                            >Tips</span
+                            ></span
+                            >
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <div
+                                    class="flex items-start gap-1.5 text-xs text-muted-foreground font-body"
+                                >
+                    <span
+                        class="shrink-0 mt-0.5 text-muted-foreground"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 12px;
+                        height: 12px;
+                      "
+                        data-icon="dot"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12px"
+                        height="12px"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            cx="12.1"
+                            cy="12.1"
+                            r="1"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="4"
+                        ></circle></svg></span
+                    ><span data-file="/screens/new_screen5.jsx" data-idx="94"
+                                >Use a short, memorable project key (2–4 chars).</span
+                                >
+                                </div>
+                                <div
+                                    class="flex items-start gap-1.5 text-xs text-muted-foreground font-body"
+                                >
+                    <span
+                        class="shrink-0 mt-0.5 text-muted-foreground"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 12px;
+                        height: 12px;
+                      "
+                        data-icon="dot"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12px"
+                        height="12px"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            cx="12.1"
+                            cy="12.1"
+                            r="1"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="4"
+                        ></circle></svg></span
+                    ><span data-file="/screens/new_screen5.jsx" data-idx="95"
+                                >Add a clear description to help teammates understand the
+                      scope.</span
+                                >
+                                </div>
+                                <div
+                                    class="flex items-start gap-1.5 text-xs text-muted-foreground font-body"
+                                >
+                    <span
+                        class="shrink-0 mt-0.5 text-muted-foreground"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 12px;
+                        height: 12px;
+                      "
+                        data-icon="dot"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12px"
+                        height="12px"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            cx="12.1"
+                            cy="12.1"
+                            r="1"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="4"
+                        ></circle></svg></span
+                    ><span data-file="/screens/new_screen5.jsx" data-idx="96"
+                                >Set a realistic due date — you can change it later.</span
+                                >
+                                </div>
+                                <div
+                                    class="flex items-start gap-1.5 text-xs text-muted-foreground font-body"
+                                >
+                    <span
+                        class="shrink-0 mt-0.5 text-muted-foreground"
+                        style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        width: 12px;
+                        height: 12px;
+                      "
+                        data-icon="dot"
+                        data-component="@globalComponents/Icon.jsx"
+                    ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12px"
+                        height="12px"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            cx="12.1"
+                            cy="12.1"
+                            r="1"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="4"
+                        ></circle></svg></span
+                    ><span data-file="/screens/new_screen5.jsx" data-idx="97"
+                                >Enable time tracking from the start for accurate
+                      reporting.</span
+                                >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </body>
+        </html>
+        <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    </div>
+
+</design>
+```
