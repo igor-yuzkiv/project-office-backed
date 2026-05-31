@@ -15,5 +15,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <pre>{{ projects }}</pre>
+    <div class="flex-1 flex-col p-2 overflow-auto">
+        <pre>{{ projects }}</pre>
+    </div>
 </template>

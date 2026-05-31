@@ -9,13 +9,13 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('@/pages/LoginPage.vue'),
-            meta: { guest: true },
+            meta: { guest: true, layout: 'auth' },
         },
         {
             path: '/',
             name: 'home',
             component: () => import('@/pages/HomePage.vue'),
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, layout: 'default' },
         },
     ],
 })
