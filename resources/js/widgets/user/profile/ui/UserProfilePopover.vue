@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import Popover from 'primevue/popover'
 import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
-import { getInitials } from '@/shared/utils/string.util'
+import { getInitials } from '@/shared/utils/string.util.ts'
 
 const props = defineProps<{
     name: string

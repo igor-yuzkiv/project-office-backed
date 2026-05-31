@@ -5,11 +5,11 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { IconButton } from '@/shared/components/button'
 import { getInitials } from '@/shared/utils/string.util'
-import { UserProfilePopover } from '@/widgets/user'
+import { UserProfilePopover } from '@/widgets/user/profile'
 import HeaderActionButton from './HeaderActionButton.vue'
 import type { HeaderAction } from '../../types'
 
-const props = defineProps<{
+defineProps<{
     title: string
     actions?: HeaderAction[]
 }>()
