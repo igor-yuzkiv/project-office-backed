@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TaskListModelFactory extends Factory
 {
+    protected $model = TaskListModel::class;
+
     public function definition(): array
     {
         return [

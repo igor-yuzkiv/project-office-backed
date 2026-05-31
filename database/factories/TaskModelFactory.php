@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TaskModelFactory extends Factory
 {
+    protected $model = TaskModel::class;
+
     public function definition(): array
     {
         $sequence = fake()->unique()->numberBetween(1, 99999);
