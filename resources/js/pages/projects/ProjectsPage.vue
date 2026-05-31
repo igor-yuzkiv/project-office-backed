@@ -23,19 +23,19 @@ const { projects, paginationMeta, isPending } = useProjectsQuery(pagination)
 const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
-const activeProject = ref<IProject>()
+const selectedProject = ref<IProject>()
 
 const rowMenuItems: MenuItem[] = [
     { label: 'Edit', icon: 'pi pi-pencil', command: () => {} },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () => deleteProject(activeProject.value!.id, `Are you sure you want to delete "${activeProject.value!.name}"?`),
+        command: () => deleteProject(selectedProject.value!.id, `Are you sure you want to delete "${selectedProject.value!.name}"?`),
     },
 ]
 
 function openRowMenu(event: MouseEvent, project: IProject) {
-    activeProject.value = project
+    selectedProject.value = project
     rowMenu.value?.toggle(event)
 }
 
