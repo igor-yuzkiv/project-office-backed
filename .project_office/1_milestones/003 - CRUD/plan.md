@@ -1,36 +1,37 @@
-# Milestone 3: CRUD
+# Milestone 3: Frontend CRUD Initial
 
 ## Scope
 
-- Реалізувати CRUD для `Project`.
-- Реалізувати CRUD для `Task List`.
-- Реалізувати CRUD для `Task`.
+- Ініціювати frontend CRUD для `Project`.
+- Ініціювати frontend CRUD для `Task List`.
+- Ініціювати frontend CRUD для `Task`.
 
 ## Goals
 
-- Підготувати повні користувацькі сценарії створення, перегляду, редагування та видалення сутностей.
+- Підготувати початкову frontend реалізацію сценаріїв створення, перегляду, редагування та видалення сутностей.
 - Використати існуючі backend API та frontend інфраструктуру.
 - Зберегти поточну архітектуру, naming conventions та структуру модулів.
+- Закласти основу для подальшого розширення CRUD flows без повного фінального polish у межах цього milestone.
 
 ## Entities
 
 ### Project
 
-Потрібно декомпозувати.
+Потрібно декомпозувати frontend CRUD flow.
 
 ### Task List
 
-Потрібно декомпозувати.
+Потрібно декомпозувати frontend CRUD flow.
 
 ### Task
 
-Потрібно декомпозувати.
+Потрібно декомпозувати frontend CRUD flow.
 
 ## Draft Task List
 
-- Implement Project CRUD
-- Implement Task List CRUD
-- Implement Task CRUD
+- Initialize Project Frontend CRUD
+- Initialize Task List Frontend CRUD
+- Initialize Task Frontend CRUD
 
 ## Questions
 
