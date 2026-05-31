@@ -264,3 +264,76 @@ Store зберігає масив actions.
     },
 ]
 ```
+
+---
+
+## Confirmed Clarifications
+
+- `AppHeader` не читає layout store напряму. Компонент отримує `title` та `actions` через props.
+- `DefaultLayout` підключається до `use.app-layout.store.ts` і передає дані в `AppHeader`.
+- `Settings` у header поки є кнопкою без логіки переходу.
+- Sidebar navigation може містити route links для сторінок, які вже створені в межах milestone.
+- Застарілу task 002 видалено і не використовувати як актуальний scope.
+- Перенесення `auth.store` в `app/stores` винесено в окрему task.
+
+---
+
+## Task Split
+
+### X - 001 - Prepare Layout System
+
+Статус: completed.
+
+Scope:
+- layout selection через `route.meta.layout`;
+- `DefaultLayout`;
+- `AuthLayout`;
+- layout typing для router meta.
+
+### 002 - App Shell Components
+
+Scope:
+- `AppHeader` як presentation component;
+- `AppLeftNavigationSidebar`;
+- `IconButton` у `shared/components/button/`;
+- placeholder user avatar, notifications button, settings button;
+- Split Button для header actions через props;
+- sidebar placeholders для Recent Projects і bottom section.
+
+Out of scope:
+- app layout store;
+- auth store move;
+- CRUD screens;
+- settings route або settings logic.
+
+### 003 - App Layout Store
+
+Scope:
+- створити `resources/js/app/stores/use.app-layout.store.ts`;
+- зберігати page title;
+- зберігати header actions;
+- синхронізувати browser page title у форматі `<Page Title> | <VITE_APP_NAME>`;
+- підключити store у `DefaultLayout` і передати дані в `AppHeader`.
+
+### 004 - Move Auth Store To App Stores
+
+Scope:
+- перенести `resources/js/stores/auth.store.ts` у `resources/js/app/stores/use.auth.store.ts`;
+- оновити imports у router, pages та інших місцях використання;
+- не змінювати auth behavior.
+
+### 005 - Create Base Pages And Routes
+
+Scope:
+- створити базові сторінки `Projects`, `Tasks`, `Documents`;
+- додати routes для створених сторінок;
+- підключити `meta.layout: 'default'`;
+- залишити сторінки як мінімальні placeholders.
+
+### 006 - Wire Sidebar Navigation
+
+Scope:
+- зробити sidebar navigation route-aware;
+- додати links для `Home`, `Projects`, `Tasks`, `Documents`;
+- додати active state для поточного route;
+- не додавати settings route без окремого погодження.
