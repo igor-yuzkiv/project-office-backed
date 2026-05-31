@@ -18,3 +18,18 @@ export interface ITask extends IEntity {
     priority: ITaskPriority
     status: TaskStatusValue
 }
+
+export interface ICreateTaskInput {
+    name: string
+    priority: number
+    task_list_id?: string | null
+    description?: string | null
+}
+
+export interface IUpdateTaskInput {
+    name?: string
+    priority?: number
+    status?: TaskStatusValue
+    task_list_id?: string | null
+    description?: string | null
+}

@@ -3,12 +3,18 @@ import type { ILoginCredentials, IUser } from '../types'
 
 type UserResponse = { data: IUser }
 
-export const authApi = {
-    getCsrfCookie: () => httpClient.get('/sanctum/csrf-cookie', { baseURL: '/' }),
+export async function fetchCsrfCookieRequest() {
+    return httpClient.get('/sanctum/csrf-cookie', { baseURL: '/' }).then((res) => res.data)
+}
 
-    login: (credentials: ILoginCredentials) => httpClient.post<UserResponse>('/login', credentials),
+export async function loginRequest(credentials: ILoginCredentials): Promise<UserResponse> {
+    return httpClient.post<UserResponse>('/login', credentials).then((res) => res.data)
+}
 
-    logout: () => httpClient.post('/logout'),
+export async function logoutRequest() {
+    return httpClient.post('/logout').then((res) => res.data)
+}
 
-    getUser: () => httpClient.get<UserResponse>('/user'),
+export async function fetchUserRequest(): Promise<UserResponse> {
+    return httpClient.get<UserResponse>('/user').then((res) => res.data)
 }

@@ -1,4 +1,5 @@
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
+import { ApiError } from './api.error'
 
 const httpClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -10,5 +11,15 @@ const httpClient = axios.create({
         Accept: 'application/json',
     },
 })
+
+httpClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (isAxiosError(error)) {
+            return Promise.reject(new ApiError(error))
+        }
+        return Promise.reject(error)
+    },
+)
 
 export { httpClient }

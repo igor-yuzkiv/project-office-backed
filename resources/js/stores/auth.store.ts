@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { authApi } from '@/entities/user/api'
+import { fetchCsrfCookieRequest, fetchUserRequest, loginRequest, logoutRequest } from '@/entities/user/api'
 import type { ILoginCredentials, IUser } from '@/entities/user/types'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -12,8 +12,8 @@ export const useAuthStore = defineStore('auth', () => {
     async function initialize() {
         if (initialized.value) return
         try {
-            const { data } = await authApi.getUser()
-            user.value = data.data
+            const { data } = await fetchUserRequest()
+            user.value = data
         } catch {
             user.value = null
         } finally {
@@ -22,13 +22,13 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function login(credentials: ILoginCredentials) {
-        await authApi.getCsrfCookie()
-        const { data } = await authApi.login(credentials)
-        user.value = data.data
+        await fetchCsrfCookieRequest()
+        const { data } = await loginRequest(credentials)
+        user.value = data
     }
 
     async function logout() {
-        await authApi.logout()
+        await logoutRequest()
         user.value = null
     }
 
