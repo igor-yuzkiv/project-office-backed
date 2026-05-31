@@ -25,3 +25,17 @@
 - push notifications
 - roles and permissions: entity based, ex Projects: Create, Update, Delete, Read
 - Mention user in comment, task/project description
+
+
+# Tasks Strategy
+
+- таска має мати можливість розідлятись на саб таски але не зовсім
+- корче має бути можливсть розідляти роботу по ролях PM, QA, DEV але це буде все ще одна таска з спільним time log
+
+
+# AI Asistam or AI Features
+
+
+# Integrations
+
+- two way sync with zoho projects
