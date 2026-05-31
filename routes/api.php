@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Attachments\AttachmentsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Projects\ProjectsController;
 use App\Http\Controllers\TaskLists\TaskListsController;
@@ -20,3 +21,5 @@ Route::apiResource('projects', ProjectsController::class)->middleware(['auth:san
 Route::apiResource('projects.task-lists', TaskListsController::class)->middleware(['auth:sanctum']);
 
 Route::apiResource('projects.tasks', TasksController::class)->middleware(['auth:sanctum']);
+
+Route::post('attachments', [AttachmentsController::class, 'store'])->middleware(['auth:sanctum'])->name('attachments.store');
