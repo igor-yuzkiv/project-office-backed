@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth.store'
+import { useAuthStore } from '@/app/stores/use.auth.store'
 import type { RouteLocationNormalized } from 'vue-router'
 
 const router = createRouter({
@@ -8,14 +8,32 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: () => import('@/pages/LoginPage.vue'),
+            component: () => import('@/pages/login/LoginPage.vue'),
             meta: { guest: true, layout: 'auth' },
         },
         {
             path: '/',
             name: 'home',
-            component: () => import('@/pages/HomePage.vue'),
-            meta: { requiresAuth: true, layout: 'default' },
+            component: () => import('@/pages/home/HomePage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Home' },
+        },
+        {
+            path: '/projects',
+            name: 'projects',
+            component: () => import('@/pages/projects/ProjectsPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Projects' },
+        },
+        {
+            path: '/tasks',
+            name: 'tasks',
+            component: () => import('@/pages/tasks/TasksPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Tasks' },
+        },
+        {
+            path: '/documents',
+            name: 'documents',
+            component: () => import('@/pages/documents/DocumentsPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Documents' },
         },
     ],
 })

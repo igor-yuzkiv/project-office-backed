@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
-import { useAuthStore } from '@/stores/auth.store'
+import { useAuthStore } from '@/app/stores/use.auth.store'
 
 const router = useRouter()
 const authStore = useAuthStore()

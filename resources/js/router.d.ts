@@ -7,5 +7,6 @@ declare module 'vue-router' {
         requiresAuth?: boolean
         guest?: boolean
         layout?: AppLayoutName
+        title?: string
     }
 }
