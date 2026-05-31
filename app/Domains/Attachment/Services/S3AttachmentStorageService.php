@@ -10,7 +10,7 @@ use RuntimeException;
 
 class S3AttachmentStorageService implements AttachmentStorageService
 {
-    private const STORAGE_PROVIDER = 's3';
+    private const string STORAGE_PROVIDER = 's3';
 
     public function store(
         UploadedFile $file,
