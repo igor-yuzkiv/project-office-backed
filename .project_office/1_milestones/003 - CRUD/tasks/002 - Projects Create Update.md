@@ -1,8 +1,0 @@
-- дизайн для сторінки стоврення проектів тут /var/www/task-manager/mvp-task-manager/.project_office/2_design/concept/create_project_page
-- на рівні widgets/projects потрібно створити компоент project form
-- він буде використовватись на сторінка стоврення та оновлення
-- поки на фронті валідацій не потрібно бо вони є на бекенді
-- для форм використувати prime vue compinents та їх розширення @primevue/forms яке я щойно встановив
-- налаштувати сторінку для створення та оновлення
-- vue query mutations поки не використовуємо
-- для обробки помилок є api.error.ts
