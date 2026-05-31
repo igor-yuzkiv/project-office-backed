@@ -1,11 +1,11 @@
 import type { IEntity } from '@/shared/types'
 
-export type TaskPriorityLabel = 'low' | 'medium' | 'high'
+export type TaskPriorityName = 'Low' | 'Medium' | 'High'
 export type TaskStatusValue = 'open' | 'in_progress' | 'completed' | 'closed'
 
 export interface ITaskPriority {
     value: number
-    label: TaskPriorityLabel
+    name: TaskPriorityName
 }
 
 export interface ITask extends IEntity {
