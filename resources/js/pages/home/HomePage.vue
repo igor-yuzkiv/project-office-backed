@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import type { IProject } from '@/entities/project/types'
-import { fetchProjectsRequest } from '@/entities/project/api'
 import type { PaginatedResponse } from '@/shared/types'
+import { fetchTasksRequest } from '@/entities/task/api'
+import type { ITask } from '@/entities/task/types'
 
-const projects = ref<PaginatedResponse<IProject> | null>(null)
+const tasks = ref<PaginatedResponse<ITask> | null>(null)
 
 onMounted(async () => {
-    projects.value = await fetchProjectsRequest().catch((err) => {
+    tasks.value = await fetchTasksRequest().catch((err) => {
         console.error(err)
         return null
     })
@@ -16,6 +16,6 @@ onMounted(async () => {
 
 <template>
     <div class="p-2 flex-1 flex-col overflow-auto">
-        <pre>{{ projects }}</pre>
+        <pre>{{ tasks }}</pre>
     </div>
 </template>

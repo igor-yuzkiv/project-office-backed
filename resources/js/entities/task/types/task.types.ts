@@ -20,6 +20,7 @@ export interface ITask extends IEntity {
 }
 
 export interface ICreateTaskInput {
+    project_id: string
     name: string
     priority: number
     task_list_id?: string | null

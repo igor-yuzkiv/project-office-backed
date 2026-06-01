@@ -6,6 +6,7 @@ export interface ITaskList extends IEntity {
 }
 
 export interface ICreateTaskListInput {
+    project_id: string
     name: string
 }
 

@@ -9,7 +9,8 @@ class StoreTaskListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'project_id' => ['required', 'string', 'ulid'],
+            'name'       => ['required', 'string', 'max:255'],
         ];
     }
 }

@@ -8,12 +8,12 @@ use App\Domains\Project\Actions\DeleteProject\DeleteProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectCommand;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\Project\Queries\SearchProjectsQuery;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Projects\SearchProjectsRequest;
 use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
+use App\Http\Requests\Shared\SearchRequest;
 use App\Http\Resources\Projects\ProjectResource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -37,14 +37,18 @@ class ProjectsController extends Controller
         return ProjectResource::collection($projects);
     }
 
-    public function search(SearchProjectsRequest $request): AnonymousResourceCollection
+    public function search(SearchRequest $request): AnonymousResourceCollection
     {
-        $projects = (new SearchProjectsQuery(
-            query: (string) $request->input('query', ''),
-            filters: (array) $request->input('filters', []),
-            sort: $this->getSortParams(),
-            pagination: $this->getPaginationParams(),
-        ))->run();
+        $sort = $this->getSortParams();
+        $pagination = $this->getPaginationParams();
+
+        $projects = ProjectModel::search((string) $request->input('query', ''))
+            ->orderBy($sort->field, $sort->direction)
+            ->query(function (Builder $q) use ($request): Builder {
+                /** @var Builder<ProjectModel> $q */
+                return $q->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
+            })
+            ->paginate($pagination->perPage, 'page', $pagination->page);
 
         return ProjectResource::collection($projects);
     }

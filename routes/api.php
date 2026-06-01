@@ -19,8 +19,10 @@ Route::group([
 Route::post('projects/search', [ProjectsController::class, 'search'])->middleware(['auth:sanctum'])->name('projects.search');
 Route::apiResource('projects', ProjectsController::class)->middleware(['auth:sanctum']);
 
-Route::apiResource('projects.task-lists', TaskListsController::class)->middleware(['auth:sanctum']);
+Route::post('task-lists/search', [TaskListsController::class, 'search'])->middleware(['auth:sanctum'])->name('task-lists.search');
+Route::apiResource('task-lists', TaskListsController::class)->middleware(['auth:sanctum']);
 
-Route::apiResource('projects.tasks', TasksController::class)->middleware(['auth:sanctum']);
+Route::post('tasks/search', [TasksController::class, 'search'])->middleware(['auth:sanctum'])->name('tasks.search');
+Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']);
 
 Route::post('attachments', [AttachmentsController::class, 'store'])->middleware(['auth:sanctum'])->name('attachments.store');

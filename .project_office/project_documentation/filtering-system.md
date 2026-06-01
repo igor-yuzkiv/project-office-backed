@@ -174,10 +174,22 @@ class StatusFilter extends Filter
 new FilterDefinition(StatusFilter::class, ['status']),
 ```
 
-### Search endpoint (Projects)
+### Search request
+
+Всі search endpoints використовують єдиний validation class:
+
+```
+app/Http/Requests/Shared/SearchRequest.php
+```
+
+Клас валідує `query`, `filters[]`, `page`, `per_page`, `sort_by`, `sort_order`.
+
+### Search endpoints
 
 ```
 POST /api/projects/search
+POST /api/task-lists/search
+POST /api/tasks/search
 Authorization: Bearer {token}
 ```
 
@@ -200,22 +212,35 @@ Authorization: Bearer {token}
 }
 ```
 
-Реалізовано через `SearchProjectsQuery` — окремий Query клас, щоб не захаращувати контролер:
+Логіка search інлайнована у відповідному controller:
 
 ```php
-// app/Domains/Project/Queries/SearchProjectsQuery.php
-public function run(): LengthAwarePaginator
+public function search(SearchRequest $request): AnonymousResourceCollection
 {
-    return ProjectModel::search($this->query)
-        ->orderBy($this->sort->field, $this->sort->direction) // Scout Builder level
-        ->query(function (Builder $q): Builder {
-            return $q->with(['createdBy', 'updatedBy'])->filter($this->filters);
+    $sort = $this->getSortParams();
+    $pagination = $this->getPaginationParams();
+
+    $projects = ProjectModel::search((string) $request->input('query', ''))
+        ->orderBy($sort->field, $sort->direction)
+        ->query(function (Builder $q) use ($request): Builder {
+            return $q->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
         })
-        ->paginate($this->pagination->perPage, 'page', $this->pagination->page);
+        ->paginate($pagination->perPage, 'page', $pagination->page);
+
+    return ProjectResource::collection($projects);
 }
 ```
 
 **Важливо:** `->orderBy()` для Scout CollectionEngine має бути на рівні Scout Builder (до `->query()`), а не всередині `->query()` callback. CollectionEngine застосовує порядок тільки через `$builder->orders`; `orderBy` всередині callback потрапляє в re-fetch, але потім перезаписується позиціями з `searchModels()`.
+
+### Allowed filters по моделях
+
+| Модель | Filter | Поля |
+|---|---|---|
+| `ProjectModel` | `TextFilter` | `name`, `prefix` |
+| `TaskListModel` | `TextFilter` | `name`, `project_id` |
+| `TaskModel` | `TextFilter` | `name`, `description`, `key`, `project_id`, `task_list_id`, `status` |
+| `TaskModel` | `IntegerFilter` | `priority` |
 
 ---
 

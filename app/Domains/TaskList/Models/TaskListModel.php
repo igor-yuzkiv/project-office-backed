@@ -5,6 +5,9 @@ namespace App\Domains\TaskList\Models;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Libs\EloquentFilters\Concerns\HasFilters;
+use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskListModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -13,11 +16,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
+/** @method static \Illuminate\Database\Eloquent\Builder filter(array $filters) */
 #[Fillable(['id', 'project_id', 'name', 'created_by', 'updated_by'])]
 class TaskListModel extends Model
 {
     /** @use HasFactory<TaskListModelFactory> */
-    use HasAuditableColumns, HasFactory, HasUlids, Searchable;
+    use HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
     protected $table = 'task_lists';
 
@@ -50,5 +54,12 @@ class TaskListModel extends Model
     public static function newFactory(): TaskListModelFactory
     {
         return TaskListModelFactory::new();
+    }
+
+    public static function allowedFilters(): array
+    {
+        return [
+            new FilterDefinition(TextFilter::class, ['name', 'project_id']),
+        ];
     }
 }

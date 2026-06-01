@@ -8,6 +8,10 @@ use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Libs\EloquentFilters\Concerns\HasFilters;
+use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\IntegerFilter;
+use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -19,12 +23,14 @@ use Laravel\Scout\Searchable;
 /**
  * @property TaskPriority $priority
  * @property TaskStatus $status
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
 #[Fillable(['id', 'project_id', 'task_list_id', 'key', 'sequence_number', 'name', 'description', 'priority', 'status', 'created_by', 'updated_by'])]
 class TaskModel extends Model
 {
     /** @use HasFactory<TaskModelFactory> */
-    use HasAuditableColumns, HasFactory, HasUlids, Searchable;
+    use HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
     protected $table = 'tasks';
 
@@ -71,5 +77,13 @@ class TaskModel extends Model
     public static function newFactory(): TaskModelFactory
     {
         return TaskModelFactory::new();
+    }
+
+    public static function allowedFilters(): array
+    {
+        return [
+            new FilterDefinition(TextFilter::class, ['name', 'description', 'key', 'project_id', 'task_list_id', 'status']),
+            new FilterDefinition(IntegerFilter::class, ['priority']),
+        ];
     }
 }

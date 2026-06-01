@@ -33,6 +33,8 @@
 - Initialize Task List Frontend CRUD
 - Initialize Task Frontend CRUD
 - Refactor Backend API To Flat Resources And Search Endpoints
+- Create TasksPage With Global Tasks List
+- Create Project Details Page
 
 ## Questions
 

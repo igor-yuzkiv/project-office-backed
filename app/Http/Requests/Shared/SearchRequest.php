@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Projects;
+namespace App\Http\Requests\Shared;
 
 use App\Libs\EloquentFilters\MatchMode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class SearchProjectsRequest extends FormRequest
+class SearchRequest extends FormRequest
 {
     public function rules(): array
     {
