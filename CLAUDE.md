@@ -81,7 +81,7 @@ Project root: `/var/www/task-manager/mvp-task-manager`
 
 ### Agent Workflow
 
-Before starting any task, read `.project_office/agent_guides/agent_workflow.md`.
+Before starting any task, read `.project_office/agent_guides/developer_agent_workflow.md`.
 
 It defines:
 - how to locate and read the current milestone and task;
