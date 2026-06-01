@@ -1,5 +1,6 @@
 import type { IEntity, PagingParams } from '@/shared/types'
 import type { FilterPayloadItem } from '@/shared/filters'
+import type { SortParams } from '@/shared/sort'
 
 export interface IProject extends IEntity {
     name: string
@@ -16,7 +17,8 @@ export interface IUpdateProjectInput {
     prefix?: string
 }
 
-export type ProjectSearchParams = PagingParams & {
-    query?: string
-    filters?: FilterPayloadItem[]
-}
+export type ProjectSearchParams = PagingParams &
+    SortParams & {
+        query?: string
+        filters?: FilterPayloadItem[]
+    }

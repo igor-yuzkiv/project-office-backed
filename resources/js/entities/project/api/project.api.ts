@@ -1,5 +1,6 @@
 import { httpClient } from '@/shared/api'
-import type { PaginatedResponse, PagingParams, PromisePaginatedResponse, SortParams } from '@/shared/types'
+import type { PaginatedResponse, PagingParams, PromisePaginatedResponse } from '@/shared/types'
+import type { SortParams } from '@/shared/sort'
 import type { ICreateProjectInput, IProject, IUpdateProjectInput, ProjectSearchParams } from '../types'
 
 type ProjectResponse = { data: IProject }

@@ -3,11 +3,6 @@ export type PagingParams = {
     per_page?: number
 }
 
-export type SortParams = {
-    sort_by?: string
-    sort_order?: 'asc' | 'desc'
-}
-
 export type PaginationLinks = {
     first: string | null
     last: string | null

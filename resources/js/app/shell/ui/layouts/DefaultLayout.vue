@@ -38,9 +38,7 @@ const recentProjects = [
 
         <div class="flex flex-1 flex-col overflow-hidden">
             <AppHeader :title="store.pageTitle" :actions="store.headerActions" />
-            <main class="flex-1 overflow-auto">
-                <slot />
-            </main>
+            <slot />
         </div>
     </div>
 </template>

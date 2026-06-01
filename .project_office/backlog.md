@@ -18,3 +18,7 @@
 # URL State
 
 - Реалізувати URL-based filters and sort.
+
+
+# Custom View
+- типу як в срм щоб користувачі створвали відфільтровані вю 
