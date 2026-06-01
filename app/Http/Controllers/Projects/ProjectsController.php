@@ -12,7 +12,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Resources\Projects\ProjectResource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProjectsController extends Controller
@@ -31,6 +33,22 @@ class ProjectsController extends Controller
         $projects = ProjectModel::with(['createdBy', 'updatedBy'])
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
+
+        return ProjectResource::collection($projects);
+    }
+
+    public function search(Request $request): AnonymousResourceCollection
+    {
+        $query = (string) $request->input('query', '');
+        $filters = (array) $request->input('filters', []);
+        $pagination = $this->getPaginationParams();
+
+        $projects = ProjectModel::search($query)
+            ->query(function (Builder $q) use ($filters) {
+                /** @var Builder<ProjectModel> $q */
+                return $q->with(['createdBy', 'updatedBy'])->filter($filters);
+            })
+            ->paginate($pagination->perPage, 'page', $pagination->page);
 
         return ProjectResource::collection($projects);
     }

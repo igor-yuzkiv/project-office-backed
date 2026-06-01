@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Scout\Searchable;
 
 /**
  * @property TaskPriority $priority
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TaskModel extends Model
 {
     /** @use HasFactory<TaskModelFactory> */
-    use HasAuditableColumns, HasFactory, HasUlids;
+    use HasAuditableColumns, HasFactory, HasUlids, Searchable;
 
     protected $table = 'tasks';
 
@@ -34,6 +35,16 @@ class TaskModel extends Model
         return [
             'priority' => TaskPriority::class,
             'status'   => TaskStatus::class,
+        ];
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id'          => $this->id,
+            'key'         => $this->key,
+            'name'        => $this->name,
+            'description' => $this->description,
         ];
     }
 

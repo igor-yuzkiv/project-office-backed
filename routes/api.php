@@ -16,6 +16,7 @@ Route::group([
     Route::post('/logout', 'logout')->name('logout')->middleware('auth:sanctum');
 });
 
+Route::post('projects/search', [ProjectsController::class, 'search'])->middleware(['auth:sanctum'])->name('projects.search');
 Route::apiResource('projects', ProjectsController::class)->middleware(['auth:sanctum']);
 
 Route::apiResource('projects.task-lists', TaskListsController::class)->middleware(['auth:sanctum']);

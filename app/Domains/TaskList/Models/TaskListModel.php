@@ -11,16 +11,26 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Scout\Searchable;
 
 #[Fillable(['id', 'project_id', 'name', 'created_by', 'updated_by'])]
 class TaskListModel extends Model
 {
     /** @use HasFactory<TaskListModelFactory> */
-    use HasAuditableColumns, HasFactory, HasUlids;
+    use HasAuditableColumns, HasFactory, HasUlids, Searchable;
 
     protected $table = 'task_lists';
 
     public $incrementing = false;
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id'         => $this->id,
+            'name'       => $this->name,
+            'project_id' => $this->project_id,
+        ];
+    }
 
     public function project(): BelongsTo
     {

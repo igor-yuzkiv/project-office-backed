@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
+/** @method static \Illuminate\Database\Eloquent\Builder filter(array $filters) */
 #[Fillable(['id', 'name', 'prefix', 'created_by', 'updated_by'])]
 class ProjectModel extends Model
 {
@@ -55,6 +56,15 @@ class ProjectModel extends Model
     public static function newFactory(): ProjectModelFactory
     {
         return ProjectModelFactory::new();
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id'     => $this->id,
+            'name'   => $this->name,
+            'prefix' => $this->prefix,
+        ];
     }
 
     public static function allowedFilters(): array
