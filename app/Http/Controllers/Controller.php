@@ -22,4 +22,18 @@ abstract class Controller
             direction: request()->input('sort_order', 'desc'),
         );
     }
+
+    /**
+     * @param  array<string, string>  $allowedMap  API name → Eloquent relation name
+     * @return string[]
+     */
+    protected function getIncludeParams(array $allowedMap): array
+    {
+        $raw = request()->input('include', []);
+        $requested = is_string($raw) ? array_filter(explode(',', $raw)) : (array) $raw;
+
+        return array_values(array_filter(
+            array_map(fn (string $key) => $allowedMap[trim($key)] ?? null, $requested)
+        ));
+    }
 }

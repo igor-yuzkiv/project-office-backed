@@ -1,12 +1,21 @@
 import { httpClient } from '@/shared/api'
-import type { PaginatedResponse, PagingParams, PromisePaginatedResponse } from '@/shared/types'
-import type { SortParams } from '@/shared/sort'
-import type { ICreateTaskInput, ITask, IUpdateTaskInput } from '../types'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
+import type { ICreateTaskInput, ITask, IUpdateTaskInput, TaskFetchParams, TaskSearchParams } from '../types'
 
 type TaskResponse = { data: ITask }
 
-export async function fetchTasksRequest(params?: PagingParams & SortParams): PromisePaginatedResponse<ITask> {
-    return httpClient.get<PaginatedResponse<ITask>>('/tasks', { params }).then((res) => res.data)
+export async function fetchTasksRequest(params?: TaskFetchParams): PromisePaginatedResponse<ITask> {
+    const { include, ...rest } = params ?? {}
+    return httpClient
+        .get<PaginatedResponse<ITask>>('/tasks', { params: { ...rest, include: include?.join(',') } })
+        .then((res) => res.data)
+}
+
+export async function searchTasksRequest(params: TaskSearchParams): PromisePaginatedResponse<ITask> {
+    const { query = '', filters = [], include, ...pagination } = params
+    return httpClient
+        .post<PaginatedResponse<ITask>>('/tasks/search', { query, filters, include, ...pagination })
+        .then((res) => res.data)
 }
 
 export async function fetchTaskRequest(taskId: string): Promise<TaskResponse> {

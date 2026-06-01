@@ -3,6 +3,8 @@
 namespace App\Http\Resources\Tasks;
 
 use App\Domains\Task\Models\TaskModel;
+use App\Http\Resources\Projects\ProjectResource;
+use App\Http\Resources\TaskLists\TaskListResource;
 use App\Http\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,6 +28,9 @@ class TaskResource extends JsonResource
             'updated_by'      => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
             'created_at'      => $this->created_at,
             'updated_at'      => $this->updated_at,
+
+            'project'         => $this->whenLoaded('project', fn () => new ProjectResource($this->project)),
+            'task_list'       => $this->whenLoaded('taskList', fn () => new TaskListResource($this->taskList)),
         ];
     }
 }

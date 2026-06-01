@@ -27,12 +27,15 @@ class TasksController extends Controller
         private readonly DeleteTaskHandler $deleteHandler,
     ) {}
 
+    private const array ALLOWED_INCLUDES = ['project' => 'project', 'task_list' => 'taskList'];
+
     public function index(): AnonymousResourceCollection
     {
         $pagination = $this->getPaginationParams();
         $sort = $this->getSortParams();
+        $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
 
-        $tasks = TaskModel::with(['createdBy', 'updatedBy'])
+        $tasks = TaskModel::with(['createdBy', 'updatedBy', ...$includes])
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -43,12 +46,13 @@ class TasksController extends Controller
     {
         $sort = $this->getSortParams();
         $pagination = $this->getPaginationParams();
+        $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
 
         $tasks = TaskModel::search((string) $request->input('query', ''))
             ->orderBy($sort->field, $sort->direction)
-            ->query(function (Builder $q) use ($request): Builder {
+            ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskModel> $q */
-                return $q->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
+                return $q->with(['createdBy', 'updatedBy', ...$includes])->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
