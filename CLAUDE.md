@@ -247,6 +247,15 @@ shared/
 └── utils/            # pure utility functions
 ```
 
+### Script Block Order
+
+Order inside `<script setup>` blocks:
+
+1. **Imports and composables** — `defineProps`, `defineEmits`, composable calls, injected dependencies.
+2. **State** — `ref`, `reactive`, `computed`.
+3. **Functions and handlers** — business logic, event handlers, helper functions.
+4. **Lifecycle hooks and watchers** — `watch`, `watchEffect`, `onMounted`, `onUnmounted`, and other lifecycle hooks.
+
 ### Component and Library Usage
 
 Prefer components and utilities from already-installed packages over writing custom implementations.

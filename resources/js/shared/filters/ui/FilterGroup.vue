@@ -12,7 +12,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="gap-4 flex flex-col">
+    <div class="flex flex-col">
         <FilterControl
             v-for="(def, key) in defMap"
             :key="key"

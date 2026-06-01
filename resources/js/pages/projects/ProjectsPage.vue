@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import { useProjectsQuery } from '@/entities/project/queries'
+import { useProjectsSearchQuery } from '@/entities/project/queries'
 import { useDeleteProjectMutation } from '@/entities/project/mutations'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { PAGE_SIZE } from '@/app/config'
 import type { IProject } from '@/entities/project/types'
 import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
 import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
+import { FilterSidebar, FiltersButton, createFiltersDefinitionsMap, useFilterSidebar } from '@/shared/filters'
+import { SearchInput } from '@/shared/components/input'
+import { DisplayDate } from '@/shared/components/display'
 
 const upsertDialog = useProjectUpsertDialog()
 
@@ -20,14 +23,36 @@ layoutStore.setHeaderActions([
     { key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() },
 ])
 
-const page = ref(1)
-const pagination = ref({ page: page.value, per_page: PAGE_SIZE })
+const {
+    visible: sidebarVisible,
+    draftDefMap: sidebarDefMap,
+    resolvedFilters: appliedFilters,
+    updateFilter,
+    apply: applyFilters,
+    reset: resetFilters,
+} = useFilterSidebar(
+    createFiltersDefinitionsMap((map) =>
+        map.addField('name', 'text', (d) => d.label('Name')).addField('prefix', 'text', (d) => d.label('Prefix'))
+    )
+)
 
-const { projects, paginationMeta, isPending } = useProjectsQuery(pagination)
 const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 
+const searchInput = ref('')
+const searchQuery = ref('')
+const page = ref(1)
 const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedProject = ref<IProject>()
+
+const activeFiltersCount = computed(() => appliedFilters.value.length)
+const searchParams = computed(() => ({
+    query: searchQuery.value,
+    filters: appliedFilters.value,
+    page: page.value,
+    per_page: PAGE_SIZE,
+}))
+
+const { projects, paginationMeta, isPending } = useProjectsSearchQuery(searchParams)
 
 const rowMenuItems: MenuItem[] = [
     { label: 'Edit', icon: 'pi pi-pencil', command: () => upsertDialog.open(selectedProject.value) },
@@ -42,6 +67,16 @@ const rowMenuItems: MenuItem[] = [
     },
 ]
 
+function onSearchSubmit() {
+    searchQuery.value = searchInput.value
+    page.value = 1
+}
+
+function onApply() {
+    applyFilters()
+    page.value = 1
+}
+
 function openRowMenu(event: MouseEvent, project: IProject) {
     selectedProject.value = project
     rowMenu.value?.toggle(event)
@@ -49,15 +84,14 @@ function openRowMenu(event: MouseEvent, project: IProject) {
 
 function onPageChange(event: { page: number }) {
     page.value = event.page + 1
-    pagination.value = { page: page.value, per_page: PAGE_SIZE }
 }
 </script>
 
 <template>
-    <div class="gap-6 p-6 flex flex-col">
-        <div class="gap-1 flex flex-col">
-            <h1 class="text-xl font-semibold text-surface-900 dark:text-surface-0">Projects</h1>
-            <p class="text-sm text-surface-500">Manage and track all your organisation's projects.</p>
+    <div class="gap-4 p-6 flex flex-col">
+        <div class="gap-2 flex items-center">
+            <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
+            <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
         </div>
 
         <DataTable :value="projects" :loading="isPending" lazy striped-rows class="w-full" row-hover>
@@ -65,7 +99,7 @@ function onPageChange(event: { page: number }) {
             <Column field="name" header="Project Name" />
             <Column field="created_at" header="Created" style="width: 12rem">
                 <template #body="{ data }">
-                    {{ new Date(data.created_at).toLocaleDateString() }}
+                    <DisplayDate :date="data.created_at" />
                 </template>
             </Column>
             <Column style="width: 3rem">
@@ -88,6 +122,16 @@ function onPageChange(event: { page: number }) {
     </div>
 
     <Menu ref="rowMenu" :model="rowMenuItems" popup />
+
+    <FilterSidebar
+        v-model:visible="sidebarVisible"
+        :def-map="sidebarDefMap"
+        title="Filters"
+        @apply="onApply"
+        @reset="resetFilters"
+        @change="updateFilter"
+    />
+
     <ProjectUpsertDialog
         v-model:visible="upsertDialog.visible.value"
         v-model:name="upsertDialog.name.value"

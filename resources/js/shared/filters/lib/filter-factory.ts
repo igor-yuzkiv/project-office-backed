@@ -26,7 +26,7 @@ export function createFilterDefinition<TDataType extends FilterDataType>(
         defaultValue: null as FilterDef<TDataType>['defaultValue'],
         matchMode: null,
         inputProps: {},
-        enabled: true,
+        enabled: false,
     }
 
     if (!configure) {

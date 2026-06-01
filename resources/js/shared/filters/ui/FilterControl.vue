@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Checkbox from 'primevue/checkbox'
+import Panel from 'primevue/panel'
 import Select from 'primevue/select'
 import { computed } from 'vue'
 import type { AnyFilterDef } from '../types/filter-def.types'
@@ -19,15 +19,17 @@ const emit = defineEmits<{
     change: [key: string, patch: Partial<AnyFilterDef>]
 }>()
 
+// expanded = enabled: open panel → filter active, collapsed → filter disabled
+const panelCollapsed = computed({
+    get: () => !props.def.enabled,
+    set: (val: boolean) => emit('change', props.filterKey, { enabled: !val }),
+})
+
 const matchModeOptions = computed<MatchModeOption[]>(() => MATCH_MODE_OPTIONS[props.def.dataType])
 
 const showMatchMode = computed(() => !props.def.withoutMatchMode && matchModeOptions.value.length > 0)
 
 const showValueInput = computed(() => props.def.dataType !== 'nullable')
-
-function onEnabledChange(value: boolean) {
-    emit('change', props.filterKey, { enabled: value })
-}
 
 function onMatchModeChange(value: MatchMode | null) {
     emit('change', props.filterKey, { matchMode: value })
@@ -41,16 +43,17 @@ const asString = (v: unknown): string | null => v as string | null
 const asNumber = (v: unknown): number | null => v as number | null
 const asBoolean = (v: unknown): boolean | null => v as boolean | null
 const asDate = (v: unknown): Date | null => v as Date | null
+
+const panelPt = {
+    root: { class: '!rounded-none !shadow-none !border-0 !border-b !border-surface-200 dark:!border-surface-700' },
+    header: { class: '!px-0 !py-2.5' },
+    content: { class: '!px-0 !pt-0 !pb-3' },
+}
 </script>
 
 <template>
-    <div class="gap-2 flex flex-col">
-        <div class="gap-2 flex items-center">
-            <Checkbox :model-value="def.enabled" :binary="true" @update:model-value="onEnabledChange" />
-            <span class="text-sm font-medium text-surface-700">{{ def.label }}</span>
-        </div>
-
-        <div v-if="def.enabled" class="gap-2 pl-6 flex flex-col">
+    <Panel v-model:collapsed="panelCollapsed" :header="def.label" toggleable :pt="panelPt">
+        <div class="gap-2 flex flex-col">
             <Select
                 v-if="showMatchMode"
                 :model-value="def.matchMode"
@@ -85,5 +88,5 @@ const asDate = (v: unknown): Date | null => v as Date | null
                 />
             </template>
         </div>
-    </div>
+    </Panel>
 </template>

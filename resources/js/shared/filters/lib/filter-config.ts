@@ -1,6 +1,11 @@
 import type { FilterDataType } from '../types/filter-def.types'
 import type { MatchModeOption } from '../types/match-mode.types'
-import { DATETIME_MATCH_MODES, INTEGER_MATCH_MODES, NULLABLE_MATCH_MODES, TEXT_MATCH_MODES } from '../types/match-mode.types'
+import {
+    DATETIME_MATCH_MODES,
+    INTEGER_MATCH_MODES,
+    NULLABLE_MATCH_MODES,
+    TEXT_MATCH_MODES,
+} from '../types/match-mode.types'
 
 export const MATCH_MODE_OPTIONS: Record<FilterDataType, MatchModeOption[]> = {
     text: TEXT_MATCH_MODES,

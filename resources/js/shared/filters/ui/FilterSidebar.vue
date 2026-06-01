@@ -33,7 +33,7 @@ function onReset() {
 </script>
 
 <template>
-    <Drawer v-model:visible="visible" :header="title" position="right" class="!w-80">
+    <Drawer v-model:visible="visible" :header="title" position="right" class="!w-96">
         <div class="gap-4 flex h-full flex-col">
             <div class="flex-1 overflow-y-auto">
                 <FilterGroup :def-map="props.defMap" @change="(k, patch) => emit('change', k, patch)" />
