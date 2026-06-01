@@ -10,11 +10,11 @@ use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Project\Queries\SearchProjectsQuery;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Projects\SearchProjectsRequest;
 use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Resources\Projects\ProjectResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProjectsController extends Controller
@@ -37,7 +37,7 @@ class ProjectsController extends Controller
         return ProjectResource::collection($projects);
     }
 
-    public function search(Request $request): AnonymousResourceCollection
+    public function search(SearchProjectsRequest $request): AnonymousResourceCollection
     {
         $projects = (new SearchProjectsQuery(
             query: (string) $request->input('query', ''),
