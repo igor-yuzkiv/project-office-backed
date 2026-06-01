@@ -4,6 +4,7 @@ namespace App\Libs\EloquentFilters\Filters;
 
 use App\Libs\EloquentFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
+use Laravel\Scout\Builder as ScoutBuilder;
 
 class BooleanFilter extends Filter
 {
@@ -12,14 +13,10 @@ class BooleanFilter extends Filter
         return 'boolean';
     }
 
-    public function apply(Builder $query): Builder
+    public function apply(Builder|ScoutBuilder $query): Builder|ScoutBuilder
     {
-        $field = $this->params->get('field');
+        $field = $this->payload->fieldName;
 
-        if (!$field) {
-            return $query;
-        }
-
-        return $query->where($field, $this->params->boolean('value'));
+        return $query->where($field, filter_var($this->payload->value, FILTER_VALIDATE_BOOLEAN));
     }
 }

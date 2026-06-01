@@ -4,6 +4,9 @@ namespace App\Domains\Project\Models;
 
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Libs\EloquentFilters\Concerns\HasFilters;
+use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\TextFilter;
 use App\Support\TextUtils;
 use Database\Factories\ProjectModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,7 +20,7 @@ use Laravel\Scout\Searchable;
 class ProjectModel extends Model
 {
     /** @use HasFactory<ProjectModelFactory> */
-    use HasAuditableColumns, HasFactory, HasUlids, Searchable;
+    use HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
     protected $table = 'projects';
 
@@ -52,5 +55,12 @@ class ProjectModel extends Model
     public static function newFactory(): ProjectModelFactory
     {
         return ProjectModelFactory::new();
+    }
+
+    public static function allowedFilters(): array
+    {
+        return [
+            new FilterDefinition(TextFilter::class, ['name', 'prefix']),
+        ];
     }
 }

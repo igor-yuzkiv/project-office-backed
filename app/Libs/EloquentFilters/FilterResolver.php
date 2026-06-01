@@ -6,47 +6,52 @@ class FilterResolver
 {
     /**
      * @param  array<string, mixed>  $payload
-     * @param  array<string, array{0: class-string<Filter>, 1: array{allowed_fields: string[]}}>  $allowedFilters
+     * @param  FilterDefinition[]  $allowedFilters
      */
     public function resolve(array $payload, array $allowedFilters): Filter
     {
-        $filterKey = $payload['filter'] ?? null;
-        $field = $payload['field'] ?? null;
-        $matchModeValue = $payload['matchMode'] ?? null;
-        $value = $payload['value'] ?? null;
-        $params = isset($payload['params']) && is_array($payload['params']) ? $payload['params'] : [];
+        $filterPayload = FilterPayload::fromArray($payload);
 
-        if (!$filterKey || !array_key_exists($filterKey, $allowedFilters)) {
-            throw new InvalidFilterException("Unknown filter: \"{$filterKey}\".");
+        $definition = $this->findDefinition($filterPayload->filterKey, $allowedFilters);
+
+        if (!$definition) {
+            throw InvalidFilterException::unknownFilter($filterPayload->filterKey ?? '');
         }
 
-        [$filterClass, $options] = $allowedFilters[$filterKey];
-        $allowedFields = $options['allowed_fields'];
-
-        if (!$field || !in_array($field, $allowedFields, true)) {
-            throw new InvalidFilterException("Field \"{$field}\" is not allowed for filter \"{$filterKey}\".");
+        if (!$filterPayload->fieldName || !in_array($filterPayload->fieldName, $definition->allowedFields, true)) {
+            throw InvalidFilterException::fieldNotAllowed($filterPayload->fieldName ?? '', $filterPayload->filterKey ?? '');
         }
 
-        if ($matchModeValue !== null) {
-            $matchMode = MatchMode::tryFrom($matchModeValue);
+        if ($filterPayload->matchMode !== null) {
+            $matchMode = MatchMode::tryFrom($filterPayload->matchMode);
 
             if ($matchMode === null) {
-                throw new InvalidFilterException("Unknown match mode: \"{$matchModeValue}\".");
+                throw InvalidFilterException::unknownMatchMode($filterPayload->matchMode);
             }
 
-            $supportedModes = $filterClass::supportedMatchModes();
+            $supportedModes = ($definition->filterClass)::supportedMatchModes();
 
             if ($supportedModes !== null && !in_array($matchMode, $supportedModes, true)) {
-                throw new InvalidFilterException("Match mode \"{$matchModeValue}\" is not supported by filter \"{$filterKey}\".");
+                throw InvalidFilterException::unsupportedMatchMode($filterPayload->matchMode, $filterPayload->filterKey ?? '');
             }
         }
 
-        $parameterBag = new ParameterBag(array_merge($params, [
-            'field'     => $field,
-            'value'     => $value,
-            'matchMode' => $matchModeValue,
-        ]));
+        return new ($definition->filterClass)($filterPayload);
+    }
 
-        return new $filterClass($parameterBag);
+    /** @param FilterDefinition[] $allowedFilters */
+    private function findDefinition(?string $filterKey, array $allowedFilters): ?FilterDefinition
+    {
+        if (!$filterKey) {
+            return null;
+        }
+
+        foreach ($allowedFilters as $definition) {
+            if ($definition->key() === $filterKey) {
+                return $definition;
+            }
+        }
+
+        return null;
     }
 }

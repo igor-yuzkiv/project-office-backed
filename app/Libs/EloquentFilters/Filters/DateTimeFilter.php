@@ -6,6 +6,7 @@ use App\Libs\EloquentFilters\Filter;
 use App\Libs\EloquentFilters\MatchMode;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Laravel\Scout\Builder as ScoutBuilder;
 
 class DateTimeFilter extends Filter
 {
@@ -30,12 +31,12 @@ class DateTimeFilter extends Filter
         ];
     }
 
-    public function apply(Builder $query): Builder
+    public function apply(Builder|ScoutBuilder $query): Builder|ScoutBuilder
     {
-        $field = $this->params->get('field');
-        $value = $this->params->get('value');
+        $field = $this->payload->fieldName;
+        $value = $this->payload->value;
 
-        if (!$field || !$value) {
+        if (!$value) {
             return $query;
         }
 

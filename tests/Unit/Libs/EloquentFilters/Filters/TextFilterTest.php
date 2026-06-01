@@ -1,16 +1,17 @@
 <?php
 
+use App\Libs\EloquentFilters\FilterPayload;
 use App\Libs\EloquentFilters\Filters\TextFilter;
-use App\Libs\EloquentFilters\ParameterBag;
 use Illuminate\Database\Eloquent\Builder;
 
 function makeTextFilter(string $field, string $matchMode, string $value): TextFilter
 {
-    return new TextFilter(new ParameterBag([
-        'field'     => $field,
-        'matchMode' => $matchMode,
-        'value'     => $value,
-    ]));
+    return new TextFilter(new FilterPayload(
+        filterKey: 'text',
+        fieldName: $field,
+        value: $value,
+        matchMode: $matchMode,
+    ));
 }
 
 test('contains match mode applies whereLike with surrounding wildcards', function () {

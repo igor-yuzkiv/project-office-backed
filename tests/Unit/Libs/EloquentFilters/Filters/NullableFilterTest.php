@@ -1,16 +1,17 @@
 <?php
 
+use App\Libs\EloquentFilters\FilterPayload;
 use App\Libs\EloquentFilters\Filters\NullableFilter;
-use App\Libs\EloquentFilters\ParameterBag;
 use Illuminate\Database\Eloquent\Builder;
 
 function makeNullableFilter(string $field, string $matchMode): NullableFilter
 {
-    return new NullableFilter(new ParameterBag([
-        'field'     => $field,
-        'matchMode' => $matchMode,
-        'value'     => null,
-    ]));
+    return new NullableFilter(new FilterPayload(
+        filterKey: 'nullable',
+        fieldName: $field,
+        value: null,
+        matchMode: $matchMode,
+    ));
 }
 
 test('equals match mode applies whereNull', function () {

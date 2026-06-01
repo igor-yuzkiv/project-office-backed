@@ -5,6 +5,7 @@ namespace App\Libs\EloquentFilters\Filters;
 use App\Libs\EloquentFilters\Filter;
 use App\Libs\EloquentFilters\MatchMode;
 use Illuminate\Database\Eloquent\Builder;
+use Laravel\Scout\Builder as ScoutBuilder;
 
 class NullableFilter extends Filter
 {
@@ -21,14 +22,9 @@ class NullableFilter extends Filter
         ];
     }
 
-    public function apply(Builder $query): Builder
+    public function apply(Builder|ScoutBuilder $query): Builder|ScoutBuilder
     {
-        $field = $this->params->get('field');
-
-        if (!$field) {
-            return $query;
-        }
-
+        $field = $this->payload->fieldName;
         $matchMode = $this->matchMode(MatchMode::EQUALS);
 
         return match ($matchMode) {

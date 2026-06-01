@@ -2,13 +2,13 @@
 
 namespace App\Libs\EloquentFilters\Concerns;
 
+use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\FilterResolver;
 use Illuminate\Database\Eloquent\Builder;
 
-/** @phpstan-ignore trait.unused */
 trait HasFilters
 {
-    /** @return array<string, array{0: class-string, 1: array{allowed_fields: string[]}}> */
+    /** @return FilterDefinition[] */
     abstract public static function allowedFilters(): array;
 
     public function scopeFilter(Builder $query, array $filters): Builder
