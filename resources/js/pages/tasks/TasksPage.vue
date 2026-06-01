@@ -118,18 +118,19 @@ onUnmounted(() => {
                     </template>
                 </Column>
                 <Column field="name" header="Task Name" />
-                <Column field="project.name" header="Project" style="width: 10rem">
+                <Column field="project.name" header="Project" style="width: 12rem; min-width: 0">
                     <template #body="{ data }">
                         <RouterLink
                             v-if="data.project"
                             :to="{ name: 'project-details', params: { id: data.project_id } }"
-                            class="text-primary-500 hover:underline"
+                            class="text-primary-500 hover:underline block truncate"
+                            :title="`${data.project.prefix} - ${data.project.name}`"
                         >
-                            {{ data.project.name }}
+                            {{ data.project.prefix }} - {{ data.project.name }}
                         </RouterLink>
                     </template>
                 </Column>
-                <Column field="status" header="Status" style="width: 9rem" />
+                <Column field="status" header="Status" style="width: 9rem" class="capitalize"/>
                 <Column field="priority.name" header="Priority" style="width: 7rem" />
                 <Column field="created_at" header="Created" style="width: 12rem">
                     <template #body="{ data }">

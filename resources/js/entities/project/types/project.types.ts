@@ -7,6 +7,8 @@ export interface IProject extends IEntity {
     prefix: string
 }
 
+export type ProjectOverviewDto = Pick<IProject, 'id' | 'name' | 'prefix'>
+
 export interface ICreateProjectInput {
     name: string
     prefix?: string

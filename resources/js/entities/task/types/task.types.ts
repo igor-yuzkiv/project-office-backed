@@ -1,7 +1,7 @@
 import type { IEntity, PagingParams } from '@/shared/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
-import type { IProject } from '@/entities/project/types'
+import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { ITaskList } from '@/entities/task_list/types'
 
 export type TaskPriorityName = 'Low' | 'Medium' | 'High'
@@ -24,7 +24,7 @@ export interface ITask extends IEntity {
     status: TaskStatusValue
 
     // relations
-    project?: IProject
+    project?: ProjectOverviewDto
     task_list?: ITaskList
 }
 
