@@ -1,9 +1,9 @@
 ---
 type: task
 status: todo
-milestone_number:
-milestone_name:
-milestone_path:
+sprint_number:
+sprint_name:
+sprint_path:
 task_number: 001
 task_name: Name
 task_path:
@@ -13,7 +13,7 @@ updated_at:
 
 # 001 - Name
 
-## Milestone
+## Sprint
 
 - Number:
 - Name:

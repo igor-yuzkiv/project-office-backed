@@ -1,8 +1,8 @@
-# Milestone 002 — Frontend Initial: Implementation
+# Sprint 002 — Frontend Initial: Implementation
 
 ## Overview
 
-This milestone establishes the foundational frontend architecture: app shell components,
+This sprint establishes the foundational frontend architecture: app shell components,
 layout system, navigation, auth store reorganization, app-level layout store, and base pages.
 
 ---
@@ -79,7 +79,7 @@ responsible for rendering additional sections (e.g., recent projects list with i
 This keeps the sidebar generic and avoids slot-name coupling.
 
 Bottom buttons (Settings, Profile) are plain `<button>` elements intentionally —
-they will be replaced by `RouterLink` in a future milestone.
+they will be replaced by `RouterLink` in a future sprint.
 
 ### AppHeader — SplitButton + actions
 

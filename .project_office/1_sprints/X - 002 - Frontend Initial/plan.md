@@ -272,7 +272,7 @@ Store зберігає масив actions.
 - `AppHeader` не читає layout store напряму. Компонент отримує `title` та `actions` через props.
 - `DefaultLayout` підключається до `use.app-layout.store.ts` і передає дані в `AppHeader`.
 - `Settings` у header поки є кнопкою без логіки переходу.
-- Sidebar navigation може містити route links для сторінок, які вже створені в межах milestone.
+- Sidebar navigation може містити route links для сторінок, які вже створені в межах sprint.
 - Застарілу task 002 видалено і не використовувати як актуальний scope.
 - Перенесення `auth.store` в `app/stores` винесено в окрему task.
 

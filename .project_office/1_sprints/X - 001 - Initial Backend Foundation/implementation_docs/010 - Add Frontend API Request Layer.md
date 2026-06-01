@@ -2,7 +2,7 @@
 
 ## Що реалізовано
 
-API request layer для всіх сутностей milestone. Рефакторинг `authApi` до нового стилю. `ApiError` клас з axios interceptor.
+API request layer для всіх сутностей sprint. Рефакторинг `authApi` до нового стилю. `ApiError` клас з axios interceptor.
 
 ## Змінені файли
 

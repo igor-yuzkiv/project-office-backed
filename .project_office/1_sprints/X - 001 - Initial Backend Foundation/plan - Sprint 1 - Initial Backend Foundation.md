@@ -1,4 +1,4 @@
-# Milestone 1: Initial Backend Foundation
+# Sprint 1: Initial Backend Foundation
 
 ## Scope
 
@@ -8,7 +8,7 @@
 - Виконувати create/update/delete operations через actions/handlers.
 - Підготувати універсальний API для завантаження attachments.
 - Звірити frontend pagination types зі стандартною Laravel pagination response.
-- Підготувати frontend entity types і API request layer для сутностей milestone.
+- Підготувати frontend entity types і API request layer для сутностей sprint.
 
 ## Правила реалізації
 

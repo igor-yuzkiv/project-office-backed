@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property TaskPriority $priority
+ * @property TaskStatus $status
+ */
 #[Fillable(['id', 'project_id', 'task_list_id', 'key', 'sequence_number', 'name', 'description', 'priority', 'status', 'created_by', 'updated_by'])]
 class TaskModel extends Model
 {

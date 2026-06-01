@@ -1,4 +1,4 @@
-# Milestone 3: Frontend CRUD Initial
+# Sprint 3: Frontend CRUD Initial
 
 ## Scope
 
@@ -11,7 +11,7 @@
 - Підготувати початкову frontend реалізацію сценаріїв створення, перегляду, редагування та видалення сутностей.
 - Використати існуючі backend API та frontend інфраструктуру.
 - Зберегти поточну архітектуру, naming conventions та структуру модулів.
-- Закласти основу для подальшого розширення CRUD flows без повного фінального polish у межах цього milestone.
+- Закласти основу для подальшого розширення CRUD flows без повного фінального polish у межах цього sprint.
 
 ## Entities
 
@@ -39,4 +39,4 @@
 - Який очікуваний UX для delete confirmation?
 - Чи потрібні окремі сторінки details, чи достатньо modal/drawer flows?
 - Які validation errors мають відображатись на frontend?
-- Чи потрібні filters/search/sorting у межах цього milestone?
+- Чи потрібні filters/search/sorting у межах цього sprint?

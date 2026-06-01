@@ -1,31 +1,31 @@
 ---
 type: task
 status: todo
-milestone_number: 3
-milestone_name: Frontend CRUD Initial
-milestone_path: .project_office/1_milestones/003 - CRUD
+sprint_number: 3
+sprint_name: Frontend CRUD Initial
+sprint_path: .project_office/1_sprints/003 - CRUD
 task_number: 002
 task_name: Project Upsert Dialog
-task_path: .project_office/1_milestones/003 - CRUD/tasks/002 - Project Upsert Dialog.md
+task_path: .project_office/1_sprints/003 - CRUD/tasks/002 - Project Upsert Dialog.md
 created_at: 2026-05-31
 updated_at: 2026-05-31
 ---
 
 # 002 - Project Upsert Dialog
 
-## Milestone
+## Sprint
 
 - Number: 3
 - Name: Frontend CRUD Initial
-- Path: `.project_office/1_milestones/003 - CRUD`
-- Plan: `.project_office/1_milestones/003 - CRUD/plan.md`
+- Path: `.project_office/1_sprints/003 - CRUD`
+- Plan: `.project_office/1_sprints/003 - CRUD/plan.md`
 
 ## Task
 
 - Number: 002
 - Name: Project Upsert Dialog
 - Status: todo
-- Path: `.project_office/1_milestones/003 - CRUD/tasks/002 - Project Upsert Dialog.md`
+- Path: `.project_office/1_sprints/003 - CRUD/tasks/002 - Project Upsert Dialog.md`
 
 ## Опис
 
@@ -38,7 +38,7 @@ updated_at: 2026-05-31
 - API та типи для API вже визначені.
 - Дизайн сторінки створення projects можна використовувати як орієнтир:
   `.project_office/2_design/concept/create_project_page`
-- Upsert dialog має стати базовим прикладом для наступних однотипних create/update dialogs у milestone.
+- Upsert dialog має стати базовим прикладом для наступних однотипних create/update dialogs у sprint.
 - Після успішного створення або редагування project потрібно оновити табличне представлення projects.
 
 ## Вимоги

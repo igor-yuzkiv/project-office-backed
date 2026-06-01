@@ -1,31 +1,31 @@
 ---
 type: task
 status: todo
-milestone_number: 3
-milestone_name: Frontend CRUD Initial
-milestone_path: .project_office/1_milestones/003 - CRUD
+sprint_number: 3
+sprint_name: Frontend CRUD Initial
+sprint_path: .project_office/1_sprints/003 - CRUD
 task_number: 001
 task_name: Project Table View
-task_path: .project_office/1_milestones/003 - CRUD/tasks/001 - Project Table View.md
+task_path: .project_office/1_sprints/003 - CRUD/tasks/001 - Project Table View.md
 created_at: 2026-05-31
 updated_at: 2026-05-31
 ---
 
 # 001 - Project Table View
 
-## Milestone
+## Sprint
 
 - Number: 3
 - Name: Frontend CRUD Initial
-- Path: `.project_office/1_milestones/003 - CRUD`
-- Plan: `.project_office/1_milestones/003 - CRUD/plan.md`
+- Path: `.project_office/1_sprints/003 - CRUD`
+- Plan: `.project_office/1_sprints/003 - CRUD/plan.md`
 
 ## Task
 
 - Number: 001
 - Name: Project Table View
 - Status: todo
-- Path: `.project_office/1_milestones/003 - CRUD/tasks/001 - Project Table View.md`
+- Path: `.project_office/1_sprints/003 - CRUD/tasks/001 - Project Table View.md`
 
 ## Опис
 

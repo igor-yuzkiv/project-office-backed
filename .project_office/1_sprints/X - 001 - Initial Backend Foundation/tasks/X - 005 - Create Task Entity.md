@@ -1,31 +1,31 @@
 ---
 type: task
 status: todo
-milestone_number: 1
-milestone_name: Initial Backend Foundation
-milestone_path: .project_office/1_milestones/1_m_initial
+sprint_number: 1
+sprint_name: Initial Backend Foundation
+sprint_path: .project_office/1_sprints/1_m_initial
 task_number: 005
 task_name: Create Task Entity
-task_path: .project_office/1_milestones/1_m_initial/tasks/005 - Create Task Entity.md
+task_path: .project_office/1_sprints/1_m_initial/tasks/005 - Create Task Entity.md
 created_at: 2026-05-31
 updated_at: 2026-05-31
 ---
 
 # 005 - Create Task Entity
 
-## Milestone
+## Sprint
 
 - Number: 1
 - Name: Initial Backend Foundation
-- Path: `.project_office/1_milestones/1_m_initial`
-- Plan: `.project_office/1_milestones/1_m_initial/plan.md`
+- Path: `.project_office/1_sprints/1_m_initial`
+- Plan: `.project_office/1_sprints/1_m_initial/plan.md`
 
 ## Task
 
 - Number: 005
 - Name: Create Task Entity
 - Status: todo
-- Path: `.project_office/1_milestones/1_m_initial/tasks/005 - Create Task Entity.md`
+- Path: `.project_office/1_sprints/1_m_initial/tasks/005 - Create Task Entity.md`
 
 ## Опис
 

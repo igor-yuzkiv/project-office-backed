@@ -1,11 +1,11 @@
 Продовжуємо роботу над MVP Task Manager.
 
-Поточний milestone: `.project_office/1_milestones/___/`
+Поточний sprint: `.project_office/1_sprints/___/`
 
-Поточна task: `.project_office/1_milestones/___/tasks/___`
+Поточна task: `.project_office/1_sprints/___/tasks/___`
 
-Працюємо тільки в межах поточного milestone і поточної task.
-Не переходити до наступних tasks або milestones без підтвердження.
+Працюємо тільки в межах поточного sprint і поточної task.
+Не переходити до наступних tasks або sprints без підтвердження.
 
 ---
 
@@ -17,7 +17,7 @@ Office workspace:
 
 `.project_office/`
 
-У цій папці знаходиться актуальний робочий контекст: workflow агента, roadmap, milestones, tasks, implementation docs, design references та артефакти планування.
+У цій папці знаходиться актуальний робочий контекст: workflow агента, roadmap, sprints, tasks, implementation docs, design references та артефакти планування.
 
 Перед початком роботи не починай імплементацію одразу, якщо вимоги неповні або допускають кілька валідних підходів.
 
@@ -25,14 +25,14 @@ Office workspace:
 
 1. Відкрити:
 
-`.project_office/agent_workflow.md`
+`.project_office/agent_guides/agent_workflow.md`
 
 Це головний документ.
 
 Містить:
 - правила роботи;
 - структуру project workspace;
-- порядок роботи з milestones і tasks;
+- порядок роботи з sprints і tasks;
 - workflow реалізації;
 - правила task-документації;
 - правила фінального review;
@@ -44,23 +44,23 @@ Office workspace:
 
 Використовувати roadmap тільки як high-level контекст. Не реалізовувати все з roadmap одразу.
 
-3. Знайти поточний milestone:
+3. Знайти поточний sprint:
 
-`.project_office/1_milestones/`
+`.project_office/1_sprints/`
 
 Поточний формат папок:
 
 ```text
-N_m_name
+N_s_name
 ```
 
 Приклад:
 
 ```text
-1_m_initial
+1_s_initial
 ```
 
-У milestone очікується структура:
+У sprint очікується структура:
 
 ```text
 plan.md
@@ -71,15 +71,15 @@ review.md
 
 `review.md` створюється тільки після прямого запиту користувача.
 
-4. Відкрити план поточного milestone:
+4. Відкрити план поточного sprint:
 
-`.project_office/1_milestones/<milestone>/plan.md`
+`.project_office/1_sprints/<sprint>/plan.md`
 
-Використовувати його для загального scope, черговості tasks і відкритих питань milestone.
+Використовувати його для загального scope, черговості tasks і відкритих питань sprint.
 
 5. Знайти поточну task:
 
-`.project_office/1_milestones/<milestone>/tasks/`
+`.project_office/1_sprints/<sprint>/tasks/`
 
 Важливо:
 - кожна task знаходиться в окремому файлі;
@@ -97,7 +97,7 @@ X - 001 - Task Name.md
 
 6. Перевірити task-документацію:
 
-`.project_office/1_milestones/<milestone>/implementation_docs/`
+`.project_office/1_sprints/<sprint>/implementation_docs/`
 
 Для кожної завершеної task має бути створений або оновлений окремий документ у `implementation_docs/`.
 
@@ -119,9 +119,9 @@ X - 001 - Task Name.md
 
 - task-документацію в `implementation_docs/` створювати або оновлювати після завершення кожної task;
 - фінальне review створювати тільки за прямим запитом користувача;
-- review зберігати в корені папки milestone, рекомендовано:
+- review зберігати в корені папки sprint, рекомендовано:
 
-`.project_office/1_milestones/<milestone>/review.md`
+`.project_office/1_sprints/<sprint>/review.md`
 
 - проєктну документацію створювати тільки за прямим запитом користувача;
 - проєктну документацію зберігати в корені проєкту:
@@ -130,8 +130,8 @@ X - 001 - Task Name.md
 
 Після ознайомлення:
 
-- коротко опиши поточний стан milestone;
-- підтвердь, який milestone і яка task зараз активні;
+- коротко опиши поточний стан sprint;
+- підтвердь, який sprint і яка task зараз активні;
 - явно назви відкриті питання, якщо вони є;
 - запропонуй короткий план реалізації;
 - дочекайся підтвердження перед змінами, якщо є неоднозначність.
