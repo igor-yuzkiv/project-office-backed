@@ -89,6 +89,30 @@ It defines:
 - how to handle task documentation and reviews;
 - constraints on scope and progression.
 
+# Existing Code First
+
+Before creating a new abstraction, component, composable, DTO, query, mutation, service, or utility:
+
+- Search the codebase for an existing implementation.
+- Prefer extending existing patterns over creating new ones.
+- Follow naming and structure already present in the project.
+- Do not introduce a new pattern when an established project pattern already exists.
+
+# Git Safety
+
+- Never create commits automatically.
+- Never push changes automatically.
+- Never perform merge, rebase, or reset operations without explicit user confirmation.
+
+# Validation
+
+Validation should be proportional to the change.
+
+- Small backend change → Pint + PHPStan.
+- Small frontend change → Format + Lint + Type Check.
+- Feature work → Run relevant tests when available.
+- Avoid expensive project-wide validation when a targeted check is sufficient.
+
 # Backend
 
 Laravel 12 application. PHP.
@@ -258,7 +282,7 @@ This restriction does not apply to:
 | Lint and auto-fix | `npm run lint` |
 | Check linting | `npm run lint:check` |
 | Type check | `npm run types:check` |
-| Build | `npm run build` |
 
 Run `npm run format` and `npm run lint` before considering frontend work complete.
 Run `npm run types:check` after changes that touch types or interfaces.
+Run `npm run build` only when changes affect bundling, routing, or Vite config.
