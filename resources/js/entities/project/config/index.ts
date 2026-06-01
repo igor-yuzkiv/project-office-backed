@@ -6,4 +6,5 @@ export const ProjectQueryKey = {
     all: ['projects'] as const,
     paginated: (params: MaybeRefOrGetter<PagingParams>) => [...ProjectQueryKey.all, 'paginated', params] as const,
     search: (params: MaybeRefOrGetter<ProjectSearchParams>) => [...ProjectQueryKey.all, 'search', params] as const,
+    detail: (id: MaybeRefOrGetter<string>) => [...ProjectQueryKey.all, 'detail', id] as const,
 }

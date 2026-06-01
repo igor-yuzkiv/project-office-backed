@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
@@ -17,6 +18,7 @@ import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shar
 import { SearchInput } from '@/shared/components/input'
 import { DisplayDate } from '@/shared/components/display'
 
+const router = useRouter()
 const upsertDialog = useProjectUpsertDialog()
 
 const layoutStore = useAppLayoutStore()
@@ -91,6 +93,10 @@ function onApply() {
     page.value = 1
 }
 
+function onRowClick(event: { data: IProject }) {
+    router.push({ name: 'project-details', params: { id: event.data.id } })
+}
+
 function openRowMenu(event: MouseEvent, project: IProject) {
     selectedProject.value = project
     rowMenu.value?.toggle(event)
@@ -131,10 +137,11 @@ onUnmounted(() => {
                 :loading="isPending"
                 lazy
                 striped-rows
-                class="w-full"
+                class="w-full cursor-pointer"
                 row-hover
                 scrollable
                 scroll-height="flex"
+                @row-click="onRowClick"
             >
                 <Column field="prefix" header="Prefix" style="width: 6rem" />
                 <Column field="name" header="Project Name" />
@@ -147,7 +154,7 @@ onUnmounted(() => {
                     <template #body="{ data }">
                         <button
                             class="pi pi-ellipsis-v p-1 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 cursor-pointer"
-                            @click="openRowMenu($event, data)"
+                            @click.stop="openRowMenu($event, data)"
                         />
                     </template>
                 </Column>

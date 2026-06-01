@@ -8,7 +8,13 @@ const store = useAppLayoutStore()
 
 const navItems: SidebarNavItem[] = [
     { key: 'home', label: 'Home', icon: 'heroicons:home', routeName: 'home' },
-    { key: 'projects', label: 'Projects', icon: 'heroicons:rectangle-stack', routeName: 'projects' },
+    {
+        key: 'projects',
+        label: 'Projects',
+        icon: 'heroicons:rectangle-stack',
+        routeName: 'projects',
+        activeFor: ['project-details'],
+    },
     { key: 'tasks', label: 'Tasks', icon: 'heroicons:check-circle', routeName: 'tasks' },
     { key: 'documents', label: 'Documents', icon: 'heroicons:document-text', routeName: 'documents' },
 ]

@@ -1,10 +1,15 @@
 import type { IEntity, PagingParams } from '@/shared/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
+import type { UserOverviewDto } from '@/entities/user/types'
 
 export interface IProject extends IEntity {
     name: string
     prefix: string
+    created_by?: UserOverviewDto
+    updated_by?: UserOverviewDto
+    created_at: string
+    updated_at: string
 }
 
 export type ProjectOverviewDto = Pick<IProject, 'id' | 'name' | 'prefix'>

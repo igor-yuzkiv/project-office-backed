@@ -5,6 +5,7 @@ export interface SidebarNavItem {
     label: string
     icon: string
     routeName: string
+    activeFor?: string[]
 }
 
 export interface HeaderAction {

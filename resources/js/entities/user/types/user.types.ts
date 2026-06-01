@@ -5,6 +5,8 @@ export interface IUser extends IEntity {
     email: string
 }
 
+export type UserOverviewDto = Pick<IUser, 'id' | 'name'>
+
 export interface ILoginCredentials {
     email: string
     password: string

@@ -24,7 +24,10 @@ const route = useRoute()
                 :key="item.key"
                 :to="{ name: item.routeName }"
                 class="gap-3 rounded-md px-3 py-2 text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
-                :class="{ 'bg-surface-800 text-surface-0': route.name === item.routeName }"
+                :class="{
+                    'bg-surface-800 text-surface-0':
+                        route.name === item.routeName || item.activeFor?.includes(route.name as string),
+                }"
             >
                 <Icon :icon="item.icon" class="h-4 w-4 shrink-0" />
                 <span>{{ item.label }}</span>

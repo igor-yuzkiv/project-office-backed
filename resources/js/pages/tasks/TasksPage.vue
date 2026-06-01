@@ -123,14 +123,14 @@ onUnmounted(() => {
                         <RouterLink
                             v-if="data.project"
                             :to="{ name: 'project-details', params: { id: data.project_id } }"
-                            class="text-primary-500 hover:underline block truncate"
+                            class="text-primary-500 block truncate hover:underline"
                             :title="`${data.project.prefix} - ${data.project.name}`"
                         >
                             {{ data.project.prefix }} - {{ data.project.name }}
                         </RouterLink>
                     </template>
                 </Column>
-                <Column field="status" header="Status" style="width: 9rem" class="capitalize"/>
+                <Column field="status" header="Status" style="width: 9rem" class="capitalize" />
                 <Column field="priority.name" header="Priority" style="width: 7rem" />
                 <Column field="created_at" header="Created" style="width: 12rem">
                     <template #body="{ data }">
