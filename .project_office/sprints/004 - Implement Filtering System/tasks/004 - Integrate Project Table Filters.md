@@ -7,19 +7,26 @@ status: draft
 
 ## Goal
 
-Додати мінімальну filter UI integration до Projects table для end-to-end перевірки backend і frontend filter infrastructure.
+Додати Projects table search/filter toolbar та filter sidebar integration для end-to-end перевірки backend і frontend filter infrastructure.
 
 ## Context
 
 Backend Projects API має окремий search endpoint на Laravel Scout з підтримкою filters по `name` і `prefix`, а frontend має shared resolver для формування `filters[]`. Ця задача перевіряє повний flow на реальному UI.
 
-Фінальний дизайн filter UI ще не визначений. Ця task повинна залишити місце для дизайн-опису і не змушувати Developer Agent вигадувати фінальний UX.
+UI має враховувати два дизайн-орієнтири:
+
+* `.project_office/design/concept/projects_table_page.png` — toolbar над таблицею з search field і кнопкою Filters;
+* `.project_office/design/references/zoho_project_filters_ui_reference.png` — full-height filter sidebar/popup pattern.
 
 ## Scope
 
 Що входить у задачу:
 
-* Додати filter controls до Projects table.
+* Додати toolbar section над Projects table згідно з `projects_table_page`.
+* Додати search input у toolbar.
+* Додати Filters button у toolbar.
+* Відкривати full-height filter sidebar/popup через Filters button.
+* Використати shared filter sidebar components з task 003.
 * Підтримати filters:
   * `name`;
   * `prefix`.
@@ -32,7 +39,8 @@ Backend Projects API має окремий search endpoint на Laravel Scout з
 
 Що не входить у задачу:
 
-* Final visual polish.
+* Pixel-perfect copy of Zoho Projects UI.
+* Final visual polish beyond MVP sidebar integration.
 * Advanced filter builder.
 * Saved filters.
 * Filter presets.
@@ -43,7 +51,11 @@ Backend Projects API має окремий search endpoint на Laravel Scout з
 
 ## Expected Behavior
 
-Користувач може відфільтрувати Projects table по `name` і `prefix`.
+Користувач бачить над Projects table toolbar із search field та кнопкою Filters.
+
+Клік по Filters відкриває full-height filter sidebar/popup.
+
+Користувач може відфільтрувати Projects table по `name` і `prefix` через sidebar.
 
 Frontend формує backend-compatible `filters[]` payload і передає його у Projects search request.
 
@@ -51,19 +63,31 @@ Pagination і sorting продовжують працювати разом із 
 
 Якщо filter value очищено, відповідний filter не має передаватись у request.
 
+Reset у sidebar очищає filter state.
+
+Cancel закриває sidebar без застосування незбережених змін, якщо UI реалізує draft state.
+
 ## Technical Notes
 
 * Використати shared filters infrastructure з task 003.
+* Використати shared filter sidebar components з task 003.
 * Використати існуючі PrimeVue/Tailwind patterns.
 * Не встановлювати нові packages.
-* Не створювати складний кастомний UI без погодженого дизайну.
-* Якщо дизайн на момент реалізації відсутній, реалізувати тільки після підтвердження minimal UI від автора.
+* Не створювати складний кастомний UI поза описаним sidebar pattern.
+* `projects_table_page` визначає наявність toolbar над таблицею.
+* Zoho reference визначає interaction pattern sidebar, але не є вимогою pixel-perfect копіювання.
 
 ## Acceptance Criteria
 
-* [ ] Projects table має filter controls для `name` і `prefix`.
+* [ ] Projects table має toolbar над таблицею.
+* [ ] Toolbar містить search field.
+* [ ] Toolbar містить Filters button.
+* [ ] Filters button відкриває full-height filter sidebar/popup.
+* [ ] Sidebar використовує shared filter components.
+* [ ] Sidebar має filter controls для `name` і `prefix`.
 * [ ] Filters формуються через shared resolver.
 * [ ] Projects search API request отримує `filters[]`.
+* [ ] Reset очищає filters.
 * [ ] Empty filter values не потрапляють у request.
 * [ ] Pagination працює разом із filters.
 * [ ] Sorting працює разом із filters.
@@ -72,11 +96,11 @@ Pagination і sorting продовжують працювати разом із 
 
 ## Open Questions
 
-* Остаточний дизайн Projects table filter UI ще не визначений.
 * Потрібно узгодити, чи Projects table після додавання filters завжди використовує search endpoint, чи тільки коли активний search/filter state.
+* Потрібно узгодити exact behavior для Cancel: закривати sidebar без змін через draft state чи просто закривати вже синхронізований state.
 
 ## Notes For Developer Agent
 
-Перед реалізацією перевірити, чи автор додав дизайн-опис для Projects table filters.
+Не вигадувати advanced filter UX поза описаним sidebar pattern.
 
-Якщо дизайн-опису немає, не вигадувати фінальний UX. Зупинитись і нагадати автору, що потрібно або додати дизайн, або явно підтвердити minimal UI для цієї task.
+Якщо залишаються незакриті open questions щодо search endpoint usage або Cancel behavior, зупинитись і уточнити перед реалізацією.

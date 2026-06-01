@@ -7,17 +7,23 @@ status: draft
 
 ## Goal
 
-Створити shared frontend infrastructure для опису filters і формування backend-compatible `filters[]` payload.
+Створити shared frontend infrastructure для опису filters, формування backend-compatible `filters[]` payload та generic UI components для filter sidebar.
 
 ## Context
 
 Frontend має формувати standardized filter payload, але не повинен знати PHP class names або backend implementation details. Infrastructure має бути reusable для Project, Task List і Task list views у майбутньому.
 
+Filter UI планується як reusable sidebar/popup на всю висоту, який відкривається окремою кнопкою з toolbar над таблицею. Компоненти sidebar мають бути generic і розміщені на рівні `shared`.
+
 Reference implementation існує в:
 
 * `/var/www/sir/backend/artisan_direct_frontend/packages/vue-data-filters`
 
-Reference потрібно використовувати тільки як орієнтир. Не переносити package structure один-в-один, якщо вона не відповідає поточній архітектурі `resources/js/shared`.
+UI reference:
+
+* `.project_office/design/references/zoho_project_filters_ui_reference.png`
+
+References потрібно використовувати тільки як орієнтир. Не переносити package structure один-в-один і не копіювати Zoho UI pixel-perfect.
 
 ## Scope
 
@@ -38,19 +44,26 @@ Reference потрібно використовувати тільки як ор
   * datetime;
   * nullable.
 * Додати підтримку `params`.
+* Додати generic shared UI components для filter sidebar/panel:
+  * full-height sidebar/popup container;
+  * optional filter search field всередині sidebar;
+  * filter group/section rendering;
+  * reset/apply/cancel action slots або props;
+  * support для input controls, потрібних initial filters.
 * Експортувати module через shared public API згідно з існуючими frontend patterns.
 
 ## Out Of Scope
 
 Що не входить у задачу:
 
-* Projects table UI integration.
+* Projects-specific table UI integration.
 * Advanced query builder UI.
 * Nested filter groups.
 * Relationship filters.
 * Sorting.
 * Backend changes.
 * Новий npm package.
+* Pixel-perfect copy of Zoho Projects UI.
 
 ## Expected Behavior
 
@@ -74,6 +87,13 @@ Resolver:
 * для nullable filter формує payload з `matchMode: 'equals'` або `matchMode: 'notEquals'`;
 * не використовує PHP class names.
 
+Shared UI components:
+
+* можуть бути використані з різними entity filter definitions;
+* не містять Projects-specific fields або API calls;
+* дозволяють parent component відкрити/закрити full-height sidebar;
+* дозволяють parent component обробити apply/reset/cancel.
+
 ## Technical Notes
 
 * Дотримуватись Feature-Sliced inspired structure.
@@ -81,6 +101,7 @@ Resolver:
 * Не встановлювати нові packages.
 * Використати існуючі TypeScript conventions.
 * Якщо потрібні базові UI input types, тримати їх generic і не прив'язувати до Projects.
+* Sidebar має адаптувати Zoho reference до поточного PrimeVue/Tailwind стилю, а не копіювати його один-в-один.
 
 ## Acceptance Criteria
 
@@ -91,6 +112,9 @@ Resolver:
 * [ ] Resolver формує `filters[]` payload.
 * [ ] Resolver підтримує `params`.
 * [ ] Resolver підтримує text, integer, boolean, datetime, nullable.
+* [ ] Існують generic shared UI components для full-height filter sidebar/panel.
+* [ ] Sidebar components підтримують reset/apply/cancel integration.
+* [ ] Sidebar components не містять Projects-specific logic.
 * [ ] Frontend не містить PHP class names.
 * [ ] Module експортується згідно з existing shared patterns.
 * [ ] Frontend validation виконана пропорційно зміні: format, lint, type check.
@@ -102,3 +126,5 @@ Resolver:
 ## Notes For Developer Agent
 
 Не додавати Projects-specific logic у shared module. Projects integration запланована окремою task.
+
+Shared components мають бути достатніми, щоб task 004 могла відкрити filter sidebar з кнопки Filters над Projects table.
