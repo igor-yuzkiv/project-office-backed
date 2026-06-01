@@ -34,7 +34,11 @@ const rowMenuItems: MenuItem[] = [
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () => deleteProject(selectedProject.value!.id, `Are you sure you want to delete "${selectedProject.value!.name}"?`),
+        command: () =>
+            deleteProject(
+                selectedProject.value!.id,
+                `Are you sure you want to delete "${selectedProject.value!.name}"?`
+            ),
     },
 ]
 
@@ -50,20 +54,13 @@ function onPageChange(event: { page: number }) {
 </script>
 
 <template>
-    <div class="flex flex-col gap-6 p-6">
-        <div class="flex flex-col gap-1">
+    <div class="gap-6 p-6 flex flex-col">
+        <div class="gap-1 flex flex-col">
             <h1 class="text-xl font-semibold text-surface-900 dark:text-surface-0">Projects</h1>
             <p class="text-sm text-surface-500">Manage and track all your organisation's projects.</p>
         </div>
 
-        <DataTable
-            :value="projects"
-            :loading="isPending"
-            lazy
-            striped-rows
-            class="w-full"
-            row-hover
-        >
+        <DataTable :value="projects" :loading="isPending" lazy striped-rows class="w-full" row-hover>
             <Column field="prefix" header="Prefix" style="width: 6rem" />
             <Column field="name" header="Project Name" />
             <Column field="created_at" header="Created" style="width: 12rem">
@@ -74,7 +71,7 @@ function onPageChange(event: { page: number }) {
             <Column style="width: 3rem">
                 <template #body="{ data }">
                     <button
-                        class="pi pi-ellipsis-v cursor-pointer p-1 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200"
+                        class="pi pi-ellipsis-v p-1 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 cursor-pointer"
                         @click="openRowMenu($event, data)"
                     />
                 </template>

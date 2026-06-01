@@ -24,12 +24,7 @@ const isSingle = computed(() => props.actions.length === 1)
 </script>
 
 <template>
-    <Button
-        v-if="primaryAction && isSingle"
-        :label="primaryAction.title"
-        size="small"
-        @click="primaryAction.action"
-    />
+    <Button v-if="primaryAction && isSingle" :label="primaryAction.title" size="small" @click="primaryAction.action" />
 
     <SplitButton
         v-else-if="primaryAction"

@@ -7,8 +7,7 @@ export function useUpdateProjectMutation() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: IUpdateProjectInput }) =>
-            updateProjectRequest(id, data),
+        mutationFn: ({ id, data }: { id: string; data: IUpdateProjectInput }) => updateProjectRequest(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ProjectQueryKey.all })
         },

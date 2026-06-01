@@ -32,6 +32,7 @@
 - Initialize Project Frontend CRUD
 - Initialize Task List Frontend CRUD
 - Initialize Task Frontend CRUD
+- Refactor Backend API To Flat Resources And Search Endpoints
 
 ## Questions
 
@@ -40,3 +41,4 @@
 - Чи потрібні окремі сторінки details, чи достатньо modal/drawer flows?
 - Які validation errors мають відображатись на frontend?
 - Чи потрібні filters/search/sorting у межах цього sprint?
+- Який фінальний контракт плоских backend endpoints для `Task List` і `Task` після відмови від вкладених routes?

@@ -20,7 +20,7 @@ httpClient.interceptors.response.use(
             return Promise.reject(new ApiError(error))
         }
         return Promise.reject(error)
-    },
+    }
 )
 
 export { httpClient }

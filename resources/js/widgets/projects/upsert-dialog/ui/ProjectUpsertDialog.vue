@@ -30,8 +30,8 @@ const title = { create: 'New Project', update: 'Edit Project' }
         :style="{ width: '28rem' }"
         @update:visible="emit('update:visible', $event)"
     >
-        <form class="flex flex-col gap-4 pt-1" @submit.prevent="emit('submit')">
-            <div class="flex flex-col gap-1.5">
+        <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
+            <div class="gap-1.5 flex flex-col">
                 <label for="project-name" class="text-sm font-medium text-surface-700 dark:text-surface-300">
                     Project Name <span class="text-red-500">*</span>
                 </label>

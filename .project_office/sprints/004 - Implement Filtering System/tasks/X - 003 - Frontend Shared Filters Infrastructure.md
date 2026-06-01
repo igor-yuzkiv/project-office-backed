@@ -1,6 +1,6 @@
 ---
 type: task
-status: draft
+status: done
 ---
 
 # 003 - Frontend Shared Filters Infrastructure
@@ -105,19 +105,19 @@ Shared UI components:
 
 ## Acceptance Criteria
 
-* [ ] Існує shared frontend filters module.
-* [ ] Є typed filter payload.
-* [ ] Є typed filter definitions/state.
-* [ ] Є typed match modes.
-* [ ] Resolver формує `filters[]` payload.
-* [ ] Resolver підтримує `params`.
-* [ ] Resolver підтримує text, integer, boolean, datetime, nullable.
-* [ ] Існують generic shared UI components для full-height filter sidebar/panel.
-* [ ] Sidebar components підтримують reset/apply/cancel integration.
-* [ ] Sidebar components не містять Projects-specific logic.
-* [ ] Frontend не містить PHP class names.
-* [ ] Module експортується згідно з existing shared patterns.
-* [ ] Frontend validation виконана пропорційно зміні: format, lint, type check.
+* [x] Існує shared frontend filters module.
+* [x] Є typed filter payload.
+* [x] Є typed filter definitions/state.
+* [x] Є typed match modes.
+* [x] Resolver формує `filters[]` payload.
+* [x] Resolver підтримує `params`.
+* [x] Resolver підтримує text, integer, boolean, datetime, nullable.
+* [x] Існують generic shared UI components для full-height filter sidebar/panel.
+* [x] Sidebar components підтримують reset/apply/cancel integration.
+* [x] Sidebar components не містять Projects-specific logic.
+* [x] Frontend не містить PHP class names.
+* [x] Module експортується згідно з existing shared patterns.
+* [x] Frontend validation виконана пропорційно зміні: format, lint, type check.
 
 ## Open Questions
 

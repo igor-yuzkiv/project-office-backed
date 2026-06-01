@@ -24,11 +24,11 @@ const recentProjects = [
     <div class="flex h-screen w-full overflow-hidden">
         <AppLeftNavigationSidebar :items="navItems">
             <template #default>
-                <p class="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-surface-500">Projects</p>
+                <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">Projects</p>
                 <div
                     v-for="project in recentProjects"
                     :key="project.id"
-                    class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-surface-300 hover:bg-surface-800"
+                    class="gap-2 rounded-md px-3 py-1.5 text-sm text-surface-300 hover:bg-surface-800 flex items-center"
                 >
                     <div class="h-2 w-2 shrink-0 rounded-full" :style="{ background: project.color }" />
                     <span class="truncate">{{ project.name }}</span>

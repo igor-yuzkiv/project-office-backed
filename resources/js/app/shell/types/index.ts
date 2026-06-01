@@ -7,7 +7,6 @@ export interface SidebarNavItem {
     routeName: string
 }
 
-
 export interface HeaderAction {
     key: string
     title: string

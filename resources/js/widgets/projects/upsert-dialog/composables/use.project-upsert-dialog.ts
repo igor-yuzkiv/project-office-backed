@@ -38,14 +38,11 @@ export function useProjectUpsertDialog() {
         validationErrors.value = {}
 
         if (mode.value === 'create') {
-            create(
-                { name: name.value },
-                { onSuccess: close, onError: handleError },
-            )
+            create({ name: name.value }, { onSuccess: close, onError: handleError })
         } else if (editingProject.value) {
             update(
                 { id: editingProject.value.id, data: { name: name.value } },
-                { onSuccess: close, onError: handleError },
+                { onSuccess: close, onError: handleError }
             )
         }
     }
