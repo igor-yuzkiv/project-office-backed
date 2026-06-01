@@ -117,10 +117,12 @@ onUnmounted(() => {
 
 <template>
     <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 flex items-center justify-end">
+        <div class="gap-2 flex items-center justify-between">
             <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
-            <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
-            <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+            <div class="gap-2 flex items-center">
+                <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
+                <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+            </div>
         </div>
 
         <div class="flex h-full w-full flex-col overflow-hidden">
