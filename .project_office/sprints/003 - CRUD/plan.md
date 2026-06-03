@@ -36,7 +36,7 @@
 - Create TasksPage With Global Tasks List
 - Create Project Details Page
 - Create Task Dialog
-- Task Edit Page UI Structure Draft
+- Task Edit Page
 
 ## Questions
 
@@ -57,6 +57,10 @@
 
 ### Planning Draft For Task 007
 
-- `Task Edit Page` поки планується тільки на рівні UI structure draft.
-- Мета 007 на цьому етапі: підготувати структуру `TaskDetailsPage` для генерації UI через Banani AI.
-- 007 не є фінальним implementation task, доки не закриті open questions у task-документі.
+- `Task Details And Edit Pages` планується як дві окремі сторінки з однаковою структурою:
+  - `TaskDetailsPage` read-only;
+  - `TaskEditPage` editable.
+- Placeholders і routes для details/edit сторінок уже існують; 007 має наповнити їх реальним UI.
+- Мета 007 на цьому етапі: реалізувати мінімальні details/edit pages з title/identity block, `Task Information`, description section і placeholder tabs.
+- Save/Cancel для 007 мають бути в app shell header actions.
+- Create flow redirect на `task-details` сумісний із 007, бо `TaskDetailsPage` тепер входить у scope.
