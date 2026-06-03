@@ -26,7 +26,7 @@ class CreateTaskHandler
             'sequence_number' => $taskKey->sequenceNumber,
             'name'            => $command->name,
             'description'     => $command->description,
-            'priority'        => $command->priority->value,
+            'priority'        => $command->priority?->value,
             'status'          => TaskStatus::Open->value,
         ]);
     }

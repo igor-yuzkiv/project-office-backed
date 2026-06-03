@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
 import { useTasksSearchQuery } from '@/entities/task/queries'
+import type { ITask } from '@/entities/task/types'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FiltersButton, createFiltersDefinitionsMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 
+const router = useRouter()
 const layoutStore = useAppLayoutStore()
+
+const taskCreateDialog = useTaskCreateDialog()
 
 const {
     visible: sidebarVisible,
@@ -56,6 +62,10 @@ const searchParams = computed(() => ({
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
 
+function onRowClick(event: { data: ITask }) {
+    router.push({ name: 'task-details', params: { id: event.data.id } })
+}
+
 function onSortApply() {
     sort.apply()
     sort.close()
@@ -81,7 +91,7 @@ watch([sort.sortBy, sort.sortOrder], () => {
 
 onMounted(() => {
     layoutStore.setHeaderActions([
-        { key: 'add-task', title: 'Add Task', action: () => console.log('test - Add Task'), is_primary: true },
+        { key: 'add-task', title: 'Add Task', action: () => taskCreateDialog.open(), is_primary: true },
         { key: 'add-issue', title: 'Add Issue', action: () => console.log('test - Add Issue') },
     ])
 })
@@ -107,10 +117,11 @@ onUnmounted(() => {
                 :loading="isPending"
                 lazy
                 striped-rows
-                class="w-full"
+                class="w-full cursor-pointer"
                 row-hover
                 scrollable
                 scroll-height="flex"
+                @row-click="onRowClick"
             >
                 <Column field="key" header="Key" style="width: 10rem">
                     <template #body="{ data }">
@@ -131,7 +142,11 @@ onUnmounted(() => {
                     </template>
                 </Column>
                 <Column field="status" header="Status" style="width: 9rem" class="capitalize" />
-                <Column field="priority.name" header="Priority" style="width: 7rem" />
+                <Column field="priority.name" header="Priority" style="width: 7rem">
+                    <template #body="{ data }">
+                        {{ data.priority?.name ?? '—' }}
+                    </template>
+                </Column>
                 <Column field="created_at" header="Created" style="width: 12rem">
                     <template #body="{ data }">
                         <DisplayDate :date="data.created_at" />
@@ -167,5 +182,15 @@ onUnmounted(() => {
         @apply="onApply"
         @reset="resetFilters"
         @change="updateFilter"
+    />
+
+    <TaskCreateDialog
+        :visible="taskCreateDialog.visible.value"
+        :form-data="taskCreateDialog.formData.value"
+        :validation-errors="taskCreateDialog.validationErrors.value"
+        :is-pending="taskCreateDialog.isPending.value"
+        @update:visible="taskCreateDialog.visible.value = $event"
+        @update:form-data="taskCreateDialog.formData.value = $event"
+        @submit="taskCreateDialog.submit()"
     />
 </template>

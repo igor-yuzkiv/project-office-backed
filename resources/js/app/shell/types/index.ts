@@ -5,12 +5,13 @@ export interface SidebarNavItem {
     label: string
     icon: string
     routeName: string
-    activeFor?: string[]
+    activeWhen?: string | ((item: SidebarNavItem, route: import('vue-router').RouteLocationNormalizedLoaded) => boolean)
 }
 
 export interface HeaderAction {
     key: string
     title: string
-    action: () => void
+    action?: () => void
+    to?: import('vue-router').RouteLocationRaw
     is_primary?: boolean
 }

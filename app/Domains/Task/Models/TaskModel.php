@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
 /**
- * @property TaskPriority $priority
+ * @property TaskPriority|null $priority
  * @property TaskStatus $status
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)

@@ -68,10 +68,12 @@ class TasksController extends Controller
 
     public function store(StoreTaskRequest $request): JsonResponse
     {
+        $rawPriority = $request->validated('priority');
+
         $command = new CreateTaskCommand(
             projectId: $request->validated('project_id'),
             name: $request->validated('name'),
-            priority: TaskPriority::from((int) $request->validated('priority')),
+            priority: $rawPriority !== null ? TaskPriority::from((int) $rawPriority) : null,
             taskListId: $request->validated('task_list_id'),
             description: $request->validated('description'),
         );

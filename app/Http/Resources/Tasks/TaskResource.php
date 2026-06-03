@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Tasks;
 
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\Task\ValueObjects\TaskPriorityData;
 use App\Http\Resources\Projects\ProjectOverviewResource;
 use App\Http\Resources\TaskLists\TaskListResource;
 use App\Http\Resources\Users\UserOverviewResource;
@@ -22,7 +23,7 @@ class TaskResource extends JsonResource
             'sequence_number' => $this->sequence_number,
             'name'            => $this->name,
             'description'     => $this->description,
-            'priority'        => ['value' => $this->priority->value, 'name' => $this->priority->name],
+            'priority'        => $this->priority ? TaskPriorityData::from($this->priority)->toArray() : null,
             'status'          => $this->status->value,
             'created_by'      => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
             'updated_by'      => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),

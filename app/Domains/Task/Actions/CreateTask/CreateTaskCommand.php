@@ -9,7 +9,7 @@ class CreateTaskCommand
     public function __construct(
         public readonly string $projectId,
         public readonly string $name,
-        public readonly TaskPriority $priority,
+        public readonly ?TaskPriority $priority = null,
         public readonly ?string $taskListId = null,
         public readonly ?string $description = null,
     ) {}

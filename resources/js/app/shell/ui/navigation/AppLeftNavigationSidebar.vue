@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import type { SidebarNavItem } from '../../types'
 import { APP_NAME } from '@/app/config'
@@ -9,6 +9,15 @@ defineProps<{
 }>()
 
 const route = useRoute()
+const router = useRouter()
+
+function isActive(item: SidebarNavItem): boolean {
+    if (typeof item.activeWhen === 'function') return item.activeWhen(item, route)
+
+    const prefix = item.activeWhen ?? router.resolve({ name: item.routeName }).path
+    if (prefix === '/') return route.path === '/'
+    return route.path === prefix || route.path.startsWith(prefix + '/')
+}
 </script>
 
 <template>
@@ -24,10 +33,7 @@ const route = useRoute()
                 :key="item.key"
                 :to="{ name: item.routeName }"
                 class="gap-3 rounded-md px-3 py-2 text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
-                :class="{
-                    'bg-surface-800 text-surface-0':
-                        route.name === item.routeName || item.activeFor?.includes(route.name as string),
-                }"
+                :class="{ 'bg-surface-800 text-surface-0': isActive(item) }"
             >
                 <Icon :icon="item.icon" class="h-4 w-4 shrink-0" />
                 <span>{{ item.label }}</span>

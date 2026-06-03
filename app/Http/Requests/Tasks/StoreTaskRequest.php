@@ -15,7 +15,7 @@ class StoreTaskRequest extends FormRequest
             'task_list_id' => ['nullable', 'string', 'ulid'],
             'name'         => ['required', 'string', 'max:255'],
             'description'  => ['nullable', 'string'],
-            'priority'     => ['required', 'integer', Rule::in(array_column(TaskPriority::cases(), 'value'))],
+            'priority'     => ['nullable', 'integer', Rule::enum(TaskPriority::class)],
         ];
     }
 }

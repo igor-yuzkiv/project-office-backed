@@ -20,7 +20,7 @@ export interface ITask extends IEntity {
     sequence_number: number
     name: string
     description: string | null
-    priority: ITaskPriority
+    priority: ITaskPriority | null
     status: TaskStatusValue
 
     // relations
@@ -31,7 +31,7 @@ export interface ITask extends IEntity {
 export interface ICreateTaskInput {
     project_id: string
     name: string
-    priority: number
+    priority?: number | null
     task_list_id?: string | null
     description?: string | null
 }

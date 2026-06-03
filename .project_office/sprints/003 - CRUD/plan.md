@@ -35,6 +35,8 @@
 - Refactor Backend API To Flat Resources And Search Endpoints
 - Create TasksPage With Global Tasks List
 - Create Project Details Page
+- Create Task Dialog
+- Task Edit Page UI Structure Draft
 
 ## Questions
 
@@ -44,3 +46,17 @@
 - Які validation errors мають відображатись на frontend?
 - Чи потрібні filters/search/sorting у межах цього sprint?
 - Який фінальний контракт плоских backend endpoints для `Task List` і `Task` після відмови від вкладених routes?
+
+### Resolved For Task 006
+
+- `Task` create dialog має містити тільки `name` і `project`.
+- `priority` для `Task` create flow має бути nullable і за замовчуванням `null`.
+- Project lookup у Task create dialog поки реалізується локально через PrimeVue `AutoComplete`, без shared lookup component.
+- Після створення task користувача потрібно перенаправити на порожню `TaskDetailsPage`.
+- Project autocomplete має показувати початкові suggestions і підтримувати debounce через VueUse.
+
+### Planning Draft For Task 007
+
+- `Task Edit Page` поки планується тільки на рівні UI structure draft.
+- Мета 007 на цьому етапі: підготувати структуру `TaskDetailsPage` для генерації UI через Banani AI.
+- 007 не є фінальним implementation task, доки не закриті open questions у task-документі.
