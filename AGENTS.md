@@ -247,14 +247,26 @@ shared/
 └── utils/            # pure utility functions
 ```
 
-### Script Block Order
+### Vue `<script setup>` and composable structure
 
-Order inside `<script setup>` blocks:
+Use a consistent internal order in both Vue `<script setup>` blocks and composables:
 
-1. **Imports and composables** — `defineProps`, `defineEmits`, composable calls, injected dependencies.
-2. **State** — `ref`, `reactive`, `computed`.
-3. **Functions and handlers** — business logic, event handlers, helper functions.
-4. **Lifecycle hooks and watchers** — `watch`, `watchEffect`, `onMounted`, `onUnmounted`, and other lifecycle hooks.
+1. Imports
+2. Types and interfaces
+3. Inputs:
+    - components — `defineProps`, `defineEmits`, `defineModel`
+    - composables — function parameters
+4. Composables, stores, router, injected services
+5. Reactive state: `ref`, `reactive`, constants related to state
+6. Computed values
+7. Methods and event handlers
+8. Watchers
+9. Lifecycle hooks
+10. Public API (placed last):
+    - components — `defineExpose`
+    - composables — `return`
+
+Keep lifecycle hooks near the end unless there is a strong reason to place them near related logic.
 
 ### Component and Library Usage
 
