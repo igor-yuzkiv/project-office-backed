@@ -17,7 +17,6 @@ import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useLoadingStateStore } from '@/app/stores/use.loading-state.store'
 
 interface TaskEditFormData {
     name: string
@@ -30,10 +29,9 @@ interface TaskEditFormData {
 const route = useRoute()
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
-const loadingStore = useLoadingStateStore()
 const toast = useToast()
 const taskId = route.params.id as string
-const { task, isPending: isTaskPending, isError } = useTaskQuery(taskId)
+const { task, isError } = useTaskQuery(taskId)
 const { mutate: updateTask } = useUpdateTaskMutation()
 
 const formData = ref<TaskEditFormData>({
@@ -85,7 +83,7 @@ function submit() {
                 router.push({ name: 'task-details', params: { id: taskId } })
             },
             onError: handleError,
-        },
+        }
     )
 }
 
@@ -93,23 +91,8 @@ function cancel() {
     router.push({ name: 'task-details', params: { id: taskId } })
 }
 
-watch(
-    isTaskPending,
-    (pending) => {
-        if (pending) {
-            loadingStore.start('task-edit-load')
-        } else {
-            loadingStore.stop('task-edit-load')
-        }
-    },
-    { immediate: true },
-)
-
 watch(isError, (error) => {
-    if (error) {
-        loadingStore.stop('task-edit-load')
-        toast.error('Failed to load task.')
-    }
+    if (error) toast.error('Failed to load task.')
 })
 
 watch(
@@ -127,7 +110,7 @@ watch(
             layoutStore.setPageTitle(`${t.key} | ${t.name}`)
         }
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 onMounted(() => {
@@ -139,75 +122,72 @@ onMounted(() => {
 
 onUnmounted(() => {
     layoutStore.clearHeaderActions()
-    loadingStore.stop('task-edit-load')
 })
 </script>
 
 <template>
-    <div class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
-        <template v-if="task">
-            <div class="gap-1 flex flex-col">
-                <InputText
-                    v-model="formData.name"
-                    class="text-xl font-semibold w-full"
-                    placeholder="Task name..."
-                    :invalid="!!validationErrors.name"
-                />
-                <span v-if="validationErrors.name" class="text-xs text-red-500">{{ validationErrors.name[0] }}</span>
-            </div>
+    <div v-if="task" class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
+        <div class="gap-1 flex flex-col">
+            <InputText
+                v-model="formData.name"
+                class="text-xl font-semibold w-full"
+                placeholder="Task name..."
+                :invalid="!!validationErrors.name"
+            />
+            <span v-if="validationErrors.name" class="text-xs text-red-500">{{ validationErrors.name[0] }}</span>
+        </div>
 
-            <Panel header="Task Information" toggleable>
-                <div class="md:grid-cols-2 gap-4 grid grid-cols-2">
-                    <div class="gap-1 flex flex-col">
-                        <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Status</span>
-                        <Select
-                            v-model="formData.status"
-                            :options="taskStatusOptions()"
-                            option-label="label"
-                            option-value="value"
-                            :invalid="!!validationErrors.status"
-                        />
-                        <span v-if="validationErrors.status" class="text-xs text-red-500">
-                            {{ validationErrors.status[0] }}
-                        </span>
-                    </div>
-
-                    <div class="gap-1 flex flex-col">
-                        <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Priority</span>
-                        <Select
-                            v-model="formData.priority"
-                            :options="taskPriorityOptions()"
-                            option-label="label"
-                            option-value="value"
-                            show-clear
-                            :invalid="!!validationErrors.priority"
-                        />
-                        <span v-if="validationErrors.priority" class="text-xs text-red-500">
-                            {{ validationErrors.priority[0] }}
-                        </span>
-                    </div>
-
-                    <div class="gap-1 flex flex-col">
-                        <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Task List</span>
-                        <LookupField
-                            v-model="formData.taskList"
-                            :options="taskLists"
-                            :loading="isTaskListsLoading"
-                            option-label="name"
-                            input-class="w-full"
-                            :invalid="!!validationErrors.task_list_id"
-                            @search="taskListSearchTerm = $event"
-                        />
-                        <span v-if="validationErrors.task_list_id" class="text-xs text-red-500">
-                            {{ validationErrors.task_list_id[0] }}
-                        </span>
-                    </div>
+        <Panel header="Task Information" toggleable>
+            <div class="md:grid-cols-2 gap-4 grid grid-cols-2">
+                <div class="gap-1 flex flex-col">
+                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Status</span>
+                    <Select
+                        v-model="formData.status"
+                        :options="taskStatusOptions()"
+                        option-label="label"
+                        option-value="value"
+                        :invalid="!!validationErrors.status"
+                    />
+                    <span v-if="validationErrors.status" class="text-xs text-red-500">
+                        {{ validationErrors.status[0] }}
+                    </span>
                 </div>
-            </Panel>
 
-            <Panel header="Description" toggleable>
-                <MarkdownEditor v-model="formData.description" :preview="true" />
-            </Panel>
-        </template>
+                <div class="gap-1 flex flex-col">
+                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Priority</span>
+                    <Select
+                        v-model="formData.priority"
+                        :options="taskPriorityOptions()"
+                        option-label="label"
+                        option-value="value"
+                        show-clear
+                        :invalid="!!validationErrors.priority"
+                    />
+                    <span v-if="validationErrors.priority" class="text-xs text-red-500">
+                        {{ validationErrors.priority[0] }}
+                    </span>
+                </div>
+
+                <div class="gap-1 flex flex-col">
+                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Task List</span>
+                    <LookupField
+                        v-model="formData.taskList"
+                        :options="taskLists"
+                        :loading="isTaskListsLoading"
+                        option-label="name"
+                        input-class="w-full"
+                        :invalid="!!validationErrors.task_list_id"
+                        @search="taskListSearchTerm = $event"
+                    />
+                    <span v-if="validationErrors.task_list_id" class="text-xs text-red-500">
+                        {{ validationErrors.task_list_id[0] }}
+                    </span>
+                </div>
+            </div>
+        </Panel>
+
+        <Panel header="Description" toggleable>
+            <MarkdownEditor v-model="formData.description" :preview="true" />
+        </Panel>
     </div>
 </template>

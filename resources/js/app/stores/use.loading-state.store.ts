@@ -9,6 +9,7 @@ export interface LoadingEntry {
 
 export const useLoadingStateStore = defineStore('loading-state', () => {
     const loaders = ref(new Map<string, LoadingEntry>())
+    const progressLoading = ref(false)
 
     const isLoading = computed(() => loaders.value.size > 0)
 
@@ -88,6 +89,7 @@ export const useLoadingStateStore = defineStore('loading-state', () => {
 
     return {
         loaders,
+        progressLoading,
         currentLoader,
         isLoading,
         start,

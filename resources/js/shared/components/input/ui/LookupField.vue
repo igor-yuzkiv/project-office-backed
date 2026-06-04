@@ -18,7 +18,7 @@ const props = withDefaults(
         loading: false,
         invalid: false,
         dropdown: true,
-    },
+    }
 )
 
 const emit = defineEmits<{
@@ -33,7 +33,7 @@ watch(
     () => props.options,
     (opts) => {
         suggestions.value = opts
-    },
+    }
 )
 
 function onComplete(query: string) {

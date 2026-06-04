@@ -12,33 +12,16 @@ import { useTaskQuery } from '@/entities/task/queries'
 import { DisplayField } from '@/shared/components/display'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useLoadingStateStore } from '@/app/stores/use.loading-state.store'
 
 const route = useRoute()
 const layoutStore = useAppLayoutStore()
-const loadingStore = useLoadingStateStore()
 const toast = useToast()
 const taskId = route.params.id as string
 
-const { task, isPending, isError } = useTaskQuery(taskId)
-
-watch(
-    isPending,
-    (pending) => {
-        if (pending) {
-            loadingStore.start('task-details-load')
-        } else {
-            loadingStore.stop('task-details-load')
-        }
-    },
-    { immediate: true }
-)
+const { task, isError } = useTaskQuery(taskId)
 
 watch(isError, (error) => {
-    if (error) {
-        loadingStore.stop('task-details-load')
-        toast.error('Failed to load task.')
-    }
+    if (error) toast.error('Failed to load task.')
 })
 
 watch(
@@ -57,56 +40,53 @@ onMounted(() => {
 
 onUnmounted(() => {
     layoutStore.clearHeaderActions()
-    loadingStore.stop('task-details-load')
 })
 </script>
 
 <template>
-    <div class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
-        <template v-if="task">
-            <div class="flex flex-col">
-                <h1 class="text-2xl font-semibold text-surface-900">{{ task.name }}</h1>
+    <div v-if="task" class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
+        <div class="flex flex-col">
+            <h1 class="text-2xl font-semibold text-surface-900">{{ task.name }}</h1>
+        </div>
+
+        <Panel header="Task Information" toggleable>
+            <div class="md:grid-cols-3 gap-4 grid grid-cols-2">
+                <DisplayField
+                    label="Project"
+                    :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null"
+                />
+                <DisplayField label="Task List" :value="task.task_list?.name ?? null" />
+                <DisplayField label="Status" :value="task.status" />
+                <DisplayField label="Priority" :value="task.priority?.name ?? null" />
             </div>
+        </Panel>
 
-            <Panel header="Task Information" toggleable>
-                <div class="md:grid-cols-3 gap-4 grid grid-cols-2">
-                    <DisplayField
-                        label="Project"
-                        :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null"
-                    />
-                    <DisplayField label="Task List" :value="task.task_list?.name ?? null" />
-                    <DisplayField label="Status" :value="task.status" />
-                    <DisplayField label="Priority" :value="task.priority?.name ?? null" />
-                </div>
-            </Panel>
+        <Panel header="Description" toggleable>
+            <MarkdownPreview v-if="task.description" :model-value="task.description" />
+            <p v-else class="text-sm text-surface-400 italic">No description available.</p>
+        </Panel>
 
-            <Panel header="Description" toggleable>
-                <MarkdownPreview v-if="task.description" :model-value="task.description" />
-                <p v-else class="text-sm text-surface-400 italic">No description available.</p>
-            </Panel>
-
-            <Tabs value="comments">
-                <TabList>
-                    <Tab value="comments">Comments</Tab>
-                    <Tab value="attachments">Attachments</Tab>
-                    <Tab value="activity">Activity</Tab>
-                    <Tab value="documentation">Documentation</Tab>
-                </TabList>
-                <TabPanels>
-                    <TabPanel value="comments">
-                        <p class="text-surface-400">Not implemented</p>
-                    </TabPanel>
-                    <TabPanel value="attachments">
-                        <p class="text-surface-400">Not implemented</p>
-                    </TabPanel>
-                    <TabPanel value="activity">
-                        <p class="text-surface-400">Not implemented</p>
-                    </TabPanel>
-                    <TabPanel value="documentation">
-                        <p class="text-surface-400">Not implemented</p>
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-        </template>
+        <Tabs value="comments">
+            <TabList>
+                <Tab value="comments">Comments</Tab>
+                <Tab value="attachments">Attachments</Tab>
+                <Tab value="activity">Activity</Tab>
+                <Tab value="documentation">Documentation</Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel value="comments">
+                    <p class="text-surface-400">Not implemented</p>
+                </TabPanel>
+                <TabPanel value="attachments">
+                    <p class="text-surface-400">Not implemented</p>
+                </TabPanel>
+                <TabPanel value="activity">
+                    <p class="text-surface-400">Not implemented</p>
+                </TabPanel>
+                <TabPanel value="documentation">
+                    <p class="text-surface-400">Not implemented</p>
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
     </div>
 </template>

@@ -122,82 +122,84 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 flex items-center justify-between">
-            <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
-            <div class="gap-2 flex items-center">
-                <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
-                <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+    <div class="flex flex-1 flex-col overflow-hidden">
+        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
+            <div class="gap-2 flex items-center justify-between">
+                <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
+                <div class="gap-2 flex items-center">
+                    <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
+                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                </div>
             </div>
+
+            <div class="flex h-full w-full flex-col overflow-hidden">
+                <DataTable
+                    :value="projects"
+                    :loading="isPending"
+                    lazy
+                    striped-rows
+                    class="w-full cursor-pointer"
+                    row-hover
+                    scrollable
+                    scroll-height="flex"
+                    @row-click="onRowClick"
+                >
+                    <Column field="prefix" header="Prefix" style="width: 6rem" />
+                    <Column field="name" header="Project Name" />
+                    <Column field="created_at" header="Created" style="width: 12rem">
+                        <template #body="{ data }">
+                            <DisplayDate :date="data.created_at" />
+                        </template>
+                    </Column>
+                    <Column style="width: 3rem">
+                        <template #body="{ data }">
+                            <button
+                                class="pi pi-ellipsis-v p-1 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 cursor-pointer"
+                                @click.stop="openRowMenu($event, data)"
+                            />
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
+
+            <Paginator
+                v-if="paginationMeta && paginationMeta.last_page > 1"
+                :rows="PAGE_SIZE"
+                :total-records="paginationMeta.total"
+                :first="(page - 1) * PAGE_SIZE"
+                @page="onPageChange"
+            />
         </div>
 
-        <div class="flex h-full w-full flex-col overflow-hidden">
-            <DataTable
-                :value="projects"
-                :loading="isPending"
-                lazy
-                striped-rows
-                class="w-full cursor-pointer"
-                row-hover
-                scrollable
-                scroll-height="flex"
-                @row-click="onRowClick"
-            >
-                <Column field="prefix" header="Prefix" style="width: 6rem" />
-                <Column field="name" header="Project Name" />
-                <Column field="created_at" header="Created" style="width: 12rem">
-                    <template #body="{ data }">
-                        <DisplayDate :date="data.created_at" />
-                    </template>
-                </Column>
-                <Column style="width: 3rem">
-                    <template #body="{ data }">
-                        <button
-                            class="pi pi-ellipsis-v p-1 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 cursor-pointer"
-                            @click.stop="openRowMenu($event, data)"
-                        />
-                    </template>
-                </Column>
-            </DataTable>
-        </div>
+        <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
-        <Paginator
-            v-if="paginationMeta && paginationMeta.last_page > 1"
-            :rows="PAGE_SIZE"
-            :total-records="paginationMeta.total"
-            :first="(page - 1) * PAGE_SIZE"
-            @page="onPageChange"
+        <SortDialog
+            :visible="sort.visible.value"
+            :fields="sortFieldDefs"
+            :sort-by="sort.draftSortBy.value"
+            :sort-order="sort.draftSortOrder.value"
+            @update:visible="sort.visible.value = $event"
+            @update:sort-by="sort.setDraftField"
+            @update:sort-order="sort.setDraftOrder"
+            @apply="onSortApply"
+        />
+
+        <FilterSidebar
+            v-model:visible="sidebarVisible"
+            :def-map="sidebarDefMap"
+            title="Filters"
+            @apply="onApply"
+            @reset="resetFilters"
+            @change="updateFilter"
+        />
+
+        <ProjectUpsertDialog
+            v-model:visible="upsertDialog.visible.value"
+            v-model:name="upsertDialog.name.value"
+            :mode="upsertDialog.mode.value"
+            :validation-errors="upsertDialog.validationErrors.value"
+            :is-pending="upsertDialog.isPending.value"
+            @submit="upsertDialog.submit"
         />
     </div>
-
-    <Menu ref="rowMenu" :model="rowMenuItems" popup />
-
-    <SortDialog
-        :visible="sort.visible.value"
-        :fields="sortFieldDefs"
-        :sort-by="sort.draftSortBy.value"
-        :sort-order="sort.draftSortOrder.value"
-        @update:visible="sort.visible.value = $event"
-        @update:sort-by="sort.setDraftField"
-        @update:sort-order="sort.setDraftOrder"
-        @apply="onSortApply"
-    />
-
-    <FilterSidebar
-        v-model:visible="sidebarVisible"
-        :def-map="sidebarDefMap"
-        title="Filters"
-        @apply="onApply"
-        @reset="resetFilters"
-        @change="updateFilter"
-    />
-
-    <ProjectUpsertDialog
-        v-model:visible="upsertDialog.visible.value"
-        v-model:name="upsertDialog.name.value"
-        :mode="upsertDialog.mode.value"
-        :validation-errors="upsertDialog.validationErrors.value"
-        :is-pending="upsertDialog.isPending.value"
-        @submit="upsertDialog.submit"
-    />
 </template>

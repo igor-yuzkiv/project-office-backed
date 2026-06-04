@@ -102,95 +102,97 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 flex items-center justify-between">
-            <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
-            <div class="gap-2 flex items-center">
-                <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
-                <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+    <div class="flex flex-1 flex-col overflow-hidden">
+        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
+            <div class="gap-2 flex items-center justify-between">
+                <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
+                <div class="gap-2 flex items-center">
+                    <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
+                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                </div>
             </div>
+
+            <div class="flex h-full w-full flex-col overflow-hidden">
+                <DataTable
+                    :value="tasks"
+                    :loading="isPending"
+                    lazy
+                    striped-rows
+                    class="w-full cursor-pointer"
+                    row-hover
+                    scrollable
+                    scroll-height="flex"
+                    @row-click="onRowClick"
+                >
+                    <Column field="key" header="Key" style="width: 10rem">
+                        <template #body="{ data }">
+                            <CopyToClipboard :text="data.key" class="text-surface-500" />
+                        </template>
+                    </Column>
+                    <Column field="name" header="Task Name" />
+                    <Column field="project.name" header="Project" style="width: 12rem; min-width: 0">
+                        <template #body="{ data }">
+                            <RouterLink
+                                v-if="data.project"
+                                :to="{ name: 'project-details', params: { id: data.project_id } }"
+                                class="text-primary-500 block truncate hover:underline"
+                                :title="`${data.project.prefix} - ${data.project.name}`"
+                            >
+                                {{ data.project.prefix }} - {{ data.project.name }}
+                            </RouterLink>
+                        </template>
+                    </Column>
+                    <Column field="status" header="Status" style="width: 9rem" class="capitalize" />
+                    <Column field="priority.name" header="Priority" style="width: 7rem">
+                        <template #body="{ data }">
+                            {{ data.priority?.name ?? '—' }}
+                        </template>
+                    </Column>
+                    <Column field="created_at" header="Created" style="width: 12rem">
+                        <template #body="{ data }">
+                            <DisplayDate :date="data.created_at" />
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
+
+            <Paginator
+                v-if="paginationMeta && paginationMeta.last_page > 1"
+                :rows="PAGE_SIZE"
+                :total-records="paginationMeta.total"
+                :first="(page - 1) * PAGE_SIZE"
+                @page="onPageChange"
+            />
         </div>
 
-        <div class="flex h-full w-full flex-col overflow-hidden">
-            <DataTable
-                :value="tasks"
-                :loading="isPending"
-                lazy
-                striped-rows
-                class="w-full cursor-pointer"
-                row-hover
-                scrollable
-                scroll-height="flex"
-                @row-click="onRowClick"
-            >
-                <Column field="key" header="Key" style="width: 10rem">
-                    <template #body="{ data }">
-                        <CopyToClipboard :text="data.key" class="text-surface-500" />
-                    </template>
-                </Column>
-                <Column field="name" header="Task Name" />
-                <Column field="project.name" header="Project" style="width: 12rem; min-width: 0">
-                    <template #body="{ data }">
-                        <RouterLink
-                            v-if="data.project"
-                            :to="{ name: 'project-details', params: { id: data.project_id } }"
-                            class="text-primary-500 block truncate hover:underline"
-                            :title="`${data.project.prefix} - ${data.project.name}`"
-                        >
-                            {{ data.project.prefix }} - {{ data.project.name }}
-                        </RouterLink>
-                    </template>
-                </Column>
-                <Column field="status" header="Status" style="width: 9rem" class="capitalize" />
-                <Column field="priority.name" header="Priority" style="width: 7rem">
-                    <template #body="{ data }">
-                        {{ data.priority?.name ?? '—' }}
-                    </template>
-                </Column>
-                <Column field="created_at" header="Created" style="width: 12rem">
-                    <template #body="{ data }">
-                        <DisplayDate :date="data.created_at" />
-                    </template>
-                </Column>
-            </DataTable>
-        </div>
+        <SortDialog
+            :visible="sort.visible.value"
+            :fields="sortFieldDefs"
+            :sort-by="sort.draftSortBy.value"
+            :sort-order="sort.draftSortOrder.value"
+            @update:visible="sort.visible.value = $event"
+            @update:sort-by="sort.setDraftField"
+            @update:sort-order="sort.setDraftOrder"
+            @apply="onSortApply"
+        />
 
-        <Paginator
-            v-if="paginationMeta && paginationMeta.last_page > 1"
-            :rows="PAGE_SIZE"
-            :total-records="paginationMeta.total"
-            :first="(page - 1) * PAGE_SIZE"
-            @page="onPageChange"
+        <FilterSidebar
+            v-model:visible="sidebarVisible"
+            :def-map="sidebarDefMap"
+            title="Filters"
+            @apply="onApply"
+            @reset="resetFilters"
+            @change="updateFilter"
+        />
+
+        <TaskCreateDialog
+            :visible="taskCreateDialog.visible.value"
+            :form-data="taskCreateDialog.formData.value"
+            :validation-errors="taskCreateDialog.validationErrors.value"
+            :is-pending="taskCreateDialog.isPending.value"
+            @update:visible="taskCreateDialog.visible.value = $event"
+            @update:form-data="taskCreateDialog.formData.value = $event"
+            @submit="taskCreateDialog.submit()"
         />
     </div>
-
-    <SortDialog
-        :visible="sort.visible.value"
-        :fields="sortFieldDefs"
-        :sort-by="sort.draftSortBy.value"
-        :sort-order="sort.draftSortOrder.value"
-        @update:visible="sort.visible.value = $event"
-        @update:sort-by="sort.setDraftField"
-        @update:sort-order="sort.setDraftOrder"
-        @apply="onSortApply"
-    />
-
-    <FilterSidebar
-        v-model:visible="sidebarVisible"
-        :def-map="sidebarDefMap"
-        title="Filters"
-        @apply="onApply"
-        @reset="resetFilters"
-        @change="updateFilter"
-    />
-
-    <TaskCreateDialog
-        :visible="taskCreateDialog.visible.value"
-        :form-data="taskCreateDialog.formData.value"
-        :validation-errors="taskCreateDialog.validationErrors.value"
-        :is-pending="taskCreateDialog.isPending.value"
-        @update:visible="taskCreateDialog.visible.value = $event"
-        @update:form-data="taskCreateDialog.formData.value = $event"
-        @submit="taskCreateDialog.submit()"
-    />
 </template>
