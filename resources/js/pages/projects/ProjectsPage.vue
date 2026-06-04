@@ -53,18 +53,6 @@ const page = ref(1)
 const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedProject = ref<IProject>()
 
-const activeFiltersCount = computed(() => appliedFilters.value.length)
-const searchParams = computed(() => ({
-    query: searchQuery.value,
-    filters: appliedFilters.value,
-    page: page.value,
-    per_page: PAGE_SIZE,
-    sort_by: sort.sortBy.value,
-    sort_order: sort.sortOrder.value,
-}))
-
-const { projects, paginationMeta, isPending } = useProjectsSearchQuery(searchParams)
-
 const rowMenuItems: MenuItem[] = [
     { label: 'Edit', icon: 'pi pi-pencil', command: () => upsertDialog.open(selectedProject.value) },
     {
@@ -77,6 +65,18 @@ const rowMenuItems: MenuItem[] = [
             ),
     },
 ]
+
+const activeFiltersCount = computed(() => appliedFilters.value.length)
+const searchParams = computed(() => ({
+    query: searchQuery.value,
+    filters: appliedFilters.value,
+    page: page.value,
+    per_page: PAGE_SIZE,
+    sort_by: sort.sortBy.value,
+    sort_order: sort.sortOrder.value,
+}))
+
+const { projects, paginationMeta, isPending } = useProjectsSearchQuery(searchParams)
 
 function onSortApply() {
     sort.apply()
