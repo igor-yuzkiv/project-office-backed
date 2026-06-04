@@ -1,4 +1,5 @@
-import type { IEntity } from '@/shared/types'
+import type { IEntity, PagingParams } from '@/shared/types'
+import type { SortParams } from '@/shared/sort'
 
 export interface ITaskList extends IEntity {
     project_id: string
@@ -13,3 +14,9 @@ export interface ICreateTaskListInput {
 export interface IUpdateTaskListInput {
     name?: string
 }
+
+export type TaskListSearchParams = PagingParams &
+    SortParams & {
+        query?: string
+        project_id?: string
+    }

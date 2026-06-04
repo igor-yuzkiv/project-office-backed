@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import AppHeader from '../header/AppHeader.vue'
 import AppLeftNavigationSidebar from '../navigation/AppLeftNavigationSidebar.vue'
+import LoadingOverlay from '@/shared/components/loading/LoadingOverlay.vue'
 import type { SidebarNavItem } from '../../types'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useLoadingStateStore } from '@/app/stores/use.loading-state.store'
 
 const store = useAppLayoutStore()
+const loadingStore = useLoadingStateStore()
 
 const navItems: SidebarNavItem[] = [
     { key: 'home', label: 'Home', icon: 'heroicons:home', routeName: 'home', activeWhen: '/' },
@@ -48,9 +51,14 @@ const recentProjects = [
             </template>
         </AppLeftNavigationSidebar>
 
-        <div class="flex flex-1 flex-col overflow-hidden">
+        <div class="relative flex flex-1 flex-col overflow-hidden">
             <AppHeader :title="store.pageTitle" :actions="store.headerActions" />
             <slot />
+            <LoadingOverlay
+                v-if="loadingStore.isLoading"
+                :title="loadingStore.currentLoader?.title"
+                :subtitle="loadingStore.currentLoader?.subtitle"
+            />
         </div>
     </div>
 </template>

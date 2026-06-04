@@ -15,7 +15,7 @@ class UpdateTaskRequest extends FormRequest
             'task_list_id' => ['sometimes', 'nullable', 'string', 'ulid'],
             'name'         => ['sometimes', 'required', 'string', 'max:255'],
             'description'  => ['sometimes', 'nullable', 'string'],
-            'priority'     => ['sometimes', 'integer', Rule::in(array_column(TaskPriority::cases(), 'value'))],
+            'priority'     => ['sometimes', 'nullable', 'integer', Rule::enum(TaskPriority::class)],
             'status'       => ['sometimes', 'string', Rule::enum(TaskStatus::class)],
         ];
     }

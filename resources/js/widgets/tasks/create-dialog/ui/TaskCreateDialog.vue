@@ -82,6 +82,8 @@ function handleFieldChanged(key: string, value: unknown) {
                     fluid
                     @update:model-value="handleFieldChanged('project', $event)"
                     @complete="projectSearchTerm = $event.query"
+                    dropdown
+                    dropdown-mode="current"
                 >
                     <template #option="{ option }"> {{ option.prefix }} - {{ option.name }} </template>
                 </AutoComplete>

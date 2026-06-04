@@ -61,7 +61,7 @@ class TasksController extends Controller
 
     public function show(TaskModel $task): TaskResource
     {
-        $task->load(['createdBy', 'updatedBy']);
+        $task->load(['createdBy', 'updatedBy', 'project', 'taskList']);
 
         return new TaskResource($task);
     }
@@ -93,8 +93,8 @@ class TasksController extends Controller
             taskListId: $request->validated('task_list_id'),
             name: $request->validated('name'),
             description: $request->validated('description'),
-            priority: $request->has('priority') ? TaskPriority::from((int) $request->validated('priority')) : null,
-            status: $request->has('status') ? TaskStatus::from($request->validated('status')) : null,
+            priority: ($p = $request->validated('priority')) !== null ? TaskPriority::from((int) $p) : null,
+            status: ($s = $request->validated('status')) !== null ? TaskStatus::from($s) : null,
         );
 
         $task = $this->updateHandler->handle($command);

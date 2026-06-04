@@ -1,7 +1,8 @@
 import { httpClient } from '@/shared/api'
 import type { PaginatedResponse, PagingParams, PromisePaginatedResponse } from '@/shared/types'
 import type { SortParams } from '@/shared/sort'
-import type { ICreateTaskListInput, ITaskList, IUpdateTaskListInput } from '../types'
+import type { FilterPayloadItem } from '@/shared/filters'
+import type { ICreateTaskListInput, ITaskList, IUpdateTaskListInput, TaskListSearchParams } from '../types'
 
 type TaskListResponse = { data: ITaskList }
 
@@ -23,4 +24,21 @@ export async function updateTaskListRequest(taskListId: string, data: IUpdateTas
 
 export async function deleteTaskListRequest(taskListId: string): Promise<{ message: string }> {
     return httpClient.delete<{ message: string }>(`/task-lists/${taskListId}`).then((res) => res.data)
+}
+
+export async function searchTaskListsRequest(params: TaskListSearchParams): PromisePaginatedResponse<ITaskList> {
+    const { query = '', project_id, ...pagination } = params
+    const filters: FilterPayloadItem[] = []
+    if (project_id) {
+        filters.push({
+            filter_key: 'text',
+            field_name: 'project_id',
+            value: project_id,
+            matchMode: 'equals',
+            params: {},
+        })
+    }
+    return httpClient
+        .post<PaginatedResponse<ITaskList>>('/task-lists/search', { query, filters, ...pagination })
+        .then((res) => res.data)
 }

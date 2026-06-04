@@ -8,10 +8,23 @@ export type TaskPriorityName = 'Low' | 'Medium' | 'High'
 export type TaskStatusValue = 'open' | 'in_progress' | 'completed' | 'closed'
 export type TaskInclude = 'project' | 'task_list'
 
-export interface ITaskPriority {
+export type TaskStatusMetadata = {
+    label: string
+    value: TaskStatusValue
+}
+
+export type TaskStatusMetadataMap = Record<TaskStatusValue, TaskStatusMetadata>
+
+export type TaskPriorityDto = {
     value: number
     name: TaskPriorityName
 }
+
+export type TaskPriorityMetadata = TaskPriorityDto & {
+    label: string
+}
+
+export type TaskPriorityMetadataMap = Record<TaskPriorityName, TaskPriorityMetadata>
 
 export interface ITask extends IEntity {
     project_id: string
@@ -20,7 +33,7 @@ export interface ITask extends IEntity {
     sequence_number: number
     name: string
     description: string | null
-    priority: ITaskPriority | null
+    priority: TaskPriorityDto | null
     status: TaskStatusValue
 
     // relations
@@ -38,7 +51,7 @@ export interface ICreateTaskInput {
 
 export interface IUpdateTaskInput {
     name?: string
-    priority?: number
+    priority?: number | null
     status?: TaskStatusValue
     task_list_id?: string | null
     description?: string | null
