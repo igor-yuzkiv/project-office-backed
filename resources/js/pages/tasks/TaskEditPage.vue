@@ -3,8 +3,8 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { refDebounced } from '@vueuse/core'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import AutoComplete from 'primevue/autocomplete'
 import Panel from 'primevue/panel'
+import { LookupField } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { taskPriorityOptions, taskStatusOptions } from '@/entities/task/config'
@@ -189,16 +189,14 @@ onUnmounted(() => {
 
                     <div class="gap-1 flex flex-col">
                         <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Task List</span>
-                        <AutoComplete
-                            input-class="w-full"
+                        <LookupField
                             v-model="formData.taskList"
-                            :suggestions="taskLists"
+                            :options="taskLists"
                             :loading="isTaskListsLoading"
                             option-label="name"
-                            force-selection
-                            @complete="taskListSearchTerm = $event.query"
-                            dropdown
+                            input-class="w-full"
                             :invalid="!!validationErrors.task_list_id"
+                            @search="taskListSearchTerm = $event"
                         />
                         <span v-if="validationErrors.task_list_id" class="text-xs text-red-500">
                             {{ validationErrors.task_list_id[0] }}

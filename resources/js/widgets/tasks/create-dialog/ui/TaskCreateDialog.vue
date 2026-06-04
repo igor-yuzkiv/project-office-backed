@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
-import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
+import { LookupField } from '@/shared/components/input'
 import { refDebounced } from '@vueuse/core'
 import { useProjectsSearchQuery } from '@/entities/project/queries'
 import type { ProjectOverviewDto, ProjectSearchParams } from '@/entities/project/types'
@@ -70,10 +70,10 @@ function handleFieldChanged(key: string, value: unknown) {
                 <label for="task-project" class="text-sm font-medium text-surface-700 dark:text-surface-300">
                     Project <span class="text-red-500">*</span>
                 </label>
-                <AutoComplete
+                <LookupField
                     id="task-project"
                     :model-value="props.formData.project"
-                    :suggestions="projects"
+                    :options="projects"
                     :option-label="(opt: ProjectOverviewDto) => `${opt.prefix} - ${opt.name}`"
                     placeholder="Search projects..."
                     :invalid="!!props.validationErrors.project_id"
@@ -81,12 +81,10 @@ function handleFieldChanged(key: string, value: unknown) {
                     class="w-full"
                     fluid
                     @update:model-value="handleFieldChanged('project', $event)"
-                    @complete="projectSearchTerm = $event.query"
-                    dropdown
-                    dropdown-mode="current"
+                    @search="projectSearchTerm = $event"
                 >
                     <template #option="{ option }"> {{ option.prefix }} - {{ option.name }} </template>
-                </AutoComplete>
+                </LookupField>
                 <span v-if="props.validationErrors.project_id" class="text-xs text-red-500">
                     {{ props.validationErrors.project_id[0] }}
                 </span>
