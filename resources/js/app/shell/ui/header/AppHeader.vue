@@ -28,7 +28,7 @@ async function handleLogout() {
 
 <template>
     <header
-        class="h-14 border-surface-200 px-4 dark:border-surface-700 flex shrink-0 items-center justify-between border-b"
+        class="h-14 border-surface-200 px-4 dark:border-surface-700 flex shrink-0 items-center justify-between border-b bg-white"
     >
         <span class="text-base font-medium text-surface-900 dark:text-surface-0">{{ title }}</span>
 

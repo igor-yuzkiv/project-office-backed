@@ -105,7 +105,7 @@ onUnmounted(() => {
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <div class="gap-2 flex items-center justify-between">
+            <div class="gap-2 app-card p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
                     <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
@@ -113,17 +113,19 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <div class="flex h-full w-full flex-col overflow-hidden">
+            <div class="app-card flex h-full w-full flex-col overflow-hidden">
                 <DataTable
                     :value="tasks"
                     :loading="isPending"
                     lazy
                     striped-rows
-                    class="w-full cursor-pointer"
+                    class="p-0 w-full cursor-pointer"
                     row-hover
                     scrollable
                     scroll-height="flex"
+                    size="small"
                     @row-click="onRowClick"
+                    pt:footer:class="p-0 border-none"
                 >
                     <Column field="key" header="Key" style="width: 10rem">
                         <template #body="{ data }">
@@ -150,7 +152,7 @@ onUnmounted(() => {
                     </Column>
                     <Column field="priority.name" header="Priority" style="width: 7rem">
                         <template #body="{ data }">
-                            <TaskPriorityTag :priority="data.priority" class="w-full"/>
+                            <TaskPriorityTag :priority="data.priority" class="w-full" />
                         </template>
                     </Column>
                     <Column field="created_at" header="Created" style="width: 12rem">
@@ -158,16 +160,19 @@ onUnmounted(() => {
                             <DisplayDate :date="data.created_at" />
                         </template>
                     </Column>
+
+                    <template #footer>
+                        <Paginator
+                            v-if="paginationMeta && paginationMeta.last_page > 1"
+                            :rows="PAGE_SIZE"
+                            :total-records="paginationMeta.total"
+                            :first="(page - 1) * PAGE_SIZE"
+                            @page="onPageChange"
+                            pt:root:class="p-0"
+                        />
+                    </template>
                 </DataTable>
             </div>
-
-            <Paginator
-                v-if="paginationMeta && paginationMeta.last_page > 1"
-                :rows="PAGE_SIZE"
-                :total-records="paginationMeta.total"
-                :first="(page - 1) * PAGE_SIZE"
-                @page="onPageChange"
-            />
         </div>
 
         <SortDialog

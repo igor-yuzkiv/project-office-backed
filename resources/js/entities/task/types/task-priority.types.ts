@@ -10,6 +10,7 @@ export type TaskPriorityDto = {
 export type TaskPriorityMetadata = TaskPriorityDto & {
     label: string
     color: HexColor
+    icon: string
 }
 
 export type TaskPriorityMetadataMap = Record<TaskPriorityName, TaskPriorityMetadata>

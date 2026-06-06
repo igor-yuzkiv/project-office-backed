@@ -2,7 +2,6 @@
 import { onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { MarkdownPreview } from '@/shared/components/md-editor'
-import Panel from 'primevue/panel'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
@@ -45,45 +44,42 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div v-if="task" class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
-        <div class="flex flex-col">
-            <h1 class="text-2xl font-semibold text-surface-900">{{ task.name }}</h1>
-        </div>
-
-        <Panel header="Task Information" toggleable>
-            <div class="md:grid-cols-2 gap-4 grid grid-cols-2">
-                <DisplayField
-                    label="Project"
-                    :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null"
-                />
-                <DisplayField label="Task List" :value="task.task_list?.name ?? null" />
-                <div class="gap-1 flex flex-col">
-                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Status</span>
-                    <TaskStatusTag :status="task.status" class="w-fit" />
-                </div>
-                <div class="gap-1 flex flex-col">
-                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Priority</span>
+    <div v-if="task" class="p-2 gap-2 flex flex-1 overflow-hidden">
+        <Tabs value="description" class="app-card flex flex-1 flex-col overflow-hidden">
+            <div class="p-3 flex flex-col">
+                <div class="gap-x-2 flex items-center">
+                    <TaskStatusTag :status="task.status" class="w-fit" show-icon />
                     <TaskPriorityTag :priority="task.priority" class="w-fit" />
                 </div>
+
+                <h1 class="text-2xl font-semibold text-surface-900">{{ task.name }}</h1>
+
+                <div class="gap-x-1 flex items-center">
+                    <DisplayField v-if="task.project" label="Project" :value="task.project.name" inline />
+                    <DisplayField v-if="task.task_list" label="Task List" :value="task.task_list.name ?? null" inline />
+                </div>
             </div>
-        </Panel>
 
-        <Panel header="Description" toggleable>
-            <MarkdownPreview v-if="task.description" :model-value="task.description" />
-            <p v-else class="text-sm text-surface-400 italic">No description available.</p>
-        </Panel>
-
-        <Tabs value="comments">
             <TabList>
-                <Tab value="comments">Comments</Tab>
-                <Tab value="attachments">Attachments</Tab>
-                <Tab value="activity">Activity</Tab>
-                <Tab value="documentation">Documentation</Tab>
+                <Tab value="description" class="px-4 py-2">Description</Tab>
+                <Tab value="comments" class="px-4 py-2">Comments</Tab>
+                <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
+                <Tab value="activity" class="p-2">Activity</Tab>
+                <Tab value="documentation" class="px-4 py-2">Documentation</Tab>
             </TabList>
-            <TabPanels>
+
+            <TabPanels class="min-h-0 flex-1 overflow-auto">
+                <TabPanel value="description">
+                    <div class="flex flex-col">
+                        <MarkdownPreview v-if="task.description" :model-value="task.description" />
+                        <p v-else class="text-sm text-surface-400 italic">No description available.</p>
+                    </div>
+                </TabPanel>
+
                 <TabPanel value="comments">
                     <p class="text-surface-400">Not implemented</p>
                 </TabPanel>
+
                 <TabPanel value="attachments">
                     <p class="text-surface-400">Not implemented</p>
                 </TabPanel>

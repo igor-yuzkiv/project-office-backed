@@ -11,5 +11,5 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <Button :label="label ?? 'Sort'" icon="pi pi-sort-alt" severity="secondary" outlined @click="emit('click')" />
+    <Button :label="label ?? 'Sort'" icon="pi pi-sort-alt" severity="secondary" outlined @click="emit('click')" text size="small" />
 </template>

@@ -18,5 +18,7 @@ const emit = defineEmits<{
         :badge="count ? String(count) : undefined"
         outlined
         @click="emit('click')"
+        text
+        size="small"
     />
 </template>

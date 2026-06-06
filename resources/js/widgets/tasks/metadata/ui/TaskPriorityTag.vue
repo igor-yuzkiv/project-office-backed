@@ -3,13 +3,15 @@ import { computed } from 'vue'
 import type { TaskPriorityDto } from '@/entities/task/types/task-priority.types'
 import { TaskPriorityMap } from '@/entities/task/config'
 import Tag from 'primevue/tag'
+import { Icon } from '@iconify/vue'
 
 const props = withDefaults(
     defineProps<{
         priority: TaskPriorityDto | null | undefined
         variant?: 'light' | 'dark'
+        showIcon?: boolean
     }>(),
-    { variant: 'light' }
+    { variant: 'light', showIcon: false }
 )
 
 const meta = computed(() => {
@@ -32,7 +34,8 @@ const styles = computed(() => {
 </script>
 
 <template>
-    <Tag :style="styles">
+    <Tag :style="styles" title="Priority">
+        <Icon v-if="meta && showIcon" :icon="meta.icon" />
         {{ meta?.label ?? 'None' }}
     </Tag>
 </template>
