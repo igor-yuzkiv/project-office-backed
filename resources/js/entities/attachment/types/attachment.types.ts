@@ -1,6 +1,7 @@
 import type { IEntity } from '@/shared/types'
 
 export interface IAttachment extends IEntity {
+    url: string
     original_name: string
     extension: string | null
     mime_type: string | null

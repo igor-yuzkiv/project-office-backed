@@ -28,6 +28,7 @@ class S3AttachmentStorageService implements AttachmentStorageService
             'role'             => $role,
         ]);
 
+        $attachment->setUniqueIds();
         $attachment->storage_key = $this->storageKey($attachment, $file);
 
         $stored = Storage::disk('attachments')->putFileAs(

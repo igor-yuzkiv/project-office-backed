@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Attachments;
 
 use App\Domains\Attachment\Models\AttachmentModel;
+use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Http\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -12,8 +13,12 @@ class AttachmentResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        /** @var AttachmentStorageService $storage */
+        $storage = app(AttachmentStorageService::class);
+
         return [
             'id'               => $this->id,
+            'url'              => $storage->temporaryUrl($this->resource),
             'original_name'    => $this->original_name,
             'extension'        => $this->extension,
             'mime_type'        => $this->mime_type,

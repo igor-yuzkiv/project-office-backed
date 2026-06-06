@@ -27,8 +27,8 @@ services:
             - 6379:6379
         networks:
             - app-network
-    task_manager_minio:
-        container_name: task_manager_minio
+    task-manager-minio:
+        container_name: task-manager-minio
         image: minio/minio
         command: server /data --console-address ":9001"
         environment:
@@ -41,14 +41,14 @@ services:
             - "9001:9001"
         networks:
             - app-network
-    task_manager_minio_bucket:
-        container_name: task_manager_minio_bucket
+    task-manager-minio-bucket:
+        container_name: task-manager-minio-bucket
         image: minio/mc
         depends_on:
-            - task_manager_minio
+            - task-manager-minio
         entrypoint: >
             /bin/sh -c "
-            until mc alias set local http://task_manager_minio:9000 $${ATTACHMENTS_AWS_ACCESS_KEY_ID:-minioadmin} $${ATTACHMENTS_AWS_SECRET_ACCESS_KEY:-minioadmin}; do sleep 1; done;
+            until mc alias set local http://task-manager-minio:9000 $${ATTACHMENTS_AWS_ACCESS_KEY_ID:-minioadmin} $${ATTACHMENTS_AWS_SECRET_ACCESS_KEY:-minioadmin}; do sleep 1; done;
             mc mb --ignore-existing local/$${ATTACHMENTS_AWS_BUCKET:-task-manager-attachments};
             "
         environment:

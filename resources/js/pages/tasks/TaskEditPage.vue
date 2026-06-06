@@ -177,7 +177,7 @@ onUnmounted(() => {
             pt:contentWrapper:class="p-0 flex flex-1  overflow-hidden"
             pt:content:class="p-0 flex flex-1  overflow-hidden"
         >
-            <MarkdownEditor v-model="formData.description" preview style="height: 100%" />
+            <MarkdownEditor v-model="formData.description" preview style="height: 100%" image_entity_type="tasks" :image_entity_id="taskId" image_role="task_description" />
         </Panel>
     </div>
 </template>
