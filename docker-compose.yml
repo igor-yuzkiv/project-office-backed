@@ -34,6 +34,7 @@ services:
         environment:
             MINIO_ROOT_USER: ${ATTACHMENTS_AWS_ACCESS_KEY_ID:-minioadmin}
             MINIO_ROOT_PASSWORD: ${ATTACHMENTS_AWS_SECRET_ACCESS_KEY:-minioadmin}
+            MINIO_SERVER_URL: ${ATTACHMENTS_AWS_ENDPOINT:-http://localhost:9000}
         volumes:
             - ./docker/minio-data:/data
         ports:
