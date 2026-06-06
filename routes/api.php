@@ -26,3 +26,4 @@ Route::post('tasks/search', [TasksController::class, 'search'])->middleware(['au
 Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']);
 
 Route::post('attachments', [AttachmentsController::class, 'store'])->middleware(['auth:sanctum'])->name('attachments.store');
+Route::get('attachments/{attachment}/content', [AttachmentsController::class, 'content'])->middleware(['auth:sanctum'])->name('attachments.content');

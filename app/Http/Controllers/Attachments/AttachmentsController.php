@@ -4,16 +4,20 @@ namespace App\Http\Controllers\Attachments;
 
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentCommand;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentHandler;
+use App\Domains\Attachment\Models\AttachmentModel;
+use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Shared\ValueObjects\EntityRef;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Attachments\UploadAttachmentRequest;
 use App\Http\Resources\Attachments\AttachmentResource;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttachmentsController extends Controller
 {
     public function __construct(
         private readonly UploadAttachmentHandler $uploadHandler,
+        private readonly AttachmentStorageService $storage,
     ) {}
 
     public function store(UploadAttachmentRequest $request): JsonResponse
@@ -37,5 +41,10 @@ class AttachmentsController extends Controller
         return (new AttachmentResource($attachment))
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function content(AttachmentModel $attachment): StreamedResponse
+    {
+        return $this->storage->streamResponse($attachment);
     }
 }

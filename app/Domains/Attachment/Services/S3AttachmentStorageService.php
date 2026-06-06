@@ -7,6 +7,7 @@ use App\Domains\Shared\ValueObjects\EntityRef;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class S3AttachmentStorageService implements AttachmentStorageService
 {
@@ -51,6 +52,14 @@ class S3AttachmentStorageService implements AttachmentStorageService
         return Storage::disk('attachments')->temporaryUrl(
             $attachment->storage_key,
             now()->addMinutes((int) config('filesystems.attachments_temporary_url_ttl_minutes'))
+        );
+    }
+
+    public function streamResponse(AttachmentModel $attachment): StreamedResponse
+    {
+        return Storage::disk('attachments')->response(
+            $attachment->storage_key,
+            $attachment->original_name
         );
     }
 
