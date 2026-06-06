@@ -3,28 +3,10 @@ import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { ITaskList } from '@/entities/task_list/types'
+import type { TaskPriorityDto } from './task-priority.types'
+import type { TaskStatusValue } from './task-status.types'
 
-export type TaskPriorityName = 'Low' | 'Medium' | 'High'
-export type TaskStatusValue = 'open' | 'in_progress' | 'completed' | 'closed'
 export type TaskInclude = 'project' | 'task_list'
-
-export type TaskStatusMetadata = {
-    label: string
-    value: TaskStatusValue
-}
-
-export type TaskStatusMetadataMap = Record<TaskStatusValue, TaskStatusMetadata>
-
-export type TaskPriorityDto = {
-    value: number
-    name: TaskPriorityName
-}
-
-export type TaskPriorityMetadata = TaskPriorityDto & {
-    label: string
-}
-
-export type TaskPriorityMetadataMap = Record<TaskPriorityName, TaskPriorityMetadata>
 
 export interface ITask extends IEntity {
     project_id: string

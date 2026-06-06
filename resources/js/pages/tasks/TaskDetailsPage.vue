@@ -10,6 +10,7 @@ import TabPanels from 'primevue/tabpanels'
 import Tabs from 'primevue/tabs'
 import { useTaskQuery } from '@/entities/task/queries'
 import { DisplayField } from '@/shared/components/display'
+import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 
@@ -56,8 +57,14 @@ onUnmounted(() => {
                     :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null"
                 />
                 <DisplayField label="Task List" :value="task.task_list?.name ?? null" />
-                <DisplayField label="Status" :value="task.status" />
-                <DisplayField label="Priority" :value="task.priority?.name ?? null" />
+                <div class="gap-1 flex flex-col">
+                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Status</span>
+                    <TaskStatusTag :status="task.status" class="w-fit" />
+                </div>
+                <div class="gap-1 flex flex-col">
+                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Priority</span>
+                    <TaskPriorityTag :priority="task.priority" class="w-fit" />
+                </div>
             </div>
         </Panel>
 

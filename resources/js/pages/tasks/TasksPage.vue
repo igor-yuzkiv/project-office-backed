@@ -13,6 +13,7 @@ import { SearchInput } from '@/shared/components/input'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
+import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -142,10 +143,14 @@ onUnmounted(() => {
                             </RouterLink>
                         </template>
                     </Column>
-                    <Column field="status" header="Status" style="width: 9rem" class="capitalize" />
+                    <Column field="status" header="Status" style="width: 9rem">
+                        <template #body="{ data }">
+                            <TaskStatusTag :status="data.status" class="w-full" />
+                        </template>
+                    </Column>
                     <Column field="priority.name" header="Priority" style="width: 7rem">
                         <template #body="{ data }">
-                            {{ data.priority?.name ?? '—' }}
+                            <TaskPriorityTag :priority="data.priority" class="w-full"/>
                         </template>
                     </Column>
                     <Column field="created_at" header="Created" style="width: 12rem">
