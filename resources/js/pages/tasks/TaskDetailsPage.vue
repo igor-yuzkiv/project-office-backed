@@ -52,7 +52,7 @@ onUnmounted(() => {
                 <div class="gap-1 flex flex-col">
                     <div class="gap-x-3 flex items-center">
                         <DisplayField v-if="task.project" inline>
-                            <ProjectIcon :prefix="task.project.prefix" size="xsmall" />
+                            <ProjectIcon :prefix="task.project.prefix" size="small" />
                             <span class="text-sm text-surface-500">{{ task.project.name }}</span>
                         </DisplayField>
 
