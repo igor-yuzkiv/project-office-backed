@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { refDebounced } from '@vueuse/core'
 import { MarkdownEditor } from '@/shared/components/md-editor'
 import Panel from 'primevue/panel'
-import { LookupField } from '@/shared/components/input'
+import { InputContainer, LookupField } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { taskPriorityOptions, taskStatusOptions } from '@/entities/task/config'
@@ -127,20 +127,13 @@ onUnmounted(() => {
 
 <template>
     <div v-if="task" class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
-        <div class="gap-1 flex flex-col">
-            <InputText
-                v-model="formData.name"
-                class="text-xl font-semibold w-full"
-                placeholder="Task name..."
-                :invalid="!!validationErrors.name"
-            />
-            <span v-if="validationErrors.name" class="text-xs text-red-500">{{ validationErrors.name[0] }}</span>
-        </div>
+        <Panel header="Task Information" toggleable pt:content:class="flex flex-col gap-4">
+            <InputContainer label="Name" :error="validationErrors.name" required>
+                <InputText v-model="formData.name" placeholder="Task name..." :invalid="!!validationErrors.name" />
+            </InputContainer>
 
-        <Panel header="Task Information" toggleable>
-            <div class="md:grid-cols-2 gap-4 grid grid-cols-2">
-                <div class="gap-1 flex flex-col">
-                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Status</span>
+            <div class="md:grid-cols-2 gap-4 grid grid-cols-1">
+                <InputContainer label="Status" :error="validationErrors.status">
                     <Select
                         v-model="formData.status"
                         :options="taskStatusOptions()"
@@ -148,13 +141,9 @@ onUnmounted(() => {
                         option-value="value"
                         :invalid="!!validationErrors.status"
                     />
-                    <span v-if="validationErrors.status" class="text-xs text-red-500">
-                        {{ validationErrors.status[0] }}
-                    </span>
-                </div>
+                </InputContainer>
 
-                <div class="gap-1 flex flex-col">
-                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Priority</span>
+                <InputContainer label="Priority" :error="validationErrors.priority">
                     <Select
                         v-model="formData.priority"
                         :options="taskPriorityOptions()"
@@ -163,13 +152,9 @@ onUnmounted(() => {
                         show-clear
                         :invalid="!!validationErrors.priority"
                     />
-                    <span v-if="validationErrors.priority" class="text-xs text-red-500">
-                        {{ validationErrors.priority[0] }}
-                    </span>
-                </div>
+                </InputContainer>
 
-                <div class="gap-1 flex flex-col">
-                    <span class="text-xs font-medium text-surface-400 tracking-wide uppercase">Task List</span>
+                <InputContainer label="Task List" :error="validationErrors.task_list_id">
                     <LookupField
                         v-model="formData.taskList"
                         :options="taskLists"
@@ -177,17 +162,22 @@ onUnmounted(() => {
                         option-label="name"
                         input-class="w-full"
                         :invalid="!!validationErrors.task_list_id"
+                        show-clear
                         @search="taskListSearchTerm = $event"
                     />
-                    <span v-if="validationErrors.task_list_id" class="text-xs text-red-500">
-                        {{ validationErrors.task_list_id[0] }}
-                    </span>
-                </div>
+                </InputContainer>
             </div>
         </Panel>
 
-        <Panel header="Description" toggleable>
-            <MarkdownEditor v-model="formData.description" :preview="true" />
+        <Panel
+            header="Description"
+            toggleable
+            class="flex flex-1 flex-col overflow-hidden"
+            pt:contentContainer:class="flex flex-1  flex-col overflow-hidden"
+            pt:contentWrapper:class="p-0 flex flex-1  overflow-hidden"
+            pt:content:class="p-0 flex flex-1  overflow-hidden"
+        >
+            <MarkdownEditor v-model="formData.description" preview style="height: 100%" />
         </Panel>
     </div>
 </template>

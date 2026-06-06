@@ -3,7 +3,7 @@ import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 
-withDefaults(defineProps<{ preview?: boolean }>(), { preview: true })
+withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 
 const modelValue = defineModel<string>({ required: true })
 

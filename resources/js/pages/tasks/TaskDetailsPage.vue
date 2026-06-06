@@ -50,7 +50,7 @@ onUnmounted(() => {
         </div>
 
         <Panel header="Task Information" toggleable>
-            <div class="md:grid-cols-3 gap-4 grid grid-cols-2">
+            <div class="md:grid-cols-2 gap-4 grid grid-cols-2">
                 <DisplayField
                     label="Project"
                     :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null"

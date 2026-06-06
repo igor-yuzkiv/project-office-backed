@@ -44,15 +44,8 @@ function onComplete(query: string) {
 
 <template>
     <AutoComplete
-        v-bind="$attrs"
+        v-bind="{ ...$attrs, suggestions, optionLabel, loading, invalid, inputClass, placeholder, dropdown }"
         v-model="modelValue"
-        :suggestions="suggestions"
-        :option-label="optionLabel"
-        :loading="loading"
-        :invalid="invalid"
-        :input-class="inputClass"
-        :placeholder="placeholder"
-        :dropdown="dropdown"
         force-selection
         @complete="onComplete($event.query)"
     >
