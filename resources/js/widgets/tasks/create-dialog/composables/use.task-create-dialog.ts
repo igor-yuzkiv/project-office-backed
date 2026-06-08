@@ -1,13 +1,13 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCreateTaskMutation } from '@/entities/task/mutations'
-import type { ProjectOverviewDto } from '@/entities/project/types'
+import type { IProject } from '@/entities/project/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 
 export interface TaskCreateFormData {
     name: string
-    project: ProjectOverviewDto | null
+    project: IProject | null
 }
 
 export function getDefaultFormData(): TaskCreateFormData {
@@ -26,7 +26,7 @@ export function useTaskCreateDialog() {
 
     const { mutate: create, isPending } = useCreateTaskMutation()
 
-    function open(initialProject?: ProjectOverviewDto) {
+    function open(initialProject?: IProject) {
         formData.value = { ...getDefaultFormData(), project: initialProject ?? null }
         validationErrors.value = {}
         visible.value = true

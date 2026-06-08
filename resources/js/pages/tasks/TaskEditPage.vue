@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { refDebounced } from '@vueuse/core'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import { InputContainer, LookupField } from '@/shared/components/input'
+import { InputContainer } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { taskPriorityOptions, taskStatusOptions } from '@/entities/task/config'
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
-import { useTaskListsSearchQuery } from '@/entities/task_list/queries'
 import type { ITaskList } from '@/entities/task_list/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { TaskListLookupField } from '@/widgets/task_list/lookup-field'
 
 interface TaskEditFormData {
     name: string
@@ -41,18 +40,7 @@ const formData = ref<TaskEditFormData>({
     priority: null,
 })
 const isFormInitialized = ref(false)
-const taskListSearchTerm = ref('')
-const debouncedTaskListSearchTerm = refDebounced(taskListSearchTerm, 300)
 const validationErrors = ref<LaravelValidationErrors>({})
-
-const taskListSearchParams = computed(() => ({
-    query: debouncedTaskListSearchTerm.value,
-    project_id: task.value?.project_id,
-    per_page: 20,
-    page: 1,
-}))
-
-const { taskLists, isPending: isTaskListsLoading } = useTaskListsSearchQuery(taskListSearchParams)
 
 function handleError(error: unknown) {
     if (error instanceof ApiError && error.isValidationError) {
@@ -133,15 +121,11 @@ onUnmounted(() => {
                 </InputContainer>
 
                 <InputContainer label="Task List" :error="validationErrors.task_list_id">
-                    <LookupField
+                    <TaskListLookupField
                         v-model="formData.taskList"
-                        :options="taskLists"
-                        :loading="isTaskListsLoading"
-                        option-label="name"
-                        input-class="w-full"
+                        :project-id="task?.project_id"
+                        :object="true"
                         :invalid="!!validationErrors.task_list_id"
-                        show-clear
-                        @search="taskListSearchTerm = $event"
                     />
                 </InputContainer>
 

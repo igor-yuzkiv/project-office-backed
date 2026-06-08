@@ -1,3 +1,4 @@
+import type { Component } from 'vue'
 import type { MatchMode } from './match-mode.types'
 
 type FilterValueMap = {
@@ -6,6 +7,7 @@ type FilterValueMap = {
     boolean: boolean | null
     datetime: Date | null
     nullable: null
+    lookup: string | number | null
 }
 
 export type FilterDataType = keyof FilterValueMap
@@ -24,6 +26,7 @@ export type FilterDef<TDataType extends FilterDataType = FilterDataType> = {
     info?: string
     enabled: boolean
     withoutMatchMode?: boolean
+    component?: Component
 }
 
 export type AnyFilterDef = {

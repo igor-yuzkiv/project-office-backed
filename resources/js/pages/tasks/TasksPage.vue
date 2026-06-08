@@ -14,6 +14,8 @@ import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
+import { ProjectLookupField } from '@/widgets/projects/lookup-field'
+import { TaskListLookupField } from '@/widgets/task_list/lookup-field'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -33,6 +35,12 @@ const {
             .addField('name', 'text', (d) => d.label('Name'))
             .addField('status', 'text', (d) => d.label('Status'))
             .addField('priority', 'integer', (d) => d.label('Priority'))
+            .addField('project_id', 'lookup', (d) =>
+                d.label('Project').component(ProjectLookupField).withoutMatchMode(true)
+            )
+            .addField('task_list_id', 'lookup', (d) =>
+                d.label('Task List').component(TaskListLookupField).withoutMatchMode(true)
+            )
     )
 )
 

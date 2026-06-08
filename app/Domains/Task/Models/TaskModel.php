@@ -11,6 +11,7 @@ use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\IntegerFilter;
+use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -82,8 +83,9 @@ class TaskModel extends Model
     public static function allowedFilters(): array
     {
         return [
-            new FilterDefinition(TextFilter::class, ['name', 'description', 'key', 'project_id', 'task_list_id', 'status']),
+            new FilterDefinition(TextFilter::class, ['name', 'description', 'key', 'status']),
             new FilterDefinition(IntegerFilter::class, ['priority']),
+            new FilterDefinition(LookupFilter::class, ['project_id', 'task_list_id']),
         ];
     }
 }

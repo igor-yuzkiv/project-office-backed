@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends object">
-import { ref, watch, type Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import AutoComplete from 'primevue/autocomplete'
 
 defineOptions({ inheritAttrs: false })
@@ -8,6 +8,8 @@ const props = withDefaults(
     defineProps<{
         options: T[]
         optionLabel: string | ((item: T) => string)
+        optionKey?: string
+        object?: boolean
         loading?: boolean
         invalid?: boolean
         inputClass?: string
@@ -15,6 +17,8 @@ const props = withDefaults(
         dropdown?: boolean
     }>(),
     {
+        optionKey: 'id',
+        object: false,
         loading: false,
         invalid: false,
         dropdown: true,
@@ -25,9 +29,9 @@ const emit = defineEmits<{
     search: [query: string]
 }>()
 
-const modelValue = defineModel<T | null>({ required: true })
+const modelValue = defineModel<T | string | number | null>({ required: true })
 
-const suggestions: Ref<T[]> = ref([])
+const suggestions = ref<T[]>([])
 
 watch(
     () => props.options,
@@ -35,6 +39,23 @@ watch(
         suggestions.value = opts
     }
 )
+
+const autocompleteValue = computed<T | null>({
+    get() {
+        const val = modelValue.value
+        if (val === null || typeof val === 'object') return val as T | null
+        return props.options.find((o) => (o as Record<string, unknown>)[props.optionKey] === val) ?? null
+    },
+    set(item: T | null) {
+        if (item === null) {
+            modelValue.value = null
+        } else if (props.object) {
+            modelValue.value = item
+        } else {
+            modelValue.value = (item as Record<string, unknown>)[props.optionKey] as string | number
+        }
+    },
+})
 
 function onComplete(query: string) {
     emit('search', query)
@@ -45,7 +66,7 @@ function onComplete(query: string) {
 <template>
     <AutoComplete
         v-bind="{ ...$attrs, suggestions, optionLabel, loading, invalid, inputClass, placeholder, dropdown }"
-        v-model="modelValue"
+        v-model="autocompleteValue"
         force-selection
         @complete="onComplete($event.query)"
     >

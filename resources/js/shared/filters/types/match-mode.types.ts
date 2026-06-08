@@ -50,3 +50,8 @@ export const NULLABLE_MATCH_MODES: MatchModeOption[] = [
     { value: 'equals', label: 'Is Empty' },
     { value: 'notEquals', label: 'Is Not Empty' },
 ]
+
+export const LOOKUP_MATCH_MODES: MatchModeOption[] = [
+    { value: 'equals', label: 'Is' },
+    { value: 'notEquals', label: 'Is Not' },
+]

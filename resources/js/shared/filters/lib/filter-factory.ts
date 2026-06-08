@@ -1,3 +1,4 @@
+import type { Component } from 'vue'
 import type { AnyFilterDef, FilterDataType, FilterDef, FilterDefMap } from '../types/filter-def.types'
 
 type ConfigureFilterDef<TDataType extends FilterDataType> = {
@@ -11,6 +12,7 @@ type ConfigureFilterDef<TDataType extends FilterDataType> = {
     enabled: (v: boolean) => ConfigureFilterDef<TDataType>
     extraParams: (v: FilterDef<TDataType>['extraParams']) => ConfigureFilterDef<TDataType>
     info: (v: FilterDef<TDataType>['info']) => ConfigureFilterDef<TDataType>
+    component: (v: Component) => ConfigureFilterDef<TDataType>
 }
 
 type ConfigureFilterDefCallback<TDataType extends FilterDataType> = (def: ConfigureFilterDef<TDataType>) => void
@@ -73,6 +75,10 @@ export function createFilterDefinition<TDataType extends FilterDataType>(
             },
             info: (v) => {
                 result.info = v
+                return builder
+            },
+            component: (v) => {
+                result.component = v
                 return builder
             },
         }
