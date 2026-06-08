@@ -126,13 +126,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div v-if="task" class="p-6 gap-6 flex flex-1 flex-col overflow-auto">
-        <Panel header="Task Information" toggleable pt:content:class="flex flex-col gap-4">
-            <InputContainer label="Name" :error="validationErrors.name" required>
-                <InputText v-model="formData.name" placeholder="Task name..." :invalid="!!validationErrors.name" />
-            </InputContainer>
+    <div v-if="task" class="p-2 gap-6 flex flex-1 flex-col overflow-auto">
+        <div class="app-card p-3 gap-3 flex flex-col">
+            <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
+                <InputContainer label="Name" :error="validationErrors.name" required>
+                    <InputText v-model="formData.name" placeholder="Task name..." :invalid="!!validationErrors.name" />
+                </InputContainer>
 
-            <div class="md:grid-cols-2 gap-4 grid grid-cols-1">
+                <InputContainer label="Task List" :error="validationErrors.task_list_id">
+                    <LookupField
+                        v-model="formData.taskList"
+                        :options="taskLists"
+                        :loading="isTaskListsLoading"
+                        option-label="name"
+                        input-class="w-full"
+                        :invalid="!!validationErrors.task_list_id"
+                        show-clear
+                        @search="taskListSearchTerm = $event"
+                    />
+                </InputContainer>
+
                 <InputContainer label="Status" :error="validationErrors.status">
                     <Select
                         v-model="formData.status"
@@ -153,31 +166,16 @@ onUnmounted(() => {
                         :invalid="!!validationErrors.priority"
                     />
                 </InputContainer>
-
-                <InputContainer label="Task List" :error="validationErrors.task_list_id">
-                    <LookupField
-                        v-model="formData.taskList"
-                        :options="taskLists"
-                        :loading="isTaskListsLoading"
-                        option-label="name"
-                        input-class="w-full"
-                        :invalid="!!validationErrors.task_list_id"
-                        show-clear
-                        @search="taskListSearchTerm = $event"
-                    />
-                </InputContainer>
             </div>
-        </Panel>
 
-        <Panel
-            header="Description"
-            toggleable
-            class="flex flex-1 flex-col overflow-hidden"
-            pt:contentContainer:class="flex flex-1  flex-col overflow-hidden"
-            pt:contentWrapper:class="p-0 flex flex-1  overflow-hidden"
-            pt:content:class="p-0 flex flex-1  overflow-hidden"
-        >
-            <MarkdownEditor v-model="formData.description" preview style="height: 100%" image_entity_type="tasks" :image_entity_id="taskId" image_role="task_description" />
-        </Panel>
+            <MarkdownEditor
+                v-model="formData.description"
+                preview
+                style="height: 100%"
+                image_entity_type="tasks"
+                :image_entity_id="taskId"
+                image_role="task_description"
+            />
+        </div>
     </div>
 </template>
