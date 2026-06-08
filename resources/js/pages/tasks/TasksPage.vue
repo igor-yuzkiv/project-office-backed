@@ -77,7 +77,7 @@ function onSearchSubmit() {
     page.value = 1
 }
 
-function onApply() {
+function onFiltersApply() {
     applyFilters()
     page.value = 1
 }
@@ -190,7 +190,7 @@ onUnmounted(() => {
             v-model:visible="sidebarVisible"
             :def-map="sidebarDefMap"
             title="Filters"
-            @apply="onApply"
+            @apply="onFiltersApply"
             @reset="resetFilters"
             @change="updateFilter"
         />
