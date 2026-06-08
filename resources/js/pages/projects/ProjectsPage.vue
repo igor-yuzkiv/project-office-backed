@@ -23,14 +23,7 @@ const upsertDialog = useProjectUpsertDialog()
 
 const layoutStore = useAppLayoutStore()
 
-const {
-    visible: sidebarVisible,
-    draftDefMap: sidebarDefMap,
-    resolvedFilters: appliedFilters,
-    updateFilter,
-    apply: applyFilters,
-    reset: resetFilters,
-} = useFilterSidebar(
+const filterSidebar = useFilterSidebar(
     createFiltersDefinitionsMap((map) =>
         map.addField('name', 'text', (d) => d.label('Name')).addField('prefix', 'text', (d) => d.label('Prefix'))
     )
@@ -66,10 +59,9 @@ const rowMenuItems: MenuItem[] = [
     },
 ]
 
-const activeFiltersCount = computed(() => appliedFilters.value.length)
 const searchParams = computed(() => ({
     query: searchQuery.value,
-    filters: appliedFilters.value,
+    filters: filterSidebar.resolvedFilters.value,
     page: page.value,
     per_page: PAGE_SIZE,
     sort_by: sort.sortBy.value,
@@ -85,11 +77,6 @@ function onSortApply() {
 
 function onSearchSubmit() {
     searchQuery.value = searchInput.value
-    page.value = 1
-}
-
-function onApply() {
-    applyFilters()
     page.value = 1
 }
 
@@ -127,7 +114,7 @@ onUnmounted(() => {
             <div class="gap-2 app-card p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
-                    <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
+                    <FiltersButton v-bind="filterSidebar.buttonProps.value" />
                     <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
                 </div>
             </div>
@@ -189,14 +176,7 @@ onUnmounted(() => {
             @apply="onSortApply"
         />
 
-        <FilterSidebar
-            v-model:visible="sidebarVisible"
-            :def-map="sidebarDefMap"
-            title="Filters"
-            @apply="onApply"
-            @reset="resetFilters"
-            @change="updateFilter"
-        />
+        <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
 
         <ProjectUpsertDialog
             v-model:visible="upsertDialog.visible.value"

@@ -9,9 +9,7 @@ const props = withDefaults(
         defMap: FilterDefMap
         title?: string
     }>(),
-    {
-        title: 'Filters',
-    }
+    { title: 'Filters' }
 )
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -26,10 +24,6 @@ function onApply() {
     visible.value = false
     emit('apply')
 }
-
-function onReset() {
-    emit('reset')
-}
 </script>
 
 <template>
@@ -41,7 +35,7 @@ function onReset() {
 
             <div class="gap-2 border-surface-200 pt-4 flex border-t">
                 <Button label="Apply" class="flex-1" @click="onApply" />
-                <Button label="Reset" severity="secondary" outlined class="flex-1" @click="onReset" />
+                <Button label="Reset" severity="secondary" outlined class="flex-1" @click="emit('reset')" />
             </div>
         </div>
     </Drawer>

@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { AnyFilterDef, FilterDefMap } from '../types/filter-def.types'
 import type { FilterPayloadItem } from '../types/filter-payload.types'
 import { resolveFilters } from '../lib/filter-resolver'
@@ -11,7 +11,8 @@ export function useFilterSidebar(initialDefs: FilterDefMap) {
     const visible = ref(false)
     const committedDefMap = ref<FilterDefMap>(copyDefMap(initialDefs))
     const draftDefMap = ref<FilterDefMap>(copyDefMap(initialDefs))
-    const resolvedFilters = ref<FilterPayloadItem[]>([])
+
+    const resolvedFilters = computed<FilterPayloadItem[]>(() => resolveFilters(committedDefMap.value))
 
     watch(visible, (open) => {
         if (open) draftDefMap.value = copyDefMap(committedDefMap.value)
@@ -24,17 +25,29 @@ export function useFilterSidebar(initialDefs: FilterDefMap) {
 
     function apply(): void {
         committedDefMap.value = copyDefMap(draftDefMap.value)
-        resolvedFilters.value = resolveFilters(committedDefMap.value)
-
-        console.log('Applied Filters:', {
-            resolvedFilters: resolvedFilters.value,
-            committedDefMap: committedDefMap.value,
-        })
     }
 
     function reset(): void {
         draftDefMap.value = copyDefMap(initialDefs)
     }
+
+    const sidebarProps = computed(() => ({
+        visible: visible.value,
+        'onUpdate:visible': (v: boolean) => {
+            visible.value = v
+        },
+        defMap: draftDefMap.value,
+        onChange: updateFilter,
+        onApply: apply,
+        onReset: reset,
+    }))
+
+    const buttonProps = computed(() => ({
+        count: resolvedFilters.value.length,
+        onClick: () => {
+            visible.value = true
+        },
+    }))
 
     return {
         visible,
@@ -43,5 +56,7 @@ export function useFilterSidebar(initialDefs: FilterDefMap) {
         updateFilter,
         apply,
         reset,
+        sidebarProps,
+        buttonProps,
     }
 }

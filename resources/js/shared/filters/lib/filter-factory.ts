@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import type { Component } from 'vue'
 import type { AnyFilterDef, FilterDataType, FilterDef, FilterDefMap } from '../types/filter-def.types'
 
@@ -8,7 +9,7 @@ type ConfigureFilterDef<TDataType extends FilterDataType> = {
     matchMode: (v: FilterDef<TDataType>['matchMode']) => ConfigureFilterDef<TDataType>
     mergeInputProps: (v: FilterDef<TDataType>['inputProps']) => ConfigureFilterDef<TDataType>
     setInputProps: (v: FilterDef<TDataType>['inputProps']) => ConfigureFilterDef<TDataType>
-    withoutMatchMode: (v: FilterDef<TDataType>['withoutMatchMode']) => ConfigureFilterDef<TDataType>
+    withoutMatchMode: () => ConfigureFilterDef<TDataType>
     enabled: (v: boolean) => ConfigureFilterDef<TDataType>
     extraParams: (v: FilterDef<TDataType>['extraParams']) => ConfigureFilterDef<TDataType>
     info: (v: FilterDef<TDataType>['info']) => ConfigureFilterDef<TDataType>
@@ -61,8 +62,8 @@ export function createFilterDefinition<TDataType extends FilterDataType>(
                 result.inputProps = v
                 return builder
             },
-            withoutMatchMode: (v) => {
-                result.withoutMatchMode = v
+            withoutMatchMode: () => {
+                result.withoutMatchMode = true
                 return builder
             },
             enabled: (v) => {
@@ -78,7 +79,7 @@ export function createFilterDefinition<TDataType extends FilterDataType>(
                 return builder
             },
             component: (v) => {
-                result.component = v
+                result.component = markRaw(v)
                 return builder
             },
         }

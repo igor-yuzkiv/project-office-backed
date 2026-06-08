@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import Panel from 'primevue/panel'
 import Select from 'primevue/select'
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import type { Component } from 'vue'
 import type { AnyFilterDef, FilterDataType } from '../types/filter-def.types'
 import type { MatchMode, MatchModeOption } from '../types/match-mode.types'
-import { MATCH_MODE_OPTIONS } from '../lib/filter-config'
+import { FILTER_TYPE_CONFIG } from '../lib/filter-config'
 import TextValueInput from './value-inputs/TextValueInput.vue'
 import IntegerValueInput from './value-inputs/IntegerValueInput.vue'
 import BooleanValueInput from './value-inputs/BooleanValueInput.vue'
 import DateTimeValueInput from './value-inputs/DateTimeValueInput.vue'
 
 const DATA_TYPE_COMPONENTS: Record<FilterDataType, Component | null> = {
-    text: TextValueInput,
-    integer: IntegerValueInput,
-    boolean: BooleanValueInput,
-    datetime: DateTimeValueInput,
+    text: markRaw(TextValueInput),
+    integer: markRaw(IntegerValueInput),
+    boolean: markRaw(BooleanValueInput),
+    datetime: markRaw(DateTimeValueInput),
     nullable: null,
     lookup: null,
 }
@@ -35,7 +35,7 @@ const panelCollapsed = computed({
     set: (val: boolean) => emit('change', props.filterKey, { enabled: !val }),
 })
 
-const matchModeOptions = computed<MatchModeOption[]>(() => MATCH_MODE_OPTIONS[props.def.dataType])
+const matchModeOptions = computed<MatchModeOption[]>(() => FILTER_TYPE_CONFIG[props.def.dataType].matchModes)
 
 const showMatchMode = computed(() => !props.def.withoutMatchMode && matchModeOptions.value.length > 0)
 
@@ -60,7 +60,7 @@ const panelPt = {
 
 <template>
     <Panel v-model:collapsed="panelCollapsed" :header="def.label" toggleable :pt="panelPt">
-        <div v-if="!panelCollapsed" class="gap-2 flex flex-col">
+        <div class="gap-2 flex flex-col">
             <Select
                 v-if="showMatchMode"
                 :model-value="def.matchMode"
@@ -73,8 +73,8 @@ const panelPt = {
             />
 
             <component
-                v-if="resolvedComponent"
                 :is="resolvedComponent"
+                v-if="resolvedComponent"
                 :model-value="def.value"
                 v-bind="def.inputProps"
                 @update:model-value="onValueChange"
