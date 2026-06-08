@@ -2,7 +2,7 @@
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
 import type { AnyFilterDef, FilterDefMap } from '../types/filter-def.types'
-import FilterGroup from './FilterGroup.vue'
+import FilterList from './FilterList.vue'
 
 const props = withDefaults(
     defineProps<{
@@ -30,7 +30,7 @@ function onApply() {
     <Drawer v-model:visible="visible" :header="title" position="right" class="!w-96">
         <div class="gap-4 flex h-full flex-col">
             <div class="flex-1 overflow-y-auto">
-                <FilterGroup :def-map="props.defMap" @change="(k, patch) => emit('change', k, patch)" />
+                <FilterList :def-map="props.defMap" @change="(k, patch) => emit('change', k, patch)" />
             </div>
 
             <div class="gap-2 border-surface-200 pt-4 flex border-t">

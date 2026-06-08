@@ -13,7 +13,7 @@ import { PAGE_SIZE } from '@/app/config'
 import type { IProject } from '@/entities/project/types'
 import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
 import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
-import { FilterSidebar, FiltersButton, createFiltersDefinitionsMap, useFilterSidebar } from '@/shared/filters'
+import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
 import { DisplayDate } from '@/shared/components/display'
@@ -24,7 +24,7 @@ const upsertDialog = useProjectUpsertDialog()
 const layoutStore = useAppLayoutStore()
 
 const filterSidebar = useFilterSidebar(
-    createFiltersDefinitionsMap((map) =>
+    createFilterDefMap((map) =>
         map.addField('name', 'text', (d) => d.label('Name')).addField('prefix', 'text', (d) => d.label('Prefix'))
     )
 )
@@ -114,7 +114,7 @@ onUnmounted(() => {
             <div class="gap-2 app-card p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
-                    <FiltersButton v-bind="filterSidebar.buttonProps.value" />
+                    <FilterButton v-bind="filterSidebar.buttonProps.value" />
                     <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
                 </div>
             </div>

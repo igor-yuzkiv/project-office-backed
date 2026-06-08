@@ -14,7 +14,7 @@ import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { TaskListLookupField } from '@/widgets/task_list/lookup-field'
+import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
 
 interface TaskEditFormData {
     name: string

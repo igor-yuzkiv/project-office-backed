@@ -6,16 +6,16 @@ import type { Component } from 'vue'
 import type { AnyFilterDef, FilterDataType } from '../types/filter-def.types'
 import type { MatchMode, MatchModeOption } from '../types/match-mode.types'
 import { FILTER_TYPE_CONFIG } from '../lib/filter-config'
-import TextValueInput from './value-inputs/TextValueInput.vue'
-import IntegerValueInput from './value-inputs/IntegerValueInput.vue'
-import BooleanValueInput from './value-inputs/BooleanValueInput.vue'
-import DateTimeValueInput from './value-inputs/DateTimeValueInput.vue'
+import TextInput from './value-inputs/TextInput.vue'
+import IntegerInput from './value-inputs/IntegerInput.vue'
+import BooleanInput from './value-inputs/BooleanInput.vue'
+import DateTimeInput from './value-inputs/DateTimeInput.vue'
 
 const DATA_TYPE_COMPONENTS: Record<FilterDataType, Component | null> = {
-    text: markRaw(TextValueInput),
-    integer: markRaw(IntegerValueInput),
-    boolean: markRaw(BooleanValueInput),
-    datetime: markRaw(DateTimeValueInput),
+    text: markRaw(TextInput),
+    integer: markRaw(IntegerInput),
+    boolean: markRaw(BooleanInput),
+    datetime: markRaw(DateTimeInput),
     nullable: null,
     lookup: null,
 }

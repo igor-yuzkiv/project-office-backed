@@ -23,7 +23,8 @@ app/Libs/EloquentFilters/
     ├── IntegerFilter.php       # key: "integer"
     ├── BooleanFilter.php       # key: "boolean"
     ├── DateTimeFilter.php      # key: "datetime"
-    └── NullableFilter.php      # key: "nullable"
+    ├── NullableFilter.php      # key: "nullable"
+    └── LookupFilter.php        # key: "lookup" — фільтрація по FK полях
 ```
 
 ### API-контракт
@@ -57,6 +58,7 @@ app/Libs/EloquentFilters/
 | `BooleanFilter` | `boolean` | — (matchMode ігнорується) |
 | `DateTimeFilter` | `datetime` | `equals`, `notEquals`, `gt`, `gte`, `lt`, `lte`, `dateIs`, `dateIsNot`, `dateBefore`, `dateAfter` |
 | `NullableFilter` | `nullable` | `equals` → `whereNull`, `notEquals` → `whereNotNull` |
+| `LookupFilter` | `lookup` | `equals`, `notEquals` |
 
 Якщо `matchMode` не вказано або null — filter використовує дефолтне значення (наприклад, `TextFilter` дефолтно `contains`).
 
@@ -69,6 +71,7 @@ use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use App\Libs\EloquentFilters\Filters\IntegerFilter;
+use App\Libs\EloquentFilters\Filters\LookupFilter;
 
 class TaskModel extends Model
 {
@@ -77,8 +80,9 @@ class TaskModel extends Model
     public static function allowedFilters(): array
     {
         return [
-            new FilterDefinition(TextFilter::class, ['name', 'description']),
+            new FilterDefinition(TextFilter::class, ['name', 'description', 'key', 'status']),
             new FilterDefinition(IntegerFilter::class, ['priority']),
+            new FilterDefinition(LookupFilter::class, ['project_id', 'task_list_id']),
         ];
     }
 }
@@ -144,7 +148,7 @@ class StatusFilter extends Filter
 {
     public static function key(): string
     {
-        return 'status'; // цей рядок використовується як filter_key у API
+        return 'status';
     }
 
     public static function supportedMatchModes(): ?array
@@ -212,26 +216,7 @@ Authorization: Bearer {token}
 }
 ```
 
-Логіка search інлайнована у відповідному controller:
-
-```php
-public function search(SearchRequest $request): AnonymousResourceCollection
-{
-    $sort = $this->getSortParams();
-    $pagination = $this->getPaginationParams();
-
-    $projects = ProjectModel::search((string) $request->input('query', ''))
-        ->orderBy($sort->field, $sort->direction)
-        ->query(function (Builder $q) use ($request): Builder {
-            return $q->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
-        })
-        ->paginate($pagination->perPage, 'page', $pagination->page);
-
-    return ProjectResource::collection($projects);
-}
-```
-
-**Важливо:** `->orderBy()` для Scout CollectionEngine має бути на рівні Scout Builder (до `->query()`), а не всередині `->query()` callback. CollectionEngine застосовує порядок тільки через `$builder->orders`; `orderBy` всередині callback потрапляє в re-fetch, але потім перезаписується позиціями з `searchModels()`.
+**Важливо:** `->orderBy()` для Scout CollectionEngine має бути на рівні Scout Builder (до `->query()`), а не всередині `->query()` callback.
 
 ### Allowed filters по моделях
 
@@ -239,8 +224,9 @@ public function search(SearchRequest $request): AnonymousResourceCollection
 |---|---|---|
 | `ProjectModel` | `TextFilter` | `name`, `prefix` |
 | `TaskListModel` | `TextFilter` | `name`, `project_id` |
-| `TaskModel` | `TextFilter` | `name`, `description`, `key`, `project_id`, `task_list_id`, `status` |
+| `TaskModel` | `TextFilter` | `name`, `description`, `key`, `status` |
 | `TaskModel` | `IntegerFilter` | `priority` |
+| `TaskModel` | `LookupFilter` | `project_id`, `task_list_id` |
 
 ---
 
@@ -251,26 +237,26 @@ public function search(SearchRequest $request): AnonymousResourceCollection
 ```
 resources/js/shared/filters/
 ├── types/
-│   ├── filter-def.types.ts     # FilterDef, FilterDefMap, AnyFilterDef, FilterDataType, FilterValue
+│   ├── filter-def.types.ts     # FilterDef, FilterDefMap, AnyFilterDef, FilterDataType
 │   ├── filter-payload.types.ts # FilterPayloadItem (API contract)
 │   └── match-mode.types.ts     # MatchMode union, MatchModeOption, constants
 ├── lib/
-│   ├── filter-config.ts        # MATCH_MODE_OPTIONS lookup
-│   ├── filter-factory.ts       # createFilterDefinition(), createFiltersDefinitionsMap()
+│   ├── filter-config.ts        # FILTER_TYPE_CONFIG — конфіг для кожного dataType
+│   ├── filter-factory.ts       # createFilterDefinition(), createFilterDefMap()
 │   └── filter-resolver.ts      # resolveFilters() → FilterPayloadItem[]
 ├── composables/
 │   ├── use.filters.ts          # useFilters() — базовий composable
 │   └── use.filter-sidebar.ts   # useFilterSidebar() — з draft/committed state
 └── ui/
-    ├── FilterControl.vue       # один filter рядок (toggle + match mode + value)
-    ├── FilterGroup.vue         # рендерить FilterControl для кожного запису в map
+    ├── FilterControl.vue       # один filter рядок (toggle + match mode + value input)
+    ├── FilterList.vue          # рендерить FilterControl для кожного запису в map
     ├── FilterSidebar.vue       # PrimeVue Drawer wrapper
-    ├── FiltersButton.vue       # кнопка з badge-лічильником активних фільтрів
+    ├── FilterButton.vue        # кнопка з badge-лічильником активних фільтрів
     └── value-inputs/
-        ├── TextValueInput.vue
-        ├── IntegerValueInput.vue
-        ├── BooleanValueInput.vue
-        └── DateTimeValueInput.vue
+        ├── TextInput.vue
+        ├── IntegerInput.vue
+        ├── BooleanInput.vue
+        └── DateTimeInput.vue
 ```
 
 Імпортувати тільки з barrel-файлу: `import { ... } from '@/shared/filters'`.
@@ -278,12 +264,12 @@ resources/js/shared/filters/
 ### Ключові типи
 
 ```ts
-// dataType відповідає filter_key у backend API
-type FilterDataType = 'text' | 'integer' | 'boolean' | 'datetime' | 'nullable'
+// відповідає filter_key у backend API
+type FilterDataType = 'text' | 'integer' | 'boolean' | 'datetime' | 'nullable' | 'lookup'
 
 type FilterDef<TDataType extends FilterDataType> = {
     label: string
-    fieldName?: string           // ім'я поля; встановлюється через createFiltersDefinitionsMap
+    fieldName?: string            // встановлюється автоматично через createFilterDefMap
     dataType: TDataType
     value: FilterValue<TDataType>
     defaultValue: FilterValue<TDataType>
@@ -293,6 +279,7 @@ type FilterDef<TDataType extends FilterDataType> = {
     info?: string
     enabled: boolean
     withoutMatchMode?: boolean
+    component?: Component         // кастомний input компонент, перекриває дефолтний для dataType
 }
 
 // FilterDefMap — Record<fieldName, FilterDef>
@@ -308,20 +295,55 @@ type FilterPayloadItem = {
 }
 ```
 
-### Декларативна фабрика
+### FILTER_TYPE_CONFIG
 
-`createFiltersDefinitionsMap()` — основний спосіб визначення набору фільтрів:
+`filter-config.ts` містить конфігурацію для кожного `FilterDataType`:
 
 ```ts
-const defMap = createFiltersDefinitionsMap((map) =>
+type FilterTypeConfig = {
+    matchModes: MatchModeOption[]   // доступні режими порівняння
+    isEmpty: (value: unknown) => boolean  // коли не включати у payload
+    omitValue?: boolean             // не передавати value у payload (наприклад, nullable)
+    requiresMatchMode?: boolean     // не включати якщо matchMode === null
+}
+
+const FILTER_TYPE_CONFIG: Record<FilterDataType, FilterTypeConfig>
+```
+
+`resolveFilters()` використовує цей конфіг замість if-else ланцюжків — додавання нового типу вимагає лише запису у конфіг.
+
+### Декларативна фабрика
+
+`createFilterDefMap()` — основний спосіб визначення набору фільтрів:
+
+```ts
+const defMap = createFilterDefMap((map) =>
     map
         .addField('name', 'text', (d) => d.label('Name'))
-        .addField('prefix', 'text', (d) => d.label('Prefix'))
         .addField('priority', 'integer', (d) => d.label('Priority').enabled(false))
+        .addField('project_id', 'lookup', (d) =>
+            d.label('Project').component(ProjectLookupField).withoutMatchMode()
+        )
 )
 ```
 
 `addField(fieldName, dataType, configure)` — автоматично встановлює `fieldName` на def.
+
+Доступні методи builder'а:
+
+| Метод | Опис |
+|---|---|
+| `.label(v)` | Заголовок у sidebar |
+| `.value(v)` | Початкове значення |
+| `.defaultValue(v)` | Значення при reset |
+| `.matchMode(v)` | Початковий matchMode |
+| `.enabled(v)` | Чи активний фільтр при відкритті |
+| `.withoutMatchMode()` | Приховати select matchMode |
+| `.component(v)` | Кастомний input компонент (замість дефолтного для dataType) |
+| `.mergeInputProps(v)` | Змерджити додаткові props для input компонента |
+| `.setInputProps(v)` | Повністю замінити inputProps |
+| `.extraParams(v)` | Додаткові params у payload |
+| `.info(v)` | Інформаційний текст |
 
 `createFilterDefinition()` для одиночного фільтра:
 
@@ -335,71 +357,88 @@ const def = createFilterDefinition('text', (d) =>
 const def = createFilterDefinition('integer', { label: 'Priority', enabled: false })
 ```
 
+### Lookup фільтри та LookupField wrapper компоненти
+
+Для фільтрації по пов'язаних сутностях використовується dataType `lookup`. Value — ID запису (string | number | null).
+
+Для кожної сутності існує wrapper компонент у `widgets/`, який інкапсулює `LookupField` + search query:
+
+```
+widgets/projects/lookup-field/ui/ProjectLookupField.vue
+widgets/task-list/lookup-field/ui/TaskListLookupField.vue
+```
+
+Використання у фільтрах:
+
+```ts
+import { ProjectLookupField } from '@/widgets/projects/lookup-field'
+import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
+
+createFilterDefMap((map) =>
+    map
+        .addField('project_id', 'lookup', (d) =>
+            d.label('Project').component(ProjectLookupField).withoutMatchMode()
+        )
+        .addField('task_list_id', 'lookup', (d) =>
+            d.label('Task List').component(TaskListLookupField).withoutMatchMode()
+        )
+)
+```
+
+Ці ж компоненти використовуються у формах (TaskCreateDialog, TaskEditPage) з `object` prop:
+
+```vue
+<!-- повертає IProject об'єкт -->
+<ProjectLookupField v-model="formData.project" :object="true" />
+
+<!-- повертає string ID -->
+<ProjectLookupField v-model="formData.project_id" />
+```
+
 ### resolveFilters — перетворення стану в API payload
 
 `resolveFilters(defMap: FilterDefMap): FilterPayloadItem[]`
 
-Правила виключення запису з результату:
+Запис виключається якщо:
 - `enabled: false`
-- `value === null | undefined | ''` (для всіх типів, крім `boolean` і `nullable`)
-- `boolean`: включається тільки якщо `value !== null`
-- `nullable`: включається тільки якщо `matchMode === 'equals' | 'notEquals'`
+- `requiresMatchMode: true` і `matchMode === null` (тип `nullable`)
+- `isEmpty(value) === true` (логіка специфічна для кожного `dataType` через `FILTER_TYPE_CONFIG`)
 
 ### Composable: useFilterSidebar
 
 Manages draft/committed state pattern — зміни у sidebar не застосовуються до query поки не натиснуто Apply.
 
 ```ts
-const {
-    visible,          // Ref<boolean> — видимість sidebar
-    draftDefMap,      // Ref<FilterDefMap> — робоча копія для рендерингу sidebar
-    resolvedFilters,  // Ref<FilterPayloadItem[]> — оновлюється тільки в apply()
-    updateFilter,     // (key, patch) => void — змінює один filter у draftDefMap
-    apply,            // () => void — копіює draft → committed, перераховує resolvedFilters
-    reset,            // () => void — скидає draft до початкових значень
-} = useFilterSidebar(initialDefMap)
+const filterSidebar = useFilterSidebar(initialDefMap)
 ```
+
+Повертає:
+
+| Поле | Тип | Опис |
+|---|---|---|
+| `visible` | `Ref<boolean>` | видимість sidebar |
+| `draftDefMap` | `Ref<FilterDefMap>` | робоча копія для рендерингу sidebar |
+| `resolvedFilters` | `ComputedRef<FilterPayloadItem[]>` | оновлюється тільки після apply() |
+| `updateFilter` | `(key, patch) => void` | змінює один filter у draftDefMap |
+| `apply` | `() => void` | копіює draft → committed |
+| `reset` | `() => void` | скидає draft до початкових значень |
+| `sidebarProps` | `ComputedRef<object>` | готові props+handlers для `<FilterSidebar v-bind>` |
+| `buttonProps` | `ComputedRef<object>` | готові props+handlers для `<FilterButton v-bind>` |
+
+`sidebarProps` включає `visible`, `defMap`, `onChange`, `onApply`, `onReset` — повністю покриває wiring між composable і компонентом.
 
 Поведінка при відкритті sidebar: `watch(visible)` копіює committed → draft, тому відкриття sidebar завжди показує актуально застосовані фільтри. Cancel або Escape відкидає незбережені зміни.
-
-### UI компоненти
-
-**FilterSidebar** — повний sidebar з групою фільтрів і кнопками Apply/Reset:
-
-```vue
-<FilterSidebar
-    v-model:visible="sidebarVisible"
-    :def-map="sidebarDefMap"
-    title="Filters"
-    @apply="onApply"
-    @reset="onReset"
-    @change="updateFilter"
-/>
-```
-
-**FiltersButton** — кнопка з badge, що показує кількість активних фільтрів:
-
-```vue
-<FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
-```
 
 ### Повний приклад інтеграції у Page компонент
 
 ```vue
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { FilterSidebar, FiltersButton, createFiltersDefinitionsMap, useFilterSidebar } from '@/shared/filters'
+import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 
-const {
-    visible: sidebarVisible,
-    draftDefMap: sidebarDefMap,
-    resolvedFilters: appliedFilters,
-    updateFilter,
-    apply: applyFilters,
-    reset: resetFilters,
-} = useFilterSidebar(
-    createFiltersDefinitionsMap((map) =>
+const filterSidebar = useFilterSidebar(
+    createFilterDefMap((map) =>
         map
             .addField('name', 'text', (d) => d.label('Name'))
             .addField('priority', 'integer', (d) => d.label('Priority'))
@@ -407,41 +446,30 @@ const {
 )
 
 const page = ref(1)
-const activeFiltersCount = computed(() => appliedFilters.value.length)
 
 const searchParams = computed(() => ({
-    filters: appliedFilters.value,
+    filters: filterSidebar.resolvedFilters.value,
     page: page.value,
     per_page: 15,
 }))
 
 const { tasks } = useTasksSearchQuery(searchParams)
-
-function onApply() {
-    applyFilters()
-    page.value = 1
-}
 </script>
 
 <template>
-    <FiltersButton :count="activeFiltersCount" @click="sidebarVisible = true" />
+    <FilterButton v-bind="filterSidebar.buttonProps.value" />
 
-    <FilterSidebar
-        v-model:visible="sidebarVisible"
-        :def-map="sidebarDefMap"
-        title="Filters"
-        @apply="onApply"
-        @reset="resetFilters"
-        @change="updateFilter"
-    />
+    <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
 </template>
 ```
+
+`v-bind` на `sidebarProps` автоматично прокидає `visible`, `defMap`, `onChange`, `onApply`, `onReset`. Додатковий `@apply` використовується для page-специфічних side effects (скидання пагінації).
 
 ### Додавання нового типу фільтра на фронті
 
 1. Додати новий `FilterDataType` до `filter-def.types.ts`.
 2. Додати відповідний `FilterValue` у `FilterValueMap`.
-3. Додати `MatchModeOption[]` у `MATCH_MODE_OPTIONS` в `filter-config.ts`.
-4. Створити `NewTypeValueInput.vue` у `value-inputs/`.
-5. Додати гілку у `FilterControl.vue` для рендерингу нового input компонента.
+3. Додати запис у `FILTER_TYPE_CONFIG` у `filter-config.ts` з `matchModes`, `isEmpty` та опціональними флагами.
+4. Створити `NewTypeInput.vue` у `value-inputs/` (якщо потрібен дефолтний input).
+5. Додати запис у `DATA_TYPE_COMPONENTS` у `FilterControl.vue`.
 6. Реалізувати відповідний backend `Filter` клас.

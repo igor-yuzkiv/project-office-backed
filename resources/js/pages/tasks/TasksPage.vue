@@ -7,7 +7,7 @@ import Paginator from 'primevue/paginator'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import type { ITask } from '@/entities/task/types'
 import { PAGE_SIZE } from '@/app/config'
-import { FilterSidebar, FiltersButton, createFiltersDefinitionsMap, useFilterSidebar } from '@/shared/filters'
+import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
@@ -15,7 +15,7 @@ import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
-import { TaskListLookupField } from '@/widgets/task_list/lookup-field'
+import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -23,7 +23,7 @@ const layoutStore = useAppLayoutStore()
 const taskCreateDialog = useTaskCreateDialog()
 
 const filterSidebar = useFilterSidebar(
-    createFiltersDefinitionsMap((map) =>
+    createFilterDefMap((map) =>
         map
             .addField('name', 'text', (d) => d.label('Name'))
             .addField('status', 'text', (d) => d.label('Status'))
@@ -103,7 +103,7 @@ onUnmounted(() => {
             <div class="gap-2 app-card p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
-                    <FiltersButton v-bind="filterSidebar.buttonProps.value" />
+                    <FilterButton v-bind="filterSidebar.buttonProps.value" />
                     <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
                 </div>
             </div>

@@ -101,7 +101,7 @@ type ConfigureFilterDefMap = {
 
 type ConfigureFilterDefMapCallback = (def: ConfigureFilterDefMap) => void
 
-export function createFiltersDefinitionsMap(configure: ConfigureFilterDefMapCallback): FilterDefMap {
+export function createFilterDefMap(configure: ConfigureFilterDefMapCallback): FilterDefMap {
     const result: FilterDefMap = {}
 
     const builder: ConfigureFilterDefMap = {
