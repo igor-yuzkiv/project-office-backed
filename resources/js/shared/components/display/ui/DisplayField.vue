@@ -25,7 +25,7 @@ const displayValue = computed(() => {
 </script>
 
 <template>
-    <div :class="inline ? 'flex-row items-center gap-2' : 'flex-col gap-1'" class="flex">
+    <div :class="inline ? 'gap-2 flex-row items-center' : 'gap-1 flex-col'" class="flex">
         <span v-if="label || $slots.label" class="text-surface-400 shrink-0">
             <slot name="label">{{ label }}</slot>
         </span>
