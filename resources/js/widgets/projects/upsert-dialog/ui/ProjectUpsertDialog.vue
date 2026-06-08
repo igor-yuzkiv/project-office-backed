@@ -3,6 +3,7 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import type { LaravelValidationErrors } from '@/shared/types'
+import { InputContainer } from '@/shared/components/input'
 
 const props = defineProps<{
     visible: boolean
@@ -31,22 +32,15 @@ const title = { create: 'New Project', update: 'Edit Project' }
         @update:visible="emit('update:visible', $event)"
     >
         <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
-            <div class="gap-1.5 flex flex-col">
-                <label for="project-name" class="text-sm font-medium text-surface-700 dark:text-surface-300">
-                    Project Name <span class="text-red-500">*</span>
-                </label>
+            <InputContainer label="Project Name" :error="props.validationErrors.name" required>
                 <InputText
-                    id="project-name"
                     :value="props.name"
                     placeholder="e.g. Atlas Platform"
                     :invalid="!!props.validationErrors.name"
                     class="w-full"
                     @input="emit('update:name', ($event.target as HTMLInputElement).value)"
                 />
-                <span v-if="props.validationErrors.name" class="text-xs text-red-500">
-                    {{ props.validationErrors.name[0] }}
-                </span>
-            </div>
+            </InputContainer>
         </form>
 
         <template #footer>
