@@ -32,7 +32,7 @@ function onPageChange(newPage: number) {
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="app-card flex h-full w-full flex-col overflow-hidden">
-            <div class="p-2 border-surface-200 flex items-center justify-end border-b">
+            <div class="gap-2 p-1 flex items-center justify-end">
                 <UploadAttachmentButton
                     :entity-type="TASK_MODULE_NAME"
                     :entity-id="taskId"

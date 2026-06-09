@@ -3,6 +3,7 @@
 namespace App\Domains\TaskList\Models;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
 /** @method static \Illuminate\Database\Eloquent\Builder filter(array $filters) */
@@ -34,6 +36,11 @@ class TaskListModel extends Model
             'name'       => $this->name,
             'project_id' => $this->project_id,
         ];
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(TaskModel::class, 'task_list_id');
     }
 
     public function project(): BelongsTo

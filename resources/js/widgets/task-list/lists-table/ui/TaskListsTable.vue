@@ -2,13 +2,13 @@
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
-import type { IAttachment } from '@/entities/attachment/types'
+import type { ITaskList } from '@/entities/task-list/types'
 import type { PaginationMeta } from '@/shared/types'
 import { PAGE_SIZE } from '@/app/config'
-import { formatFileSize } from '@/shared/utils/file.util'
+import { DisplayDate } from '@/shared/components/display'
 
 interface Props {
-    attachments: IAttachment[]
+    taskLists: ITaskList[]
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
@@ -27,7 +27,7 @@ function onPageChange(event: { page: number }) {
 
 <template>
     <DataTable
-        :value="props.attachments"
+        :value="props.taskLists"
         :loading="props.isPending"
         lazy
         striped-rows
@@ -37,23 +37,17 @@ function onPageChange(event: { page: number }) {
         size="small"
         pt:footer:class="p-0 border-none"
     >
-        <Column field="original_name" header="Name" />
-        <Column field="role" header="Role" />
-        <Column field="extension" header="Type">
+        <Column field="name" header="Name" />
+        <Column field="tasks_count" header="Tasks" style="width: 8rem">
             <template #body="{ data }">
-                {{ data.extension?.toLowerCase() ?? '' }}
+                <span :class="(data.tasks_count ?? 0) === 0 ? 'text-surface-400' : ''">
+                    {{ data.tasks_count ?? 0 }}
+                </span>
             </template>
         </Column>
-        <Column field="size_bytes" header="Size">
+        <Column field="created_at" header="Created" style="width: 12rem">
             <template #body="{ data }">
-                {{ formatFileSize(data.size_bytes) }}
-            </template>
-        </Column>
-        <Column header="Download" style="width: 8rem">
-            <template #body="{ data }">
-                <a :href="data.url" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:underline">
-                    Download
-                </a>
+                <DisplayDate :date="data.created_at" />
             </template>
         </Column>
         <Column v-if="$slots.actions" style="width: 3rem">

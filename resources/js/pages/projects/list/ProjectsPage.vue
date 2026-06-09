@@ -17,6 +17,7 @@ import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } fro
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
 import { DisplayDate } from '@/shared/components/display'
+import { IconButton } from '@/shared/components/button'
 
 const router = useRouter()
 const upsertDialog = useProjectUpsertDialog()
@@ -142,8 +143,8 @@ onUnmounted(() => {
                     </Column>
                     <Column style="width: 3rem">
                         <template #body="{ data }">
-                            <button
-                                class="pi pi-ellipsis-v p-1 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 cursor-pointer"
+                            <IconButton
+                                icon="material-symbols-light:more-vert"
                                 @click.stop="openRowMenu($event, data)"
                             />
                         </template>

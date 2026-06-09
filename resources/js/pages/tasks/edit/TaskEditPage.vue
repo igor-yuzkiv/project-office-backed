@@ -9,7 +9,7 @@ import { taskPriorityOptions, taskStatusOptions, TASK_MODULE_NAME, TASK_ATTACHME
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
-import type { ITaskList } from '@/entities/task_list/types'
+import type { ITaskList } from '@/entities/task-list/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'

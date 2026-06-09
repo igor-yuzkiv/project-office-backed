@@ -30,7 +30,8 @@ class TaskListsController extends Controller
         $pagination = $this->getPaginationParams();
         $sort = $this->getSortParams();
 
-        $taskLists = TaskListModel::with(['createdBy', 'updatedBy'])
+        $taskLists = TaskListModel::withCount('tasks')
+            ->with(['createdBy', 'updatedBy'])
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -46,7 +47,7 @@ class TaskListsController extends Controller
             ->orderBy($sort->field, $sort->direction)
             ->query(function (Builder $q) use ($request): Builder {
                 /** @var Builder<TaskListModel> $q */
-                return $q->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
+                return $q->withCount('tasks')->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 

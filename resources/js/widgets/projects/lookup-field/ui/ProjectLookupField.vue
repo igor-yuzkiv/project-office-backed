@@ -8,8 +8,9 @@ import { useProjectsSearchQuery } from '@/entities/project/queries'
 withDefaults(
     defineProps<{
         object?: boolean
+        disabled?: boolean
     }>(),
-    { object: false }
+    { object: false, disabled: false }
 )
 
 const modelValue = defineModel<IProject | string | null>({ required: true })
@@ -37,6 +38,7 @@ function onUpdate(value: unknown) {
         :option-label="optionLabel"
         :object="object"
         :loading="isPending"
+        :disabled="disabled"
         placeholder="Search projects..."
         @update:model-value="onUpdate"
         @search="searchTerm = $event"

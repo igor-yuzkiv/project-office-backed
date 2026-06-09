@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import { LookupField } from '@/shared/components/input'
-import type { ITaskList } from '@/entities/task_list/types'
-import { useTaskListsSearchQuery } from '@/entities/task_list/queries'
+import type { ITaskList } from '@/entities/task-list/types'
+import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
 
 const props = withDefaults(
     defineProps<{

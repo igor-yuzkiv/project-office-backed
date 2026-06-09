@@ -37,15 +37,7 @@ function handleFileChange(event: Event) {
 </script>
 
 <template>
-    <Button
-        label="Upload"
-        severity="info"
-        outlined
-        text
-        size="small"
-        :disabled="isPending"
-        @click="openFilePicker"
-    >
+    <Button label="Upload" severity="info" text :disabled="isPending" @click="openFilePicker">
         <template #icon>
             <Icon icon="material-symbols-light:upload-rounded" class="text-lg" />
         </template>

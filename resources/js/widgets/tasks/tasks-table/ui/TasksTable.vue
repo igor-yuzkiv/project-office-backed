@@ -78,6 +78,11 @@ function onPageChange(event: { page: number }) {
                 <DisplayDate :date="data.created_at" />
             </template>
         </Column>
+        <Column v-if="$slots.actions" style="width: 3rem">
+            <template #body="{ data }">
+                <slot name="actions" :row="data" />
+            </template>
+        </Column>
 
         <template #footer>
             <Paginator

@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
 import { useTasksSearchQuery } from '@/entities/task/queries'
+import { useDeleteTaskMutation } from '@/entities/task/mutations'
 import type { ITask } from '@/entities/task/types'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
+import { IconButton } from '@/shared/components/button'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTable } from '@/widgets/tasks/tasks-table'
@@ -16,6 +20,29 @@ const router = useRouter()
 const layoutStore = useAppLayoutStore()
 
 const taskCreateDialog = useTaskCreateDialog()
+const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
+
+const rowMenu = ref<InstanceType<typeof Menu>>()
+const selectedTask = ref<ITask>()
+
+const rowMenuItems: MenuItem[] = [
+    {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => router.push({ name: 'task-edit', params: { id: selectedTask.value!.id } }),
+    },
+    {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () =>
+            deleteTask(selectedTask.value!.id, `Are you sure you want to delete "${selectedTask.value!.name}"?`),
+    },
+]
+
+function openRowMenu(event: MouseEvent, task: ITask) {
+    selectedTask.value = task
+    rowMenu.value?.toggle(event)
+}
 
 const filterSidebar = useFilterSidebar(createDefaultTaskFiltersDefMap())
 
@@ -98,7 +125,11 @@ onUnmounted(() => {
                     :page="page"
                     @row-click="onRowClick"
                     @page-change="onPageChange"
-                />
+                >
+                    <template #actions="{ row }">
+                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                    </template>
+                </TasksTable>
             </div>
         </div>
 
@@ -114,6 +145,8 @@ onUnmounted(() => {
         />
 
         <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
+
+        <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
         <TaskCreateDialog
             :visible="taskCreateDialog.visible.value"

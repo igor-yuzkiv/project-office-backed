@@ -1,23 +1,33 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Paginator from 'primevue/paginator'
+import Button from 'primevue/button'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
+import { PAGE_SIZE } from '@/app/config'
+import { useProjectQuery } from '@/entities/project/queries'
 import { useTasksSearchQuery } from '@/entities/task/queries'
+import { useDeleteTaskMutation } from '@/entities/task/mutations'
 import type { ITask } from '@/entities/task/types'
 import type { FilterPayloadItem } from '@/shared/filters'
-import { PAGE_SIZE } from '@/app/config'
-import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
-import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
+import { SearchInput } from '@/shared/components/input'
+import { IconButton } from '@/shared/components/button'
+import { TasksTable } from '@/widgets/tasks/tasks-table'
+import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
+import { Icon } from '@iconify/vue'
 
 const route = useRoute()
 const router = useRouter()
 const projectId = route.params.id as string
 
+const { project } = useProjectQuery(projectId)
+
+const searchInput = ref('')
+const searchQuery = ref('')
 const page = ref(1)
 
 const searchParams = computed(() => ({
+    query: searchQuery.value,
     filters: [
         {
             filter_key: 'lookup',
@@ -33,58 +43,89 @@ const searchParams = computed(() => ({
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
 
-function onRowClick(event: { data: ITask }) {
-    router.push({ name: 'task-details', params: { id: event.data.id } })
+const taskCreateDialog = useTaskCreateDialog()
+const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
+
+const rowMenu = ref<InstanceType<typeof Menu>>()
+const selectedTask = ref<ITask>()
+
+const rowMenuItems: MenuItem[] = [
+    {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => router.push({ name: 'task-edit', params: { id: selectedTask.value!.id } }),
+    },
+    {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () =>
+            deleteTask(selectedTask.value!.id, `Are you sure you want to delete "${selectedTask.value!.name}"?`),
+    },
+]
+
+function openRowMenu(event: MouseEvent, task: ITask) {
+    selectedTask.value = task
+    rowMenu.value?.toggle(event)
 }
 
-function onPageChange(event: { page: number }) {
-    page.value = event.page + 1
+function onRowClick(task: ITask) {
+    router.push({ name: 'task-details', params: { id: task.id } })
+}
+
+function onSearchSubmit() {
+    searchQuery.value = searchInput.value
+    page.value = 1
+}
+
+function onPageChange(newPage: number) {
+    page.value = newPage
 }
 </script>
 
 <template>
-    <DataTable
-        :value="tasks"
-        :loading="isPending"
-        lazy
-        striped-rows
-        class="p-0 w-full cursor-pointer"
-        row-hover
-        size="small"
-        @row-click="onRowClick"
-        pt:footer:class="p-0 border-none"
-    >
-        <Column field="key" header="Key" style="width: 10rem">
-            <template #body="{ data }">
-                <CopyToClipboard :text="data.key" class="text-surface-500" />
-            </template>
-        </Column>
-        <Column field="name" header="Task Name" />
-        <Column field="status" header="Status" style="width: 9rem">
-            <template #body="{ data }">
-                <TaskStatusTag :status="data.status" class="w-full" />
-            </template>
-        </Column>
-        <Column field="priority.name" header="Priority" style="width: 7rem">
-            <template #body="{ data }">
-                <TaskPriorityTag :priority="data.priority" class="w-full" />
-            </template>
-        </Column>
-        <Column field="created_at" header="Created" style="width: 12rem">
-            <template #body="{ data }">
-                <DisplayDate :date="data.created_at" />
-            </template>
-        </Column>
+    <div class="flex flex-1 flex-col overflow-hidden">
+        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
+            <div class="gap-2 p-1 flex items-center justify-between">
+                <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
+                <Button
+                    severity="info"
+                    outlined
+                    text
+                    label="New Task"
+                    :disabled="!project"
+                    @click="project && taskCreateDialog.open(project)"
+                >
+                    <template #icon>
+                        <Icon icon="material-symbols:add" class="text-lg" />
+                    </template>
+                </Button>
+            </div>
+            <div class="flex h-full w-full flex-col overflow-hidden">
+                <TasksTable
+                    :tasks="tasks"
+                    :is-pending="isPending"
+                    :pagination-meta="paginationMeta"
+                    :page="page"
+                    @row-click="onRowClick"
+                    @page-change="onPageChange"
+                >
+                    <template #actions="{ row }">
+                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                    </template>
+                </TasksTable>
+            </div>
+        </div>
 
-        <template #footer>
-            <Paginator
-                v-if="paginationMeta && paginationMeta.last_page > 1"
-                :rows="PAGE_SIZE"
-                :total-records="paginationMeta.total"
-                :first="(page - 1) * PAGE_SIZE"
-                @page="onPageChange"
-                pt:root:class="p-0"
-            />
-        </template>
-    </DataTable>
+        <Menu ref="rowMenu" :model="rowMenuItems" popup />
+
+        <TaskCreateDialog
+            :visible="taskCreateDialog.visible.value"
+            :form-data="taskCreateDialog.formData.value"
+            :validation-errors="taskCreateDialog.validationErrors.value"
+            :is-pending="taskCreateDialog.isPending.value"
+            @update:visible="taskCreateDialog.visible.value = $event"
+            @update:form-data="taskCreateDialog.formData.value = $event"
+            @submit="taskCreateDialog.submit()"
+        />
+    </div>
 </template>

@@ -13,13 +13,14 @@ class TaskListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'project_id' => $this->project_id,
-            'name'       => $this->name,
-            'created_by' => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
-            'updated_by' => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'id'          => $this->id,
+            'project_id'  => $this->project_id,
+            'name'        => $this->name,
+            'tasks_count' => $this->whenCounted('tasks', fn () => $this->tasks_count),
+            'created_by'  => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
+            'updated_by'  => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
+            'created_at'  => $this->created_at,
+            'updated_at'  => $this->updated_at,
         ];
     }
 }
