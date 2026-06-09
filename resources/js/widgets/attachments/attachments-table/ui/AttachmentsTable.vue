@@ -38,6 +38,7 @@ function onPageChange(event: { page: number }) {
         pt:footer:class="p-0 border-none"
     >
         <Column field="original_name" header="Name" />
+        <Column field="role" header="Role" />
         <Column field="extension" header="Type">
             <template #body="{ data }">
                 {{ data.extension?.toLowerCase() ?? '' }}

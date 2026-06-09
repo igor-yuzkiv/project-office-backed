@@ -1,5 +1,6 @@
 import type { AttachmentRole } from '@/shared/types'
 
 export const TASK_ATTACHMENT_ROLES = {
-    DESCRIPTION: 'task_description',
+    UPLOAD: 'tasks.upload',
+    DESCRIPTION: 'tasks.description',
 } as const satisfies Record<string, AttachmentRole>

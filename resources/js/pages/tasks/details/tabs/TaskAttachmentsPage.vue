@@ -2,9 +2,10 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { PAGE_SIZE } from '@/app/config'
-import { TASK_MODULE_NAME } from '@/entities/task/config'
+import { TASK_ATTACHMENT_ROLES, TASK_MODULE_NAME } from '@/entities/task/config'
 import { useAttachmentsSearchQuery } from '@/entities/attachment/queries'
 import { AttachmentsTable } from '@/widgets/attachments/attachments-table'
+import { AttachmentDropZone, UploadAttachmentButton } from '@/widgets/attachments/attachment-uploader'
 
 const route = useRoute()
 
@@ -31,13 +32,23 @@ function onPageChange(newPage: number) {
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="app-card flex h-full w-full flex-col overflow-hidden">
-            <AttachmentsTable
-                :attachments="attachments"
-                :is-pending="isPending"
-                :pagination-meta="paginationMeta"
-                :page="page"
-                @page-change="onPageChange"
-            />
+            <div class="p-2 border-surface-200 flex items-center justify-end border-b">
+                <UploadAttachmentButton
+                    :entity-type="TASK_MODULE_NAME"
+                    :entity-id="taskId"
+                    :role="TASK_ATTACHMENT_ROLES.UPLOAD"
+                />
+            </div>
+
+            <AttachmentDropZone :entity-type="TASK_MODULE_NAME" :entity-id="taskId">
+                <AttachmentsTable
+                    :attachments="attachments"
+                    :is-pending="isPending"
+                    :pagination-meta="paginationMeta"
+                    :page="page"
+                    @page-change="onPageChange"
+                />
+            </AttachmentDropZone>
         </div>
     </div>
 </template>
