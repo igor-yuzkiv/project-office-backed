@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
@@ -11,13 +11,10 @@ import { PAGE_SIZE } from '@/app/config'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 
-interface Props {
-    projectId: string
-}
-
-const props = defineProps<Props>()
-
+const route = useRoute()
 const router = useRouter()
+const projectId = route.params.id as string
+
 const page = ref(1)
 
 const searchParams = computed(() => ({
@@ -25,7 +22,7 @@ const searchParams = computed(() => ({
         {
             filter_key: 'lookup',
             field_name: 'project_id',
-            value: props.projectId,
+            value: projectId,
             matchMode: null,
             params: {},
         } satisfies FilterPayloadItem,

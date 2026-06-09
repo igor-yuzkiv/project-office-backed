@@ -28,6 +28,39 @@ const router = createRouter({
             name: 'project-details',
             component: () => import('@/pages/projects/details/ProjectDetailsPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Project' },
+            redirect: (to) => ({ name: 'project-details.details', params: to.params }),
+            children: [
+                {
+                    path: 'details',
+                    name: 'project-details.details',
+                    component: () => import('@/pages/projects/details/tabs/ProjectOverviewPage.vue'),
+                },
+                {
+                    path: 'task-lists',
+                    name: 'project-details.task-lists',
+                    component: () => import('@/pages/projects/details/tabs/ProjectTaskListsPage.vue'),
+                },
+                {
+                    path: 'tasks',
+                    name: 'project-details.tasks',
+                    component: () => import('@/pages/projects/details/tabs/ProjectTasksPage.vue'),
+                },
+                {
+                    path: 'issues',
+                    name: 'project-details.issues',
+                    component: () => import('@/pages/projects/details/tabs/ProjectIssuesPage.vue'),
+                },
+                {
+                    path: 'attachments',
+                    name: 'project-details.attachments',
+                    component: () => import('@/pages/projects/details/tabs/ProjectAttachmentsPage.vue'),
+                },
+                {
+                    path: 'documentation',
+                    name: 'project-details.documentation',
+                    component: () => import('@/pages/projects/details/tabs/ProjectDocumentationPage.vue'),
+                },
+            ],
         },
         {
             path: '/tasks',
@@ -40,6 +73,29 @@ const router = createRouter({
             name: 'task-details',
             component: () => import('@/pages/tasks/details/TaskDetailsPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Task' },
+            redirect: (to) => ({ name: 'task-details.description', params: to.params }),
+            children: [
+                {
+                    path: 'details',
+                    name: 'task-details.details',
+                    component: () => import('@/pages/tasks/details/tabs/TaskOverviewPage.vue'),
+                },
+                {
+                    path: 'description',
+                    name: 'task-details.description',
+                    component: () => import('@/pages/tasks/details/tabs/TaskDescriptionPage.vue'),
+                },
+                {
+                    path: 'comments',
+                    name: 'task-details.comments',
+                    component: () => import('@/pages/tasks/details/tabs/TaskCommentsPage.vue'),
+                },
+                {
+                    path: 'attachments',
+                    name: 'task-details.attachments',
+                    component: () => import('@/pages/tasks/details/tabs/TaskAttachmentsPage.vue'),
+                },
+            ],
         },
         {
             path: '/tasks/:id/edit',
