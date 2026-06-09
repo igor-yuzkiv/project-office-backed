@@ -11,7 +11,7 @@ import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import type { ITaskList } from '@/entities/task-list/types'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
-import { TaskListsTable } from '@/widgets/task-list/lists-table'
+import { TaskListsTable } from '@/widgets/task-list/views/table'
 import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
 import { Icon } from '@iconify/vue'
 

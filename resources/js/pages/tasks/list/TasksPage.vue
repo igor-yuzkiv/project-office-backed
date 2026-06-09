@@ -13,7 +13,7 @@ import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
-import { TasksTable } from '@/widgets/tasks/tasks-table'
+import { TasksTable } from '@/widgets/tasks/views/table'
 import { createDefaultTaskFiltersDefMap } from '@/entities/task/config'
 
 const router = useRouter()

@@ -12,7 +12,7 @@ import type { ITask } from '@/entities/task/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
-import { TasksTable } from '@/widgets/tasks/tasks-table'
+import { TasksTable } from '@/widgets/tasks/views/table'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { Icon } from '@iconify/vue'
 
