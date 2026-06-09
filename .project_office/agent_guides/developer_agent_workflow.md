@@ -50,10 +50,10 @@
 
 ### Naming
 
-| Type | Active | Completed |
-| --- | --- | --- |
-| Sprint (папка) | `001 - Short Description` | `X - 001 - Short Description` |
-| Task (файл) | `001 - Short Description.md` | `X - 001 - Short Description.md` |
+| Type           | Active                       | Completed                        |
+| -------------- | ---------------------------- | -------------------------------- |
+| Sprint (папка) | `001 - Short Description`    | `X - 001 - Short Description`    |
+| Task (файл)    | `001 - Short Description.md` | `X - 001 - Short Description.md` |
 
 Префікс `X - ` додавати тільки після явного підтвердження користувача, що sprint/task завершені і правок більше немає.
 
