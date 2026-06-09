@@ -27,4 +27,5 @@ Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']
 
 Route::post('attachments/search', [AttachmentsController::class, 'search'])->middleware(['auth:sanctum'])->name('attachments.search');
 Route::post('attachments', [AttachmentsController::class, 'store'])->middleware(['auth:sanctum'])->name('attachments.store');
+Route::delete('attachments/{attachment}', [AttachmentsController::class, 'destroy'])->middleware(['auth:sanctum'])->name('attachments.destroy');
 Route::get('attachments/{attachment}/content', [AttachmentsController::class, 'content'])->middleware(['signed'])->name('attachments.content');

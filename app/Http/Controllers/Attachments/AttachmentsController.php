@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Attachments;
 
+use App\Domains\Attachment\Actions\DeleteAttachment\DeleteAttachmentHandler;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentCommand;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentHandler;
 use App\Domains\Attachment\Models\AttachmentModel;
@@ -19,6 +20,7 @@ class AttachmentsController extends Controller
 {
     public function __construct(
         private readonly UploadAttachmentHandler $uploadHandler,
+        private readonly DeleteAttachmentHandler $deleteHandler,
         private readonly AttachmentStorageService $storage,
     ) {}
 
@@ -57,6 +59,13 @@ class AttachmentsController extends Controller
         return (new AttachmentResource($attachment))
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function destroy(AttachmentModel $attachment): JsonResponse
+    {
+        $this->deleteHandler->handle($attachment);
+
+        return response()->json(['message' => 'Attachment deleted.']);
     }
 
     public function content(AttachmentModel $attachment): RedirectResponse

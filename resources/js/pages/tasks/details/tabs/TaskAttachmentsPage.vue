@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
 import { PAGE_SIZE } from '@/app/config'
 import { TASK_ATTACHMENT_ROLES, TASK_MODULE_NAME } from '@/entities/task/config'
 import { useAttachmentsSearchQuery } from '@/entities/attachment/queries'
+import { useDeleteAttachmentMutation } from '@/entities/attachment/mutations'
+import type { IAttachment } from '@/entities/attachment/types'
+import { IconButton } from '@/shared/components/button'
 import { AttachmentsTable } from '@/widgets/attachments/views/table'
 import { AttachmentDropZone, UploadAttachmentButton } from '@/widgets/attachments/attachment-uploader'
 
@@ -23,6 +28,33 @@ const searchParams = computed(() => ({
 }))
 
 const { attachments, paginationMeta, isPending } = useAttachmentsSearchQuery(searchParams)
+
+const { mutateWithConfirm: deleteAttachment } = useDeleteAttachmentMutation()
+
+const rowMenu = ref<InstanceType<typeof Menu>>()
+const selectedAttachment = ref<IAttachment>()
+
+const rowMenuItems: MenuItem[] = [
+    {
+        label: 'Download',
+        icon: 'pi pi-download',
+        command: () => window.open(selectedAttachment.value!.url, '_blank', 'noopener,noreferrer'),
+    },
+    {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () =>
+            deleteAttachment(
+                selectedAttachment.value!.id,
+                `Are you sure you want to delete "${selectedAttachment.value!.original_name}"?`
+            ),
+    },
+]
+
+function openRowMenu(event: MouseEvent, attachment: IAttachment) {
+    selectedAttachment.value = attachment
+    rowMenu.value?.toggle(event)
+}
 
 function onPageChange(newPage: number) {
     page.value = newPage
@@ -47,8 +79,14 @@ function onPageChange(newPage: number) {
                     :pagination-meta="paginationMeta"
                     :page="page"
                     @page-change="onPageChange"
-                />
+                >
+                    <template #actions="{ row }">
+                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                    </template>
+                </AttachmentsTable>
             </AttachmentDropZone>
         </div>
+
+        <Menu ref="rowMenu" :model="rowMenuItems" popup />
     </div>
 </template>

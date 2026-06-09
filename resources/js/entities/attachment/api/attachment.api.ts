@@ -11,6 +11,10 @@ export async function searchAttachmentsRequest(params: AttachmentSearchParams): 
         .then((res) => res.data)
 }
 
+export async function deleteAttachmentRequest(id: string): Promise<{ message: string }> {
+    return httpClient.delete<{ message: string }>(`/attachments/${id}`).then((res) => res.data)
+}
+
 export async function uploadAttachmentRequest(input: IUploadAttachmentInput): Promise<AttachmentResponse> {
     const formData = new FormData()
     formData.append('file', input.file)
