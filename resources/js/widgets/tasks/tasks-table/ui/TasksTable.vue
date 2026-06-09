@@ -56,7 +56,7 @@ function onPageChange(event: { page: number }) {
                 <RouterLink
                     v-if="data.project"
                     :to="{ name: 'project-details', params: { id: data.project_id } }"
-                    class="text-primary-500 block truncate hover:underline"
+                    class="app-link block truncate"
                     :title="`${data.project.prefix} - ${data.project.name}`"
                 >
                     {{ data.project.prefix }} - {{ data.project.name }}

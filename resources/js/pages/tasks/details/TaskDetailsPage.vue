@@ -61,7 +61,11 @@ onUnmounted(() => {
                     <div class="gap-x-3 flex items-center">
                         <DisplayField v-if="task.project" inline>
                             <ProjectIcon :prefix="task.project.prefix" size="small" />
-                            <span class="text-sm text-surface-500">{{ task.project.name }}</span>
+                            <RouterLink
+                                :to="{ name: 'project-details', params: { id: task.project_id } }"
+                                class="text-sm app-link"
+                                >{{ task.project.name }}</RouterLink
+                            >
                         </DisplayField>
 
                         <DisplayField v-if="task.task_list" label="Task List" :value="task.task_list.name" inline />
