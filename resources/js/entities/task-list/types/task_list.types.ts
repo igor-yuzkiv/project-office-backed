@@ -4,6 +4,7 @@ import type { SortParams } from '@/shared/sort'
 export interface ITaskList extends IEntity {
     project_id: string
     name: string
+    tasks_count?: number
 }
 
 export interface ICreateTaskListInput {
