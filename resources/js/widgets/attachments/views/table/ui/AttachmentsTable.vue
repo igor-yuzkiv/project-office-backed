@@ -49,11 +49,6 @@ function onPageChange(event: { page: number }) {
                 {{ formatFileSize(data.size_bytes) }}
             </template>
         </Column>
-        <Column header="Download" style="width: 8rem">
-            <template #body="{ data }">
-                <a :href="data.url" target="_blank" rel="noopener noreferrer" class="app-link"> Download </a>
-            </template>
-        </Column>
         <Column v-if="$slots.actions" style="width: 3rem">
             <template #body="{ data }">
                 <slot name="actions" :row="data" />
