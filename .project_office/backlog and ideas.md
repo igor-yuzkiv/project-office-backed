@@ -64,3 +64,8 @@
 # інтегарція з аі для керування
 типу як моє воркфлоу з планування робивання на задчі і implementation doc
 але через mvp та фіксуванням результатів там
+
+# User Expiriance
+- save filters and sorting
+- views
+- 

@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Paginator from 'primevue/paginator'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import type { ITask } from '@/entities/task/types'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
-import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
-import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
+import { TasksTable } from '@/widgets/tasks/tasks-table'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
 
@@ -63,8 +59,8 @@ const searchParams = computed(() => ({
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
 
-function onRowClick(event: { data: ITask }) {
-    router.push({ name: 'task-details', params: { id: event.data.id } })
+function onRowClick(task: ITask) {
+    router.push({ name: 'task-details', params: { id: task.id } })
 }
 
 function onSortApply() {
@@ -77,8 +73,8 @@ function onSearchSubmit() {
     page.value = 1
 }
 
-function onPageChange(event: { page: number }) {
-    page.value = event.page + 1
+function onPageChange(newPage: number) {
+    page.value = newPage
 }
 
 watch([sort.sortBy, sort.sortOrder], () => {
@@ -109,64 +105,14 @@ onUnmounted(() => {
             </div>
 
             <div class="app-card flex h-full w-full flex-col overflow-hidden">
-                <DataTable
-                    :value="tasks"
-                    :loading="isPending"
-                    lazy
-                    striped-rows
-                    class="p-0 w-full cursor-pointer"
-                    row-hover
-                    scrollable
-                    scroll-height="flex"
-                    size="small"
+                <TasksTable
+                    :tasks="tasks"
+                    :is-pending="isPending"
+                    :pagination-meta="paginationMeta"
+                    :page="page"
                     @row-click="onRowClick"
-                    pt:footer:class="p-0 border-none"
-                >
-                    <Column field="key" header="Key" style="width: 10rem">
-                        <template #body="{ data }">
-                            <CopyToClipboard :text="data.key" class="text-surface-500" />
-                        </template>
-                    </Column>
-                    <Column field="name" header="Task Name" />
-                    <Column field="project.name" header="Project" style="width: 12rem; min-width: 0">
-                        <template #body="{ data }">
-                            <RouterLink
-                                v-if="data.project"
-                                :to="{ name: 'project-details', params: { id: data.project_id } }"
-                                class="text-primary-500 block truncate hover:underline"
-                                :title="`${data.project.prefix} - ${data.project.name}`"
-                            >
-                                {{ data.project.prefix }} - {{ data.project.name }}
-                            </RouterLink>
-                        </template>
-                    </Column>
-                    <Column field="status" header="Status" style="width: 9rem">
-                        <template #body="{ data }">
-                            <TaskStatusTag :status="data.status" class="w-full" />
-                        </template>
-                    </Column>
-                    <Column field="priority.name" header="Priority" style="width: 7rem">
-                        <template #body="{ data }">
-                            <TaskPriorityTag :priority="data.priority" class="w-full" />
-                        </template>
-                    </Column>
-                    <Column field="created_at" header="Created" style="width: 12rem">
-                        <template #body="{ data }">
-                            <DisplayDate :date="data.created_at" />
-                        </template>
-                    </Column>
-
-                    <template #footer>
-                        <Paginator
-                            v-if="paginationMeta && paginationMeta.last_page > 1"
-                            :rows="PAGE_SIZE"
-                            :total-records="paginationMeta.total"
-                            :first="(page - 1) * PAGE_SIZE"
-                            @page="onPageChange"
-                            pt:root:class="p-0"
-                        />
-                    </template>
-                </DataTable>
+                    @page-change="onPageChange"
+                />
             </div>
         </div>
 
