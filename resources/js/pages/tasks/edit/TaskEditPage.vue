@@ -5,7 +5,7 @@ import { MarkdownEditor } from '@/shared/components/md-editor'
 import { InputContainer } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import { taskPriorityOptions, taskStatusOptions } from '@/entities/task/config'
+import { taskPriorityOptions, taskStatusOptions, TASK_MODULE_NAME } from '@/entities/task/config'
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
@@ -155,7 +155,7 @@ onUnmounted(() => {
                 v-model="formData.description"
                 preview
                 style="height: 100%"
-                image_entity_type="tasks"
+                :image_entity_type="TASK_MODULE_NAME"
                 :image_entity_id="taskId"
                 image_role="task_description"
             />

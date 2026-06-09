@@ -1,7 +1,15 @@
 import { httpClient } from '@/shared/api'
-import type { IAttachment, IUploadAttachmentInput } from '../types'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
+import type { IAttachment, IUploadAttachmentInput, AttachmentSearchParams } from '../types'
 
 type AttachmentResponse = { data: IAttachment }
+
+export async function searchAttachmentsRequest(params: AttachmentSearchParams): PromisePaginatedResponse<IAttachment> {
+    const { filters = [], include, ...pagination } = params
+    return httpClient
+        .post<PaginatedResponse<IAttachment>>('/attachments/search', { filters, include, ...pagination })
+        .then((res) => res.data)
+}
 
 export async function uploadAttachmentRequest(input: IUploadAttachmentInput): Promise<AttachmentResponse> {
     const formData = new FormData()

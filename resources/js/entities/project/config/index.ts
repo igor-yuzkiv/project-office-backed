@@ -8,3 +8,5 @@ export const ProjectQueryKey = {
     search: (params: MaybeRefOrGetter<ProjectSearchParams>) => [...ProjectQueryKey.all, 'search', params] as const,
     detail: (id: MaybeRefOrGetter<string>) => [...ProjectQueryKey.all, 'detail', id] as const,
 }
+
+export * from './project-module.config'

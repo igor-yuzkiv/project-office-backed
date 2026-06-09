@@ -21,10 +21,7 @@ const { task } = useTaskQuery(taskId)
         <DisplayField label="Priority">
             <TaskPriorityTag :priority="task.priority" class="w-fit" />
         </DisplayField>
-        <DisplayField
-            label="Project"
-            :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null"
-        />
+        <DisplayField label="Project" :value="task.project ? `${task.project.prefix} - ${task.project.name}` : null" />
         <DisplayField label="Task List" :value="task.task_list?.name ?? null" />
         <DisplayField label="Created By">
             <div v-if="task.created_by" class="gap-2 flex items-center">

@@ -6,6 +6,7 @@ use App\Domains\Attachment\Models\AttachmentModel;
 use App\Http\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\URL;
 
 /** @mixin AttachmentModel */
 class AttachmentResource extends JsonResource
@@ -14,7 +15,7 @@ class AttachmentResource extends JsonResource
     {
         return [
             'id'               => $this->id,
-            'url'              => route('attachments.content', $this->id),
+            'url'              => URL::temporarySignedRoute('attachments.content', now()->addHour(), ['attachment' => $this->id]),
             'original_name'    => $this->original_name,
             'extension'        => $this->extension,
             'mime_type'        => $this->mime_type,

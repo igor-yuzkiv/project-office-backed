@@ -17,7 +17,12 @@ const projectId = route.params.id as string
 
 const { project, isError } = useProjectQuery(projectId)
 
-const activeTab = computed(() => String(route.name ?? '').split('.').at(-1) ?? 'details')
+const activeTab = computed(
+    () =>
+        String(route.name ?? '')
+            .split('.')
+            .at(-1) ?? 'details'
+)
 
 watch(isError, (error) => {
     if (error) toast.error('Failed to load project.')

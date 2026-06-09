@@ -25,5 +25,6 @@ Route::apiResource('task-lists', TaskListsController::class)->middleware(['auth:
 Route::post('tasks/search', [TasksController::class, 'search'])->middleware(['auth:sanctum'])->name('tasks.search');
 Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']);
 
+Route::post('attachments/search', [AttachmentsController::class, 'search'])->middleware(['auth:sanctum'])->name('attachments.search');
 Route::post('attachments', [AttachmentsController::class, 'store'])->middleware(['auth:sanctum'])->name('attachments.store');
-Route::get('attachments/{attachment}/content', [AttachmentsController::class, 'content'])->middleware(['auth:sanctum'])->name('attachments.content');
+Route::get('attachments/{attachment}/content', [AttachmentsController::class, 'content'])->middleware(['signed'])->name('attachments.content');

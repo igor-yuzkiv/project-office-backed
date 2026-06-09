@@ -19,7 +19,12 @@ const taskId = route.params.id as string
 
 const { task, isError } = useTaskQuery(taskId)
 
-const activeTab = computed(() => String(route.name ?? '').split('.').at(-1) ?? 'description')
+const activeTab = computed(
+    () =>
+        String(route.name ?? '')
+            .split('.')
+            .at(-1) ?? 'description'
+)
 
 watch(isError, (error) => {
     if (error) toast.error('Failed to load task.')

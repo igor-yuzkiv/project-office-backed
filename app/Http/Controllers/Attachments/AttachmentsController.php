@@ -9,9 +9,11 @@ use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Shared\ValueObjects\EntityRef;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Attachments\UploadAttachmentRequest;
+use App\Http\Requests\Shared\SearchRequest;
 use App\Http\Resources\Attachments\AttachmentResource;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AttachmentsController extends Controller
 {
@@ -19,6 +21,20 @@ class AttachmentsController extends Controller
         private readonly UploadAttachmentHandler $uploadHandler,
         private readonly AttachmentStorageService $storage,
     ) {}
+
+    public function search(SearchRequest $request): AnonymousResourceCollection
+    {
+        $sort = $this->getSortParams();
+        $pagination = $this->getPaginationParams();
+
+        $attachments = AttachmentModel::query()
+            ->with(['createdBy', 'updatedBy'])
+            ->filter((array) $request->input('filters', []))
+            ->orderBy($sort->field, $sort->direction)
+            ->paginate($pagination->perPage, page: $pagination->page);
+
+        return AttachmentResource::collection($attachments);
+    }
 
     public function store(UploadAttachmentRequest $request): JsonResponse
     {
@@ -43,8 +59,8 @@ class AttachmentsController extends Controller
             ->setStatusCode(201);
     }
 
-    public function content(AttachmentModel $attachment): StreamedResponse
+    public function content(AttachmentModel $attachment): RedirectResponse
     {
-        return $this->storage->streamResponse($attachment);
+        return redirect()->away($this->storage->temporaryUrl($attachment));
     }
 }
