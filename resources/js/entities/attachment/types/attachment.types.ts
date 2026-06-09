@@ -1,4 +1,4 @@
-import type { IEntity, ModuleName } from '@/shared/types'
+import type { AttachmentRole, IEntity, ModuleName } from '@/shared/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
 
@@ -12,14 +12,14 @@ export interface IAttachment extends IEntity {
     storage_key: string
     entity_type: ModuleName | null
     entity_id: string | null
-    role: string | null
+    role: AttachmentRole | null
 }
 
 export interface IUploadAttachmentInput {
     file: File
     entity_type?: ModuleName
     entity_id?: string
-    role?: string
+    role?: AttachmentRole
 }
 
 export type AttachmentInclude = 'createdBy' | 'updatedBy'

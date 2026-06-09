@@ -3,13 +3,14 @@ import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { uploadAttachmentRequest } from '@/entities/attachment/api'
+import type { AttachmentRole } from '@/shared/types'
 
 const props = withDefaults(
     defineProps<{
         preview?: boolean
         image_entity_type?: string
         image_entity_id?: string
-        image_role?: string
+        image_role?: AttachmentRole
     }>(),
     { preview: false }
 )
