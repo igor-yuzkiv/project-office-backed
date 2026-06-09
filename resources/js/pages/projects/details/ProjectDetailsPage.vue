@@ -12,6 +12,7 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { UserAvatar } from '@/widgets/user/user-avatar'
+import ProjectTasksTab from './partials/ProjectTasksTab.vue'
 
 const route = useRoute()
 const layoutStore = useAppLayoutStore()
@@ -89,7 +90,7 @@ onUnmounted(() => {
                 </TabPanel>
 
                 <TabPanel value="tasks">
-                    <p class="text-surface-400">Not implemented</p>
+                    <ProjectTasksTab :project-id="projectId" />
                 </TabPanel>
 
                 <TabPanel value="issues">

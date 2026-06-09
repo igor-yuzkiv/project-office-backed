@@ -4,34 +4,20 @@ import { useRouter } from 'vue-router'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import type { ITask } from '@/entities/task/types'
 import { PAGE_SIZE } from '@/app/config'
-import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
+import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTable } from '@/widgets/tasks/tasks-table'
-import { ProjectLookupField } from '@/widgets/projects/lookup-field'
-import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
+import { createDefaultTaskFiltersDefMap } from '@/entities/task/config'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
 
 const taskCreateDialog = useTaskCreateDialog()
 
-const filterSidebar = useFilterSidebar(
-    createFilterDefMap((map) =>
-        map
-            .addField('name', 'text', (d) => d.label('Name'))
-            .addField('status', 'text', (d) => d.label('Status'))
-            .addField('priority', 'integer', (d) => d.label('Priority'))
-            .addField('project_id', 'lookup', (d) =>
-                d.label('Project').component(ProjectLookupField).withoutMatchMode()
-            )
-            .addField('task_list_id', 'lookup', (d) =>
-                d.label('Task List').component(TaskListLookupField).withoutMatchMode()
-            )
-    )
-)
+const filterSidebar = useFilterSidebar(createDefaultTaskFiltersDefMap())
 
 const sortFieldDefs: SortFieldDef[] = [
     { field: 'name', label: 'Name' },
