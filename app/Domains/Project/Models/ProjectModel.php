@@ -2,6 +2,7 @@
 
 namespace App\Domains\Project\Models;
 
+use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
@@ -16,8 +17,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
-/** @method static \Illuminate\Database\Eloquent\Builder filter(array $filters) */
-#[Fillable(['id', 'name', 'prefix', 'created_by', 'updated_by'])]
+/**
+ * @property ProjectStatus $status
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
+ */
+#[Fillable(['id', 'name', 'prefix', 'status', 'created_by', 'updated_by'])]
 class ProjectModel extends Model
 {
     /** @use HasFactory<ProjectModelFactory> */
@@ -29,7 +34,9 @@ class ProjectModel extends Model
 
     protected function casts(): array
     {
-        return [];
+        return [
+            'status' => ProjectStatus::class,
+        ];
     }
 
     protected static function booted(): void
@@ -64,13 +71,14 @@ class ProjectModel extends Model
             'id'     => $this->id,
             'name'   => $this->name,
             'prefix' => $this->prefix,
+            'status' => $this->status->value,
         ];
     }
 
     public static function allowedFilters(): array
     {
         return [
-            new FilterDefinition(TextFilter::class, ['name', 'prefix']),
+            new FilterDefinition(TextFilter::class, ['name', 'prefix', 'status']),
         ];
     }
 }

@@ -13,6 +13,8 @@ export type MatchMode =
     | 'dateIsNot'
     | 'dateBefore'
     | 'dateAfter'
+    | 'in'
+    | 'notIn'
 
 export type MatchModeOption = {
     value: MatchMode
@@ -54,4 +56,9 @@ export const NULLABLE_MATCH_MODES: MatchModeOption[] = [
 export const LOOKUP_MATCH_MODES: MatchModeOption[] = [
     { value: 'equals', label: 'Is' },
     { value: 'notEquals', label: 'Is Not' },
+]
+
+export const SELECT_MATCH_MODES: MatchModeOption[] = [
+    { value: 'in', label: 'Is Any Of' },
+    { value: 'notIn', label: 'Is None Of' },
 ]

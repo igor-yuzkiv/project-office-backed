@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\Project\Models\ProjectModel;
 use App\Support\TextUtils;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,6 +26,7 @@ class ProjectModelFactory extends Factory
         return [
             'name'   => $name,
             'prefix' => TextUtils::acronym($name),
+            'status' => ProjectStatus::DRAFT,
         ];
     }
 }

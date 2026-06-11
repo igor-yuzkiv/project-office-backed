@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import Button from 'primevue/button'
 import type { LaravelValidationErrors } from '@/shared/types'
+import type { ProjectStatusValue } from '@/entities/project/types'
+import { projectStatusOptions } from '@/entities/project/config'
 import { InputContainer } from '@/shared/components/input'
 
 const props = defineProps<{
     visible: boolean
     mode: 'create' | 'update'
     name: string
+    status: ProjectStatusValue
     validationErrors: LaravelValidationErrors
     isPending: boolean
 }>()
@@ -16,10 +20,12 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:visible': [value: boolean]
     'update:name': [value: string]
+    'update:status': [value: ProjectStatusValue]
     submit: []
 }>()
 
 const title = { create: 'New Project', update: 'Edit Project' }
+const statusOptions = projectStatusOptions()
 </script>
 
 <template>
@@ -39,6 +45,17 @@ const title = { create: 'New Project', update: 'Edit Project' }
                     :invalid="!!props.validationErrors.name"
                     class="w-full"
                     @input="emit('update:name', ($event.target as HTMLInputElement).value)"
+                />
+            </InputContainer>
+            <InputContainer label="Status" :error="props.validationErrors.status" required>
+                <Select
+                    :model-value="props.status"
+                    :options="statusOptions"
+                    option-label="label"
+                    option-value="value"
+                    :invalid="!!props.validationErrors.status"
+                    class="w-full"
+                    @update:model-value="emit('update:status', $event)"
                 />
             </InputContainer>
         </form>

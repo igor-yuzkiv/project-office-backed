@@ -23,6 +23,8 @@ class TextFilter extends Filter
             MatchMode::ENDS_WITH,
             MatchMode::CONTAINS,
             MatchMode::NOT_CONTAINS,
+            MatchMode::IN,
+            MatchMode::NOT_IN,
         ];
     }
 
@@ -32,7 +34,21 @@ class TextFilter extends Filter
         $value = $this->payload->value;
         $matchMode = $this->matchMode(MatchMode::CONTAINS);
 
-        if (!$field || !$value) {
+        if (!$field) {
+            return $query;
+        }
+
+        if ($matchMode === MatchMode::IN || $matchMode === MatchMode::NOT_IN) {
+            if (!is_array($value) || empty($value)) {
+                return $query;
+            }
+
+            return $matchMode === MatchMode::IN
+                ? $query->whereIn($field, $value)
+                : $query->whereNotIn($field, $value);
+        }
+
+        if (!$value) {
             return $query;
         }
 

@@ -68,7 +68,11 @@ function submit() {
         { taskId, data: input },
         {
             onSuccess: () => {
-                router.push({ name: 'task-details', params: { id: taskId } })
+                if (window.history.state?.back) {
+                    router.back()
+                } else {
+                    router.push({ name: 'task-details', params: { id: taskId } })
+                }
             },
             onError: handleError,
         }

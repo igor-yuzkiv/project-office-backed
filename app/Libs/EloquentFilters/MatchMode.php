@@ -18,4 +18,6 @@ enum MatchMode: string
     case DATE_IS_NOT = 'dateIsNot';
     case DATE_BEFORE = 'dateBefore';
     case DATE_AFTER = 'dateAfter';
+    case IN = 'in';
+    case NOT_IN = 'notIn';
 }

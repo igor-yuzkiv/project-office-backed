@@ -12,6 +12,7 @@ class UpdateProjectHandler
             [
                 'name'   => $command->name,
                 'prefix' => $command->prefix,
+                'status' => $command->status,
             ],
             fn ($value) => $value !== null
         );

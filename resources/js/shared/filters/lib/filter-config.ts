@@ -5,6 +5,7 @@ import {
     INTEGER_MATCH_MODES,
     LOOKUP_MATCH_MODES,
     NULLABLE_MATCH_MODES,
+    SELECT_MATCH_MODES,
     TEXT_MATCH_MODES,
 } from '../types/match-mode.types'
 
@@ -13,6 +14,7 @@ export type FilterTypeConfig = {
     isEmpty: (value: unknown) => boolean
     omitValue?: boolean
     requiresMatchMode?: boolean
+    filterKey?: string
 }
 
 export const FILTER_TYPE_CONFIG: Record<FilterDataType, FilterTypeConfig> = {
@@ -41,6 +43,12 @@ export const FILTER_TYPE_CONFIG: Record<FilterDataType, FilterTypeConfig> = {
     lookup: {
         matchModes: LOOKUP_MATCH_MODES,
         isEmpty: (v) => v === null || v === '',
+    },
+    select: {
+        matchModes: SELECT_MATCH_MODES,
+        isEmpty: (v) => !Array.isArray(v) || v.length === 0,
+        requiresMatchMode: true,
+        filterKey: 'text',
     },
 }
 

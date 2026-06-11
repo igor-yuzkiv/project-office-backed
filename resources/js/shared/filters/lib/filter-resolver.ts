@@ -12,7 +12,7 @@ export function resolveFilters(defMap: FilterDefMap): FilterPayloadItem[] {
         if (config.isEmpty(def.value)) return acc
 
         acc.push({
-            filter_key: def.dataType,
+            filter_key: config.filterKey ?? def.dataType,
             field_name: def.fieldName ?? '',
             value: config.omitValue ? null : def.value,
             matchMode: def.matchMode,

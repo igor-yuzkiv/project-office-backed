@@ -56,7 +56,7 @@ it('applies text filter on name field', function () {
         ->and($response->json('data.0.name'))->toBe('Fix login bug');
 });
 
-it('applies text filter on project_id field', function () {
+it('applies lookup filter on project_id field', function () {
     $otherProject = ProjectModel::factory()->create();
     TaskModel::factory()->count(2)->create(['project_id' => $this->project->id]);
     TaskModel::factory()->create(['project_id' => $otherProject->id]);
@@ -64,7 +64,7 @@ it('applies text filter on project_id field', function () {
     $response = $this->postJson('/api/tasks/search', [
         'query'   => '',
         'filters' => [[
-            'filter_key' => 'text',
+            'filter_key' => 'lookup',
             'field_name' => 'project_id',
             'value'      => $this->project->id,
             'matchMode'  => 'equals',
@@ -76,7 +76,7 @@ it('applies text filter on project_id field', function () {
     expect($response->json('meta.total'))->toBe(2);
 });
 
-it('applies integer filter on priority field', function () {
+it('applies select filter on priority field', function () {
     TaskModel::factory()->create(['project_id' => $this->project->id, 'priority' => TaskPriority::High->value]);
     TaskModel::factory()->create(['project_id' => $this->project->id, 'priority' => TaskPriority::Low->value]);
     TaskModel::factory()->create(['project_id' => $this->project->id, 'priority' => TaskPriority::Medium->value]);
@@ -84,10 +84,10 @@ it('applies integer filter on priority field', function () {
     $response = $this->postJson('/api/tasks/search', [
         'query'   => '',
         'filters' => [[
-            'filter_key' => 'integer',
+            'filter_key' => 'text',
             'field_name' => 'priority',
-            'value'      => TaskPriority::High->value,
-            'matchMode'  => 'equals',
+            'value'      => [TaskPriority::High->value],
+            'matchMode'  => 'in',
             'params'     => [],
         ]],
     ]);
@@ -96,7 +96,7 @@ it('applies integer filter on priority field', function () {
     expect($response->json('meta.total'))->toBe(1);
 });
 
-it('applies text filter on status field', function () {
+it('applies select filter on status field', function () {
     TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::Open->value]);
     TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::Open->value]);
     TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::Closed->value]);
@@ -106,8 +106,8 @@ it('applies text filter on status field', function () {
         'filters' => [[
             'filter_key' => 'text',
             'field_name' => 'status',
-            'value'      => TaskStatus::Open->value,
-            'matchMode'  => 'equals',
+            'value'      => [TaskStatus::Open->value],
+            'matchMode'  => 'in',
             'params'     => [],
         ]],
     ]);

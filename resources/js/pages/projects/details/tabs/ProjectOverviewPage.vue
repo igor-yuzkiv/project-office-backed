@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router'
 import { useProjectQuery } from '@/entities/project/queries'
 import { DisplayDate, DisplayField } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
+import { ProjectStatusTag } from '@/widgets/projects/status-tag'
 
 const route = useRoute()
 const projectId = route.params.id as string
@@ -14,6 +15,9 @@ const { project } = useProjectQuery(projectId)
     <div v-if="project" class="gap-4 p-4 grid grid-cols-2">
         <DisplayField label="Name" :value="project.name" />
         <DisplayField label="Prefix" :value="project.prefix" />
+        <DisplayField label="Status">
+            <ProjectStatusTag :status="project.status" variant="light" class="w-fit" />
+        </DisplayField>
         <DisplayField label="Created By">
             <div v-if="project.created_by" class="gap-2 flex items-center">
                 <UserAvatar :user="project.created_by" size="small" />

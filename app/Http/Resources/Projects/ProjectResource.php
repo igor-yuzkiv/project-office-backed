@@ -16,6 +16,7 @@ class ProjectResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->name,
             'prefix'     => $this->prefix,
+            'status'     => $this->status->value,
             'created_by' => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
             'updated_by' => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
             'created_at' => $this->created_at,

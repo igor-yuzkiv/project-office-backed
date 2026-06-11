@@ -11,6 +11,7 @@ class CreateProjectHandler
         return ProjectModel::create([
             'name'   => $command->name,
             'prefix' => $command->prefix,
+            'status' => $command->status,
         ]);
     }
 }

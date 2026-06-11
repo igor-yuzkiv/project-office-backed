@@ -11,8 +11,10 @@ import { useDeleteProjectMutation } from '@/entities/project/mutations'
 import { useHeaderActions } from '@/app/shell'
 import { PAGE_SIZE } from '@/app/config'
 import type { IProject } from '@/entities/project/types'
+import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
 import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
+import { ProjectStatusTag } from '@/widgets/projects/status-tag'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
@@ -24,7 +26,17 @@ const upsertDialog = useProjectUpsertDialog()
 
 const filterSidebar = useFilterSidebar(
     createFilterDefMap((map) =>
-        map.addField('name', 'text', (d) => d.label('Name')).addField('prefix', 'text', (d) => d.label('Prefix'))
+        map
+            .addField('name', 'text', (d) => d.label('Name'))
+            .addField('prefix', 'text', (d) => d.label('Prefix'))
+            .addField('status', 'select', (d) =>
+                d.label('Status').matchMode('in').setInputProps({
+                    options: projectStatusOptions(),
+                    optionLabel: 'label',
+                    optionValue: 'value',
+                    placeholder: 'Select status',
+                })
+            )
     )
 )
 
@@ -125,6 +137,11 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
                     pt:footer:class="p-0 border-none"
                 >
                     <Column field="prefix" header="Prefix" style="width: 6rem" />
+                    <Column field="status" header="Status" style="width: 8rem">
+                        <template #body="{ data }">
+                            <ProjectStatusTag :status="data.status" variant="light" />
+                        </template>
+                    </Column>
                     <Column field="name" header="Project Name" />
                     <Column field="created_at" header="Created" style="width: 12rem">
                         <template #body="{ data }">
@@ -172,6 +189,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
         <ProjectUpsertDialog
             v-model:visible="upsertDialog.visible.value"
             v-model:name="upsertDialog.name.value"
+            v-model:status="upsertDialog.status.value"
             :mode="upsertDialog.mode.value"
             :validation-errors="upsertDialog.validationErrors.value"
             :is-pending="upsertDialog.isPending.value"

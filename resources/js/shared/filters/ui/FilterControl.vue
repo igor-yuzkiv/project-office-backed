@@ -10,6 +10,7 @@ import TextInput from './value-inputs/TextInput.vue'
 import IntegerInput from './value-inputs/IntegerInput.vue'
 import BooleanInput from './value-inputs/BooleanInput.vue'
 import DateTimeInput from './value-inputs/DateTimeInput.vue'
+import SelectInput from './value-inputs/SelectInput.vue'
 
 const DATA_TYPE_COMPONENTS: Record<FilterDataType, Component | null> = {
     text: markRaw(TextInput),
@@ -18,6 +19,7 @@ const DATA_TYPE_COMPONENTS: Record<FilterDataType, Component | null> = {
     datetime: markRaw(DateTimeInput),
     nullable: null,
     lookup: null,
+    select: markRaw(SelectInput),
 }
 
 const props = defineProps<{

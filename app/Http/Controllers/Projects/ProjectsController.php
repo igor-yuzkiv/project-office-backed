@@ -7,6 +7,7 @@ use App\Domains\Project\Actions\CreateProject\CreateProjectHandler;
 use App\Domains\Project\Actions\DeleteProject\DeleteProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectCommand;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
+use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\Project\Models\ProjectModel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\StoreProjectRequest;
@@ -64,9 +65,11 @@ class ProjectsController extends Controller
 
     public function store(StoreProjectRequest $request): JsonResponse
     {
+        $statusValue = $request->validated('status');
         $command = new CreateProjectCommand(
             name: $request->validated('name'),
             prefix: $request->validated('prefix'),
+            status: $statusValue ? ProjectStatus::from($statusValue) : ProjectStatus::DRAFT,
         );
 
         $project = $this->createHandler->handle($command);
@@ -79,10 +82,12 @@ class ProjectsController extends Controller
 
     public function update(UpdateProjectRequest $request, ProjectModel $project): ProjectResource
     {
+        $statusValue = $request->validated('status');
         $command = new UpdateProjectCommand(
             project: $project,
             name: $request->validated('name'),
             prefix: $request->validated('prefix'),
+            status: $statusValue ? ProjectStatus::from($statusValue) : null,
         );
 
         $project = $this->updateHandler->handle($command);

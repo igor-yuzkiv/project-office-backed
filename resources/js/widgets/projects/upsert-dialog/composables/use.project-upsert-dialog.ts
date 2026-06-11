@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { useCreateProjectMutation } from '@/entities/project/mutations'
 import { useUpdateProjectMutation } from '@/entities/project/mutations'
-import type { IProject } from '@/entities/project/types'
+import type { IProject, ProjectStatusValue } from '@/entities/project/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 
@@ -11,6 +11,7 @@ export function useProjectUpsertDialog() {
     const mode = computed<'create' | 'update'>(() => (editingProject.value ? 'update' : 'create'))
 
     const name = ref('')
+    const status = ref<ProjectStatusValue>('draft')
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: create, isPending: isCreating } = useCreateProjectMutation()
@@ -20,6 +21,7 @@ export function useProjectUpsertDialog() {
     function open(project?: IProject) {
         editingProject.value = project
         name.value = project?.name ?? ''
+        status.value = project?.status ?? 'draft'
         validationErrors.value = {}
         visible.value = true
     }
@@ -38,14 +40,14 @@ export function useProjectUpsertDialog() {
         validationErrors.value = {}
 
         if (mode.value === 'create') {
-            create({ name: name.value }, { onSuccess: close, onError: handleError })
+            create({ name: name.value, status: status.value }, { onSuccess: close, onError: handleError })
         } else if (editingProject.value) {
             update(
-                { id: editingProject.value.id, data: { name: name.value } },
+                { id: editingProject.value.id, data: { name: name.value, status: status.value } },
                 { onSuccess: close, onError: handleError }
             )
         }
     }
 
-    return { visible, mode, name, validationErrors, isPending, open, close, submit }
+    return { visible, mode, name, status, validationErrors, isPending, open, close, submit }
 }
