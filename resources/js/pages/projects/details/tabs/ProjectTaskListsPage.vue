@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { PAGE_SIZE } from '@/app/config'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
+import { useRouteParams } from '@vueuse/router'
+import type { FilterPayloadItem } from '@/shared/filters'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import type { ITaskList } from '@/entities/task-list/types'
 import { SearchInput } from '@/shared/components/input'
@@ -15,8 +16,7 @@ import { TaskListsTable } from '@/widgets/task-list/views/table'
 import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
 import { Icon } from '@iconify/vue'
 
-const route = useRoute()
-const projectId = route.params.id as string
+const projectId = useRouteParams<string>('id')
 
 const { project } = useProjectQuery(projectId)
 
@@ -24,12 +24,21 @@ const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
 
-const searchParams = computed(() => ({
-    query: searchQuery.value,
-    project_id: projectId,
-    page: page.value,
-    per_page: PAGE_SIZE,
-}))
+const searchParams = computed(() => {
+    const projectFilter: FilterPayloadItem = {
+        filter_key: 'text',
+        field_name: 'project_id',
+        value: projectId.value,
+        matchMode: 'equals',
+        params: {},
+    }
+    return {
+        query: searchQuery.value,
+        filters: [projectFilter],
+        page: page.value,
+        per_page: PAGE_SIZE,
+    }
+})
 
 const { taskLists, paginationMeta, isPending } = useTaskListsSearchQuery(searchParams)
 

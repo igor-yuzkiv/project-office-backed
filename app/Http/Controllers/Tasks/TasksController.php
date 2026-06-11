@@ -52,7 +52,9 @@ class TasksController extends Controller
             ->orderBy($sort->field, $sort->direction)
             ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskModel> $q */
-                return $q->with(['createdBy', 'updatedBy', ...$includes])->filter((array) $request->input('filters', []));
+                return $q
+                    ->with(['createdBy', 'updatedBy', ...$includes])
+                    ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 

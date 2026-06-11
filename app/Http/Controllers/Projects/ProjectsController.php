@@ -46,7 +46,9 @@ class ProjectsController extends Controller
             ->orderBy($sort->field, $sort->direction)
             ->query(function (Builder $q) use ($request): Builder {
                 /** @var Builder<ProjectModel> $q */
-                return $q->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
+                return $q
+                    ->with(['createdBy', 'updatedBy'])
+                    ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 

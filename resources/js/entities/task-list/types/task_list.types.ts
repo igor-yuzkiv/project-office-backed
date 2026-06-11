@@ -1,5 +1,6 @@
 import type { IEntity, PagingParams } from '@/shared/types'
 import type { SortParams } from '@/shared/sort'
+import type { FilterPayloadItem } from '@/shared/filters'
 
 export interface ITaskList extends IEntity {
     project_id: string
@@ -19,5 +20,5 @@ export interface IUpdateTaskListInput {
 export type TaskListSearchParams = PagingParams &
     SortParams & {
         query?: string
-        project_id?: string
+        filters?: FilterPayloadItem[]
     }
