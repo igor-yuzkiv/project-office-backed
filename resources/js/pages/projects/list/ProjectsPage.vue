@@ -80,7 +80,7 @@ function onSearchSubmit() {
 }
 
 function onRowClick(event: { data: IProject }) {
-    router.push({ name: 'project-details', params: { id: event.data.id } })
+    router.push({ name: 'project-details.tasks', params: { id: event.data.id } })
 }
 
 function openRowMenu(event: MouseEvent, project: IProject) {

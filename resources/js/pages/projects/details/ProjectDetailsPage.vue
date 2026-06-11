@@ -22,7 +22,7 @@ const activeTab = computed(
     () =>
         String(route.name ?? '')
             .split('.')
-            .at(-1) ?? 'details'
+            .at(-1) ?? 'tasks'
 )
 
 watch(isError, (error) => {

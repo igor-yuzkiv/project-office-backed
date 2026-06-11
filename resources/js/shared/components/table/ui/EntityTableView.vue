@@ -62,6 +62,12 @@ function onPageChange(event: { page: number }) {
             </template>
         </Column>
 
+        <template #empty>
+            <slot name="empty">
+                <div class="py-6 text-center text-sm text-surface-400">No records found.</div>
+            </slot>
+        </template>
+
         <template #footer>
             <Paginator
                 v-if="props.paginationMeta && props.paginationMeta.last_page > 1"
