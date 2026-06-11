@@ -58,7 +58,7 @@ const recentProjects = [
         </AppLeftNavigationSidebar>
 
         <div class="bg-surface-50 relative flex flex-1 flex-col overflow-hidden">
-            <AppHeader :title="store.pageTitle" :actions="store.headerActions" />
+            <AppHeader :title="store.pageTitle" :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
             <ProgressBar
                 v-show="showProgressBar"
                 mode="indeterminate"

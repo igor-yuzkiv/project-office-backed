@@ -7,7 +7,7 @@ import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useHeaderActions } from '@/app/shell'
+import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 
 const route = useRoute()
@@ -42,6 +42,8 @@ function onTabChange(value: string | number) {
 }
 
 useHeaderActions([])
+
+useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: project.value?.name ?? 'Project' }])
 </script>
 
 <template>

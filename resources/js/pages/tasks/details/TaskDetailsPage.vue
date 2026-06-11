@@ -10,7 +10,7 @@ import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useHeaderActions } from '@/app/shell'
+import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 
 const route = useRoute()
 const router = useRouter()
@@ -46,29 +46,38 @@ function onTabChange(value: string | number) {
 useHeaderActions([
     { key: 'edit-task', title: 'Edit Task', to: { name: 'task-edit', params: { id: taskId } }, is_primary: true },
 ])
+
+useBreadcrumbs(() => [
+    { label: 'Tasks', to: { name: 'tasks' } },
+    ...(task.value?.project
+        ? [{ label: task.value.project.name, to: { name: 'project-details', params: { id: task.value.project_id } } }]
+        : []),
+    { label: task.value ? task.value.key : 'Task' },
+])
 </script>
 
 <template>
     <div v-if="task" class="p-2 flex flex-1 overflow-hidden">
         <Tabs :value="activeTab" class="app-card flex flex-1 flex-col overflow-hidden" @update:value="onTabChange">
-            <div class="p-3 flex shrink-0 items-start justify-between">
-                <div class="gap-1 flex flex-col">
+            <div class="p-3 flex shrink-0 items-start justify-between truncate">
+                <div class="gap-1 flex flex-col truncate">
                     <div class="gap-x-3 flex items-center">
                         <DisplayField v-if="task.project" inline>
                             <ProjectIcon :prefix="task.project.prefix" size="small" />
                             <RouterLink
                                 :to="{ name: 'project-details', params: { id: task.project_id } }"
                                 class="text-sm app-link"
-                                >{{ task.project.name }}</RouterLink
                             >
+                                {{ task.project.name }}
+                            </RouterLink>
                         </DisplayField>
 
                         <DisplayField v-if="task.task_list" label="Task List" :value="task.task_list.name" inline />
                     </div>
 
-                    <div class="gap-x-2 text-2xl font-semibold flex items-center">
+                    <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
                         <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
-                        <h1 class="text-surface-900">{{ task.name }}</h1>
+                        <h1 class="text-surface-900 truncate">{{ task.name }}</h1>
                     </div>
                 </div>
 

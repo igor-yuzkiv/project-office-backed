@@ -31,9 +31,6 @@ const router = createRouter({
                 requiresAuth: true,
                 layout: 'default',
                 title: 'Project',
-                breadcrumbs: [
-                    'projects', ':projectId'
-                ],
             },
             redirect: (to) => ({ name: 'project-details.details', params: to.params }),
             children: [
@@ -41,9 +38,6 @@ const router = createRouter({
                     path: 'details',
                     name: 'project-details.details',
                     component: () => import('@/pages/projects/details/tabs/ProjectOverviewPage.vue'),
-                    meta: {
-                        breadcrumbs: ['details'],
-                    }
                 },
                 {
                     path: 'task-lists',

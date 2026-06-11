@@ -14,7 +14,7 @@ import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useHeaderActions } from '@/app/shell'
+import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
 
 interface TaskEditFormData {
@@ -104,6 +104,15 @@ watch(
 useHeaderActions([
     { key: 'save-task', title: 'Save', action: submit, is_primary: true },
     { key: 'cancel-task', title: 'Cancel', action: cancel },
+])
+
+useBreadcrumbs(() => [
+    { label: 'Tasks', to: { name: 'tasks' } },
+    {
+        label: task.value ? `${task.value.key} | ${task.value.name}` : 'Task',
+        to: { name: 'task-details', params: { id: taskId } },
+    },
+    { label: 'Edit' },
 ])
 </script>
 

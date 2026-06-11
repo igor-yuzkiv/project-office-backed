@@ -96,9 +96,7 @@ watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
 
-useHeaderActions([
-    { key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() },
-])
+useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() }])
 </script>
 
 <template>

@@ -1,3 +1,5 @@
+import type { RouteLocationNormalizedLoaded, RouteLocationRaw } from 'vue-router'
+
 export type AppLayoutName = 'default' | 'auth'
 
 export interface SidebarNavItem {
@@ -5,13 +7,18 @@ export interface SidebarNavItem {
     label: string
     icon: string
     routeName: string
-    activeWhen?: string | ((item: SidebarNavItem, route: import('vue-router').RouteLocationNormalizedLoaded) => boolean)
+    activeWhen?: string | ((item: SidebarNavItem, route: RouteLocationNormalizedLoaded) => boolean)
 }
 
 export interface HeaderAction {
     key: string
     title: string
     action?: () => void
-    to?: import('vue-router').RouteLocationRaw
+    to?: RouteLocationRaw
     is_primary?: boolean
+}
+
+export interface BreadcrumbItem {
+    label: string
+    to?: RouteLocationRaw
 }

@@ -1,15 +1,18 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import type { HeaderAction } from '@/app/shell'
+import type { BreadcrumbItem, HeaderAction } from '@/app/shell'
 import { APP_NAME } from '@/app/config'
 
 export const useAppLayoutStore = defineStore('app-layout', () => {
     const route = useRoute()
     const titleOverride = ref<string | null>(null)
     const headerActions = ref<HeaderAction[]>([])
+    const breadcrumbs = ref<BreadcrumbItem[]>([])
+    const breadcrumbScope = ref<symbol | null>(null)
 
     const pageTitle = computed(() => titleOverride.value ?? route.meta.title ?? '')
+    const activeBreadcrumbs = computed(() => breadcrumbs.value)
 
     watch(
         () => route.name,
@@ -34,5 +37,26 @@ export const useAppLayoutStore = defineStore('app-layout', () => {
         headerActions.value = []
     }
 
-    return { pageTitle, headerActions, setPageTitle, setHeaderActions, clearHeaderActions }
+    function setBreadcrumbs(scopeId: symbol, items: BreadcrumbItem[]) {
+        breadcrumbScope.value = scopeId
+        breadcrumbs.value = items
+    }
+
+    function clearBreadcrumbs(scopeId: symbol) {
+        if (breadcrumbScope.value === scopeId) {
+            breadcrumbScope.value = null
+            breadcrumbs.value = []
+        }
+    }
+
+    return {
+        pageTitle,
+        headerActions,
+        activeBreadcrumbs,
+        setPageTitle,
+        setHeaderActions,
+        clearHeaderActions,
+        setBreadcrumbs,
+        clearBreadcrumbs,
+    }
 })
