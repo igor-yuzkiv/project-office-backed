@@ -74,3 +74,8 @@
 - search
 - replay
 - threds
+
+# Integrations
+- cliq for notifications or summary
+- sentry for issue creation
+

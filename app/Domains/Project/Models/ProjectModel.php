@@ -71,7 +71,7 @@ class ProjectModel extends Model
             'id'     => $this->id,
             'name'   => $this->name,
             'prefix' => $this->prefix,
-            'status' => $this->status->value,
+            'status' => $this->status,
         ];
     }
 
