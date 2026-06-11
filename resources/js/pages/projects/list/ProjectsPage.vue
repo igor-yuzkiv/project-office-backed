@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -8,7 +8,7 @@ import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { useProjectsSearchQuery } from '@/entities/project/queries'
 import { useDeleteProjectMutation } from '@/entities/project/mutations'
-import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useHeaderActions } from '@/app/shell'
 import { PAGE_SIZE } from '@/app/config'
 import type { IProject } from '@/entities/project/types'
 import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
@@ -21,8 +21,6 @@ import { IconButton } from '@/shared/components/button'
 
 const router = useRouter()
 const upsertDialog = useProjectUpsertDialog()
-
-const layoutStore = useAppLayoutStore()
 
 const filterSidebar = useFilterSidebar(
     createFilterDefMap((map) =>
@@ -98,15 +96,9 @@ watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
 
-onMounted(() => {
-    layoutStore.setHeaderActions([
-        { key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() },
-    ])
-})
-
-onUnmounted(() => {
-    layoutStore.clearHeaderActions()
-})
+useHeaderActions([
+    { key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() },
+])
 </script>
 
 <template>

@@ -27,13 +27,23 @@ const router = createRouter({
             path: '/projects/:id',
             name: 'project-details',
             component: () => import('@/pages/projects/details/ProjectDetailsPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Project' },
+            meta: {
+                requiresAuth: true,
+                layout: 'default',
+                title: 'Project',
+                breadcrumbs: [
+                    'projects', ':projectId'
+                ],
+            },
             redirect: (to) => ({ name: 'project-details.details', params: to.params }),
             children: [
                 {
                     path: 'details',
                     name: 'project-details.details',
                     component: () => import('@/pages/projects/details/tabs/ProjectOverviewPage.vue'),
+                    meta: {
+                        breadcrumbs: ['details'],
+                    }
                 },
                 {
                     path: 'task-lists',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { MarkdownEditor } from '@/shared/components/md-editor'
 import { InputContainer } from '@/shared/components/input'
@@ -14,6 +14,7 @@ import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useHeaderActions } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
 
 interface TaskEditFormData {
@@ -100,16 +101,10 @@ watch(
     { immediate: true }
 )
 
-onMounted(() => {
-    layoutStore.setHeaderActions([
-        { key: 'save-task', title: 'Save', action: submit, is_primary: true },
-        { key: 'cancel-task', title: 'Cancel', action: cancel },
-    ])
-})
-
-onUnmounted(() => {
-    layoutStore.clearHeaderActions()
-})
+useHeaderActions([
+    { key: 'save-task', title: 'Save', action: submit, is_primary: true },
+    { key: 'cancel-task', title: 'Cancel', action: cancel },
+])
 </script>
 
 <template>

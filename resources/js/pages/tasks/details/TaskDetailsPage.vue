@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
@@ -10,6 +10,7 @@ import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useHeaderActions } from '@/app/shell'
 
 const route = useRoute()
 const router = useRouter()
@@ -42,15 +43,9 @@ function onTabChange(value: string | number) {
     router.push({ name: `task-details.${value}`, params: { id: taskId } })
 }
 
-onMounted(() => {
-    layoutStore.setHeaderActions([
-        { key: 'edit-task', title: 'Edit Task', to: { name: 'task-edit', params: { id: taskId } }, is_primary: true },
-    ])
-})
-
-onUnmounted(() => {
-    layoutStore.clearHeaderActions()
-})
+useHeaderActions([
+    { key: 'edit-task', title: 'Edit Task', to: { name: 'task-edit', params: { id: taskId } }, is_primary: true },
+])
 </script>
 
 <template>

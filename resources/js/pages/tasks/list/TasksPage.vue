@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
@@ -11,13 +11,12 @@ import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
-import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useHeaderActions } from '@/app/shell'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { createDefaultTaskFiltersDefMap } from '@/entities/task/config'
 
 const router = useRouter()
-const layoutStore = useAppLayoutStore()
 
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
@@ -94,16 +93,10 @@ watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
 
-onMounted(() => {
-    layoutStore.setHeaderActions([
-        { key: 'add-task', title: 'Add Task', action: () => taskCreateDialog.open(), is_primary: true },
-        { key: 'add-issue', title: 'Add Issue', action: () => console.log('test - Add Issue') },
-    ])
-})
-
-onUnmounted(() => {
-    layoutStore.clearHeaderActions()
-})
+useHeaderActions([
+    { key: 'add-task', title: 'Add Task', action: () => taskCreateDialog.open(), is_primary: true },
+    { key: 'add-issue', title: 'Add Issue', action: () => console.log('test - Add Issue') },
+])
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProjectQuery } from '@/entities/project/queries'
 import Tab from 'primevue/tab'
@@ -7,6 +7,7 @@ import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useHeaderActions } from '@/app/shell'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 
 const route = useRoute()
@@ -40,13 +41,7 @@ function onTabChange(value: string | number) {
     router.push({ name: `project-details.${value}`, params: { id: projectId } })
 }
 
-onMounted(() => {
-    layoutStore.clearHeaderActions()
-})
-
-onUnmounted(() => {
-    layoutStore.clearHeaderActions()
-})
+useHeaderActions([])
 </script>
 
 <template>
