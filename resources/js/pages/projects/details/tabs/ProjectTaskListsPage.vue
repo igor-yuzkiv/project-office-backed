@@ -12,7 +12,7 @@ import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import type { ITaskList } from '@/entities/task-list/types'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
-import { TaskListsTable } from '@/widgets/task-list/views/table'
+import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
 import { Icon } from '@iconify/vue'
 
@@ -102,7 +102,7 @@ function onPageChange(newPage: number) {
                 </Button>
             </div>
             <div class="flex h-full w-full flex-col overflow-hidden">
-                <TaskListsTable
+                <TaskListsTableView
                     :task-lists="taskLists"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
@@ -112,7 +112,7 @@ function onPageChange(newPage: number) {
                     <template #actions="{ row }">
                         <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
                     </template>
-                </TaskListsTable>
+                </TaskListsTableView>
             </div>
         </div>
 

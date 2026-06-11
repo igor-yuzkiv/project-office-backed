@@ -1,1 +1,1 @@
-export { default as TasksTable } from './ui/TasksTable.vue'
+export { default as TasksTableView } from './ui/TasksTableView.vue'

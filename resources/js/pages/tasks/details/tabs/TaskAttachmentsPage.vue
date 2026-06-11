@@ -9,7 +9,7 @@ import { useAttachmentsSearchQuery } from '@/entities/attachment/queries'
 import { useDeleteAttachmentMutation } from '@/entities/attachment/mutations'
 import type { IAttachment } from '@/entities/attachment/types'
 import { IconButton } from '@/shared/components/button'
-import { AttachmentsTable } from '@/widgets/attachments/views/table'
+import { AttachmentsTableView } from '@/widgets/attachments/views/table'
 import { AttachmentDropZone, UploadAttachmentButton } from '@/widgets/attachments/attachment-uploader'
 
 const route = useRoute()
@@ -73,7 +73,7 @@ function onPageChange(newPage: number) {
             </div>
 
             <AttachmentDropZone :entity-type="TASK_MODULE_NAME" :entity-id="taskId">
-                <AttachmentsTable
+                <AttachmentsTableView
                     :attachments="attachments"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
@@ -83,7 +83,7 @@ function onPageChange(newPage: number) {
                     <template #actions="{ row }">
                         <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
                     </template>
-                </AttachmentsTable>
+                </AttachmentsTableView>
             </AttachmentDropZone>
         </div>
 

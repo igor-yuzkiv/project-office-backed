@@ -13,7 +13,7 @@ import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
-import { TasksTable } from '@/widgets/tasks/views/table'
+import { TasksTableView } from '@/widgets/tasks/views/table'
 import { createDefaultTaskFiltersDefMap } from '@/entities/task/config'
 
 const router = useRouter()
@@ -118,7 +118,7 @@ onUnmounted(() => {
             </div>
 
             <div class="app-card flex h-full w-full flex-col overflow-hidden">
-                <TasksTable
+                <TasksTableView
                     :tasks="tasks"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
@@ -129,7 +129,7 @@ onUnmounted(() => {
                     <template #actions="{ row }">
                         <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
                     </template>
-                </TasksTable>
+                </TasksTableView>
             </div>
         </div>
 

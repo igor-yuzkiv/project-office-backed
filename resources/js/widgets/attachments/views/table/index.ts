@@ -1,1 +1,1 @@
-export { default as AttachmentsTable } from './ui/AttachmentsTable.vue'
+export { default as AttachmentsTableView } from './ui/AttachmentsTableView.vue'
