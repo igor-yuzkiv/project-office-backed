@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        ProjectModel::factory(15)->create()->each(function (ProjectModel $project): void {
-            TaskModel::factory(10)->create(['project_id' => $project->id]);
+        ProjectModel::factory(5)->create()->each(function (ProjectModel $project): void {
+            TaskModel::factory(100)->create(['project_id' => $project->id]);
         });
     }
 }
