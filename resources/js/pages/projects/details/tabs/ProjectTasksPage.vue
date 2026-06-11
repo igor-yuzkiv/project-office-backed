@@ -8,7 +8,7 @@ import { PAGE_SIZE } from '@/app/config'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
-import type { ITask } from '@/entities/task/types'
+import type { ITask, TaskSearchParams } from '@/entities/task/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
@@ -26,7 +26,7 @@ const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
 
-const searchParams = computed(() => ({
+const searchParams = computed<TaskSearchParams>(() => ({
     query: searchQuery.value,
     filters: [
         {
@@ -38,7 +38,7 @@ const searchParams = computed(() => ({
         } satisfies FilterPayloadItem,
     ],
     page: page.value,
-    per_page: PAGE_SIZE,
+    per_page: PAGE_SIZE
 }))
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
