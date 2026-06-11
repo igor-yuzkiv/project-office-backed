@@ -108,8 +108,11 @@ useHeaderActions([
 
 useBreadcrumbs(() => [
     { label: 'Tasks', to: { name: 'tasks' } },
+    ...(task.value?.project
+        ? [{ label: task.value.project.name, to: { name: 'project-details', params: { id: task.value.project_id } } }]
+        : []),
     {
-        label: task.value ? `${task.value.key} | ${task.value.name}` : 'Task',
+        label: task.value?.key ?? 'Task',
         to: { name: 'task-details', params: { id: taskId } },
     },
     { label: 'Edit' },
