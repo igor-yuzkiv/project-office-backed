@@ -15,6 +15,7 @@ import { IconButton } from '@/shared/components/button'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { Icon } from '@iconify/vue'
+import type { EntityTableColumnDef } from '@/shared/components/table'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,6 +26,14 @@ const { project } = useProjectQuery(projectId)
 const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
+
+const tableColumnsDef: EntityTableColumnDef[] = [
+    { field: 'key', header: 'Key', style: 'width: 10rem' },
+    { field: 'name', header: 'Task Name' },
+    { field: 'status', header: 'Status', style: 'width: 9rem' },
+    { field: 'priority', header: 'Priority', style: 'width: 7rem' },
+    { field: 'created_at', header: 'Created', style: 'width: 12rem' },
+]
 
 const searchParams = computed<TaskSearchParams>(() => ({
     query: searchQuery.value,
@@ -38,7 +47,7 @@ const searchParams = computed<TaskSearchParams>(() => ({
         } satisfies FilterPayloadItem,
     ],
     page: page.value,
-    per_page: PAGE_SIZE
+    per_page: PAGE_SIZE,
 }))
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
@@ -108,6 +117,7 @@ function onPageChange(newPage: number) {
                     :page="page"
                     @row-click="onRowClick"
                     @page-change="onPageChange"
+                    :columns="tableColumnsDef"
                 >
                     <template #actions="{ row }">
                         <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />

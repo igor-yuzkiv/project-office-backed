@@ -1,0 +1,76 @@
+<script setup lang="ts" generic="T extends Record<string, unknown>">
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Paginator from 'primevue/paginator'
+import type { PaginationMeta } from '@/shared/types'
+import { PAGE_SIZE } from '@/app/config'
+import type { EntityTableColumnDef } from '../entity-table.types'
+
+const props = defineProps<{
+    rows: T[]
+    columns: EntityTableColumnDef[]
+    isPending: boolean
+    paginationMeta?: PaginationMeta
+    page: number
+    rowClickable?: boolean
+}>()
+
+const emit = defineEmits<{
+    pageChange: [page: number]
+    rowClick: [row: T]
+}>()
+
+function onRowClick(event: { data: T }) {
+    emit('rowClick', event.data)
+}
+
+function onPageChange(event: { page: number }) {
+    emit('pageChange', event.page + 1)
+}
+</script>
+
+<template>
+    <DataTable
+        :value="props.rows"
+        :loading="props.isPending"
+        lazy
+        striped-rows
+        class="p-0 w-full"
+        :class="{ 'cursor-pointer': props.rowClickable }"
+        scrollable
+        scroll-height="flex"
+        size="small"
+        :row-hover="props.rowClickable"
+        pt:footer:class="p-0 border-none"
+        @row-click="props.rowClickable ? onRowClick($event) : undefined"
+    >
+        <Column
+            v-for="col in props.columns"
+            :key="col.field"
+            :field="col.field"
+            :header="col.header"
+            :style="col.style"
+        >
+            <template v-if="$slots[`column:${col.field}`]" #body="{ data }">
+                <slot :name="`column:${col.field}`" :row="data as T" />
+            </template>
+        </Column>
+
+        <Column v-if="$slots.actions" style="width: 3rem">
+            <template #body="{ data }">
+                <slot name="actions" :row="data as T" />
+            </template>
+        </Column>
+
+        <template #footer>
+            <Paginator
+                v-if="props.paginationMeta && props.paginationMeta.last_page > 1"
+                :rows="PAGE_SIZE"
+                :total-records="props.paginationMeta.total"
+                :first="(props.page - 1) * PAGE_SIZE"
+                pt:root:class="p-0"
+                @page="onPageChange"
+            />
+        </template>
+    </DataTable>
+</template>

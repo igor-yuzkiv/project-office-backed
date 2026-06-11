@@ -1,98 +1,80 @@
 <script setup lang="ts">
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Paginator from 'primevue/paginator'
 import type { ITask } from '@/entities/task/types'
 import type { PaginationMeta } from '@/shared/types'
-import { PAGE_SIZE } from '@/app/config'
+import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
+import { computed } from 'vue'
 
-interface Props {
+const props = defineProps<{
     tasks: ITask[]
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
-}
+    columns?: EntityTableColumnDef[]
+}>()
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
+defineEmits<{
     rowClick: [task: ITask]
     pageChange: [page: number]
 }>()
 
-function onRowClick(event: { data: ITask }) {
-    emit('rowClick', event.data)
-}
+const defaultColumns = computed<EntityTableColumnDef[]>(() => {
+    if (props.columns) {
+        return props.columns
+    }
 
-function onPageChange(event: { page: number }) {
-    emit('pageChange', event.page + 1)
-}
+    return [
+        { field: 'key', header: 'Key', style: 'width: 10rem' },
+        { field: 'name', header: 'Task Name' },
+        { field: 'project', header: 'Project', style: 'width: 12rem; min-width: 0' },
+        { field: 'status', header: 'Status', style: 'width: 9rem' },
+        { field: 'priority', header: 'Priority', style: 'width: 7rem' },
+        { field: 'created_at', header: 'Created', style: 'width: 12rem' },
+    ]
+})
 </script>
 
 <template>
-    <DataTable
-        :value="props.tasks"
-        :loading="props.isPending"
-        lazy
-        striped-rows
-        class="p-0 w-full cursor-pointer"
-        row-hover
-        scrollable
-        scroll-height="flex"
-        size="small"
-        @row-click="onRowClick"
-        pt:footer:class="p-0 border-none"
+    <EntityTableView
+        :rows="tasks"
+        :columns="props.columns ?? defaultColumns"
+        :is-pending="isPending"
+        :pagination-meta="paginationMeta"
+        :page="page"
+        row-clickable
+        @row-click="$emit('rowClick', $event)"
+        @page-change="$emit('pageChange', $event)"
     >
-        <Column field="key" header="Key" style="width: 10rem">
-            <template #body="{ data }">
-                <CopyToClipboard :text="data.key" class="text-surface-500" />
-            </template>
-        </Column>
-        <Column field="name" header="Task Name" />
-        <Column field="project.name" header="Project" style="width: 12rem; min-width: 0">
-            <template #body="{ data }">
-                <RouterLink
-                    v-if="data.project"
-                    :to="{ name: 'project-details', params: { id: data.project_id } }"
-                    class="app-link block truncate"
-                    :title="`${data.project.prefix} - ${data.project.name}`"
-                >
-                    {{ data.project.prefix }} - {{ data.project.name }}
-                </RouterLink>
-            </template>
-        </Column>
-        <Column field="status" header="Status" style="width: 9rem">
-            <template #body="{ data }">
-                <TaskStatusTag :status="data.status" class="w-full" />
-            </template>
-        </Column>
-        <Column field="priority.name" header="Priority" style="width: 7rem">
-            <template #body="{ data }">
-                <TaskPriorityTag :priority="data.priority" class="w-full" />
-            </template>
-        </Column>
-        <Column field="created_at" header="Created" style="width: 12rem">
-            <template #body="{ data }">
-                <DisplayDate :date="data.created_at" />
-            </template>
-        </Column>
-        <Column v-if="$slots.actions" style="width: 3rem">
-            <template #body="{ data }">
-                <slot name="actions" :row="data" />
-            </template>
-        </Column>
-
-        <template #footer>
-            <Paginator
-                v-if="props.paginationMeta && props.paginationMeta.last_page > 1"
-                :rows="PAGE_SIZE"
-                :total-records="props.paginationMeta.total"
-                :first="(props.page - 1) * PAGE_SIZE"
-                @page="onPageChange"
-                pt:root:class="p-0"
-            />
+        <template #column:key="{ row }">
+            <CopyToClipboard :text="row.key" class="text-surface-500" />
         </template>
-    </DataTable>
+
+        <template #column:project="{ row }">
+            <RouterLink
+                v-if="row.project"
+                :to="{ name: 'project-details', params: { id: row.project_id } }"
+                class="app-link block truncate"
+                :title="`${row.project.prefix} - ${row.project.name}`"
+            >
+                {{ row.project.prefix }} - {{ row.project.name }}
+            </RouterLink>
+        </template>
+
+        <template #column:status="{ row }">
+            <TaskStatusTag :status="row.status" class="w-full" />
+        </template>
+
+        <template #column:priority="{ row }">
+            <TaskPriorityTag :priority="row.priority" class="w-full" />
+        </template>
+
+        <template #column:created_at="{ row }">
+            <DisplayDate :date="row.created_at" />
+        </template>
+
+        <template v-if="$slots.actions" #actions="{ row }">
+            <slot name="actions" :row="row" />
+        </template>
+    </EntityTableView>
 </template>

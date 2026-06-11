@@ -6,6 +6,8 @@ export interface ITaskList extends IEntity {
     project_id: string
     name: string
     tasks_count?: number
+    created_at: string
+    updated_at: string
 }
 
 export interface ICreateTaskListInput {

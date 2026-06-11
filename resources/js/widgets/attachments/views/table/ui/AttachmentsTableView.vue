@@ -1,69 +1,47 @@
 <script setup lang="ts">
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Paginator from 'primevue/paginator'
 import type { IAttachment } from '@/entities/attachment/types'
 import type { PaginationMeta } from '@/shared/types'
-import { PAGE_SIZE } from '@/app/config'
+import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { formatFileSize } from '@/shared/utils/file.util'
 
-interface Props {
+defineProps<{
     attachments: IAttachment[]
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
-}
+}>()
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
+defineEmits<{
     pageChange: [page: number]
 }>()
 
-function onPageChange(event: { page: number }) {
-    emit('pageChange', event.page + 1)
-}
+const columns: EntityTableColumnDef[] = [
+    { field: 'original_name', header: 'Name' },
+    { field: 'role', header: 'Role' },
+    { field: 'extension', header: 'Type' },
+    { field: 'size_bytes', header: 'Size' },
+]
 </script>
 
 <template>
-    <DataTable
-        :value="props.attachments"
-        :loading="props.isPending"
-        lazy
-        striped-rows
-        class="p-0 w-full"
-        scrollable
-        scroll-height="flex"
-        size="small"
-        pt:footer:class="p-0 border-none"
+    <EntityTableView
+        :rows="attachments"
+        :columns="columns"
+        :is-pending="isPending"
+        :pagination-meta="paginationMeta"
+        :page="page"
+        @page-change="$emit('pageChange', $event)"
     >
-        <Column field="original_name" header="Name" />
-        <Column field="role" header="Role" />
-        <Column field="extension" header="Type">
-            <template #body="{ data }">
-                {{ data.extension?.toLowerCase() ?? '' }}
-            </template>
-        </Column>
-        <Column field="size_bytes" header="Size">
-            <template #body="{ data }">
-                {{ formatFileSize(data.size_bytes) }}
-            </template>
-        </Column>
-        <Column v-if="$slots.actions" style="width: 3rem">
-            <template #body="{ data }">
-                <slot name="actions" :row="data" />
-            </template>
-        </Column>
-
-        <template #footer>
-            <Paginator
-                v-if="props.paginationMeta && props.paginationMeta.last_page > 1"
-                :rows="PAGE_SIZE"
-                :total-records="props.paginationMeta.total"
-                :first="(props.page - 1) * PAGE_SIZE"
-                @page="onPageChange"
-                pt:root:class="p-0"
-            />
+        <template #column:extension="{ row }">
+            {{ row.extension?.toLowerCase() ?? '' }}
         </template>
-    </DataTable>
+
+        <template #column:size_bytes="{ row }">
+            {{ formatFileSize(row.size_bytes) }}
+        </template>
+
+        <template v-if="$slots.actions" #actions="{ row }">
+            <slot name="actions" :row="row" />
+        </template>
+    </EntityTableView>
 </template>
