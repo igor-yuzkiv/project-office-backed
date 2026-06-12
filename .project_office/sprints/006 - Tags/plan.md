@@ -89,20 +89,19 @@ Frontend:
 
 Статус: todo
 
-Підключити `TagInput` до `EditTaskPage` і `EditProjectPage`. Додати фільтр за тегами на сторінки списків Task і Project.
+Підключити `TagInput` до `EditTaskPage` і `ProjectUpsertDialog`. Додати фільтр за тегами на сторінки списків Task і Project.
 
 ## Dependencies
 
 - 002 залежить від 001.
 - 003, 004, 005 залежать від 001.
 - 007 залежить від 006.
-- 008 залежить від 007 та готовності `EditProjectPage` (окрема task `011 - Implement Project Edit Page` у sprint 004).
+- 008 залежить від 007.
 
 ## Risks
 
 - PHPStan level 5: polymorphic relations потребують `@property` PHPDoc на моделях.
 - Потрібні індекси на `taggables` для швидкої фільтрації за `tag_id` та lookup по `taggable_id` + `taggable_type`.
-- Якщо `EditProjectPage` не готова — інтеграцію в Project edit можна тимчасово винести з task 008 і відкласти; інтеграція у Task має бути виконана в будь-якому разі.
 
 ## Open Questions
 

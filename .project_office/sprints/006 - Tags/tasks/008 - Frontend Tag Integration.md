@@ -7,13 +7,13 @@ status: draft
 
 ## Goal
 
-Підключити `TagInput` до `EditTaskPage` і `EditProjectPage`. Додати фільтр за тегами на сторінки списків Task і Project.
+Підключити `TagInput` до `EditTaskPage` і `ProjectUpsertDialog`. Додати фільтр за тегами на сторінки списків Task і Project.
 
 ## Context
 
-Компоненти готові у task 007, entity layer — у task 006. Цей task інтегрує їх у реальні сторінки.
+Компоненти готові у task 007, entity layer — у task 006. Цей task інтегрує їх у реальні місця користувацького flow.
 
-`EditProjectPage` створюється окремо у задачі `011 - Implement Project Edit Page` (sprint 004). Якщо ця задача не завершена — інтеграцію в Project edit винести з цього task і відкласти, не блокуючи Task частину.
+Project не має окремої edit-сторінки — редагування і створення Project відбуваються через `widgets/projects/upsert-dialog/ui/ProjectUpsertDialog.vue`.
 
 ## Scope
 
@@ -22,9 +22,10 @@ status: draft
   - bind до поля `tag_ids` у формі;
   - при submit — відправляти `tag_ids` як частину `Update Task` payload.
 
-- `EditProjectPage`:
-  - аналогічно для Project.
-  - якщо сторінка ще не готова — зафіксувати у Open Questions і реалізувати тільки Task частину.
+- `ProjectUpsertDialog`:
+  - додати `TagInput` у форму;
+  - bind до поля `tag_ids`;
+  - підтримати як create, так і update flow — при створенні новий Project повинен прив'язати вибрані теги одразу через `tag_ids` у payload.
 
 - Task details / Project details сторінки:
   - відображати `TagList` із полем `tags` із resource (перші 4);
@@ -44,9 +45,11 @@ status: draft
 ## Expected Behavior
 
 - На `EditTaskPage` можна додавати/видаляти теги і створювати нові через dialog. Збереження форми зберігає прив'язки.
+- У `ProjectUpsertDialog` те саме — теги доступні при створенні і редагуванні Project.
 - На Task details сторінці показано перші 4 теги; "View all" відкриває dialog із повним списком.
+- На Project details сторінці — те саме.
 - На Tasks list сторінці можна відфільтрувати задачі за одним або кількома тегами (OR).
-- Аналогічно для Project.
+- На Projects list сторінці — те саме.
 
 ## Technical Notes
 
@@ -57,7 +60,7 @@ status: draft
 ## Acceptance Criteria
 
 - [ ] `EditTaskPage` дозволяє редагувати теги через `TagInput` і зберігає `tag_ids` при submit.
-- [ ] `EditProjectPage` робить те саме (або винесено в Open Questions, якщо сторінка не готова).
+- [ ] `ProjectUpsertDialog` підтримує `TagInput` як при створенні, так і при редагуванні.
 - [ ] Task details показує `TagList` із перших 4 тегів і кнопку "View all".
 - [ ] Project details — те саме.
 - [ ] Tasks list має фільтр за тегами (OR).
@@ -67,9 +70,9 @@ status: draft
 
 ## Open Questions
 
-- Готовність `EditProjectPage` (task `011 - Implement Project Edit Page` у sprint 004). Якщо не готова на момент старту — Project edit інтеграція виноситься з цього task.
+- N/A
 
 ## Notes For Developer Agent
 
-- Не змінювати верстку інших полів на сторінках більше, ніж потрібно для додавання `TagInput`.
-- Перед стартом перевірити стан `EditProjectPage`.
+- Не змінювати верстку інших полів більше, ніж потрібно для додавання `TagInput`.
+- `ProjectUpsertDialog` розташований у `widgets/projects/upsert-dialog/ui/ProjectUpsertDialog.vue`.
