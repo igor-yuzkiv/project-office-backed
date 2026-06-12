@@ -1,6 +1,8 @@
-import type { AttachmentRole, IEntity, ModuleName } from '@/shared/types'
+import type { IEntity, ModuleName } from '@/shared/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
+
+export type AttachmentRole = string
 
 export interface IAttachment extends IEntity {
     url: string

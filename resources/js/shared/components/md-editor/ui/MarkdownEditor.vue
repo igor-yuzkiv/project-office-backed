@@ -3,7 +3,7 @@ import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { uploadAttachmentRequest } from '@/entities/attachment/api'
-import type { AttachmentRole } from '@/shared/types'
+import type { AttachmentRole } from '@/entities/attachment/types'
 
 const props = withDefaults(
     defineProps<{

@@ -2,7 +2,8 @@
 import { ref } from 'vue'
 import Button from 'primevue/button'
 import { Icon } from '@iconify/vue'
-import type { AttachmentRole, ModuleName } from '@/shared/types'
+import type { ModuleName } from '@/shared/types'
+import type { AttachmentRole } from '@/entities/attachment/types'
 import { useAttachmentUpload } from '../composables/use.attachment-upload'
 
 const props = withDefaults(

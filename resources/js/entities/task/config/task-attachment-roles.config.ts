@@ -1,4 +1,4 @@
-import type { AttachmentRole } from '@/shared/types'
+import type { AttachmentRole } from '@/entities/attachment/types'
 
 export const TASK_ATTACHMENT_ROLES = {
     UPLOAD: 'tasks.upload',
