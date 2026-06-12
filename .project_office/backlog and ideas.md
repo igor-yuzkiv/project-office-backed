@@ -79,3 +79,7 @@
 - cliq for notifications or summary
 - sentry for issue creation
 
+
+
+
+Фіча для ранкового планування замість потчної ексельки і ручного скидання в чат
