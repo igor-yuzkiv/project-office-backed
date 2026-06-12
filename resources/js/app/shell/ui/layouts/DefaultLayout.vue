@@ -46,7 +46,9 @@ const recentProjects = [
         <AppLeftNavigationSidebar :items="navItems">
             <template #default>
                 <div class="flex flex-col">
-                    <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">Recent Projects</p>
+                    <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">
+                        Recent Projects
+                    </p>
                     <div
                         v-for="project in recentProjects"
                         :key="project.id"
@@ -57,8 +59,10 @@ const recentProjects = [
                     </div>
                 </div>
 
-                <div class="flex flex-col mt-3">
-                    <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">Recent Tasks</p>
+                <div class="mt-3 flex flex-col">
+                    <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">
+                        Recent Tasks
+                    </p>
                     <div
                         v-for="project in recentProjects"
                         :key="project.id"

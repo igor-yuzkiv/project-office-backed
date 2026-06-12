@@ -12,5 +12,6 @@ class CreateTaskCommand
         public readonly ?TaskPriority $priority = null,
         public readonly ?string $taskListId = null,
         public readonly ?string $description = null,
+        public readonly ?array $tagIds = null,
     ) {}
 }

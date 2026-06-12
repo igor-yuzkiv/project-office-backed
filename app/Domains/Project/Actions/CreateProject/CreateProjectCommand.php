@@ -10,5 +10,6 @@ class CreateProjectCommand
         public readonly string $name,
         public readonly ?string $prefix = null,
         public readonly ProjectStatus $status = ProjectStatus::DRAFT,
+        public readonly ?array $tagIds = null,
     ) {}
 }

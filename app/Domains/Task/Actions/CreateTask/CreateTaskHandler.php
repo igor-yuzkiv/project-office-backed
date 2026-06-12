@@ -19,7 +19,7 @@ class CreateTaskHandler
         $project = ProjectModel::findOrFail($command->projectId);
         $taskKey = $this->taskKeyResolver->resolve($project);
 
-        return TaskModel::create([
+        $task = TaskModel::create([
             'project_id'      => $command->projectId,
             'task_list_id'    => $command->taskListId,
             'key'             => $taskKey->value,
@@ -29,5 +29,11 @@ class CreateTaskHandler
             'priority'        => $command->priority?->value,
             'status'          => TaskStatus::Open->value,
         ]);
+
+        if ($command->tagIds !== null) {
+            $task->tags()->sync($command->tagIds);
+        }
+
+        return $task;
     }
 }
