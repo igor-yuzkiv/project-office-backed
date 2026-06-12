@@ -3,6 +3,7 @@
 namespace App\Domains\Task\Models;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Enums\TaskPriority;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\TaskList\Models\TaskListModel;
@@ -14,15 +15,18 @@ use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Laravel\Scout\Searchable;
 
 /**
  * @property TaskPriority|null $priority
  * @property TaskStatus $status
+ * @property Collection<int, TagModel> $tags
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -72,6 +76,11 @@ class TaskModel extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'updated_by');
+    }
+
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(TagModel::class, 'taggable')->withPivot('created_at');
     }
 
     public static function newFactory(): TaskModelFactory

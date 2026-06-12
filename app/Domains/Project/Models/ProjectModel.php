@@ -3,6 +3,7 @@
 namespace App\Domains\Project\Models;
 
 use App\Domains\Project\Enums\ProjectStatus;
+use App\Domains\Tag\Models\TagModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
@@ -11,14 +12,17 @@ use App\Libs\EloquentFilters\Filters\TextFilter;
 use App\Support\TextUtils;
 use Database\Factories\ProjectModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Laravel\Scout\Searchable;
 
 /**
  * @property ProjectStatus $status
+ * @property Collection<int, TagModel> $tags
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -58,6 +62,11 @@ class ProjectModel extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'updated_by');
+    }
+
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(TagModel::class, 'taggable')->withPivot('created_at');
     }
 
     public static function newFactory(): ProjectModelFactory
