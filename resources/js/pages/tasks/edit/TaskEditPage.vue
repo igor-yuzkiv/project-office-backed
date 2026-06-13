@@ -133,7 +133,7 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div v-if="task" class="p-2 gap-6 flex flex-1 flex-col overflow-auto">
+    <div v-if="task" class="p-2 flex flex-1 flex-col overflow-hidden">
         <div class="p-3 gap-3 flex flex-col">
             <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
                 <InputContainer label="Name" :error="validationErrors.name" required>
@@ -182,9 +182,9 @@ useBreadcrumbs(() => [
                     <TagList :tags="formData.tags" />
                 </div>
             </InputContainer>
+        </div>
 
-            <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
-
+        <div class="flex-1 overflow-auto">
             <MarkdownEditor
                 v-model="formData.description"
                 preview
@@ -194,5 +194,7 @@ useBreadcrumbs(() => [
                 :image_role="TASK_ATTACHMENT_ROLES.DESCRIPTION"
             />
         </div>
+
+        <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
     </div>
 </template>
