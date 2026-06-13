@@ -26,7 +26,7 @@ function isActive(): boolean {
         class="rounded-md text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
         :class="[
             isActive() ? 'bg-surface-800 text-surface-0' : '',
-            collapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2',
+            collapsed ? 'p-2 justify-center' : 'gap-3 px-3 py-2',
         ]"
         :title="collapsed ? item.label : undefined"
     >

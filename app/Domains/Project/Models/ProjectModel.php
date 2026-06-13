@@ -4,6 +4,8 @@ namespace App\Domains\Project\Models;
 
 use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\Tag\Models\TagModel;
+use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
@@ -18,12 +20,15 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Laravel\Scout\Searchable;
 
 /**
  * @property ProjectStatus $status
  * @property Collection<int, TagModel> $tags
+ * @property Collection<int, TaskModel> $tasks
+ * @property Collection<int, TaskListModel> $taskLists
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -63,6 +68,16 @@ class ProjectModel extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'updated_by');
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(TaskModel::class, 'project_id');
+    }
+
+    public function taskLists(): HasMany
+    {
+        return $this->hasMany(TaskListModel::class, 'project_id');
     }
 
     public function tags(): MorphToMany

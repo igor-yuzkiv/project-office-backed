@@ -7,7 +7,7 @@ import { useProjectsSearchQuery } from '@/entities/project/queries'
 import { useDeleteProjectMutation } from '@/entities/project/mutations'
 import { useHeaderActions } from '@/app/shell'
 import { PAGE_SIZE } from '@/app/config'
-import type { IProject } from '@/entities/project/types'
+import type { IProject, ProjectSearchParams } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
 import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
@@ -67,7 +67,7 @@ const rowMenuItems: MenuItem[] = [
     },
 ]
 
-const searchParams = computed(() => ({
+const searchParams = computed<ProjectSearchParams>(() => ({
     query: searchQuery.value,
     filters: filterSidebar.resolvedFilters.value,
     page: page.value,
@@ -129,10 +129,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
-                        <IconButton
-                            icon="material-symbols-light:more-vert"
-                            @click.stop="openRowMenu($event, row)"
-                        />
+                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
                     </template>
                 </ProjectsTableView>
             </div>

@@ -1,6 +1,5 @@
 import type { IEntity, ModuleName } from '@/shared/types'
-import type { FilterPayloadItem } from '@/shared/filters'
-import type { SortParams } from '@/shared/sort'
+import type { UserOverviewDto } from '@/entities/user/types'
 
 export type AttachmentRole = string
 
@@ -15,20 +14,7 @@ export interface IAttachment extends IEntity {
     entity_type: ModuleName | null
     entity_id: string | null
     role: AttachmentRole | null
-}
 
-export interface IUploadAttachmentInput {
-    file: File
-    entity_type?: ModuleName
-    entity_id?: string
-    role?: AttachmentRole
-}
-
-export type AttachmentInclude = 'createdBy' | 'updatedBy'
-
-export type AttachmentSearchParams = SortParams & {
-    filters?: FilterPayloadItem[]
-    page?: number
-    per_page?: number
-    include?: AttachmentInclude[]
+    created_by?: UserOverviewDto
+    updated_by?: UserOverviewDto
 }

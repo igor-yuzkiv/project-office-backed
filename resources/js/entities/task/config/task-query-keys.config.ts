@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import type { TaskSearchParams } from '../types/task.types'
+import type { TaskSearchParams } from '../types/task.api.types'
 
 export const TaskQueryKey = {
     all: ['tasks'] as const,

@@ -4,6 +4,8 @@ namespace App\Http\Resources\Projects;
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Http\Resources\Tags\TagResource;
+use App\Http\Resources\TaskLists\TaskListResource;
+use App\Http\Resources\Tasks\TaskResource;
 use App\Http\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,7 +25,9 @@ class ProjectResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
 
-            'tags' => TagResource::collection($this->whenLoaded('tags', fn () => $this->tags, [])),
+            'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
+            'tasks'      => $this->whenLoaded('tasks', fn () => TaskResource::collection($this->tasks)),
+            'task_lists' => $this->whenLoaded('taskLists', fn () => TaskListResource::collection($this->taskLists)),
         ];
     }
 }

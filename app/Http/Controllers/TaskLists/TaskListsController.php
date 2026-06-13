@@ -8,7 +8,7 @@ use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListHandler;
 use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListCommand;
 use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListHandler;
 use App\Domains\TaskList\Models\TaskListModel;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Shared\SearchRequest;
 use App\Http\Requests\TaskLists\StoreTaskListRequest;
 use App\Http\Requests\TaskLists\UpdateTaskListRequest;
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class TaskListsController extends Controller
+class TaskListsController extends ResourceController
 {
     public function __construct(
         private readonly CreateTaskListHandler $createHandler,
@@ -25,13 +25,20 @@ class TaskListsController extends Controller
         private readonly DeleteTaskListHandler $deleteHandler,
     ) {}
 
+    protected function getAllowedIncludes(): array
+    {
+        return ['tasks', 'project', 'createdBy', 'updatedBy'];
+    }
+
     public function index(): AnonymousResourceCollection
     {
         $pagination = $this->getPaginationParams();
         $sort = $this->getSortParams();
 
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes());
+
         $taskLists = TaskListModel::withCount('tasks')
-            ->with(['createdBy', 'updatedBy'])
+            ->with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -43,11 +50,13 @@ class TaskListsController extends Controller
         $sort = $this->getSortParams();
         $pagination = $this->getPaginationParams();
 
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes());
+
         $taskLists = TaskListModel::search((string) $request->input('query', ''))
             ->orderBy($sort->field, $sort->direction)
-            ->query(function (Builder $q) use ($request): Builder {
+            ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskListModel> $q */
-                return $q->withCount('tasks')->with(['createdBy', 'updatedBy'])->filter((array) $request->input('filters', []));
+                return $q->withCount('tasks')->with($includes)->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
@@ -56,7 +65,7 @@ class TaskListsController extends Controller
 
     public function show(TaskListModel $taskList): TaskListResource
     {
-        $taskList->load(['createdBy', 'updatedBy']);
+        $taskList->load($this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes()));
 
         return new TaskListResource($taskList);
     }

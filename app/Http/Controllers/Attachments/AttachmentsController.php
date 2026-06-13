@@ -8,7 +8,7 @@ use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentHandler;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Shared\ValueObjects\EntityRef;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Attachments\UploadAttachmentRequest;
 use App\Http\Requests\Shared\SearchRequest;
 use App\Http\Resources\Attachments\AttachmentResource;
@@ -16,7 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class AttachmentsController extends Controller
+class AttachmentsController extends ResourceController
 {
     public function __construct(
         private readonly UploadAttachmentHandler $uploadHandler,
@@ -24,13 +24,20 @@ class AttachmentsController extends Controller
         private readonly AttachmentStorageService $storage,
     ) {}
 
+    protected function getAllowedIncludes(): array
+    {
+        return ['createdBy', 'updatedBy'];
+    }
+
     public function search(SearchRequest $request): AnonymousResourceCollection
     {
         $sort = $this->getSortParams();
         $pagination = $this->getPaginationParams();
 
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes());
+
         $attachments = AttachmentModel::query()
-            ->with(['createdBy', 'updatedBy'])
+            ->with($includes)
             ->filter((array) $request->input('filters', []))
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);

@@ -5,18 +5,23 @@ namespace App\Http\Controllers\Tags;
 use App\Domains\Tag\Actions\CreateTag\CreateTagCommand;
 use App\Domains\Tag\Actions\CreateTag\CreateTagHandler;
 use App\Domains\Tag\Models\TagModel;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Tag\CreateTagRequest;
 use App\Http\Resources\Tags\TagResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class TagsController extends Controller
+class TagsController extends ResourceController
 {
     public function __construct(
         private readonly CreateTagHandler $createHandler,
     ) {}
+
+    protected function getAllowedIncludes(): array
+    {
+        return [];
+    }
 
     public function index(Request $request): AnonymousResourceCollection
     {

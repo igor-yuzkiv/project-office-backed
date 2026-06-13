@@ -1,6 +1,7 @@
-import type { IEntity, PagingParams } from '@/shared/types'
-import type { SortParams } from '@/shared/sort'
-import type { FilterPayloadItem } from '@/shared/filters'
+import type { IEntity } from '@/shared/types'
+import type { ProjectOverviewDto } from '@/entities/project/types'
+import type { UserOverviewDto } from '@/entities/user/types'
+import type { ITask } from '@/entities/task/types'
 
 export interface ITaskList extends IEntity {
     project_id: string
@@ -8,19 +9,9 @@ export interface ITaskList extends IEntity {
     tasks_count?: number
     created_at: string
     updated_at: string
-}
 
-export interface ICreateTaskListInput {
-    project_id: string
-    name: string
+    project?: ProjectOverviewDto
+    tasks?: ITask[]
+    created_by?: UserOverviewDto
+    updated_by?: UserOverviewDto
 }
-
-export interface IUpdateTaskListInput {
-    name?: string
-}
-
-export type TaskListSearchParams = PagingParams &
-    SortParams & {
-        query?: string
-        filters?: FilterPayloadItem[]
-    }

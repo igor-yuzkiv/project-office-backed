@@ -9,7 +9,7 @@ use App\Domains\Project\Actions\UpdateProject\UpdateProjectCommand;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\Project\Models\ProjectModel;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Requests\Shared\SearchRequest;
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ProjectsController extends Controller
+class ProjectsController extends ResourceController
 {
     public function __construct(
         private readonly CreateProjectHandler $createHandler,
@@ -26,12 +26,19 @@ class ProjectsController extends Controller
         private readonly DeleteProjectHandler $deleteHandler,
     ) {}
 
+    protected function getAllowedIncludes(): array
+    {
+        return ['createdBy', 'updatedBy', 'tags', 'tasks', 'taskLists'];
+    }
+
     public function index(): AnonymousResourceCollection
     {
         $pagination = $this->getPaginationParams();
         $sort = $this->getSortParams();
 
-        $projects = ProjectModel::with(['createdBy', 'updatedBy', 'tags'])
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
+
+        $projects = ProjectModel::with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -43,12 +50,14 @@ class ProjectsController extends Controller
         $sort = $this->getSortParams();
         $pagination = $this->getPaginationParams();
 
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
+
         $projects = ProjectModel::search((string) $request->input('query', ''))
             ->orderBy($sort->field, $sort->direction)
-            ->query(function (Builder $q) use ($request): Builder {
+            ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<ProjectModel> $q */
                 return $q
-                    ->with(['createdBy', 'updatedBy', 'tags'])
+                    ->with($includes)
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
@@ -58,7 +67,7 @@ class ProjectsController extends Controller
 
     public function show(ProjectModel $project): ProjectResource
     {
-        $project->load(['createdBy', 'updatedBy', 'tags']);
+        $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes()));
 
         return new ProjectResource($project);
     }

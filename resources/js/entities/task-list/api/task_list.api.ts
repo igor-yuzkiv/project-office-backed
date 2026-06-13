@@ -1,12 +1,20 @@
 import { httpClient } from '@/shared/api'
-import type { PaginatedResponse, PagingParams, PromisePaginatedResponse } from '@/shared/types'
-import type { SortParams } from '@/shared/sort'
-import type { ICreateTaskListInput, ITaskList, IUpdateTaskListInput, TaskListSearchParams } from '../types'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
+import type {
+    ICreateTaskListInput,
+    ITaskList,
+    IUpdateTaskListInput,
+    TaskListFetchParams,
+    TaskListSearchParams,
+} from '../types'
 
 type TaskListResponse = { data: ITaskList }
 
-export async function fetchTaskListsRequest(params?: PagingParams & SortParams): PromisePaginatedResponse<ITaskList> {
-    return httpClient.get<PaginatedResponse<ITaskList>>('/task-lists', { params }).then((res) => res.data)
+export async function fetchTaskListsRequest(params?: TaskListFetchParams): PromisePaginatedResponse<ITaskList> {
+    const { include, ...rest } = params ?? {}
+    return httpClient
+        .get<PaginatedResponse<ITaskList>>('/task-lists', { params: { ...rest, include: include?.join(',') } })
+        .then((res) => res.data)
 }
 
 export async function fetchTaskListRequest(taskListId: string): Promise<TaskListResponse> {
@@ -26,8 +34,8 @@ export async function deleteTaskListRequest(taskListId: string): Promise<{ messa
 }
 
 export async function searchTaskListsRequest(params: TaskListSearchParams): PromisePaginatedResponse<ITaskList> {
-    const { query = '', filters = [], ...pagination } = params
+    const { query = '', filters = [], include, ...pagination } = params
     return httpClient
-        .post<PaginatedResponse<ITaskList>>('/task-lists/search', { query, filters, ...pagination })
+        .post<PaginatedResponse<ITaskList>>('/task-lists/search', { query, filters, include, ...pagination })
         .then((res) => res.data)
 }

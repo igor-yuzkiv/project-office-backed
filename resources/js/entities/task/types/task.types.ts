@@ -1,14 +1,10 @@
-import type { IEntity, PagingParams } from '@/shared/types'
-import type { FilterPayloadItem } from '@/shared/filters'
-import type { SortParams } from '@/shared/sort'
+import type { IEntity } from '@/shared/types'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { ITaskList } from '@/entities/task-list/types'
 import type { TaskPriorityDto } from './task-priority.types'
 import type { TaskStatusValue } from './task-status.types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
-
-export type TaskInclude = 'project' | 'task_list' | 'createdBy' | 'updatedBy'
 
 export interface ITask extends IEntity {
     project_id: string
@@ -29,32 +25,3 @@ export interface ITask extends IEntity {
     updated_by?: UserOverviewDto
     tags?: ITag[]
 }
-
-export interface ICreateTaskInput {
-    project_id: string
-    name: string
-    priority?: number | null
-    task_list_id?: string | null
-    description?: string | null
-}
-
-export interface IUpdateTaskInput {
-    name?: string
-    priority?: number | null
-    status?: TaskStatusValue
-    task_list_id?: string | null
-    description?: string | null
-    tag_ids?: string[]
-}
-
-export type TaskFetchParams = PagingParams &
-    SortParams & {
-        include?: TaskInclude[]
-    }
-
-export type TaskSearchParams = PagingParams &
-    SortParams & {
-        query?: string
-        filters?: FilterPayloadItem[]
-        include?: TaskInclude[]
-    }

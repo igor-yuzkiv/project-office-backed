@@ -34,7 +34,7 @@ class TaskResource extends JsonResource
             'project'   => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
             'task_list' => $this->whenLoaded('taskList', fn () => new TaskListResource($this->taskList)),
 
-            'tags' => TagResource::collection($this->whenLoaded('tags', fn () => $this->tags, [])),
+            'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
         ];
     }
 }

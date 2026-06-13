@@ -9,7 +9,7 @@ import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
 import { useRouteParams } from '@vueuse/router'
 import type { FilterPayloadItem } from '@/shared/filters'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
-import type { ITaskList } from '@/entities/task-list/types'
+import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
@@ -24,7 +24,7 @@ const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
 
-const searchParams = computed(() => {
+const searchParams = computed<TaskListSearchParams>(() => {
     const projectFilter: FilterPayloadItem = {
         filter_key: 'text',
         field_name: 'project_id',

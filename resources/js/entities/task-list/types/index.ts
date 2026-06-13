@@ -1,1 +1,2 @@
-export * from './task_list.types.ts'
+export * from './task_list.types'
+export * from './task_list.api.types'

@@ -10,7 +10,7 @@ use App\Domains\Task\Actions\UpdateTask\UpdateTaskHandler;
 use App\Domains\Task\Enums\TaskPriority;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Shared\SearchRequest;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class TasksController extends Controller
+class TasksController extends ResourceController
 {
     public function __construct(
         private readonly CreateTaskHandler $createHandler,
@@ -27,15 +27,18 @@ class TasksController extends Controller
         private readonly DeleteTaskHandler $deleteHandler,
     ) {}
 
-    private const array ALLOWED_INCLUDES = ['project' => 'project', 'task_list' => 'taskList'];
+    protected function getAllowedIncludes(): array
+    {
+        return ['project', 'taskList', 'createdBy', 'updatedBy', 'tags'];
+    }
 
     public function index(): AnonymousResourceCollection
     {
         $pagination = $this->getPaginationParams();
         $sort = $this->getSortParams();
-        $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
 
-        $tasks = TaskModel::with(['createdBy', 'updatedBy', 'tags', ...$includes])
+        $tasks = TaskModel::with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -46,14 +49,14 @@ class TasksController extends Controller
     {
         $sort = $this->getSortParams();
         $pagination = $this->getPaginationParams();
-        $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
+        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
 
         $tasks = TaskModel::search((string) $request->input('query', ''))
             ->orderBy($sort->field, $sort->direction)
             ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskModel> $q */
                 return $q
-                    ->with(['createdBy', 'updatedBy', 'tags', ...$includes])
+                    ->with($includes)
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
@@ -63,7 +66,7 @@ class TasksController extends Controller
 
     public function show(TaskModel $task): TaskResource
     {
-        $task->load(['createdBy', 'updatedBy', 'project', 'taskList', 'tags']);
+        $task->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'taskList', 'tags'], requested: $this->parseRequestedIncludes()));
 
         return new TaskResource($task);
     }

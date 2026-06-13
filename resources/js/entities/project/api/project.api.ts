@@ -1,18 +1,26 @@
 import { httpClient } from '@/shared/api'
-import type { PaginatedResponse, PagingParams, PromisePaginatedResponse } from '@/shared/types'
-import type { SortParams } from '@/shared/sort'
-import type { ICreateProjectInput, IProject, IUpdateProjectInput, ProjectSearchParams } from '../types'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
+import type {
+    ICreateProjectInput,
+    IProject,
+    IUpdateProjectInput,
+    ProjectFetchParams,
+    ProjectSearchParams,
+} from '../types'
 
 type ProjectResponse = { data: IProject }
 
-export async function fetchProjectsRequest(params?: PagingParams & SortParams): PromisePaginatedResponse<IProject> {
-    return httpClient.get<PaginatedResponse<IProject>>('/projects', { params }).then((res) => res.data)
+export async function fetchProjectsRequest(params?: ProjectFetchParams): PromisePaginatedResponse<IProject> {
+    const { include, ...rest } = params ?? {}
+    return httpClient
+        .get<PaginatedResponse<IProject>>('/projects', { params: { ...rest, include: include?.join(',') } })
+        .then((res) => res.data)
 }
 
 export async function searchProjectsRequest(params: ProjectSearchParams): PromisePaginatedResponse<IProject> {
-    const { query = '', filters = [], ...pagination } = params
+    const { query = '', filters = [], include, ...pagination } = params
     return httpClient
-        .post<PaginatedResponse<IProject>>('/projects/search', { query, filters, ...pagination })
+        .post<PaginatedResponse<IProject>>('/projects/search', { query, filters, include, ...pagination })
         .then((res) => res.data)
 }
 
