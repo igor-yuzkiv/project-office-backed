@@ -16,7 +16,7 @@ export interface IProject extends IEntity {
     tags?: ITag[]
 }
 
-export type ProjectOverviewDto = Pick<IProject, 'id' | 'name' | 'prefix'>
+export type ProjectOverviewDto = Pick<IProject, 'id' | 'name' | 'prefix' | 'status'>
 
 export interface ICreateProjectInput {
     name: string

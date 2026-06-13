@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Paginator from 'primevue/paginator'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { useProjectsSearchQuery } from '@/entities/project/queries'
@@ -14,11 +11,10 @@ import type { IProject } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
 import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
-import { ProjectStatusTag } from '@/widgets/projects/status-tag'
+import { ProjectsTableView } from '@/widgets/projects/views/table'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { SearchInput } from '@/shared/components/input'
-import { DisplayDate } from '@/shared/components/display'
 import { IconButton } from '@/shared/components/button'
 
 const router = useRouter()
@@ -92,8 +88,8 @@ function onSearchSubmit() {
     page.value = 1
 }
 
-function onRowClick(event: { data: IProject }) {
-    router.push({ name: 'project-details.tasks', params: { id: event.data.id } })
+function onRowClick(project: IProject) {
+    router.push({ name: 'project-details.tasks', params: { id: project.id } })
 }
 
 function openRowMenu(event: MouseEvent, project: IProject) {
@@ -101,8 +97,8 @@ function openRowMenu(event: MouseEvent, project: IProject) {
     rowMenu.value?.toggle(event)
 }
 
-function onPageChange(event: { page: number }) {
-    page.value = event.page + 1
+function onPageChange(newPage: number) {
+    page.value = newPage
 }
 
 watch([sort.sortBy, sort.sortOrder], () => {
@@ -124,51 +120,21 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
             </div>
 
             <div class="app-card flex h-full w-full flex-col overflow-hidden">
-                <DataTable
-                    :value="projects"
-                    :loading="isPending"
-                    lazy
-                    striped-rows
-                    class="p-0 w-full cursor-pointer"
-                    row-hover
-                    scrollable
-                    scroll-height="flex"
-                    size="small"
+                <ProjectsTableView
+                    :projects="projects"
+                    :is-pending="isPending"
+                    :pagination-meta="paginationMeta"
+                    :page="page"
                     @row-click="onRowClick"
-                    pt:footer:class="p-0 border-none"
+                    @page-change="onPageChange"
                 >
-                    <Column field="prefix" header="Prefix" style="width: 6rem" />
-                    <Column field="status" header="Status" style="width: 8rem">
-                        <template #body="{ data }">
-                            <ProjectStatusTag :status="data.status" variant="light" />
-                        </template>
-                    </Column>
-                    <Column field="name" header="Project Name" />
-                    <Column field="created_at" header="Created" style="width: 12rem">
-                        <template #body="{ data }">
-                            <DisplayDate :date="data.created_at" />
-                        </template>
-                    </Column>
-                    <Column style="width: 3rem">
-                        <template #body="{ data }">
-                            <IconButton
-                                icon="material-symbols-light:more-vert"
-                                @click.stop="openRowMenu($event, data)"
-                            />
-                        </template>
-                    </Column>
-
-                    <template #footer>
-                        <Paginator
-                            v-if="paginationMeta && paginationMeta.last_page > 1"
-                            :rows="PAGE_SIZE"
-                            :total-records="paginationMeta.total"
-                            :first="(page - 1) * PAGE_SIZE"
-                            @page="onPageChange"
-                            pt:root:class="p-0"
+                    <template #actions="{ row }">
+                        <IconButton
+                            icon="material-symbols-light:more-vert"
+                            @click.stop="openRowMenu($event, row)"
                         />
                     </template>
-                </DataTable>
+                </ProjectsTableView>
             </div>
         </div>
 

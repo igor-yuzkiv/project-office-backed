@@ -64,7 +64,7 @@ useBreadcrumbs(() => [
                 <div class="gap-1 flex flex-col truncate">
                     <div class="gap-x-3 flex items-center">
                         <DisplayField v-if="task.project" inline>
-                            <ProjectIcon :prefix="task.project.prefix" size="small" />
+                            <ProjectIcon :prefix="task.project.prefix" size="small" :status="task.project.status"/>
                             <RouterLink
                                 :to="{ name: 'project-details', params: { id: task.project_id } }"
                                 class="text-sm app-link"

@@ -32,6 +32,7 @@ const tableColumnsDef: EntityTableColumnDef[] = [
     { field: 'name', header: 'Task Name' },
     { field: 'status', header: 'Status', style: 'width: 9rem' },
     { field: 'priority', header: 'Priority', style: 'width: 7rem' },
+    { field: 'tags', header: 'Tags' },
     { field: 'created_at', header: 'Created', style: 'width: 12rem' },
 ]
 

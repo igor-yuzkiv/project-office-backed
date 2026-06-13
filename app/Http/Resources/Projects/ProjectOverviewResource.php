@@ -15,6 +15,7 @@ class ProjectOverviewResource extends JsonResource
             'id'     => $this->id,
             'name'   => $this->name,
             'prefix' => $this->prefix,
+            'status' => $this->status,
         ];
     }
 }
