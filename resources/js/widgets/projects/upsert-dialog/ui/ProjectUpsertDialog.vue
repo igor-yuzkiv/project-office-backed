@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -6,15 +7,18 @@ import Button from 'primevue/button'
 import type { LaravelValidationErrors } from '@/shared/types'
 import type { ProjectStatusValue } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
+import type { ITag } from '@/entities/tag/types'
 import { InputContainer } from '@/shared/components/input'
-import { TagInput } from '@/widgets/tags/multi-lookup'
+import { TagList } from '@/widgets/tags/metadata'
+import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
+import { IconButton } from '@/shared/components/button'
 
 const props = defineProps<{
     visible: boolean
     mode: 'create' | 'update'
     name: string
     status: ProjectStatusValue
-    tagIds: string[]
+    tags: ITag[]
     validationErrors: LaravelValidationErrors
     isPending: boolean
 }>()
@@ -23,12 +27,15 @@ const emit = defineEmits<{
     'update:visible': [value: boolean]
     'update:name': [value: string]
     'update:status': [value: ProjectStatusValue]
-    'update:tagIds': [value: string[]]
+    'update:tags': [value: ITag[]]
     submit: []
 }>()
 
 const title = { create: 'New Project', update: 'Edit Project' }
 const statusOptions = projectStatusOptions()
+
+const showManageTagsDialog = ref(false)
+
 </script>
 
 <template>
@@ -62,9 +69,24 @@ const statusOptions = projectStatusOptions()
                 />
             </InputContainer>
             <InputContainer label="Tags" :error="props.validationErrors.tag_ids">
-                <TagInput :model-value="props.tagIds" @update:model-value="emit('update:tagIds', $event)" />
+                <div class="gap-2 flex items-center">
+                    <IconButton
+                        size="medium"
+                        severity="success"
+                        icon="mdi:tag-edit"
+                        @click="showManageTagsDialog = true"
+                    />
+
+                    <TagList :tags="props.tags" />
+                </div>
             </InputContainer>
         </form>
+
+        <ManageRecordTagsDialog
+            v-model:visible="showManageTagsDialog"
+            :model-value="props.tags"
+            @update:model-value="emit('update:tags', $event)"
+        />
 
         <template #footer>
             <Button

@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { useCreateProjectMutation } from '@/entities/project/mutations'
 import { useUpdateProjectMutation } from '@/entities/project/mutations'
 import type { IProject, ProjectStatusValue } from '@/entities/project/types'
+import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 
@@ -12,7 +13,7 @@ export function useProjectUpsertDialog() {
 
     const name = ref('')
     const status = ref<ProjectStatusValue>('draft')
-    const tagIds = ref<string[]>([])
+    const tags = ref<ITag[]>([])
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: create, isPending: isCreating } = useCreateProjectMutation()
@@ -23,7 +24,7 @@ export function useProjectUpsertDialog() {
         editingProject.value = project
         name.value = project?.name ?? ''
         status.value = project?.status ?? 'draft'
-        tagIds.value = project?.tags?.map((tag) => tag.id) ?? []
+        tags.value = project?.tags ?? []
         validationErrors.value = {}
         visible.value = true
     }
@@ -41,21 +42,20 @@ export function useProjectUpsertDialog() {
     function submit() {
         validationErrors.value = {}
 
+        const tag_ids = tags.value.map((t) => t.id)
+
         if (mode.value === 'create') {
-            create(
-                { name: name.value, status: status.value, tag_ids: tagIds.value },
-                { onSuccess: close, onError: handleError }
-            )
+            create({ name: name.value, status: status.value, tag_ids }, { onSuccess: close, onError: handleError })
         } else if (editingProject.value) {
             update(
                 {
                     id: editingProject.value.id,
-                    data: { name: name.value, status: status.value, tag_ids: tagIds.value },
+                    data: { name: name.value, status: status.value, tag_ids },
                 },
                 { onSuccess: close, onError: handleError }
             )
         }
     }
 
-    return { visible, mode, name, status, tagIds, validationErrors, isPending, open, close, submit }
+    return { visible, mode, name, status, tags, validationErrors, isPending, open, close, submit }
 }

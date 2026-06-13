@@ -3,9 +3,11 @@ import { computed } from 'vue'
 import Tag from 'primevue/tag'
 import type { ITag } from '@/entities/tag/types'
 import { getContrastColor } from '@/shared/utils/color.util.ts'
+import { Icon } from '@iconify/vue'
 
 const props = defineProps<{
     tag: ITag
+    closable?: boolean
 }>()
 
 const styles = computed(() => ({
@@ -15,5 +17,8 @@ const styles = computed(() => ({
 </script>
 
 <template>
-    <Tag :style="styles">{{ tag.name }}</Tag>
+    <Tag :style="styles" class="gap-2 flex">
+        <Icon v-if="closable" icon="material-symbols:close" class="cursor-pointer" />
+        <span>{{ tag.name }}</span>
+    </Tag>
 </template>

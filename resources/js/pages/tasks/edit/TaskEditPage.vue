@@ -10,13 +10,16 @@ import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
 import type { ITaskList } from '@/entities/task-list/types'
+import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
-import { TagInput } from '@/widgets/tags/multi-lookup'
+import { TagList } from '@/widgets/tags/metadata'
+import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
+import { IconButton } from '@/shared/components/button'
 
 interface TaskEditFormData {
     name: string
@@ -24,7 +27,7 @@ interface TaskEditFormData {
     taskList: ITaskList | null
     status: TaskStatusValue
     priority: number | null
-    tag_ids: string[]
+    tags: ITag[]
 }
 
 const route = useRoute()
@@ -41,10 +44,11 @@ const formData = ref<TaskEditFormData>({
     taskList: null,
     status: 'open',
     priority: null,
-    tag_ids: [],
+    tags: [],
 })
 const isFormInitialized = ref(false)
 const validationErrors = ref<LaravelValidationErrors>({})
+const showManageTagsDialog = ref(false)
 
 function handleError(error: unknown) {
     if (error instanceof ApiError && error.isValidationError) {
@@ -65,7 +69,7 @@ function submit() {
         task_list_id: formData.value.taskList?.id ?? null,
         status: formData.value.status,
         priority: formData.value.priority,
-        tag_ids: formData.value.tag_ids,
+        tag_ids: formData.value.tags.map((t) => t.id),
     }
 
     updateTask(
@@ -101,7 +105,7 @@ watch(
                 taskList: t.task_list ?? null,
                 status: t.status,
                 priority: t.priority?.value ?? null,
-                tag_ids: t.tags?.map((tag) => tag.id) ?? [],
+                tags: t.tags ?? [],
             }
             isFormInitialized.value = true
             layoutStore.setPageTitle(`${t.key} | ${t.name}`)
@@ -168,8 +172,18 @@ useBreadcrumbs(() => [
             </div>
 
             <InputContainer label="Tags" :error="validationErrors.tag_ids">
-                <TagInput v-model="formData.tag_ids" />
+                <div class="gap-2 p-1 flex items-center">
+                    <IconButton
+                        size="medium"
+                        severity="success"
+                        icon="mdi:tag-edit"
+                        @click="showManageTagsDialog = true"
+                    />
+                    <TagList :tags="formData.tags" />
+                </div>
             </InputContainer>
+
+            <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
 
             <MarkdownEditor
                 v-model="formData.description"
