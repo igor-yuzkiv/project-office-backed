@@ -10,6 +10,7 @@ import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { TagList } from '@/widgets/tags/metadata'
+import { ProjectStatusTag } from '@/widgets/projects/status-tag'
 
 const route = useRoute()
 const router = useRouter()
@@ -53,11 +54,15 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
             <div class="p-3 flex shrink-0 items-start justify-between">
                 <div class="gap-1 flex flex-col">
                     <div class="gap-x-2 text-2xl font-semibold flex items-center">
-                        <ProjectIcon :prefix="project.prefix" size="small" :status="project.status"/>
+                        <ProjectIcon :prefix="project.prefix" size="small" :status="project.status" />
                         <h1 class="text-surface-900">{{ project.name }}</h1>
                     </div>
 
                     <TagList :tags="project.tags ?? []" />
+                </div>
+
+                <div class="gap-x-2 flex items-center">
+                    <ProjectStatusTag :status="project.status" class="w-fit" variant="light" show-icon />
                 </div>
             </div>
 

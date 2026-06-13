@@ -4,6 +4,7 @@ import Avatar from 'primevue/avatar'
 import Breadcrumb from 'primevue/breadcrumb'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/app/stores/use.auth.store'
+import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { IconButton } from '@/shared/components/button'
 import { getInitials } from '@/shared/utils/string.util'
 import { UserProfilePopover } from '@/widgets/user/profile'
@@ -17,6 +18,7 @@ defineProps<{
 }>()
 
 const authStore = useAuthStore()
+const layoutStore = useAppLayoutStore()
 const router = useRouter()
 const profilePopover = ref<InstanceType<typeof UserProfilePopover>>()
 
@@ -32,7 +34,13 @@ async function handleLogout() {
     <header
         class="h-14 border-surface-200 px-4 dark:border-surface-700 bg-white flex shrink-0 items-center justify-between border-b"
     >
-        <div class="flex items-center truncate">
+        <div class="gap-1 flex items-center truncate">
+            <IconButton
+                icon="heroicons:bars-3"
+                size="medium"
+                severity="secondary"
+                @click="layoutStore.toggleSidebar()"
+            />
             <Breadcrumb
                 v-if="breadcrumbs?.length"
                 :model="breadcrumbs"
