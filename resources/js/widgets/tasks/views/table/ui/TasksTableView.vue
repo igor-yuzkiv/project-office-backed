@@ -72,7 +72,7 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         </template>
 
         <template #column:tags="{ row }">
-            <TagList v-if="row.tags" :tags="row.tags" inline/>
+            <TagList v-if="row.tags" :tags="row.tags" inline />
         </template>
 
         <template #column:created_at="{ row }">
