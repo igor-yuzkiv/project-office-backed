@@ -13,7 +13,7 @@ const { task } = useTaskQuery(taskId)
 </script>
 
 <template>
-    <div v-if="task" class="gap-4 p-4 grid grid-cols-2">
+    <div v-if="task" class="app-content-background gap-4 p-4 grid grid-cols-2">
         <DisplayField label="Key" :value="task.key" />
         <DisplayField label="Sequence Number" :value="String(task.sequence_number)" />
         <DisplayField label="Status">

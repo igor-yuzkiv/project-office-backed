@@ -111,7 +111,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <div class="gap-2 app-card p-1 flex items-center justify-between">
+            <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
                     <FilterButton v-bind="filterSidebar.buttonProps.value" />
@@ -119,7 +119,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
                 </div>
             </div>
 
-            <div class="app-card flex h-full w-full flex-col overflow-hidden">
+            <div class="flex h-full w-full flex-col overflow-hidden">
                 <ProjectsTableView
                     :projects="projects"
                     :is-pending="isPending"
@@ -129,7 +129,11 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
-                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                        <IconButton
+                            severity="secondary"
+                            icon="pepicons-pop:dots-y"
+                            @click.stop="openRowMenu($event, row)"
+                        />
                     </template>
                 </ProjectsTableView>
             </div>

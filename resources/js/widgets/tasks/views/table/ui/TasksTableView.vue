@@ -26,13 +26,13 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
     }
 
     return [
-        { field: 'key', header: 'Key', style: 'width: 10rem' },
-        { field: 'name', header: 'Task Name' },
-        { field: 'project', header: 'Project', style: 'width: 12rem; min-width: 0' },
-        { field: 'status', header: 'Status', style: 'width: 9rem' },
-        { field: 'priority', header: 'Priority', style: 'width: 7rem' },
-        { field: 'tags', header: 'Tags' },
-        { field: 'created_at', header: 'Created', style: 'width: 12rem' },
+        { field: 'key', header: 'Key', style: 'min-width: 10rem' },
+        { field: 'name', header: 'Task Name', style: 'min-width: 16rem;' },
+        { field: 'project', header: 'Project', style: 'min-width: 12rem;' },
+        { field: 'status', header: 'Status', style: 'min-width: 9rem' },
+        { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
+        { field: 'tags', header: 'Tags', style: 'min-width: 12rem;' },
+        { field: 'created_at', header: 'Created', style: 'min-width: 12rem' },
     ]
 })
 </script>
@@ -48,6 +48,10 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         @row-click="$emit('rowClick', $event)"
         @page-change="$emit('pageChange', $event)"
     >
+        <template v-if="$slots.actions" #actions="{ row }">
+            <slot name="actions" :row="row" />
+        </template>
+
         <template #column:key="{ row }">
             <CopyToClipboard :text="row.key" class="text-surface-500" />
         </template>
@@ -64,11 +68,11 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         </template>
 
         <template #column:status="{ row }">
-            <TaskStatusTag :status="row.status" class="w-full" />
+            <TaskStatusTag :status="row.status" class="w-fit" />
         </template>
 
         <template #column:priority="{ row }">
-            <TaskPriorityTag :priority="row.priority" class="w-full" />
+            <TaskPriorityTag :priority="row.priority" class="w-fit" />
         </template>
 
         <template #column:tags="{ row }">
@@ -77,10 +81,6 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
         <template #column:created_at="{ row }">
             <DisplayDate :date="row.created_at" />
-        </template>
-
-        <template v-if="$slots.actions" #actions="{ row }">
-            <slot name="actions" :row="row" />
         </template>
     </EntityTableView>
 </template>

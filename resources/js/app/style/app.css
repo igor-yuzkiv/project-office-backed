@@ -1,0 +1,11 @@
+.app-card {
+    @apply bg-surface-0 dark:bg-surface-900 rounded-lg shadow-sm;
+}
+
+.app-content-background {
+    @apply bg-surface-0 dark:bg-surface-900;
+}
+
+.app-link {
+    @apply text-blue-500 hover:underline;
+}

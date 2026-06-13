@@ -59,7 +59,7 @@ useBreadcrumbs(() => [
 
 <template>
     <div v-if="task" class="p-2 flex flex-1 overflow-hidden">
-        <Tabs :value="activeTab" class="app-card flex flex-1 flex-col overflow-hidden" @update:value="onTabChange">
+        <Tabs :value="activeTab" class="flex flex-1 flex-col overflow-hidden" @update:value="onTabChange">
             <div class="p-3 flex shrink-0 items-start justify-between truncate">
                 <div class="gap-1 flex flex-col truncate">
                     <div class="gap-x-3 flex items-center">

@@ -63,7 +63,7 @@ function onPageChange(newPage: number) {
 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
-        <div class="app-card flex h-full w-full flex-col overflow-hidden">
+        <div class="flex h-full w-full flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-end">
                 <UploadAttachmentButton
                     :entity-type="TASK_MODULE_NAME"
@@ -81,7 +81,11 @@ function onPageChange(newPage: number) {
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
-                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                        <IconButton
+                            severity="secondary"
+                            icon="pepicons-pop:dots-y"
+                            @click.stop="openRowMenu($event, row)"
+                        />
                     </template>
                 </AttachmentsTableView>
             </AttachmentDropZone>

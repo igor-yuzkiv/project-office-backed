@@ -13,7 +13,7 @@ const { project } = useProjectQuery(projectId)
 </script>
 
 <template>
-    <div v-if="project" class="gap-4 p-4 grid grid-cols-2">
+    <div v-if="project" class="app-content-background gap-4 p-4 grid grid-cols-2">
         <DisplayField label="Name" :value="project.name" />
         <DisplayField label="Prefix" :value="project.prefix" />
         <DisplayField label="Status">

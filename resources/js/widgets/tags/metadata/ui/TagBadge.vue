@@ -17,7 +17,7 @@ const styles = computed(() => ({
 </script>
 
 <template>
-    <Tag :style="styles" class="gap-2 px-1 py-0.5 flex truncate">
+    <Tag :style="styles" class="gap-2 px-1 py-0.5 flex truncate shrink-0">
         <Icon v-if="closable" icon="material-symbols:close" class="cursor-pointer" />
         <span class="truncate">{{ tag.name }}</span>
     </Tag>

@@ -121,7 +121,11 @@ function onPageChange(newPage: number) {
                     :columns="tableColumnsDef"
                 >
                     <template #actions="{ row }">
-                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                        <IconButton
+                            severity="secondary"
+                            icon="pepicons-pop:dots-y"
+                            @click.stop="openRowMenu($event, row)"
+                        />
                     </template>
                 </TasksTableView>
             </div>

@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
-
+@import 'app.css';
 @import './md-editor.css';
 
 @source '../../../../**/*.{html,js,ts,vue,tsx,jsx}';
@@ -15,22 +15,7 @@
     }
 }
 
-.page-enter-active,
-.page-leave-active {
-    transition:
-        opacity 0.18s ease,
-        transform 0.18s ease;
-}
-
-.page-enter-from {
-    opacity: 0;
-    transform: translateY(6px);
-}
-
-.page-leave-to {
-    opacity: 0;
-    transform: translateY(-6px);
-}
+/* Scrollbar styles */
 
 *::-webkit-scrollbar {
     width: 8px;
@@ -45,10 +30,21 @@
     background: transparent;
 }
 
-.app-card {
-    @apply bg-white dark:bg-surface-950 rounded-lg shadow-sm;
+
+/* Page transition styles */
+
+.page-enter-active,
+.page-leave-active {
+    transition: opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
-.app-link {
-    @apply text-primary-500 hover:underline;
+.page-enter-from {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.page-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
 }

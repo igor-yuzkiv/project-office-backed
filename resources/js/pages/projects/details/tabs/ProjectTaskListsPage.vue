@@ -110,7 +110,11 @@ function onPageChange(newPage: number) {
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
-                        <IconButton icon="material-symbols-light:more-vert" @click.stop="openRowMenu($event, row)" />
+                        <IconButton
+                            severity="secondary"
+                            icon="pepicons-pop:dots-y"
+                            @click.stop="openRowMenu($event, row)"
+                        />
                     </template>
                 </TaskListsTableView>
             </div>

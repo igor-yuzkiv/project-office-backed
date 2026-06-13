@@ -44,6 +44,12 @@ function onPageChange(event: { page: number }) {
         pt:footer:class="p-0 border-none"
         @row-click="props.rowClickable ? onRowClick($event) : undefined"
     >
+        <Column v-if="$slots.actions" style="width: 3rem">
+            <template #body="{ data }">
+                <slot name="actions" :row="data as T" />
+            </template>
+        </Column>
+
         <Column
             v-for="col in props.columns"
             :key="col.field"
@@ -53,12 +59,6 @@ function onPageChange(event: { page: number }) {
         >
             <template v-if="$slots[`column:${col.field}`]" #body="{ data }">
                 <slot :name="`column:${col.field}`" :row="data as T" />
-            </template>
-        </Column>
-
-        <Column v-if="$slots.actions" style="width: 3rem">
-            <template #body="{ data }">
-                <slot name="actions" :row="data as T" />
             </template>
         </Column>
 

@@ -134,7 +134,7 @@ useBreadcrumbs(() => [
 
 <template>
     <div v-if="task" class="p-2 gap-6 flex flex-1 flex-col overflow-auto">
-        <div class="app-card p-3 gap-3 flex flex-col">
+        <div class="p-3 gap-3 flex flex-col">
             <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
                 <InputContainer label="Name" :error="validationErrors.name" required>
                     <InputText v-model="formData.name" placeholder="Task name..." :invalid="!!validationErrors.name" />
