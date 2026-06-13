@@ -20,14 +20,14 @@ const { project } = useProjectQuery(projectId)
             <ProjectStatusTag :status="project.status" class="w-fit" />
         </DisplayField>
         <DisplayField label="Created By">
-            <div v-if="project.created_by" class="gap-2 flex items-center">
-                <UserAvatar :user="project.created_by" size="small" />
+            <div v-if="project?.created_by?.name" class="gap-2 flex items-center">
+                <UserAvatar :user-name="project.created_by.name" size="small" />
                 <span class="text-surface-700 dark:text-surface-300">{{ project.created_by.name }}</span>
             </div>
         </DisplayField>
         <DisplayField label="Updated By">
-            <div v-if="project.updated_by" class="gap-2 flex items-center">
-                <UserAvatar :user="project.updated_by" size="small" />
+            <div v-if="project.updated_by?.name" class="gap-2 flex items-center">
+                <UserAvatar :user-name="project.updated_by?.name" size="small" />
                 <span class="text-surface-700 dark:text-surface-300">{{ project.updated_by.name }}</span>
             </div>
         </DisplayField>

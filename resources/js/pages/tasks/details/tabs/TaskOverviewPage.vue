@@ -34,13 +34,13 @@ const { task } = useTaskQuery(taskId)
         <DisplayField label="Task List" :value="task.task_list?.name ?? null" />
         <DisplayField label="Created By">
             <div v-if="task.created_by" class="gap-2 flex items-center">
-                <UserAvatar :user="task.created_by" size="small" />
+                <UserAvatar :user-name="task.created_by.name" size="small" />
                 <span class="text-surface-700 dark:text-surface-300">{{ task.created_by.name }}</span>
             </div>
         </DisplayField>
         <DisplayField label="Updated By">
             <div v-if="task.updated_by" class="gap-2 flex items-center">
-                <UserAvatar :user="task.updated_by" size="small" />
+                <UserAvatar :user-name="task.updated_by.name" size="small" />
                 <span class="text-surface-700 dark:text-surface-300">{{ task.updated_by.name }}</span>
             </div>
         </DisplayField>

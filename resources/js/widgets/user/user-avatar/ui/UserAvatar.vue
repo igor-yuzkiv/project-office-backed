@@ -2,19 +2,18 @@
 import { computed } from 'vue'
 import Avatar from 'primevue/avatar'
 import type { ComponentSize } from '@/shared/types'
-import type { UserOverviewDto } from '@/entities/user/types'
 import { getInitials } from '@/shared/utils/string.util'
 import { USER_AVATAR_SIZE_MAP } from '../user-avatar.config'
 
 const props = withDefaults(
     defineProps<{
-        user: UserOverviewDto
+        userName: string
         size?: ComponentSize
     }>(),
     { size: 'medium' }
 )
 
-const initials = computed(() => getInitials(props.user.name))
+const initials = computed(() => getInitials(props.userName))
 const sizeClasses = computed(() => USER_AVATAR_SIZE_MAP[props.size])
 </script>
 

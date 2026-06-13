@@ -120,7 +120,11 @@ useHeaderActions([
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
-                        <IconButton severity="secondary" icon="pepicons-pop:dots-y" @click.stop="openRowMenu($event, row)" />
+                        <IconButton
+                            severity="secondary"
+                            icon="pepicons-pop:dots-y"
+                            @click.stop="openRowMenu($event, row)"
+                        />
                     </template>
                 </TasksTableView>
             </div>
