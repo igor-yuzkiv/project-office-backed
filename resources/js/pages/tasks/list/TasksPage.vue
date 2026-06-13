@@ -5,7 +5,7 @@ import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
-import type { ITask } from '@/entities/task/types'
+import type { TaskOverviewDto } from '@/entities/task/types'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
@@ -22,7 +22,7 @@ const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedTask = ref<ITask>()
+const selectedTask = ref<TaskOverviewDto>()
 
 const rowMenuItems: MenuItem[] = [
     {
@@ -38,7 +38,7 @@ const rowMenuItems: MenuItem[] = [
     },
 ]
 
-function openRowMenu(event: MouseEvent, task: ITask) {
+function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
     selectedTask.value = task
     rowMenu.value?.toggle(event)
 }
@@ -71,7 +71,7 @@ const searchParams = computed(() => ({
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
 
-function onRowClick(task: ITask) {
+function onRowClick(task: TaskOverviewDto) {
     router.push({ name: 'task-details', params: { id: task.id } })
 }
 

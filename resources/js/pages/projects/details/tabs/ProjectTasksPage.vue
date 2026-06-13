@@ -8,7 +8,7 @@ import { PAGE_SIZE } from '@/app/config'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
-import type { ITask, TaskSearchParams } from '@/entities/task/types'
+import type { TaskOverviewDto, TaskSearchParams } from '@/entities/task/types'
 import type { FilterPayloadItem } from '@/shared/filters'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
@@ -57,7 +57,7 @@ const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedTask = ref<ITask>()
+const selectedTask = ref<TaskOverviewDto>()
 
 const rowMenuItems: MenuItem[] = [
     {
@@ -73,12 +73,12 @@ const rowMenuItems: MenuItem[] = [
     },
 ]
 
-function openRowMenu(event: MouseEvent, task: ITask) {
+function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
     selectedTask.value = task
     rowMenu.value?.toggle(event)
 }
 
-function onRowClick(task: ITask) {
+function onRowClick(task: TaskOverviewDto) {
     router.push({ name: 'task-details', params: { id: task.id } })
 }
 

@@ -4,7 +4,7 @@ import { format as dateFnsFormat } from 'date-fns'
 
 const props = withDefaults(
     defineProps<{
-        date: string | Date
+        date?: string | Date
         label?: string
         inline?: boolean
         emptyValue?: string
@@ -14,6 +14,10 @@ const props = withDefaults(
 )
 
 const displayValue = computed(() => {
+    if (!props.date) {
+        return props.emptyValue
+    }
+
     try {
         return dateFnsFormat(new Date(props.date), props.format)
     } catch {

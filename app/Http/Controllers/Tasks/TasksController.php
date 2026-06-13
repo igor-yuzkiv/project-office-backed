@@ -14,6 +14,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Shared\SearchRequest;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
+use App\Http\Resources\Tasks\TaskOverviewResource;
 use App\Http\Resources\Tasks\TaskResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -42,7 +43,7 @@ class TasksController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
-        return TaskResource::collection($tasks);
+        return TaskOverviewResource::collection($tasks);
     }
 
     public function search(SearchRequest $request): AnonymousResourceCollection
@@ -61,7 +62,7 @@ class TasksController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
-        return TaskResource::collection($tasks);
+        return TaskOverviewResource::collection($tasks);
     }
 
     public function show(TaskModel $task): TaskResource

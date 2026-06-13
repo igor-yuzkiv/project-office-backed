@@ -6,139 +6,198 @@
 
 ## Backend
 
-### Базовий Controller
+### ResourceController
 
-`Controller::getIncludeParams()` — спільний helper для всіх controllers:
+Єдиний базовий клас для всіх resource controllers (`app/Http/Controllers/ResourceController.php`). Замінює старий `Controller`. Містить:
+
+- `getPaginationParams()` та `getSortParams()` — загальні helpers
+- `getAllowedIncludes()` — **abstract**, кожен controller визначає які Eloquent relations доступні клієнту
+- `resolveIncludes(required, requested)` — об'єднує обов'язкові та запитані includes
+- `parseRequestedIncludes()` — читає `include` з request
+
+### getAllowedIncludes
+
+Кожен controller реалізує метод і повертає список **Eloquent relation names** — тих самих, що і в `->with()`:
 
 ```php
-/**
- * @param  array<string, string>  $allowedMap  API name → Eloquent relation name
- * @return string[]
- */
-protected function getIncludeParams(array $allowedMap): array
+protected function getAllowedIncludes(): array
 {
-    $raw = request()->input('include', []);
-    $requested = is_string($raw) ? array_filter(explode(',', $raw)) : (array) $raw;
-
-    return array_values(array_filter(
-        array_map(fn (string $key) => $allowedMap[trim($key)] ?? null, $requested)
-    ));
+    return ['project', 'taskList', 'createdBy', 'updatedBy', 'tags'];
 }
 ```
 
-Метод:
-- читає `include` з request (query string або POST body);
-- нормалізує до масиву (підтримує і рядок `project,task_list`, і JSON масив);
-- фільтрує тільки дозволені значення через `$allowedMap`;
-- повертає Eloquent relation names готові для `->with()`.
-
-### Підключення до Controller
-
-У кожному controller оголошується whitelist через `ALLOWED_INCLUDES`:
+### resolveIncludes
 
 ```php
-private const ALLOWED_INCLUDES = [
-    'project'   => 'project',   // API name => Eloquent relation
-    'task_list' => 'taskList',
-];
+protected function resolveIncludes(array $required, array $requested): array
 ```
 
-Далі передається в `index()` і `search()`:
+- `$required` — relations, які **завжди** завантажуються для цього action (задаються в контролері)
+- `$requested` — relations, які запросив клієнт (з `parseRequestedIncludes()`)
+
+Метод перевіряє кожен `$requested` item проти `getAllowedIncludes()`. Якщо relation не дозволений — кидає `InvalidIncludeException` з HTTP 422. Дозволені items об'єднуються з `$required` (дублікати видаляються).
+
+Результат передається у `->with()` або `->load()`:
 
 ```php
 public function index(): AnonymousResourceCollection
 {
-    $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
+    $includes = $this->resolveIncludes(
+        required:  ['createdBy', 'updatedBy', 'tags'],
+        requested: $this->parseRequestedIncludes(),
+    );
 
-    $tasks = TaskModel::with(['createdBy', 'updatedBy', ...$includes])
-        ->orderBy($sort->field, $sort->direction)
-        ->paginate($pagination->perPage, page: $pagination->page);
-
-    return TaskResource::collection($tasks);
-}
-
-public function search(SearchRequest $request): AnonymousResourceCollection
-{
-    $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
-
-    $tasks = TaskModel::search((string) $request->input('query', ''))
-        ->query(function (Builder $q) use ($request, $includes): Builder {
-            return $q->with(['createdBy', 'updatedBy', ...$includes])->filter(...);
-        })
-        ->paginate(...);
+    $tasks = TaskModel::with($includes)->paginate(...);
 
     return TaskResource::collection($tasks);
 }
 ```
 
-### Resource
-
-У `toArray()` includes рендеряться через `whenLoaded()` — поле з'являється в response тільки якщо relation завантажено:
+Для `show()` всі потрібні relations передаються через `$required`, а `$requested` дозволяє клієнту додати ще:
 
 ```php
-public function toArray(Request $request): array
+public function show(TaskModel $task): TaskResource
 {
-    return [
-        'id'        => $this->id,
-        // ... основні поля ...
-        'project'   => $this->whenLoaded('project', fn () => new ProjectResource($this->project)),
-        'task_list' => $this->whenLoaded('taskList', fn () => new TaskListResource($this->taskList)),
-    ];
+    $task->load($this->resolveIncludes(
+        required:  ['createdBy', 'updatedBy', 'project', 'taskList', 'tags'],
+        requested: $this->parseRequestedIncludes(),
+    ));
+
+    return new TaskResource($task);
 }
 ```
 
-Якщо `include=project` не передано — поле `project` відсутнє у відповіді повністю (не `null`, а відсутнє).
+### InvalidIncludeException
+
+`app/Infrastructure/Exceptions/InvalidIncludeException.php` — кидається коли клієнт передає relation якого немає в `getAllowedIncludes()`.
+
+Рендериться як HTTP 422:
+
+```json
+{
+  "message": "Include 'fooBar' is not allowed. Allowed includes: project, taskList, createdBy, updatedBy, tags."
+}
+```
+
+### Resource: whenLoaded
+
+У `toArray()` кожен include рендериться через `whenLoaded()` — поле з'являється у response тільки якщо relation завантажено. Для колекцій `::collection()` знаходиться всередині callback:
+
+```php
+// singular relation — відсутнє якщо не loaded
+'project' => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
+
+// collection — відсутнє якщо не loaded (не [], а відсутнє)
+'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
+```
 
 ---
 
 ## API Contract
 
+### Формат передачі
+
 `include` передається як:
-- **query param** для GET запитів: `?include=project,task_list`
-- **тіло запиту** для POST (search): `{ "include": ["project", "task_list"] }`
 
-Backend нормалізує обидва формати — поведінка однакова.
+- **GET** (index, show): query param з comma-separated рядком
+  ```
+  GET /api/tasks?include=project,taskList
+  ```
+- **POST** (search): масив у тілі запиту
+  ```json
+  { "include": ["project", "taskList"] }
+  ```
 
-Значення відповідають API names з `ALLOWED_INCLUDES` конкретного controller:
+Backend обробляє обидва формати однаково через `parseRequestedIncludes()`.
 
-| API name | Що повертається |
+### Помилки
+
+| Ситуація | HTTP | Відповідь |
+|---|---|---|
+| relation не в `getAllowedIncludes()` | 422 | `{ "message": "Include 'X' is not allowed. Allowed includes: ..." }` |
+
+### Allowed includes по сутностях
+
+| Сутність | Allowed includes |
 |---|---|
-| `project` | Об'єкт `ProjectResource` вкладений у відповідь |
-| `task_list` | Об'єкт `TaskListResource` вкладений у відповідь |
+| **Project** | `createdBy`, `updatedBy`, `tags`, `tasks`, `taskLists` |
+| **Task** | `project`, `taskList`, `createdBy`, `updatedBy`, `tags` |
+| **TaskList** | `tasks`, `project`, `createdBy`, `updatedBy` |
+| **Attachment** | `createdBy`, `updatedBy` |
 
-Невідомі або недозволені includes мовчки ігноруються — помилки не виникає.
+### Required includes по діях
+
+Навіть без `include` у запиті, деякі relations завантажуються завжди (вони в `$required` конкретного action):
+
+| Сутність | Action | Required (завжди завантажуються) |
+|---|---|---|
+| **Project** | `index`, `search`, `show` | `createdBy`, `updatedBy`, `tags` |
+| **Task** | `index`, `search` | `createdBy`, `updatedBy`, `tags` |
+| **Task** | `show` | `createdBy`, `updatedBy`, `tags`, `project`, `taskList` |
+| **TaskList** | `index`, `search`, `show` | `createdBy`, `updatedBy` |
+| **Attachment** | `search` | `createdBy`, `updatedBy` |
 
 ---
 
 ## Frontend
 
-### Тип include
+### Структура
 
-Для кожної сутності оголошується union type допустимих includes:
+API-типи кожної сутності знаходяться в окремому файлі `*.api.types.ts` всередині `entities/{entity}/types/`:
 
-```ts
-export type TaskInclude = 'project' | 'task_list'
+```
+entities/{entity}/types/
+├── {entity}.types.ts       # entity interface, overview DTO
+├── {entity}.api.types.ts   # *Include, *FetchParams, *SearchParams, ICreate*Input, IUpdate*Input
+└── index.ts                # re-exports обох файлів
 ```
 
-### Тип entity
+### Include types
 
-Опціональні поля для можливих includes:
+Для кожної сутності — union type з Eloquent relation names (ті самі назви, що і на беку):
+
+```ts
+// task.api.types.ts
+export type TaskInclude = 'project' | 'taskList' | 'createdBy' | 'updatedBy' | 'tags'
+
+// project.api.types.ts
+export type ProjectInclude = 'createdBy' | 'updatedBy' | 'tags' | 'tasks' | 'taskLists'
+
+// task_list.api.types.ts
+export type TaskListInclude = 'tasks' | 'project' | 'createdBy' | 'updatedBy'
+
+// attachment.api.types.ts
+export type AttachmentInclude = 'createdBy' | 'updatedBy'
+```
+
+### Entity interfaces
+
+Поля relations в entity interface — опціональні (`?`), бо їх присутність залежить від того чи передавався `include`:
 
 ```ts
 export interface ITask extends IEntity {
-    // ... основні поля ...
-    project?:   IProject
-    task_list?: ITaskList
+    // ... scalar fields ...
+
+    project?:    ProjectOverviewDto
+    task_list?:  ITaskList
+    created_by?: UserOverviewDto
+    updated_by?: UserOverviewDto
+    tags?:       ITag[]
 }
 ```
 
-Поля опціональні (`?`), бо їх присутність залежить від того, чи передавався `include` у запиті.
+Назви полів — snake_case, відповідають ключам з Resource `toArray()`.
 
-### Search params
+### Params types
 
-`include` додається до params-типу сутності:
+`include` входить до fetch і search params типів:
 
 ```ts
+export type TaskFetchParams = PagingParams &
+    SortParams & {
+        include?: TaskInclude[]
+    }
+
 export type TaskSearchParams = PagingParams &
     SortParams & {
         query?:   string
@@ -152,9 +211,7 @@ export type TaskSearchParams = PagingParams &
 **GET** — `include` серіалізується у comma-separated рядок:
 
 ```ts
-export async function fetchTasksRequest(
-    params?: PagingParams & SortParams & { include?: TaskInclude[] }
-): PromisePaginatedResponse<ITask> {
+export async function fetchTasksRequest(params?: TaskFetchParams): PromisePaginatedResponse<ITask> {
     const { include, ...rest } = params ?? {}
     return httpClient
         .get('/tasks', { params: { ...rest, include: include?.join(',') } })
@@ -178,38 +235,32 @@ export async function searchTasksRequest(params: TaskSearchParams): PromisePagin
 ```ts
 const searchParams = computed(() => ({
     query:      searchQuery.value,
-    filters:    appliedFilters.value,
+    filters:    filterSidebar.resolvedFilters.value,
     page:       page.value,
     per_page:   PAGE_SIZE,
-    sort_by:    sort.sortBy.value,
-    sort_order: sort.sortOrder.value,
-    include:    ['project' as const],   // підключаємо тільки те, що потрібно на цій сторінці
+    include:    ['project', 'taskList'] satisfies TaskInclude[],
 }))
 ```
 
-У шаблоні поле доступне як `data.project` — але оскільки воно опціональне, завжди перевіряємо наявність:
+Поле у шаблоні — опціональне, завжди перевіряємо наявність:
 
 ```vue
-<template #body="{ data }">
-    <RouterLink v-if="data.project" :to="{ name: 'project-details', params: { id: data.project_id } }">
-        {{ data.project.name }}
-    </RouterLink>
+<template #body="{ data }: { data: ITask }">
+    <span v-if="data.project">{{ data.project.name }}</span>
 </template>
 ```
 
 ---
 
-## Додавання includes до нової сутності
+## Додавання includes до сутності
 
 **Backend:**
 
-1. Додати `ALLOWED_INCLUDES` до controller.
-2. Передати `$includes` у `->with()` в `index()` і `search()`.
-3. Додати `whenLoaded()` поля у відповідний `Resource`.
+1. Додати relation до моделі (`hasMany`, `belongsTo`, тощо) і `@property` PHPDoc.
+2. Додати relation name у `getAllowedIncludes()` відповідного controller.
+3. Додати `whenLoaded()` поле у відповідний Resource.
 
 **Frontend:**
 
-1. Оголосити `EntityInclude` union type.
-2. Додати опціональні поля у `IEntity` interface.
-3. Додати `include?: EntityInclude[]` у `EntitySearchParams`.
-4. Серіалізувати `include` в API функціях (join для GET, масив для POST).
+1. Додати значення у `*Include` union type у `*.api.types.ts`.
+2. Додати опціональне поле у entity interface у `*.types.ts`.

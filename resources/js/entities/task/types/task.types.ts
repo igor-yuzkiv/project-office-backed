@@ -19,9 +19,27 @@ export interface ITask extends IEntity {
     updated_at: string
 
     // relations
-    project?: ProjectOverviewDto
-    task_list?: ITaskList
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
     tags?: ITag[]
+    project?: ProjectOverviewDto
+    task_list?: ITaskList
 }
+
+export type TaskOverviewDto = Pick<
+    ITask,
+    | 'id'
+    | 'project_id'
+    | 'task_list_id'
+    | 'key'
+    | 'name'
+    | 'priority'
+    | 'status'
+    | 'created_at'
+    | 'updated_at'
+    | 'created_by'
+    | 'updated_by'
+    | 'tags'
+    | 'project'
+    | 'task_list'
+>

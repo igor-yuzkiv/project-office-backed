@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ITask } from '@/entities/task/types'
+import type { TaskOverviewDto } from '@/entities/task/types'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
@@ -8,7 +8,7 @@ import { computed } from 'vue'
 import { TagList } from '@/widgets/tags/metadata'
 
 const props = defineProps<{
-    tasks: ITask[]
+    tasks: TaskOverviewDto[]
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-    rowClick: [task: ITask]
+    rowClick: [task: TaskOverviewDto]
     pageChange: [page: number]
 }>()
 
