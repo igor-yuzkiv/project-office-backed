@@ -16,7 +16,7 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
-import { TagInput } from '@/widgets/tags/input'
+import { TagInput } from '@/widgets/tags/multi-lookup'
 
 interface TaskEditFormData {
     name: string

@@ -7,7 +7,7 @@ import type { LaravelValidationErrors } from '@/shared/types'
 import type { ProjectStatusValue } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { InputContainer } from '@/shared/components/input'
-import { TagInput } from '@/widgets/tags/input'
+import { TagInput } from '@/widgets/tags/multi-lookup'
 
 const props = defineProps<{
     visible: boolean

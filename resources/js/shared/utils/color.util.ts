@@ -1,12 +1,10 @@
 import type { HexColor } from '@/shared/types'
 
 export function randomHex(): HexColor {
-    return (
-        '#' +
+    return ('#' +
         Math.floor(Math.random() * 0xffffff)
             .toString(16)
-            .padStart(6, '0')
-    ) as HexColor
+            .padStart(6, '0')) as HexColor
 }
 
 export function getContrastColor(hex: HexColor): string {

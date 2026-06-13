@@ -20,7 +20,7 @@ import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shar
 import { SearchInput } from '@/shared/components/input'
 import { DisplayDate } from '@/shared/components/display'
 import { IconButton } from '@/shared/components/button'
-import { TagFilterInput } from '@/widgets/tags/input'
+import { TagFilterInput } from '@/widgets/tags/multi-lookup'
 
 const router = useRouter()
 const upsertDialog = useProjectUpsertDialog()

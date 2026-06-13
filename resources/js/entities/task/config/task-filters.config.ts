@@ -4,7 +4,7 @@ import { taskPriorityOptions } from './task-priority.config'
 import { taskStatusOptions } from './task-status.config'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
-import { TagFilterInput } from '@/widgets/tags/input'
+import { TagFilterInput } from '@/widgets/tags/multi-lookup'
 
 export function createDefaultTaskFiltersDefMap() {
     return createFilterDefMap((map) =>
