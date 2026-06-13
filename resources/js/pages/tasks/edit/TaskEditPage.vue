@@ -58,6 +58,14 @@ function handleError(error: unknown) {
     }
 }
 
+function navigateBack() {
+    if (window.history.state?.back) {
+        router.back()
+    } else {
+        router.push({ name: 'task-details', params: { id: taskId } })
+    }
+}
+
 function submit() {
     if (!task.value) return
 
@@ -75,20 +83,10 @@ function submit() {
     updateTask(
         { taskId, data: input },
         {
-            onSuccess: () => {
-                if (window.history.state?.back) {
-                    router.back()
-                } else {
-                    router.push({ name: 'task-details', params: { id: taskId } })
-                }
-            },
+            onSuccess: navigateBack,
             onError: handleError,
         }
     )
-}
-
-function cancel() {
-    router.push({ name: 'task-details', params: { id: taskId } })
 }
 
 watch(isError, (error) => {
@@ -116,7 +114,7 @@ watch(
 
 useHeaderActions([
     { key: 'save-task', title: 'Save', action: submit, is_primary: true },
-    { key: 'cancel-task', title: 'Cancel', action: cancel },
+    { key: 'cancel-task', title: 'Cancel', action: navigateBack },
 ])
 
 useBreadcrumbs(() => [
