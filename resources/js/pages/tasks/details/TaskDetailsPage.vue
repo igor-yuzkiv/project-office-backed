@@ -11,6 +11,7 @@ import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
+import { TagList } from '@/widgets/tags/metadata'
 
 const route = useRoute()
 const router = useRouter()
@@ -79,11 +80,8 @@ useBreadcrumbs(() => [
                         <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
                         <h1 class="text-surface-900 truncate">{{ task.name }}</h1>
                     </div>
-                </div>
 
-                <div class="gap-2 flex items-center">
-                    <TaskStatusTag :status="task.status" class="w-fit" show-icon />
-                    <TaskPriorityTag :priority="task.priority" class="w-fit" />
+                    <TagList :tags="task.tags ?? []" />
                 </div>
             </div>
 
