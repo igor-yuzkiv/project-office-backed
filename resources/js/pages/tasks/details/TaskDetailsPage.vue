@@ -83,6 +83,11 @@ useBreadcrumbs(() => [
 
                     <TagList :tags="task.tags ?? []" />
                 </div>
+
+                <div class="gap-2 flex items-center">
+                    <TaskStatusTag :status="task.status" class="w-fit" show-icon />
+                    <TaskPriorityTag :priority="task.priority" class="w-fit" />
+                </div>
             </div>
 
             <TabList>
