@@ -1,15 +1,5 @@
 @import 'md-editor-v3/lib/style.css';
 
-.md-editor-dark,
-.md-editor-modal-container[data-theme='dark'] {
-    --md-color: #fff;
-    --md-bk-color: #232323;
-}
-
-/*.md-editor-previewOnly {*/
-/*    background: transparent !important;*/
-/*}*/
-
 .md-editor-preview h1,
 .md-editor-preview h2,
 .md-editor-preview h3,
@@ -24,4 +14,8 @@
 
 .md-editor-preview .md-editor-code .md-editor-code-head {
     z-index: 1;
+}
+
+.md-editor-previewOnly {
+    background-color: transparent !important;
 }

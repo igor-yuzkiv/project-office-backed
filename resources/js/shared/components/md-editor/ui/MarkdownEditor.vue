@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
-import 'md-editor-v3/lib/style.css'
 import { uploadAttachmentRequest } from '@/entities/attachment/api'
 import type { AttachmentRole } from '@/entities/attachment/types'
 import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
