@@ -148,7 +148,7 @@ watch(visible, (isVisible) => {
             <div class="gap-2 flex flex-col">
                 <span class="text-xs font-semibold tracking-wide text-surface-500 uppercase"> Available Tags </span>
 
-                <div class="max-h-60 divide-surface-200 flex flex-col divide-y overflow-y-auto">
+                <div class="max-h-60 divide-surface-200 dark:divide-surface-700 flex flex-col divide-y overflow-y-auto">
                     <div
                         v-for="tag in availableTags"
                         :key="tag.id"
