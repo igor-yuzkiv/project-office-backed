@@ -4,6 +4,7 @@ import { useTaskQuery } from '@/entities/task/queries'
 import { DisplayField, DisplayDate } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
+import { TagList } from '@/widgets/tags/metadata'
 
 const route = useRoute()
 const taskId = route.params.id as string
@@ -45,5 +46,8 @@ const { task } = useTaskQuery(taskId)
         </DisplayField>
         <DisplayDate :date="task.created_at" label="Created" />
         <DisplayDate :date="task.updated_at" label="Updated" />
+        <DisplayField label="Tags">
+            <TagList :tags="task.tags ?? []" />
+        </DisplayField>
     </div>
 </template>

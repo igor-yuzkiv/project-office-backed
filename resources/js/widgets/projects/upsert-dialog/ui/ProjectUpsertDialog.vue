@@ -7,12 +7,14 @@ import type { LaravelValidationErrors } from '@/shared/types'
 import type { ProjectStatusValue } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { InputContainer } from '@/shared/components/input'
+import { TagInput } from '@/widgets/tags/input'
 
 const props = defineProps<{
     visible: boolean
     mode: 'create' | 'update'
     name: string
     status: ProjectStatusValue
+    tagIds: string[]
     validationErrors: LaravelValidationErrors
     isPending: boolean
 }>()
@@ -21,6 +23,7 @@ const emit = defineEmits<{
     'update:visible': [value: boolean]
     'update:name': [value: string]
     'update:status': [value: ProjectStatusValue]
+    'update:tagIds': [value: string[]]
     submit: []
 }>()
 
@@ -57,6 +60,9 @@ const statusOptions = projectStatusOptions()
                     class="w-full"
                     @update:model-value="emit('update:status', $event)"
                 />
+            </InputContainer>
+            <InputContainer label="Tags" :error="props.validationErrors.tag_ids">
+                <TagInput :model-value="props.tagIds" @update:model-value="emit('update:tagIds', $event)" />
             </InputContainer>
         </form>
 

@@ -19,6 +19,10 @@ class UpdateProjectHandler
 
         $command->project->update($data);
 
+        if ($command->tagIds !== null) {
+            $command->project->tags()->sync($command->tagIds);
+        }
+
         return $command->project->fresh();
     }
 }

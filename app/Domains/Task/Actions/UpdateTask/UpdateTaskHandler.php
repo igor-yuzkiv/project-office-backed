@@ -16,6 +16,10 @@ class UpdateTaskHandler
             'status'       => $command->status?->value,
         ]);
 
+        if ($command->tagIds !== null) {
+            $command->task->tags()->sync($command->tagIds);
+        }
+
         return $command->task->fresh();
     }
 }

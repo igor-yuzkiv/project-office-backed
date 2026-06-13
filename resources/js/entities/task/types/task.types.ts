@@ -6,6 +6,7 @@ import type { ITaskList } from '@/entities/task-list/types'
 import type { TaskPriorityDto } from './task-priority.types'
 import type { TaskStatusValue } from './task-status.types'
 import type { UserOverviewDto } from '@/entities/user/types'
+import type { ITag } from '@/entities/tag/types'
 
 export type TaskInclude = 'project' | 'task_list' | 'createdBy' | 'updatedBy'
 
@@ -26,6 +27,7 @@ export interface ITask extends IEntity {
     task_list?: ITaskList
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
+    tags?: ITag[]
 }
 
 export interface ICreateTaskInput {
@@ -42,6 +44,7 @@ export interface IUpdateTaskInput {
     status?: TaskStatusValue
     task_list_id?: string | null
     description?: string | null
+    tag_ids?: string[]
 }
 
 export type TaskFetchParams = PagingParams &

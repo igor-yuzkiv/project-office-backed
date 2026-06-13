@@ -17,6 +17,8 @@ class UpdateTaskRequest extends FormRequest
             'description'  => ['sometimes', 'nullable', 'string'],
             'priority'     => ['sometimes', 'nullable', 'integer', Rule::enum(TaskPriority::class)],
             'status'       => ['sometimes', 'string', Rule::enum(TaskStatus::class)],
+            'tag_ids'      => ['sometimes', 'array'],
+            'tag_ids.*'    => ['string', 'exists:tags,id'],
         ];
     }
 }

@@ -31,7 +31,7 @@ class ProjectsController extends Controller
         $pagination = $this->getPaginationParams();
         $sort = $this->getSortParams();
 
-        $projects = ProjectModel::with(['createdBy', 'updatedBy'])
+        $projects = ProjectModel::with(['createdBy', 'updatedBy', 'tags'])
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -48,7 +48,7 @@ class ProjectsController extends Controller
             ->query(function (Builder $q) use ($request): Builder {
                 /** @var Builder<ProjectModel> $q */
                 return $q
-                    ->with(['createdBy', 'updatedBy'])
+                    ->with(['createdBy', 'updatedBy', 'tags'])
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
@@ -58,7 +58,7 @@ class ProjectsController extends Controller
 
     public function show(ProjectModel $project): ProjectResource
     {
-        $project->load(['createdBy', 'updatedBy']);
+        $project->load(['createdBy', 'updatedBy', 'tags']);
 
         return new ProjectResource($project);
     }
@@ -70,6 +70,7 @@ class ProjectsController extends Controller
             name: $request->validated('name'),
             prefix: $request->validated('prefix'),
             status: $statusValue ? ProjectStatus::from($statusValue) : ProjectStatus::DRAFT,
+            tagIds: $request->validated('tag_ids'),
         );
 
         $project = $this->createHandler->handle($command);
@@ -88,6 +89,7 @@ class ProjectsController extends Controller
             name: $request->validated('name'),
             prefix: $request->validated('prefix'),
             status: $statusValue ? ProjectStatus::from($statusValue) : null,
+            tagIds: $request->validated('tag_ids'),
         );
 
         $project = $this->updateHandler->handle($command);

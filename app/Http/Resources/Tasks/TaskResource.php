@@ -5,6 +5,7 @@ namespace App\Http\Resources\Tasks;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\ValueObjects\TaskPriorityData;
 use App\Http\Resources\Projects\ProjectOverviewResource;
+use App\Http\Resources\Tags\TagResource;
 use App\Http\Resources\TaskLists\TaskListResource;
 use App\Http\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
@@ -32,6 +33,8 @@ class TaskResource extends JsonResource
 
             'project'   => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
             'task_list' => $this->whenLoaded('taskList', fn () => new TaskListResource($this->taskList)),
+
+            'tags' => TagResource::collection($this->whenLoaded('tags', fn () => $this->tags, [])),
         ];
     }
 }

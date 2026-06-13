@@ -35,7 +35,7 @@ class TasksController extends Controller
         $sort = $this->getSortParams();
         $includes = $this->getIncludeParams(self::ALLOWED_INCLUDES);
 
-        $tasks = TaskModel::with(['createdBy', 'updatedBy', ...$includes])
+        $tasks = TaskModel::with(['createdBy', 'updatedBy', 'tags', ...$includes])
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -53,7 +53,7 @@ class TasksController extends Controller
             ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskModel> $q */
                 return $q
-                    ->with(['createdBy', 'updatedBy', ...$includes])
+                    ->with(['createdBy', 'updatedBy', 'tags', ...$includes])
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
@@ -63,7 +63,7 @@ class TasksController extends Controller
 
     public function show(TaskModel $task): TaskResource
     {
-        $task->load(['createdBy', 'updatedBy', 'project', 'taskList']);
+        $task->load(['createdBy', 'updatedBy', 'project', 'taskList', 'tags']);
 
         return new TaskResource($task);
     }
@@ -78,6 +78,7 @@ class TasksController extends Controller
             priority: $rawPriority !== null ? TaskPriority::from((int) $rawPriority) : null,
             taskListId: $request->validated('task_list_id'),
             description: $request->validated('description'),
+            tagIds: $request->validated('tag_ids'),
         );
 
         $task = $this->createHandler->handle($command);
@@ -97,6 +98,7 @@ class TasksController extends Controller
             description: $request->validated('description'),
             priority: ($p = $request->validated('priority')) !== null ? TaskPriority::from((int) $p) : null,
             status: ($s = $request->validated('status')) !== null ? TaskStatus::from($s) : null,
+            tagIds: $request->validated('tag_ids'),
         );
 
         $task = $this->updateHandler->handle($command);

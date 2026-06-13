@@ -12,5 +12,6 @@ class UpdateProjectCommand
         public readonly ?string $name = null,
         public readonly ?string $prefix = null,
         public readonly ?ProjectStatus $status = null,
+        public readonly ?array $tagIds = null,
     ) {}
 }

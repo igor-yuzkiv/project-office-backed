@@ -4,6 +4,7 @@ import { useProjectQuery } from '@/entities/project/queries'
 import { DisplayDate, DisplayField } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import { ProjectStatusTag } from '@/widgets/projects/status-tag'
+import { TagList } from '@/widgets/tags/metadata'
 
 const route = useRoute()
 const projectId = route.params.id as string
@@ -32,5 +33,8 @@ const { project } = useProjectQuery(projectId)
         </DisplayField>
         <DisplayDate label="Created At" :date="project.created_at" />
         <DisplayDate label="Updated At" :date="project.updated_at" />
+        <DisplayField label="Tags">
+            <TagList :tags="project.tags ?? []" />
+        </DisplayField>
     </div>
 </template>

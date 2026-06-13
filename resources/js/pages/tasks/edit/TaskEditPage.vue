@@ -16,6 +16,7 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
+import { TagInput } from '@/widgets/tags/input'
 
 interface TaskEditFormData {
     name: string
@@ -23,6 +24,7 @@ interface TaskEditFormData {
     taskList: ITaskList | null
     status: TaskStatusValue
     priority: number | null
+    tag_ids: string[]
 }
 
 const route = useRoute()
@@ -39,6 +41,7 @@ const formData = ref<TaskEditFormData>({
     taskList: null,
     status: 'open',
     priority: null,
+    tag_ids: [],
 })
 const isFormInitialized = ref(false)
 const validationErrors = ref<LaravelValidationErrors>({})
@@ -62,6 +65,7 @@ function submit() {
         task_list_id: formData.value.taskList?.id ?? null,
         status: formData.value.status,
         priority: formData.value.priority,
+        tag_ids: formData.value.tag_ids,
     }
 
     updateTask(
@@ -97,6 +101,7 @@ watch(
                 taskList: t.task_list ?? null,
                 status: t.status,
                 priority: t.priority?.value ?? null,
+                tag_ids: t.tags?.map((tag) => tag.id) ?? [],
             }
             isFormInitialized.value = true
             layoutStore.setPageTitle(`${t.key} | ${t.name}`)
@@ -161,6 +166,10 @@ useBreadcrumbs(() => [
                     />
                 </InputContainer>
             </div>
+
+            <InputContainer label="Tags" :error="validationErrors.tag_ids">
+                <TagInput v-model="formData.tag_ids" />
+            </InputContainer>
 
             <MarkdownEditor
                 v-model="formData.description"

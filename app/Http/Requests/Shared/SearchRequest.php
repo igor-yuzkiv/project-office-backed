@@ -14,7 +14,7 @@ class SearchRequest extends FormRequest
             'query'                => ['sometimes', 'nullable', 'string', 'max:255'],
             'filters'              => ['sometimes', 'array'],
             'filters.*.filter_key' => ['required', 'string'],
-            'filters.*.field_name' => ['required', 'string'],
+            'filters.*.field_name' => ['nullable', 'string'],
             'filters.*.value'      => ['nullable'],
             'filters.*.matchMode'  => ['nullable', Rule::enum(MatchMode::class)],
             'filters.*.params'     => ['sometimes', 'array'],

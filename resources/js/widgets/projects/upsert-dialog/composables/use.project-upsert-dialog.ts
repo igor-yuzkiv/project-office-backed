@@ -12,6 +12,7 @@ export function useProjectUpsertDialog() {
 
     const name = ref('')
     const status = ref<ProjectStatusValue>('draft')
+    const tagIds = ref<string[]>([])
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: create, isPending: isCreating } = useCreateProjectMutation()
@@ -22,6 +23,7 @@ export function useProjectUpsertDialog() {
         editingProject.value = project
         name.value = project?.name ?? ''
         status.value = project?.status ?? 'draft'
+        tagIds.value = project?.tags?.map((tag) => tag.id) ?? []
         validationErrors.value = {}
         visible.value = true
     }
@@ -40,14 +42,20 @@ export function useProjectUpsertDialog() {
         validationErrors.value = {}
 
         if (mode.value === 'create') {
-            create({ name: name.value, status: status.value }, { onSuccess: close, onError: handleError })
+            create(
+                { name: name.value, status: status.value, tag_ids: tagIds.value },
+                { onSuccess: close, onError: handleError }
+            )
         } else if (editingProject.value) {
             update(
-                { id: editingProject.value.id, data: { name: name.value, status: status.value } },
+                {
+                    id: editingProject.value.id,
+                    data: { name: name.value, status: status.value, tag_ids: tagIds.value },
+                },
                 { onSuccess: close, onError: handleError }
             )
         }
     }
 
-    return { visible, mode, name, status, validationErrors, isPending, open, close, submit }
+    return { visible, mode, name, status, tagIds, validationErrors, isPending, open, close, submit }
 }

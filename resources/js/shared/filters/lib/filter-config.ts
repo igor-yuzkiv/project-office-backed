@@ -50,6 +50,10 @@ export const FILTER_TYPE_CONFIG: Record<FilterDataType, FilterTypeConfig> = {
         requiresMatchMode: true,
         filterKey: 'text',
     },
+    tags: {
+        matchModes: [],
+        isEmpty: (v) => !Array.isArray(v) || v.length === 0,
+    },
 }
 
 export const MATCH_MODE_OPTIONS: Record<FilterDataType, MatchModeOption[]> = Object.fromEntries(

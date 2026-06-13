@@ -18,8 +18,10 @@ class FilterResolver
             throw InvalidFilterException::unknownFilter($filterPayload->filterKey ?? '');
         }
 
-        if (!$filterPayload->fieldName || !in_array($filterPayload->fieldName, $definition->allowedFields, true)) {
-            throw InvalidFilterException::fieldNotAllowed($filterPayload->fieldName ?? '', $filterPayload->filterKey ?? '');
+        if (!empty($definition->allowedFields)) {
+            if (!$filterPayload->fieldName || !in_array($filterPayload->fieldName, $definition->allowedFields, true)) {
+                throw InvalidFilterException::fieldNotAllowed($filterPayload->fieldName ?? '', $filterPayload->filterKey ?? '');
+            }
         }
 
         if ($filterPayload->matchMode !== null) {

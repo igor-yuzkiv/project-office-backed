@@ -9,6 +9,7 @@ type FilterValueMap = {
     nullable: null
     lookup: string | number | null
     select: (string | number)[] | null
+    tags: string[] | null
 }
 
 export type FilterDataType = keyof FilterValueMap

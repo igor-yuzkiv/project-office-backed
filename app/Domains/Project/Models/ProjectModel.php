@@ -8,6 +8,7 @@ use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use App\Support\TextUtils;
 use Database\Factories\ProjectModelFactory;
@@ -66,7 +67,7 @@ class ProjectModel extends Model
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(TagModel::class, 'taggable')->withPivot('created_at');
+        return $this->morphToMany(TagModel::class, 'taggable', relatedPivotKey: 'tag_id')->withPivot('created_at');
     }
 
     public static function newFactory(): ProjectModelFactory
@@ -88,6 +89,7 @@ class ProjectModel extends Model
     {
         return [
             new FilterDefinition(TextFilter::class, ['name', 'prefix', 'status']),
+            new FilterDefinition(TagFilter::class, []),
         ];
     }
 }

@@ -16,6 +16,8 @@ class StoreTaskRequest extends FormRequest
             'name'         => ['required', 'string', 'max:255'],
             'description'  => ['nullable', 'string'],
             'priority'     => ['nullable', 'integer', Rule::enum(TaskPriority::class)],
+            'tag_ids'      => ['sometimes', 'array'],
+            'tag_ids.*'    => ['string', 'exists:tags,id'],
         ];
     }
 }

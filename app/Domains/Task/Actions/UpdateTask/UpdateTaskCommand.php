@@ -15,5 +15,6 @@ class UpdateTaskCommand
         public readonly ?string $description = null,
         public readonly ?TaskPriority $priority = null,
         public readonly ?TaskStatus $status = null,
+        public readonly ?array $tagIds = null,
     ) {}
 }

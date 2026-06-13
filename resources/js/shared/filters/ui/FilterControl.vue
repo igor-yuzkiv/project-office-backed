@@ -20,6 +20,7 @@ const DATA_TYPE_COMPONENTS: Record<FilterDataType, Component | null> = {
     nullable: null,
     lookup: null,
     select: markRaw(SelectInput),
+    tags: null,
 }
 
 const props = defineProps<{

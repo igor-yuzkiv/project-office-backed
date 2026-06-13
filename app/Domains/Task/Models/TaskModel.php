@@ -12,6 +12,7 @@ use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\LookupFilter;
+use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -80,7 +81,7 @@ class TaskModel extends Model
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(TagModel::class, 'taggable')->withPivot('created_at');
+        return $this->morphToMany(TagModel::class, 'taggable', relatedPivotKey: 'tag_id')->withPivot('created_at');
     }
 
     public static function newFactory(): TaskModelFactory
@@ -93,6 +94,7 @@ class TaskModel extends Model
         return [
             new FilterDefinition(TextFilter::class, ['name', 'description', 'key', 'status', 'priority']),
             new FilterDefinition(LookupFilter::class, ['project_id', 'task_list_id']),
+            new FilterDefinition(TagFilter::class, []),
         ];
     }
 }
