@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, markRaw, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -20,7 +20,6 @@ import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shar
 import { SearchInput } from '@/shared/components/input'
 import { DisplayDate } from '@/shared/components/display'
 import { IconButton } from '@/shared/components/button'
-import { TagFilterInput } from '@/widgets/tags/multi-lookup'
 
 const router = useRouter()
 const upsertDialog = useProjectUpsertDialog()
@@ -38,7 +37,7 @@ const filterSidebar = useFilterSidebar(
                     placeholder: 'Select status',
                 })
             )
-            .addField('tags', 'tags', (d) => d.label('Tags').component(markRaw(TagFilterInput)).withoutMatchMode())
+            .addField('tags', 'tags', (d) => d.label('Tags'))
     )
 )
 

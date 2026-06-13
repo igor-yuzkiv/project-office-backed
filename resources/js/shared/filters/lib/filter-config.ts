@@ -1,5 +1,4 @@
-import type { FilterDataType } from '../types/filter-def.types'
-import type { MatchModeOption } from '../types/match-mode.types'
+import type { FilterDataType, FilterFieldTypeConfig } from '../types/filter-def.types'
 import {
     DATETIME_MATCH_MODES,
     INTEGER_MATCH_MODES,
@@ -9,53 +8,57 @@ import {
     TEXT_MATCH_MODES,
 } from '../types/match-mode.types'
 
-export type FilterTypeConfig = {
-    matchModes: MatchModeOption[]
-    isEmpty: (value: unknown) => boolean
-    omitValue?: boolean
-    requiresMatchMode?: boolean
-    filterKey?: string
-}
+import TextInput from '../ui/value-inputs/TextInput.vue'
+import IntegerInput from '../ui/value-inputs/IntegerInput.vue'
+import BooleanInput from '../ui/value-inputs/BooleanInput.vue'
+import DateTimeInput from '../ui/value-inputs/DateTimeInput.vue'
+import SelectInput from '../ui/value-inputs/SelectInput.vue'
+import { markRaw } from 'vue'
+import { TagFilterInput } from '@/widgets/tags/filters'
 
-export const FILTER_TYPE_CONFIG: Record<FilterDataType, FilterTypeConfig> = {
+export const FilterFieldTypeConfigMap: Record<FilterDataType, FilterFieldTypeConfig> = {
     text: {
         matchModes: TEXT_MATCH_MODES,
-        isEmpty: (v) => v === null || v === '',
+        isInputValueEmpty: (v) => v === null || v === '',
+        component: markRaw(TextInput),
     },
     integer: {
         matchModes: INTEGER_MATCH_MODES,
-        isEmpty: (v) => v === null,
+        isInputValueEmpty: (v) => v === null,
+        component: markRaw(IntegerInput),
     },
     boolean: {
         matchModes: [],
-        isEmpty: (v) => v === null,
+        isInputValueEmpty: (v) => v === null,
+        component: markRaw(BooleanInput),
     },
     datetime: {
         matchModes: DATETIME_MATCH_MODES,
-        isEmpty: (v) => v === null,
+        isInputValueEmpty: (v) => v === null,
+        component: markRaw(DateTimeInput),
     },
     nullable: {
         matchModes: NULLABLE_MATCH_MODES,
-        isEmpty: () => false,
+        isInputValueEmpty: () => false,
         omitValue: true,
         requiresMatchMode: true,
+        component: null,
     },
     lookup: {
         matchModes: LOOKUP_MATCH_MODES,
-        isEmpty: (v) => v === null || v === '',
+        isInputValueEmpty: (v) => v === null || v === '',
+        component: null,
     },
     select: {
         matchModes: SELECT_MATCH_MODES,
-        isEmpty: (v) => !Array.isArray(v) || v.length === 0,
+        isInputValueEmpty: (v) => !Array.isArray(v) || v.length === 0,
         requiresMatchMode: true,
         filterKey: 'text',
+        component: markRaw(SelectInput),
     },
     tags: {
         matchModes: [],
-        isEmpty: (v) => !Array.isArray(v) || v.length === 0,
+        isInputValueEmpty: (v) => !Array.isArray(v) || v.length === 0,
+        component: markRaw(TagFilterInput),
     },
 }
-
-export const MATCH_MODE_OPTIONS: Record<FilterDataType, MatchModeOption[]> = Object.fromEntries(
-    (Object.entries(FILTER_TYPE_CONFIG) as [FilterDataType, FilterTypeConfig][]).map(([k, v]) => [k, v.matchModes])
-) as Record<FilterDataType, MatchModeOption[]>

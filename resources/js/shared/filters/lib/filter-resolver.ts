@@ -1,15 +1,15 @@
 import type { FilterDefMap } from '../types/filter-def.types'
 import type { FilterPayloadItem } from '../types/filter-payload.types'
-import { FILTER_TYPE_CONFIG } from './filter-config'
+import { FilterFieldTypeConfigMap } from './filter-config'
 
 export function resolveFilters(defMap: FilterDefMap): FilterPayloadItem[] {
     return Object.values(defMap).reduce<FilterPayloadItem[]>((acc, def) => {
         if (!def.enabled) return acc
 
-        const config = FILTER_TYPE_CONFIG[def.dataType]
+        const config = FilterFieldTypeConfigMap[def.dataType]
 
         if (config.requiresMatchMode && def.matchMode === null) return acc
-        if (config.isEmpty(def.value)) return acc
+        if (config.isInputValueEmpty(def.value)) return acc
 
         acc.push({
             filter_key: config.filterKey ?? def.dataType,

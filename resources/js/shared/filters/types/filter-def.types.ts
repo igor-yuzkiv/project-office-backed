@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import type { MatchMode } from './match-mode.types'
+import type { MatchMode, MatchModeOption } from './match-mode.types'
 
 type FilterValueMap = {
     text: string | null
@@ -29,6 +29,15 @@ export type FilterDef<TDataType extends FilterDataType = FilterDataType> = {
     enabled: boolean
     withoutMatchMode?: boolean
     component?: Component
+}
+
+export type FilterFieldTypeConfig = {
+    matchModes: MatchModeOption[]
+    isInputValueEmpty: (value: unknown) => boolean
+    omitValue?: boolean
+    requiresMatchMode?: boolean
+    filterKey?: string
+    component?: Component | null
 }
 
 export type AnyFilterDef = {

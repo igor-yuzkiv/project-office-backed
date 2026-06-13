@@ -1,10 +1,8 @@
-import { markRaw } from 'vue'
 import { createFilterDefMap } from '@/shared/filters'
 import { taskPriorityOptions } from './task-priority.config'
 import { taskStatusOptions } from './task-status.config'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
-import { TagFilterInput } from '@/widgets/tags/multi-lookup'
 
 export function createDefaultTaskFiltersDefMap() {
     return createFilterDefMap((map) =>
@@ -32,6 +30,6 @@ export function createDefaultTaskFiltersDefMap() {
             .addField('task_list_id', 'lookup', (d) =>
                 d.label('Task List').component(TaskListLookupField).withoutMatchMode()
             )
-            .addField('tags', 'tags', (d) => d.label('Tags').component(markRaw(TagFilterInput)).withoutMatchMode())
+            .addField('tags', 'tags', (d) => d.label('Tags'))
     )
 }

@@ -1,27 +1,11 @@
 <script setup lang="ts">
 import Panel from 'primevue/panel'
 import Select from 'primevue/select'
-import { computed, markRaw } from 'vue'
+import { computed } from 'vue'
 import type { Component } from 'vue'
-import type { AnyFilterDef, FilterDataType } from '../types/filter-def.types'
+import type { AnyFilterDef } from '../types/filter-def.types'
 import type { MatchMode, MatchModeOption } from '../types/match-mode.types'
-import { FILTER_TYPE_CONFIG } from '../lib/filter-config'
-import TextInput from './value-inputs/TextInput.vue'
-import IntegerInput from './value-inputs/IntegerInput.vue'
-import BooleanInput from './value-inputs/BooleanInput.vue'
-import DateTimeInput from './value-inputs/DateTimeInput.vue'
-import SelectInput from './value-inputs/SelectInput.vue'
-
-const DATA_TYPE_COMPONENTS: Record<FilterDataType, Component | null> = {
-    text: markRaw(TextInput),
-    integer: markRaw(IntegerInput),
-    boolean: markRaw(BooleanInput),
-    datetime: markRaw(DateTimeInput),
-    nullable: null,
-    lookup: null,
-    select: markRaw(SelectInput),
-    tags: null,
-}
+import { FilterFieldTypeConfigMap } from '../lib/filter-config'
 
 const props = defineProps<{
     filterKey: string
@@ -38,12 +22,12 @@ const panelCollapsed = computed({
     set: (val: boolean) => emit('change', props.filterKey, { enabled: !val }),
 })
 
-const matchModeOptions = computed<MatchModeOption[]>(() => FILTER_TYPE_CONFIG[props.def.dataType].matchModes)
+const matchModeOptions = computed<MatchModeOption[]>(() => FilterFieldTypeConfigMap[props.def.dataType].matchModes)
 
 const showMatchMode = computed(() => !props.def.withoutMatchMode && matchModeOptions.value.length > 0)
 
 const resolvedComponent = computed<Component | null>(
-    () => props.def.component ?? DATA_TYPE_COMPONENTS[props.def.dataType]
+    () => props.def.component ?? FilterFieldTypeConfigMap[props.def.dataType].component ?? null
 )
 
 function onMatchModeChange(value: MatchMode | null) {
