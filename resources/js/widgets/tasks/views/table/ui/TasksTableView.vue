@@ -5,6 +5,7 @@ import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { computed } from 'vue'
+import { TagList } from '@/widgets/tags/metadata'
 
 const props = defineProps<{
     tasks: ITask[]
@@ -30,6 +31,7 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         { field: 'project', header: 'Project', style: 'width: 12rem; min-width: 0' },
         { field: 'status', header: 'Status', style: 'width: 9rem' },
         { field: 'priority', header: 'Priority', style: 'width: 7rem' },
+        { field: 'tags', header: 'tags', },
         { field: 'created_at', header: 'Created', style: 'width: 12rem' },
     ]
 })
@@ -67,6 +69,10 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
         <template #column:priority="{ row }">
             <TaskPriorityTag :priority="row.priority" class="w-full" />
+        </template>
+
+        <template #column:tags="{ row }">
+            <TagList v-if="row.tags" :tags="row.tags" inline/>
         </template>
 
         <template #column:created_at="{ row }">

@@ -129,12 +129,10 @@ function onPageChange(newPage: number) {
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
         <TaskCreateDialog
-            :visible="taskCreateDialog.visible.value"
-            :form-data="taskCreateDialog.formData.value"
+            v-model:visible="taskCreateDialog.visible.value"
+            v-model:form-data="taskCreateDialog.formData.value"
             :validation-errors="taskCreateDialog.validationErrors.value"
             :is-pending="taskCreateDialog.isPending.value"
-            @update:visible="taskCreateDialog.visible.value = $event"
-            @update:form-data="taskCreateDialog.formData.value = $event"
             @submit="taskCreateDialog.submit()"
         />
     </div>

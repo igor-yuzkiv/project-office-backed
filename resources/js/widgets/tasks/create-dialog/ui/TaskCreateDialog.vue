@@ -7,49 +7,41 @@ import type { TaskCreateFormData } from '../composables/use.task-create-dialog'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
 import { InputContainer } from '@/shared/components/input'
 
+const visible = defineModel<boolean>('visible', { default: false })
+const formData = defineModel<TaskCreateFormData>('formData', { required: true })
+
 const props = defineProps<{
-    visible: boolean
-    formData: TaskCreateFormData
     validationErrors: LaravelValidationErrors
     isPending: boolean
 }>()
 
 const emit = defineEmits<{
-    'update:visible': [value: boolean]
-    'update:formData': [value: TaskCreateFormData]
     submit: []
 }>()
 
-function handleFieldChanged(key: string, value: unknown) {
-    emit('update:formData', { ...props.formData, [key]: value })
+function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
+    formData.value = { ...formData.value, [key]: value }
 }
 </script>
 
 <template>
-    <Dialog
-        :visible="props.visible"
-        header="New Task"
-        modal
-        :closable="!props.isPending"
-        :style="{ width: '28rem' }"
-        @update:visible="emit('update:visible', $event)"
-    >
+    <Dialog v-model:visible="visible" header="New Task" modal :closable="!isPending" :style="{ width: '28rem' }">
         <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
-            <InputContainer label="Task Name" :error="props.validationErrors.name" required>
+            <InputContainer label="Task Name" :error="validationErrors.name" required>
                 <InputText
-                    :value="props.formData.name"
+                    :model-value="formData.name"
+                    @update:model-value="handleFieldChanged('name', $event)"
                     placeholder="e.g. Fix login bug"
-                    :invalid="!!props.validationErrors.name"
+                    :invalid="!!validationErrors.name"
                     class="w-full"
-                    @input="handleFieldChanged('name', ($event.target as HTMLInputElement).value)"
                 />
             </InputContainer>
 
-            <InputContainer label="Project" :error="props.validationErrors.project_id" required>
+            <InputContainer label="Project" :error="validationErrors.project_id" required>
                 <ProjectLookupField
-                    :model-value="props.formData.project"
+                    :model-value="formData.project"
                     :object="true"
-                    :invalid="!!props.validationErrors.project_id"
+                    :invalid="!!validationErrors.project_id"
                     class="w-full"
                     fluid
                     @update:model-value="handleFieldChanged('project', $event)"
@@ -58,17 +50,11 @@ function handleFieldChanged(key: string, value: unknown) {
         </form>
 
         <template #footer>
-            <Button
-                label="Cancel"
-                severity="secondary"
-                text
-                :disabled="props.isPending"
-                @click="emit('update:visible', false)"
-            />
+            <Button label="Cancel" severity="secondary" text :disabled="isPending" @click="visible = false" />
             <Button
                 label="Create"
-                :loading="props.isPending"
-                :disabled="!props.formData.name.trim() || !props.formData.project"
+                :loading="isPending"
+                :disabled="!formData.name.trim() || !formData.project"
                 @click="emit('submit')"
             />
         </template>

@@ -9,6 +9,7 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
+import { TagList } from '@/widgets/tags/metadata'
 
 const route = useRoute()
 const router = useRouter()
@@ -55,6 +56,8 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                         <ProjectIcon :prefix="project.prefix" size="small" />
                         <h1 class="text-surface-900">{{ project.name }}</h1>
                     </div>
+
+                    <TagList :tags="project.tags ?? []" />
                 </div>
             </div>
 

@@ -189,9 +189,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
 
         <ProjectUpsertDialog
             v-model:visible="upsertDialog.visible.value"
-            v-model:name="upsertDialog.name.value"
-            v-model:status="upsertDialog.status.value"
-            v-model:tags="upsertDialog.tags.value"
+            v-model:form-data="upsertDialog.formData.value"
             :mode="upsertDialog.mode.value"
             :validation-errors="upsertDialog.validationErrors.value"
             :is-pending="upsertDialog.isPending.value"

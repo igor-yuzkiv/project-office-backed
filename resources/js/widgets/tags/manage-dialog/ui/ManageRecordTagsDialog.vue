@@ -110,7 +110,7 @@ watch(visible, (isVisible) => {
                     <span class="text-xs text-surface-500"> {{ selectedTags.length }} selected </span>
                 </div>
 
-                <div v-if="selectedTags.length > 0" class="gap-2 flex flex-wrap max-h-40 overflow-y-auto">
+                <div v-if="selectedTags.length > 0" class="gap-2 max-h-40 flex flex-wrap overflow-y-auto">
                     <TagBadge
                         v-for="tag in selectedTags"
                         :key="tag.id"

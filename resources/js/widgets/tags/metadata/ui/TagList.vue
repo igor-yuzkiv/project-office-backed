@@ -8,10 +8,11 @@ const props = withDefaults(
     defineProps<{
         tags: ITag[]
         visibleLimit?: number
+        inline?: boolean
     }>(),
     {
         tags: () => [],
-        visibleLimit: 6,
+        visibleLimit: 5,
     }
 )
 
@@ -23,12 +24,12 @@ const hasMore = computed(() => hiddenCount.value > 0)
 </script>
 
 <template>
-    <div v-if="tags.length > 0" class="gap-1.5 flex flex-wrap items-center">
+    <div v-if="tags.length > 0" class="gap-1.5 items-center" :class="inline ? 'inline-flex' : 'flex flex-wrap'">
         <TagBadge v-for="tag in visibleTags" :key="tag.id" :tag="tag" />
         <span
             v-if="hasMore"
-            class="cursor-pointer text-sm text-surface-400 hover:text-surface-600"
-            @click="showViewDialog = true"
+            class="text-sm text-surface-400 hover:text-surface-600 cursor-pointer"
+            @click.stop="showViewDialog = true"
         >
             +{{ hiddenCount }}
         </span>

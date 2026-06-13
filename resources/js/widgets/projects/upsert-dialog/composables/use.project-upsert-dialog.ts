@@ -6,14 +6,22 @@ import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 
+export interface ProjectUpsertFormData {
+    name: string
+    status: ProjectStatusValue
+    tags: ITag[]
+}
+
+function getDefaultFormData(): ProjectUpsertFormData {
+    return { name: '', status: 'draft', tags: [] }
+}
+
 export function useProjectUpsertDialog() {
     const visible = ref(false)
     const editingProject = ref<IProject | undefined>()
     const mode = computed<'create' | 'update'>(() => (editingProject.value ? 'update' : 'create'))
 
-    const name = ref('')
-    const status = ref<ProjectStatusValue>('draft')
-    const tags = ref<ITag[]>([])
+    const formData = ref<ProjectUpsertFormData>(getDefaultFormData())
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: create, isPending: isCreating } = useCreateProjectMutation()
@@ -22,9 +30,11 @@ export function useProjectUpsertDialog() {
 
     function open(project?: IProject) {
         editingProject.value = project
-        name.value = project?.name ?? ''
-        status.value = project?.status ?? 'draft'
-        tags.value = project?.tags ?? []
+        formData.value = {
+            name: project?.name ?? '',
+            status: project?.status ?? 'draft',
+            tags: project?.tags ?? [],
+        }
         validationErrors.value = {}
         visible.value = true
     }
@@ -42,20 +52,23 @@ export function useProjectUpsertDialog() {
     function submit() {
         validationErrors.value = {}
 
-        const tag_ids = tags.value.map((t) => t.id)
+        const tag_ids = formData.value.tags.map((t) => t.id)
 
         if (mode.value === 'create') {
-            create({ name: name.value, status: status.value, tag_ids }, { onSuccess: close, onError: handleError })
+            create(
+                { name: formData.value.name, status: formData.value.status, tag_ids },
+                { onSuccess: close, onError: handleError }
+            )
         } else if (editingProject.value) {
             update(
                 {
                     id: editingProject.value.id,
-                    data: { name: name.value, status: status.value, tag_ids },
+                    data: { name: formData.value.name, status: formData.value.status, tag_ids },
                 },
                 { onSuccess: close, onError: handleError }
             )
         }
     }
 
-    return { visible, mode, name, status, tags, validationErrors, isPending, open, close, submit }
+    return { visible, mode, formData, validationErrors, isPending, open, close, submit }
 }
