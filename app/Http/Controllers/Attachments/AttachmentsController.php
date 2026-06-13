@@ -77,6 +77,6 @@ class AttachmentsController extends ResourceController
 
     public function content(AttachmentModel $attachment): RedirectResponse
     {
-        return redirect()->away($this->storage->temporaryUrl($attachment));
+        return redirect($this->storage->temporaryUrl($attachment));
     }
 }

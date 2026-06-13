@@ -15,7 +15,7 @@ class AttachmentResource extends JsonResource
     {
         return [
             'id'               => $this->id,
-            'url'              => URL::temporarySignedRoute('attachments.content', now()->addHour(), ['attachment' => $this->id]),
+            'url'              => URL::route('attachments.content', ['attachment' => $this->id]),
             'original_name'    => $this->original_name,
             'extension'        => $this->extension,
             'mime_type'        => $this->mime_type,

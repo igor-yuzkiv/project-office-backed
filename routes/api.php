@@ -63,5 +63,5 @@ Route::group([
     Route::post('search', 'search')->name('search');
     Route::post('/', 'store')->name('store');
     Route::delete('{attachment}', 'destroy')->name('destroy');
-    Route::get('{attachment}/content', 'content')->middleware(['signed'])->name('content');
+    Route::get('{attachment}/content', 'content')->name('content');
 });
