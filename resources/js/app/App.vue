@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { DefaultLayout, AuthLayout } from '@/app/shell'
 import type { AppLayoutName } from '@/app/shell'
 import Toast from 'primevue/toast'
 import ConfirmDialog from 'primevue/confirmdialog'
+import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
 
 const route = useRoute()
+const themeStore = useAppThemeStore()
+
+onMounted(() => {
+    themeStore.initialize()
+})
 
 const AppLayoutComponentMap: Record<AppLayoutName, unknown> = {
     default: DefaultLayout,

@@ -55,14 +55,14 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                 <div class="gap-1 flex flex-col">
                     <div class="gap-x-2 text-2xl font-semibold flex items-center">
                         <ProjectIcon :prefix="project.prefix" size="small" :status="project.status" />
-                        <h1 class="text-surface-900">{{ project.name }}</h1>
+                        <h1 class="text-surface-900 dark:text-surface-0">{{ project.name }}</h1>
                     </div>
 
                     <TagList :tags="project.tags ?? []" />
                 </div>
 
                 <div class="gap-x-2 flex items-center">
-                    <ProjectStatusTag :status="project.status" class="w-fit" variant="light" show-icon />
+                    <ProjectStatusTag :status="project.status" class="w-fit" show-icon />
                 </div>
             </div>
 

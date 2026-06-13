@@ -10,6 +10,7 @@ import { getInitials } from '@/shared/utils/string.util'
 import { UserProfilePopover } from '@/widgets/user/profile'
 import HeaderActionButton from './HeaderActionButton.vue'
 import type { BreadcrumbItem, HeaderAction } from '../../types'
+import { useAppThemeStore } from '@/app/stores/use.app-theme-store.ts'
 
 defineProps<{
     title: string
@@ -18,6 +19,7 @@ defineProps<{
 }>()
 
 const authStore = useAuthStore()
+const themeStore = useAppThemeStore()
 const layoutStore = useAppLayoutStore()
 const router = useRouter()
 const profilePopover = ref<InstanceType<typeof UserProfilePopover>>()
@@ -32,7 +34,7 @@ async function handleLogout() {
 
 <template>
     <header
-        class="h-14 border-surface-200 px-4 dark:border-surface-700 bg-white flex shrink-0 items-center justify-between border-b"
+        class="h-14 border-surface-200 px-4 dark:border-surface-700 bg-white dark:bg-surface-900 flex shrink-0 items-center justify-between border-b"
     >
         <div class="gap-1 flex items-center truncate">
             <IconButton
@@ -51,11 +53,11 @@ async function handleLogout() {
                     <RouterLink
                         v-if="item.to"
                         :to="item.to"
-                        class="text-sm text-surface-600 hover:text-surface-900 block"
+                        class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-0 block"
                     >
                         {{ item.label }}
                     </RouterLink>
-                    <span v-else class="text-sm font-medium text-surface-900 block truncate">
+                    <span v-else class="text-sm font-medium text-surface-900 dark:text-surface-0 block truncate">
                         {{ item.label }}
                     </span>
                 </template>
@@ -67,6 +69,12 @@ async function handleLogout() {
         <div class="gap-2 flex shrink-0 items-center">
             <HeaderActionButton v-if="actions?.length" :actions="actions" />
 
+            <IconButton
+                @click="themeStore.toggle"
+                size="medium"
+                severity="secondary"
+                :icon="themeStore.isDark ? 'ix:light-dark' : 'circum:dark'"
+            />
             <IconButton icon="heroicons:bell" size="medium" severity="secondary" />
             <IconButton icon="heroicons:cog-6-tooth" size="medium" severity="secondary" />
 

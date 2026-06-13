@@ -43,7 +43,7 @@ const columns: EntityTableColumnDef[] = [
             <ProjectIcon :prefix="row.prefix" :status="row.status" size="medium" />
         </template>
         <template #column:status="{ row }">
-            <ProjectStatusTag :status="row.status" variant="light" />
+            <ProjectStatusTag :status="row.status" />
         </template>
 
         <template #column:tags="{ row }">

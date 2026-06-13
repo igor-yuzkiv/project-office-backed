@@ -152,7 +152,7 @@ watch(visible, (isVisible) => {
                     <div
                         v-for="tag in availableTags"
                         :key="tag.id"
-                        class="gap-3 hover:bg-surface-50 px-1 py-2 flex cursor-pointer items-center"
+                        class="gap-3 hover:bg-surface-50 dark:hover:bg-surface-800 px-1 py-2 flex cursor-pointer items-center"
                         @click="selectTag(tag)"
                     >
                         <span class="h-5 w-5 flex shrink-0 rounded-full" :style="{ backgroundColor: tag.color }" />

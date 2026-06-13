@@ -6,7 +6,7 @@ const loadingStore = useLoadingStateStore()
 </script>
 
 <template>
-    <div class="relative flex h-screen w-full items-center justify-center">
+    <div class="bg-surface-50 dark:bg-surface-950 relative flex h-screen w-full items-center justify-center">
         <slot />
         <LoadingOverlay
             v-if="loadingStore.isLoading"

@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { uploadAttachmentRequest } from '@/entities/attachment/api'
 import type { AttachmentRole } from '@/entities/attachment/types'
+import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
 
 const props = withDefaults(
     defineProps<{
@@ -16,6 +18,9 @@ const props = withDefaults(
 )
 
 const modelValue = defineModel<string>({ required: true })
+
+const themeStore = useAppThemeStore()
+const editorTheme = computed(() => (themeStore.isDark ? 'dark' : 'light'))
 
 const toolbars: ToolbarNames[] = [
     'bold',
@@ -69,6 +74,7 @@ async function handleUploadImages(files: File[], callback: (urls: string[]) => v
     <MdEditor
         v-model="modelValue"
         language="en-US"
+        :theme="editorTheme"
         :preview="preview"
         :toolbars="toolbars"
         preview-theme="github"

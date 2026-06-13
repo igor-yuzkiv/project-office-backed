@@ -32,7 +32,7 @@ const displayValue = computed(() => {
             <slot name="label">{{ label }}</slot>
         </span>
         <slot>
-            <span class="text-surface-700">{{ displayValue }}</span>
+            <span class="text-surface-700 dark:text-surface-300">{{ displayValue }}</span>
         </slot>
     </div>
 </template>

@@ -78,7 +78,7 @@ useBreadcrumbs(() => [
 
                     <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
                         <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
-                        <h1 class="text-surface-900 truncate">{{ task.name }}</h1>
+                        <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
                     </div>
 
                     <TagList :tags="task.tags ?? []" />

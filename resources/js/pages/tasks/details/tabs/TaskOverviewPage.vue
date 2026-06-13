@@ -35,13 +35,13 @@ const { task } = useTaskQuery(taskId)
         <DisplayField label="Created By">
             <div v-if="task.created_by" class="gap-2 flex items-center">
                 <UserAvatar :user="task.created_by" size="small" />
-                <span class="text-surface-700">{{ task.created_by.name }}</span>
+                <span class="text-surface-700 dark:text-surface-300">{{ task.created_by.name }}</span>
             </div>
         </DisplayField>
         <DisplayField label="Updated By">
             <div v-if="task.updated_by" class="gap-2 flex items-center">
                 <UserAvatar :user="task.updated_by" size="small" />
-                <span class="text-surface-700">{{ task.updated_by.name }}</span>
+                <span class="text-surface-700 dark:text-surface-300">{{ task.updated_by.name }}</span>
             </div>
         </DisplayField>
         <DisplayDate :date="task.created_at" label="Created" />

@@ -28,7 +28,7 @@ const hasMore = computed(() => hiddenCount.value > 0)
         <TagBadge v-for="tag in visibleTags" :key="tag.id" :tag="tag" />
         <span
             v-if="hasMore"
-            class="text-sm text-surface-400 hover:text-surface-600 cursor-pointer"
+            class="text-sm text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 cursor-pointer"
             @click.stop="showViewDialog = true"
         >
             +{{ hiddenCount }}

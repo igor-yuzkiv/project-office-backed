@@ -11,7 +11,7 @@ const props = withDefaults(
         variant?: 'light' | 'dark'
         showIcon?: boolean
     }>(),
-    { variant: 'light', showIcon: false }
+    { variant: 'dark', showIcon: false }
 )
 
 const meta = computed(() => {

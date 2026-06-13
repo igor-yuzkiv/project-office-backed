@@ -17,18 +17,18 @@ const { project } = useProjectQuery(projectId)
         <DisplayField label="Name" :value="project.name" />
         <DisplayField label="Prefix" :value="project.prefix" />
         <DisplayField label="Status">
-            <ProjectStatusTag :status="project.status" variant="light" class="w-fit" />
+            <ProjectStatusTag :status="project.status" class="w-fit" />
         </DisplayField>
         <DisplayField label="Created By">
             <div v-if="project.created_by" class="gap-2 flex items-center">
                 <UserAvatar :user="project.created_by" size="small" />
-                <span class="text-surface-700">{{ project.created_by.name }}</span>
+                <span class="text-surface-700 dark:text-surface-300">{{ project.created_by.name }}</span>
             </div>
         </DisplayField>
         <DisplayField label="Updated By">
             <div v-if="project.updated_by" class="gap-2 flex items-center">
                 <UserAvatar :user="project.updated_by" size="small" />
-                <span class="text-surface-700">{{ project.updated_by.name }}</span>
+                <span class="text-surface-700 dark:text-surface-300">{{ project.updated_by.name }}</span>
             </div>
         </DisplayField>
         <DisplayDate label="Created At" :date="project.created_at" />
