@@ -9,8 +9,7 @@ import { useHeaderActions } from '@/app/shell'
 import { PAGE_SIZE } from '@/app/config'
 import type { IProject, ProjectSearchParams } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
-import { ProjectUpsertDialog } from '@/widgets/projects/upsert-dialog'
-import { useProjectUpsertDialog } from '@/widgets/projects/upsert-dialog/composables/use.project-upsert-dialog'
+import { ProjectCreateDialog, useProjectCreateDialog } from '@/widgets/projects/create-dialog'
 import { ProjectsTableView } from '@/widgets/projects/views/table'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
@@ -18,7 +17,7 @@ import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 
 const router = useRouter()
-const upsertDialog = useProjectUpsertDialog()
+const createDialog = useProjectCreateDialog()
 
 const filterSidebar = useFilterSidebar(
     createFilterDefMap((map) =>
@@ -55,7 +54,11 @@ const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedProject = ref<IProject>()
 
 const rowMenuItems: MenuItem[] = [
-    { label: 'Edit', icon: 'pi pi-pencil', command: () => upsertDialog.open(selectedProject.value) },
+    {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => router.push({ name: 'project-edit', params: { id: selectedProject.value!.id } }),
+    },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
@@ -105,7 +108,7 @@ watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
 
-useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, action: () => upsertDialog.open() }])
+useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, action: () => createDialog.open() }])
 </script>
 
 <template>
@@ -154,13 +157,12 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
 
         <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
 
-        <ProjectUpsertDialog
-            v-model:visible="upsertDialog.visible.value"
-            v-model:form-data="upsertDialog.formData.value"
-            :mode="upsertDialog.mode.value"
-            :validation-errors="upsertDialog.validationErrors.value"
-            :is-pending="upsertDialog.isPending.value"
-            @submit="upsertDialog.submit"
+        <ProjectCreateDialog
+            v-model:visible="createDialog.visible.value"
+            v-model:form-data="createDialog.formData.value"
+            :validation-errors="createDialog.validationErrors.value"
+            :is-pending="createDialog.isPending.value"
+            @submit="createDialog.submit"
         />
     </div>
 </template>

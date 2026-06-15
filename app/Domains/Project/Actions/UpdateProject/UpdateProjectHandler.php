@@ -8,14 +8,19 @@ class UpdateProjectHandler
 {
     public function handle(UpdateProjectCommand $command): ProjectModel
     {
+        // Optional fields (null = not provided, skip update)
         $data = array_filter(
             [
                 'name'   => $command->name,
-                'prefix' => $command->prefix,
                 'status' => $command->status,
             ],
             fn ($value) => $value !== null
         );
+
+        // Nullable fields (null = clear the value)
+        $data['description'] = $command->description;
+        $data['start_date'] = $command->startDate;
+        $data['end_date'] = $command->endDate;
 
         $command->project->update($data);
 

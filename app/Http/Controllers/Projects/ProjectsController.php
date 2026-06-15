@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Projects;
 
-use App\Domains\Project\Actions\CreateProject\CreateProjectCommand;
 use App\Domains\Project\Actions\CreateProject\CreateProjectHandler;
 use App\Domains\Project\Actions\DeleteProject\DeleteProjectHandler;
-use App\Domains\Project\Actions\UpdateProject\UpdateProjectCommand;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
-use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\Project\Models\ProjectModel;
 use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Projects\StoreProjectRequest;
@@ -28,7 +25,7 @@ class ProjectsController extends ResourceController
 
     protected function getAllowedIncludes(): array
     {
-        return ['createdBy', 'updatedBy', 'tags', 'tasks', 'taskLists'];
+        return ['createdBy', 'updatedBy', 'archivedBy', 'tags', 'tasks', 'taskLists'];
     }
 
     public function index(): AnonymousResourceCollection
@@ -67,22 +64,14 @@ class ProjectsController extends ResourceController
 
     public function show(ProjectModel $project): ProjectResource
     {
-        $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes()));
+        $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'archivedBy', 'tags'], requested: $this->parseRequestedIncludes()));
 
         return new ProjectResource($project);
     }
 
     public function store(StoreProjectRequest $request): JsonResponse
     {
-        $statusValue = $request->validated('status');
-        $command = new CreateProjectCommand(
-            name: $request->validated('name'),
-            prefix: $request->validated('prefix'),
-            status: $statusValue ? ProjectStatus::from($statusValue) : ProjectStatus::DRAFT,
-            tagIds: $request->validated('tag_ids'),
-        );
-
-        $project = $this->createHandler->handle($command);
+        $project = $this->createHandler->handle($request->toCommand());
         $project->load(['createdBy', 'updatedBy']);
 
         return (new ProjectResource($project))
@@ -92,17 +81,8 @@ class ProjectsController extends ResourceController
 
     public function update(UpdateProjectRequest $request, ProjectModel $project): ProjectResource
     {
-        $statusValue = $request->validated('status');
-        $command = new UpdateProjectCommand(
-            project: $project,
-            name: $request->validated('name'),
-            prefix: $request->validated('prefix'),
-            status: $statusValue ? ProjectStatus::from($statusValue) : null,
-            tagIds: $request->validated('tag_ids'),
-        );
-
-        $project = $this->updateHandler->handle($command);
-        $project->load(['createdBy', 'updatedBy']);
+        $project = $this->updateHandler->handle($request->toCommand($project));
+        $project->load(['createdBy', 'updatedBy', 'archivedBy']);
 
         return new ProjectResource($project);
     }

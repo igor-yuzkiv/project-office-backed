@@ -43,7 +43,13 @@ function onTabChange(value: string | number) {
     router.push({ name: `project-details.${value}`, params: { id: projectId } })
 }
 
-useHeaderActions([])
+useHeaderActions([
+    {
+        key: 'edit-project',
+        title: 'Edit',
+        action: () => router.push({ name: 'project-edit', params: { id: projectId } }),
+    },
+])
 
 useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: project.value?.name ?? 'Project' }])
 </script>

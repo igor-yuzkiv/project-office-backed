@@ -1,7 +1,7 @@
 Продовжуємо планування MVP Task Manager.
 
-Поточний sprint: `.project_office/sprints/006`
-поки пишу загальний план перед декомпозизцію
+Поточний sprint: `.project_office/sprints/008`
+Задача: `001`
 
 ---
 

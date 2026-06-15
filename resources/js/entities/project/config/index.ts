@@ -9,5 +9,6 @@ export const ProjectQueryKey = {
     detail: (id: MaybeRefOrGetter<string>) => [...ProjectQueryKey.all, 'detail', id] as const,
 }
 
+export * from './project-attachment.config'
 export * from './project-module.config'
 export * from './project-status.config'

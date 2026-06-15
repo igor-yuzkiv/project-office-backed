@@ -16,14 +16,19 @@ class ProjectResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'prefix'     => $this->prefix,
-            'status'     => $this->status->value,
-            'created_by' => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
-            'updated_by' => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'prefix'      => $this->prefix,
+            'status'      => $this->status->value,
+            'description' => $this->description,
+            'start_date'  => $this->start_date?->toDateString(),
+            'end_date'    => $this->end_date?->toDateString(),
+            'archived_at' => $this->archived_at,
+            'archived_by' => $this->whenLoaded('archivedBy', fn () => new UserOverviewResource($this->archivedBy)),
+            'created_by'  => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
+            'updated_by'  => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
+            'created_at'  => $this->created_at,
+            'updated_at'  => $this->updated_at,
 
             'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'tasks'      => $this->whenLoaded('tasks', fn () => TaskResource::collection($this->tasks)),

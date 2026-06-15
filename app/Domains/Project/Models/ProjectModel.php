@@ -7,7 +7,9 @@ use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
+use App\Infrastructure\Models\Concerns\HasArchivableColumns;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Infrastructure\Models\Contracts\Archivable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\TagFilter;
@@ -22,21 +24,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 
 /**
  * @property ProjectStatus $status
+ * @property string|null $description
+ * @property Carbon|null $start_date
+ * @property Carbon|null $end_date
+ * @property Carbon|null $archived_at
+ * @property string|null $archived_by
+ * @property UserModel|null $archivedBy
  * @property Collection<int, TagModel> $tags
  * @property Collection<int, TaskModel> $tasks
  * @property Collection<int, TaskListModel> $taskLists
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
-#[Fillable(['id', 'name', 'prefix', 'status', 'created_by', 'updated_by'])]
-class ProjectModel extends Model
+#[Fillable(['id', 'name', 'prefix', 'status', 'description', 'start_date', 'end_date', 'created_by', 'updated_by'])]
+class ProjectModel extends Model implements Archivable
 {
     /** @use HasFactory<ProjectModelFactory> */
-    use HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
+    use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
     protected $table = 'projects';
 
@@ -45,7 +54,10 @@ class ProjectModel extends Model
     protected function casts(): array
     {
         return [
-            'status' => ProjectStatus::class,
+            'status'      => ProjectStatus::class,
+            'start_date'  => 'date',
+            'end_date'    => 'date',
+            'archived_at' => 'datetime',
         ];
     }
 
@@ -60,6 +72,11 @@ class ProjectModel extends Model
         });
     }
 
+    public function wasStatusChangedToArchived(): bool
+    {
+        return $this->isDirty('status') && $this->status === ProjectStatus::ARCHIVED;
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'created_by');
@@ -68,6 +85,11 @@ class ProjectModel extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'updated_by');
+    }
+
+    public function archivedBy(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'archived_by');
     }
 
     public function tasks(): HasMany

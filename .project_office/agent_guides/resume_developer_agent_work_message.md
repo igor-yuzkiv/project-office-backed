@@ -1,7 +1,7 @@
 Продовжуємо роботу над MVP Task Manager.
 
-оточний sprint: `.project_office/sprints/006`
-Поточна задача планування: `009`
+оточний sprint: `.project_office/sprints/008`
+Поточна задача планування: `001`
 
 Перед початком роботи прочитай: `.project_office/agent_guides/developer_agent_workflow.md`
 Потім коротко опиши стан sprint і task, назви відкриті питання і запропонуй план.

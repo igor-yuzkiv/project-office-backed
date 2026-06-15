@@ -16,6 +16,12 @@ return new class extends Migration
             $table->string('prefix', 5);
             $table->string('status', 100)->default(ProjectStatus::DRAFT->value);
 
+            $table->longText('description')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->timestamp('archived_at')->nullable();
+            $table->foreignUlid('archived_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->foreignUlid('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignUlid('updated_by')->nullable()->constrained('users')->nullOnDelete();
 

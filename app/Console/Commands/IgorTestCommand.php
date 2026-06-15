@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Domains\Project\Models\ProjectModel;
+use App\Domains\User\Models\UserModel;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 
 class IgorTestCommand extends Command
 {
@@ -13,18 +14,10 @@ class IgorTestCommand extends Command
 
     public function handle(): void
     {
-        $filters = [
-            [
-                'filter_key' => 'text',
-                'field_name' => 'name',
-                'value'      => 'test',
-                'matchMode'  => 'contains',
-                'params'     => [],
-            ],
-        ];
-
-        $projects = ProjectModel::query()->filter($filters)->get();
-
-        dump($projects->toArray());
+        UserModel::create([
+            'name'     => 'Igor Yuzkiv',
+            'email'    => 'iy@crmoz.com',
+            'password' => Hash::make('qwert123'),
+        ]);
     }
 }
