@@ -13,6 +13,8 @@ export interface ITask extends IEntity {
     sequence_number: number
     name: string
     description: string | null
+    start_date: string | null
+    due_date: string | null
     priority: TaskPriorityDto
     status: TaskStatusValue
     created_at: string
@@ -33,6 +35,8 @@ export type TaskOverviewDto = Pick<
     | 'task_list_id'
     | 'key'
     | 'name'
+    | 'start_date'
+    | 'due_date'
     | 'priority'
     | 'status'
     | 'created_at'

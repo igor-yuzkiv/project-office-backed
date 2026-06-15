@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IProject } from '@/entities/project/types'
+import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { DisplayDate } from '@/shared/components/display'
@@ -8,14 +8,14 @@ import { TagList } from '@/widgets/tags/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 
 defineProps<{
-    projects: IProject[]
+    projects: ProjectOverviewDto[]
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
 }>()
 
 defineEmits<{
-    rowClick: [project: IProject]
+    rowClick: [project: ProjectOverviewDto]
     pageChange: [page: number]
 }>()
 

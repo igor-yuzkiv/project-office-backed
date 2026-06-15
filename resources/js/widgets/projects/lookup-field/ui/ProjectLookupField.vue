@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import { LookupField } from '@/shared/components/input'
-import type { IProject } from '@/entities/project/types'
+import type { ProjectOverviewDto } from '@/entities/project/types'
 import { useProjectsSearchQuery } from '@/entities/project/queries'
 
 withDefaults(
@@ -13,7 +13,7 @@ withDefaults(
     { object: false, disabled: false }
 )
 
-const modelValue = defineModel<IProject | string | null>({ required: true })
+const modelValue = defineModel<ProjectOverviewDto | string | null>({ required: true })
 
 const searchTerm = ref('')
 const debouncedSearchTerm = refDebounced(searchTerm, 300)
@@ -22,12 +22,12 @@ const { projects, isPending } = useProjectsSearchQuery(
     computed(() => ({ query: debouncedSearchTerm.value, per_page: 20, page: 1 }))
 )
 
-function optionLabel(project: IProject): string {
+function optionLabel(project: ProjectOverviewDto): string {
     return `${project.prefix} - ${project.name}`
 }
 
 function onUpdate(value: unknown) {
-    modelValue.value = value as IProject | string | null
+    modelValue.value = value as ProjectOverviewDto | string | null
 }
 </script>
 

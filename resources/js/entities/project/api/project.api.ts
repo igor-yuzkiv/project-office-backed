@@ -5,22 +5,23 @@ import type {
     IProject,
     IUpdateProjectInput,
     ProjectFetchParams,
+    ProjectOverviewDto,
     ProjectSearchParams,
 } from '../types'
 
 type ProjectResponse = { data: IProject }
 
-export async function fetchProjectsRequest(params?: ProjectFetchParams): PromisePaginatedResponse<IProject> {
+export async function fetchProjectsRequest(params?: ProjectFetchParams): PromisePaginatedResponse<ProjectOverviewDto> {
     const { include, ...rest } = params ?? {}
     return httpClient
-        .get<PaginatedResponse<IProject>>('/projects', { params: { ...rest, include: include?.join(',') } })
+        .get<PaginatedResponse<ProjectOverviewDto>>('/projects', { params: { ...rest, include: include?.join(',') } })
         .then((res) => res.data)
 }
 
-export async function searchProjectsRequest(params: ProjectSearchParams): PromisePaginatedResponse<IProject> {
+export async function searchProjectsRequest(params: ProjectSearchParams): PromisePaginatedResponse<ProjectOverviewDto> {
     const { query = '', filters = [], include, ...pagination } = params
     return httpClient
-        .post<PaginatedResponse<IProject>>('/projects/search', { query, filters, include, ...pagination })
+        .post<PaginatedResponse<ProjectOverviewDto>>('/projects/search', { query, filters, include, ...pagination })
         .then((res) => res.data)
 }
 

@@ -106,6 +106,9 @@ Navem victa ipsis quam officium avertitur lupos Phoebi currus ianua, sic?
 Proceres auras, manu dum. Meo tigno, illo nepos conclamat. Tibi dum?
 EOT;
 
+        $startDate = fake()->boolean(40) ? fake()->dateTimeBetween('-3 months', 'now') : null;
+        $dueDate = $startDate !== null && fake()->boolean(60) ? fake()->dateTimeBetween($startDate, '+3 months') : null;
+
         return [
             'key'             => 'TASK-'.$sequence,
             'sequence_number' => $sequence,
@@ -113,6 +116,8 @@ EOT;
             'description'     => $description,
             'priority'        => fake()->randomElement(TaskPriority::cases())->value,
             'status'          => fake()->randomElement(TaskStatus::cases())->value,
+            'start_date'      => $startDate !== null ? $startDate->format('Y-m-d') : null,
+            'due_date'        => $dueDate !== null ? $dueDate->format('Y-m-d') : null,
         ];
     }
 }

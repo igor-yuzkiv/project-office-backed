@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('name');
             $table->longText('description')->nullable();
 
+            $table->date('start_date')->nullable();
+            $table->date('due_date')->nullable();
+
             $table->unsignedInteger('priority')->default(0);
             $table->string('status');
 

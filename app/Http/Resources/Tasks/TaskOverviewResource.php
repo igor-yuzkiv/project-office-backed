@@ -22,6 +22,8 @@ class TaskOverviewResource extends JsonResource
             'task_list_id' => $this->task_list_id,
             'key'          => $this->key,
             'name'         => $this->name,
+            'start_date'   => $this->start_date?->toDateString(),
+            'due_date'     => $this->due_date?->toDateString(),
             'priority'     => TaskPriorityData::from($this->priority)->toArray(),
             'status'       => $this->status->value,
             'created_at'   => $this->created_at,

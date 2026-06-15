@@ -11,6 +11,8 @@ export interface ICreateTaskInput {
     priority?: number | null
     task_list_id?: string | null
     description?: string | null
+    start_date?: string | null
+    due_date?: string | null
 }
 
 export interface IUpdateTaskInput {
@@ -19,6 +21,8 @@ export interface IUpdateTaskInput {
     status?: TaskStatusValue
     task_list_id?: string | null
     description?: string | null
+    start_date?: string | null
+    due_date?: string | null
     tag_ids?: string[]
 }
 

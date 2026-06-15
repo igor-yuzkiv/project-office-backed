@@ -24,4 +24,18 @@ export interface IProject extends IEntity {
     task_lists?: ITaskList[]
 }
 
-export type ProjectOverviewDto = Pick<IProject, 'id' | 'name' | 'prefix' | 'status'>
+export type ProjectOverviewDto = Pick<
+    IProject,
+    | 'id'
+    | 'name'
+    | 'prefix'
+    | 'status'
+    | 'created_at'
+    | 'updated_at'
+    | 'created_by'
+    | 'updated_by'
+    | 'archived_by'
+    | 'tags'
+    | 'tasks'
+    | 'task_lists'
+>

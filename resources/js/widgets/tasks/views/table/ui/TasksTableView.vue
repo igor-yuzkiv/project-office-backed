@@ -27,11 +27,13 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
     return [
         { field: 'key', header: 'Key', style: 'min-width: 10rem' },
-        { field: 'name', header: 'Task Name', style: 'min-width: 16rem;' },
-        { field: 'project', header: 'Project', style: 'min-width: 12rem;' },
+        { field: 'name', header: 'Task Name', style: 'min-width: 16rem' },
+        { field: 'project', header: 'Project', style: 'min-width: 12rem' },
         { field: 'status', header: 'Status', style: 'min-width: 9rem' },
         { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
-        { field: 'tags', header: 'Tags', style: 'min-width: 12rem;' },
+        { field: 'start_date', header: 'Start Date', style: 'min-width: 10rem' },
+        { field: 'due_date', header: 'Due Date', style: 'min-width: 10rem' },
+        { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
         { field: 'created_at', header: 'Created', style: 'min-width: 12rem' },
     ]
 })
@@ -73,6 +75,14 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
         <template #column:priority="{ row }">
             <TaskPriorityTag :priority="row.priority" class="w-fit" />
+        </template>
+
+        <template #column:start_date="{ row }">
+            <DisplayDate :date="row.start_date ?? undefined" />
+        </template>
+
+        <template #column:due_date="{ row }">
+            <DisplayDate :date="row.due_date ?? undefined" />
         </template>
 
         <template #column:tags="{ row }">

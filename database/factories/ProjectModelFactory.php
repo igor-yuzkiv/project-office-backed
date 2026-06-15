@@ -23,10 +23,16 @@ class ProjectModelFactory extends Factory
     {
         $name = fake()->words(3, true);
 
+        $startDate = fake()->boolean(50) ? fake()->dateTimeBetween('-3 months', 'now') : null;
+        $endDate = $startDate !== null && fake()->boolean(60) ? fake()->dateTimeBetween($startDate, '+6 months') : null;
+
         return [
-            'name'   => $name,
-            'prefix' => TextUtils::acronym($name),
-            'status' => fake()->randomElement(ProjectStatus::cases())->value,
+            'name'        => $name,
+            'prefix'      => TextUtils::acronym($name),
+            'status'      => fake()->randomElement(ProjectStatus::cases())->value,
+            'description' => fake()->boolean(60) ? fake()->paragraphs(2, true) : null,
+            'start_date'  => $startDate !== null ? $startDate->format('Y-m-d') : null,
+            'end_date'    => $endDate !== null ? $endDate->format('Y-m-d') : null,
         ];
     }
 }

@@ -44,6 +44,8 @@ const { task } = useTaskQuery(taskId)
                 <span class="text-surface-700 dark:text-surface-300">{{ task.updated_by.name }}</span>
             </div>
         </DisplayField>
+        <DisplayDate :date="task.start_date ?? undefined" label="Start Date" />
+        <DisplayDate :date="task.due_date ?? undefined" label="Due Date" />
         <DisplayDate :date="task.created_at" label="Created" />
         <DisplayDate :date="task.updated_at" label="Updated" />
         <DisplayField label="Tags">

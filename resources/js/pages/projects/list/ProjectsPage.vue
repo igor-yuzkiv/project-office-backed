@@ -7,7 +7,7 @@ import { useProjectsSearchQuery } from '@/entities/project/queries'
 import { useDeleteProjectMutation } from '@/entities/project/mutations'
 import { useHeaderActions } from '@/app/shell'
 import { PAGE_SIZE } from '@/app/config'
-import type { IProject, ProjectSearchParams } from '@/entities/project/types'
+import type { ProjectOverviewDto, ProjectSearchParams } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectCreateDialog, useProjectCreateDialog } from '@/widgets/projects/create-dialog'
 import { ProjectsTableView } from '@/widgets/projects/views/table'
@@ -51,7 +51,7 @@ const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
 const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedProject = ref<IProject>()
+const selectedProject = ref<ProjectOverviewDto>()
 
 const rowMenuItems: MenuItem[] = [
     {
@@ -91,11 +91,11 @@ function onSearchSubmit() {
     page.value = 1
 }
 
-function onRowClick(project: IProject) {
+function onRowClick(project: ProjectOverviewDto) {
     router.push({ name: 'project-details.tasks', params: { id: project.id } })
 }
 
-function openRowMenu(event: MouseEvent, project: IProject) {
+function openRowMenu(event: MouseEvent, project: ProjectOverviewDto) {
     selectedProject.value = project
     rowMenu.value?.toggle(event)
 }

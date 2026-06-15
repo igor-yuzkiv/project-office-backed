@@ -5,6 +5,7 @@ import { MarkdownEditor } from '@/shared/components/md-editor'
 import { InputContainer } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import DatePicker from 'primevue/datepicker'
 import { taskPriorityOptions, taskStatusOptions, TASK_MODULE_NAME, TASK_ATTACHMENT_ROLES } from '@/entities/task/config'
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
@@ -27,6 +28,8 @@ interface TaskEditFormData {
     taskList: ITaskList | null
     status: TaskStatusValue
     priority: number | null
+    start_date: Date | null
+    due_date: Date | null
     tags: ITag[]
 }
 
@@ -44,6 +47,8 @@ const formData = ref<TaskEditFormData>({
     taskList: null,
     status: 'open',
     priority: null,
+    start_date: null,
+    due_date: null,
     tags: [],
 })
 const isFormInitialized = ref(false)
@@ -56,6 +61,11 @@ function handleError(error: unknown) {
     } else {
         toast.error(error instanceof ApiError ? error.displayMessage : 'Failed to save task.')
     }
+}
+
+function formatDateForApi(date: Date | null): string | null {
+    if (!date) return null
+    return date.toISOString().split('T')[0]
 }
 
 function navigateBack() {
@@ -77,6 +87,8 @@ function submit() {
         task_list_id: formData.value.taskList?.id ?? null,
         status: formData.value.status,
         priority: formData.value.priority,
+        start_date: formatDateForApi(formData.value.start_date),
+        due_date: formatDateForApi(formData.value.due_date),
         tag_ids: formData.value.tags.map((t) => t.id),
     }
 
@@ -103,6 +115,8 @@ watch(
                 taskList: t.task_list ?? null,
                 status: t.status,
                 priority: t.priority?.value ?? null,
+                start_date: t.start_date ? new Date(t.start_date) : null,
+                due_date: t.due_date ? new Date(t.due_date) : null,
                 tags: t.tags ?? [],
             }
             isFormInitialized.value = true
@@ -167,6 +181,26 @@ useBreadcrumbs(() => [
                         :invalid="!!validationErrors.priority"
                     />
                 </InputContainer>
+
+                <div class="md:grid-cols-2 gap-3 md:col-span-2 col-span-full grid grid-cols-1">
+                    <InputContainer label="Start Date" :error="validationErrors.start_date">
+                        <DatePicker
+                            v-model="formData.start_date"
+                            date-format="yy-mm-dd"
+                            show-clear
+                            :invalid="!!validationErrors.start_date"
+                        />
+                    </InputContainer>
+
+                    <InputContainer label="Due Date" :error="validationErrors.due_date">
+                        <DatePicker
+                            v-model="formData.due_date"
+                            date-format="yy-mm-dd"
+                            show-clear
+                            :invalid="!!validationErrors.due_date"
+                        />
+                    </InputContainer>
+                </div>
             </div>
 
             <InputContainer label="Tags" :error="validationErrors.tag_ids">

@@ -24,6 +24,8 @@ class TaskResource extends JsonResource
             'sequence_number' => $this->sequence_number,
             'name'            => $this->name,
             'description'     => $this->description,
+            'start_date'      => $this->start_date?->toDateString(),
+            'due_date'        => $this->due_date?->toDateString(),
             'priority'        => TaskPriorityData::from($this->priority)->toArray(),
             'status'          => $this->status->value,
             'created_by'      => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),

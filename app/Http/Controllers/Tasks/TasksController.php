@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Tasks;
 
-use App\Domains\Task\Actions\CreateTask\CreateTaskCommand;
 use App\Domains\Task\Actions\CreateTask\CreateTaskHandler;
 use App\Domains\Task\Actions\DeleteTask\DeleteTaskHandler;
-use App\Domains\Task\Actions\UpdateTask\UpdateTaskCommand;
 use App\Domains\Task\Actions\UpdateTask\UpdateTaskHandler;
-use App\Domains\Task\Enums\TaskPriority;
-use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Shared\SearchRequest;
@@ -74,18 +70,7 @@ class TasksController extends ResourceController
 
     public function store(StoreTaskRequest $request): JsonResponse
     {
-        $rawPriority = $request->validated('priority');
-
-        $command = new CreateTaskCommand(
-            projectId: $request->validated('project_id'),
-            name: $request->validated('name'),
-            priority: $rawPriority !== null ? TaskPriority::from((int) $rawPriority) : TaskPriority::None,
-            taskListId: $request->validated('task_list_id'),
-            description: $request->validated('description'),
-            tagIds: $request->validated('tag_ids'),
-        );
-
-        $task = $this->createHandler->handle($command);
+        $task = $this->createHandler->handle($request->toCommand());
         $task->load(['createdBy', 'updatedBy']);
 
         return (new TaskResource($task))
@@ -95,24 +80,7 @@ class TasksController extends ResourceController
 
     public function update(UpdateTaskRequest $request, TaskModel $task): TaskResource
     {
-        $validated = $request->validated();
-        $priority = match (true) {
-            !array_key_exists('priority', $validated) => $task->priority ?? TaskPriority::None,
-            $validated['priority'] === null           => TaskPriority::None,
-            default                                   => TaskPriority::from((int) $validated['priority']),
-        };
-
-        $command = new UpdateTaskCommand(
-            task: $task,
-            taskListId: $request->validated('task_list_id'),
-            name: $request->validated('name'),
-            description: $request->validated('description'),
-            priority: $priority,
-            status: ($s = $request->validated('status')) !== null ? TaskStatus::from($s) : null,
-            tagIds: $request->validated('tag_ids'),
-        );
-
-        $task = $this->updateHandler->handle($command);
+        $task = $this->updateHandler->handle($request->toCommand($task));
         $task->load(['createdBy', 'updatedBy']);
 
         return new TaskResource($task);

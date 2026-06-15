@@ -1,13 +1,13 @@
 import { computed, ref } from 'vue'
 import { useCreateTaskListMutation, useUpdateTaskListMutation } from '@/entities/task-list/mutations'
 import type { ITaskList } from '@/entities/task-list/types'
-import type { IProject } from '@/entities/project/types'
+import type { ProjectOverviewDto } from '@/entities/project/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 
 export interface TaskListUpsertFormData {
     name: string
-    project: IProject | null
+    project: ProjectOverviewDto | null
 }
 
 function getDefaultFormData(): TaskListUpsertFormData {
@@ -26,7 +26,7 @@ export function useTaskListUpsertDialog() {
     const { mutate: update, isPending: isUpdating } = useUpdateTaskListMutation()
     const isPending = computed(() => isCreating.value || isUpdating.value)
 
-    function open(project: IProject, taskList?: ITaskList) {
+    function open(project: ProjectOverviewDto, taskList?: ITaskList) {
         editingTaskList.value = taskList
         formData.value = { name: taskList?.name ?? '', project }
         validationErrors.value = {}

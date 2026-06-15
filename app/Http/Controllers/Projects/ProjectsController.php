@@ -10,6 +10,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Requests\Shared\SearchRequest;
+use App\Http\Resources\Projects\ProjectOverviewResource;
 use App\Http\Resources\Projects\ProjectResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -39,7 +40,7 @@ class ProjectsController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
-        return ProjectResource::collection($projects);
+        return ProjectOverviewResource::collection($projects);
     }
 
     public function search(SearchRequest $request): AnonymousResourceCollection
@@ -59,7 +60,7 @@ class ProjectsController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
-        return ProjectResource::collection($projects);
+        return ProjectOverviewResource::collection($projects);
     }
 
     public function show(ProjectModel $project): ProjectResource

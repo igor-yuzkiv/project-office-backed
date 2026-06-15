@@ -22,16 +22,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 
 /**
  * @property TaskPriority $priority
  * @property TaskStatus $status
+ * @property Carbon|null $start_date
+ * @property Carbon|null $due_date
  * @property Collection<int, TagModel> $tags
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
-#[Fillable(['id', 'project_id', 'task_list_id', 'key', 'sequence_number', 'name', 'description', 'priority', 'status', 'created_by', 'updated_by'])]
+#[Fillable(['id', 'project_id', 'task_list_id', 'key', 'sequence_number', 'name', 'description', 'start_date', 'due_date', 'priority', 'status', 'created_by', 'updated_by'])]
 class TaskModel extends Model
 {
     /** @use HasFactory<TaskModelFactory> */
@@ -44,8 +47,10 @@ class TaskModel extends Model
     protected function casts(): array
     {
         return [
-            'priority' => TaskPriority::class,
-            'status'   => TaskStatus::class,
+            'start_date' => 'date',
+            'due_date'   => 'date',
+            'priority'   => TaskPriority::class,
+            'status'     => TaskStatus::class,
         ];
     }
 
