@@ -1,0 +1,8 @@
+- [x] Project
+- [ ] Task List
+- [x] Task
+- [ ] Issue/Bug
+- [ ] Sub Tasks
+- [ ] comments
+- [x] tags
+- [ ] time logs

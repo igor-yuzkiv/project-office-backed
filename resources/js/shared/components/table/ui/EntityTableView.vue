@@ -74,9 +74,18 @@ function onPageChange(event: { page: number }) {
                 :rows="PAGE_SIZE"
                 :total-records="props.paginationMeta.total"
                 :first="(props.page - 1) * PAGE_SIZE"
-                pt:root:class="p-0"
+                pt:root:class="py-0.5 px-2"
                 @page="onPageChange"
-            />
+            >
+                <template #start>
+                    <span class="text-sm text-surface-500">
+                        Page {{ props.page }} of {{ props.paginationMeta?.last_page }}
+                    </span>
+                </template>
+                <template #end>
+                    <span class="text-sm text-surface-500"> Total Records: {{ props.paginationMeta?.total }} </span>
+                </template>
+            </Paginator>
         </template>
     </DataTable>
 </template>

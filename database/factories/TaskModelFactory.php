@@ -106,13 +106,16 @@ Navem victa ipsis quam officium avertitur lupos Phoebi currus ianua, sic?
 Proceres auras, manu dum. Meo tigno, illo nepos conclamat. Tibi dum?
 EOT;
 
+
+
+
         return [
             'key'             => 'TASK-'.$sequence,
             'sequence_number' => $sequence,
             'name'            => fake()->words(3, true),
             'description'     => $description,
-            'priority'        => TaskPriority::Medium->value,
-            'status'          => TaskStatus::Open->value,
+            'priority'        => fake()->randomElement(TaskPriority::cases())->value,
+            'status'          => fake()->randomElement(TaskStatus::cases())->value,
         ];
     }
 }

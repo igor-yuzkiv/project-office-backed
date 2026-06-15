@@ -26,7 +26,7 @@ class ProjectModelFactory extends Factory
         return [
             'name'   => $name,
             'prefix' => TextUtils::acronym($name),
-            'status' => ProjectStatus::DRAFT,
+            'status' => fake()->randomElement(ProjectStatus::cases())->value,
         ];
     }
 }
