@@ -1,6 +1,6 @@
 import type { HexColor } from '@/shared/types'
 
-export type TaskPriorityName = 'Low' | 'Medium' | 'High'
+export type TaskPriorityName = 'None' | 'Low' | 'Medium' | 'High' | 'Urgent'
 
 export type TaskPriorityDto = {
     value: number

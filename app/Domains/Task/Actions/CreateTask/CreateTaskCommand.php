@@ -9,7 +9,7 @@ class CreateTaskCommand
     public function __construct(
         public readonly string $projectId,
         public readonly string $name,
-        public readonly ?TaskPriority $priority = null,
+        public readonly TaskPriority $priority = TaskPriority::None,
         public readonly ?string $taskListId = null,
         public readonly ?string $description = null,
         public readonly ?array $tagIds = null,

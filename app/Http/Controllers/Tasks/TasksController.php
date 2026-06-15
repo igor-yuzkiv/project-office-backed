@@ -79,7 +79,7 @@ class TasksController extends ResourceController
         $command = new CreateTaskCommand(
             projectId: $request->validated('project_id'),
             name: $request->validated('name'),
-            priority: $rawPriority !== null ? TaskPriority::from((int) $rawPriority) : null,
+            priority: $rawPriority !== null ? TaskPriority::from((int) $rawPriority) : TaskPriority::None,
             taskListId: $request->validated('task_list_id'),
             description: $request->validated('description'),
             tagIds: $request->validated('tag_ids'),
@@ -95,12 +95,19 @@ class TasksController extends ResourceController
 
     public function update(UpdateTaskRequest $request, TaskModel $task): TaskResource
     {
+        $validated = $request->validated();
+        $priority = match (true) {
+            !array_key_exists('priority', $validated) => $task->priority ?? TaskPriority::None,
+            $validated['priority'] === null           => TaskPriority::None,
+            default                                   => TaskPriority::from((int) $validated['priority']),
+        };
+
         $command = new UpdateTaskCommand(
             task: $task,
             taskListId: $request->validated('task_list_id'),
             name: $request->validated('name'),
             description: $request->validated('description'),
-            priority: ($p = $request->validated('priority')) !== null ? TaskPriority::from((int) $p) : null,
+            priority: $priority,
             status: ($s = $request->validated('status')) !== null ? TaskStatus::from($s) : null,
             tagIds: $request->validated('tag_ids'),
         );

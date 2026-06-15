@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('name');
             $table->longText('description')->nullable();
 
-            $table->unsignedInteger('priority')->nullable();
+            $table->unsignedInteger('priority')->default(0);
             $table->string('status');
 
             $table->foreignUlid('created_by')->nullable()->constrained('users')->nullOnDelete();

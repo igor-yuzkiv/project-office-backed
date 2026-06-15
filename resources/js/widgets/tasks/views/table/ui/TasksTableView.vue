@@ -72,7 +72,7 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         </template>
 
         <template #column:priority="{ row }">
-            <TaskPriorityTag :priority="row.priority" class="w-fit" />
+            <TaskPriorityTag :priority="row.priority" class="w-fit"  />
         </template>
 
         <template #column:tags="{ row }">

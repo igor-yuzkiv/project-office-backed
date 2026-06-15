@@ -13,7 +13,7 @@ class UpdateTaskCommand
         public readonly ?string $taskListId = null,
         public readonly ?string $name = null,
         public readonly ?string $description = null,
-        public readonly ?TaskPriority $priority = null,
+        public readonly TaskPriority $priority = TaskPriority::None,
         public readonly ?TaskStatus $status = null,
         public readonly ?array $tagIds = null,
     ) {}

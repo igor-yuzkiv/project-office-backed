@@ -13,7 +13,7 @@ export interface ITask extends IEntity {
     sequence_number: number
     name: string
     description: string | null
-    priority: TaskPriorityDto | null
+    priority: TaskPriorityDto
     status: TaskStatusValue
     created_at: string
     updated_at: string

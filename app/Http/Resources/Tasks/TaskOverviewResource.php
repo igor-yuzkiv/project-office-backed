@@ -22,7 +22,7 @@ class TaskOverviewResource extends JsonResource
             'task_list_id' => $this->task_list_id,
             'key'          => $this->key,
             'name'         => $this->name,
-            'priority'     => $this->priority ? TaskPriorityData::from($this->priority)->toArray() : null,
+            'priority'     => TaskPriorityData::from($this->priority)->toArray(),
             'status'       => $this->status->value,
             'created_at'   => $this->created_at,
             'updated_at'   => $this->updated_at,

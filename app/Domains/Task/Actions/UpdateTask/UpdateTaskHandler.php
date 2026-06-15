@@ -12,7 +12,7 @@ class UpdateTaskHandler
             'task_list_id' => $command->taskListId,
             'name'         => $command->name,
             'description'  => $command->description,
-            'priority'     => $command->priority?->value,
+            'priority'     => $command->priority->value,
             'status'       => $command->status?->value,
         ]);
 

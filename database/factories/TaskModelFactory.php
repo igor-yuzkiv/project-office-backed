@@ -106,9 +106,6 @@ Navem victa ipsis quam officium avertitur lupos Phoebi currus ianua, sic?
 Proceres auras, manu dum. Meo tigno, illo nepos conclamat. Tibi dum?
 EOT;
 
-
-
-
         return [
             'key'             => 'TASK-'.$sequence,
             'sequence_number' => $sequence,

@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Laravel\Scout\Searchable;
 
 /**
- * @property TaskPriority|null $priority
+ * @property TaskPriority $priority
  * @property TaskStatus $status
  * @property Collection<int, TagModel> $tags
  *
