@@ -10,7 +10,7 @@ const props = withDefaults(
         emptyValue?: string
         format?: string
     }>(),
-    { inline: false, emptyValue: 'N/A', format: 'MMM d, yyyy HH:mm' }
+    { inline: true, emptyValue: 'N/A', format: 'MMM d, yyyy HH:mm' }
 )
 
 const displayValue = computed(() => {
@@ -27,7 +27,7 @@ const displayValue = computed(() => {
 </script>
 
 <template>
-    <div :class="inline ? 'gap-2 flex-row items-center' : 'gap-1 flex-col'" class="flex">
+    <div :class="inline ? 'gap-1 md:flex-row md:items-center md:gap-2 flex-col' : 'gap-1 flex-col'" class="flex">
         <span v-if="label || $slots.label" class="text-surface-400 shrink-0">
             <slot name="label">{{ label }}</slot>
         </span>
