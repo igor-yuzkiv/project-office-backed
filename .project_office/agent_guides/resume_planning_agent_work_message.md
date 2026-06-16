@@ -1,7 +1,7 @@
 Продовжуємо планування MVP Task Manager.
 
-Поточний sprint: `.project_office/sprints/008`
-Задача: `001`
+Поточний sprint: `.project_office/sprints/009`
+Задача: plan
 
 ---
 
