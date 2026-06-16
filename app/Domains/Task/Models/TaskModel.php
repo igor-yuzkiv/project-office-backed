@@ -2,6 +2,7 @@
 
 namespace App\Domains\Task\Models;
 
+use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Enums\TaskPriority;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
@@ -87,6 +89,11 @@ class TaskModel extends Model
     public function tags(): MorphToMany
     {
         return $this->morphToMany(TagModel::class, 'taggable', relatedPivotKey: 'tag_id')->withPivot('created_at');
+    }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(CommentModel::class, 'commentable');
     }
 
     public static function newFactory(): TaskModelFactory

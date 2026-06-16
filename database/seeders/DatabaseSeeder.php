@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\User\Models\UserModel;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,17 +16,25 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        $users = UserModel::factory(15)->create();
         $tags = TagModel::factory(100)->create();
 
-        ProjectModel::factory(50)->create()->each(function (ProjectModel $project) use ($tags): void {
+        ProjectModel::factory(50)->create()->each(function (ProjectModel $project) use ($tags, $users): void {
             $project->tags()->attach(
                 $tags->random(rand(0, 3))->pluck('id')->toArray()
             );
 
-            TaskModel::factory(200)->create(['project_id' => $project->id])->each(function (TaskModel $task) use ($tags): void {
+            TaskModel::factory(200)->create(['project_id' => $project->id])->each(function (TaskModel $task) use ($tags, $users): void {
                 $task->tags()->attach(
                     $tags->random(rand(0, 3))->pluck('id')->toArray()
                 );
+
+                CommentModel::factory(rand(10, 100))->make()->each(function (CommentModel $comment) use ($task, $users): void {
+                    $task->comments()->create([
+                        'content'   => $comment->content,
+                        'author_id' => $users->random()->id,
+                    ]);
+                });
             });
         });
     }

@@ -5,6 +5,9 @@ namespace App\Infrastructure\Providers;
 use App\Console\Commands\IgorTestCommand;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Attachment\Services\S3AttachmentStorageService;
+use App\Domains\Comment\Models\CommentModel;
+use App\Domains\Comment\Policies\CommentPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
 
@@ -31,5 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->commands([
             IgorTestCommand::class,
         ]);
+
+        Gate::policy(CommentModel::class, CommentPolicy::class);
     }
 }

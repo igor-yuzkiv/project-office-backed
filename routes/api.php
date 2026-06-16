@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Attachments\AttachmentsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Projects\ProjectsController;
 use App\Http\Controllers\Tags\TagsController;
 use App\Http\Controllers\TaskLists\TaskListsController;
@@ -64,4 +65,17 @@ Route::group([
     Route::post('/', 'store')->name('store');
     Route::delete('{attachment}', 'destroy')->name('destroy');
     Route::get('{attachment}/content', 'content')->name('content');
+});
+
+/**
+ * Comments
+ */
+Route::group([
+    'middleware' => ['auth:sanctum'],
+    'controller' => CommentController::class,
+], function () {
+    Route::get('tasks/{task}/comments', 'index')->name('tasks.comments.index');
+    Route::post('tasks/{task}/comments', 'store')->name('tasks.comments.store');
+    Route::patch('comments/{comment}', 'update')->name('comments.update');
+    Route::delete('comments/{comment}', 'destroy')->name('comments.destroy');
 });
