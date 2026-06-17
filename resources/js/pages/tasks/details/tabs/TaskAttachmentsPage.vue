@@ -8,6 +8,7 @@ import { TaskAttachmentRoles } from '@/entities/task/config'
 import { useTaskAttachmentsQuery } from '@/entities/task/queries'
 import { useUploadTaskAttachmentMutation } from '@/entities/task/mutations'
 import { useDeleteAttachmentMutation } from '@/entities/attachment/mutations'
+import { useDownloadAttachment } from '@/entities/attachment/composables'
 import { ApiError } from '@/shared/api'
 import { useToast } from '@/shared/composables'
 import type { IAttachment } from '@/entities/attachment/types'
@@ -41,6 +42,7 @@ function upload(file: File) {
 }
 
 const { mutateWithConfirm: deleteAttachment } = useDeleteAttachmentMutation()
+const { download } = useDownloadAttachment()
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedAttachment = ref<IAttachment>()
@@ -49,7 +51,7 @@ const rowMenuItems: MenuItem[] = [
     {
         label: 'Download',
         icon: 'pi pi-download',
-        command: () => window.open(selectedAttachment.value!.url, '_blank', 'noopener,noreferrer'),
+        command: () => download(selectedAttachment.value!),
     },
     {
         label: 'Delete',

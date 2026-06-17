@@ -104,6 +104,8 @@ Route::group([
 ], function () {
     Route::delete('{attachment}', 'destroy')->name('destroy');
     Route::get('{attachment}/content', 'content')->name('content');
+    Route::get('{attachment}/download', 'download')->name('download');
+    Route::get('{attachment}/temporary-url', 'temporaryUrl')->name('temporaryUrl');
 });
 
 /**

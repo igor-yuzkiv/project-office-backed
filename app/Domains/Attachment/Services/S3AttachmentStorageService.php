@@ -2,79 +2,58 @@
 
 namespace App\Domains\Attachment\Services;
 
-use App\Domains\Attachment\Models\AttachmentModel;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class S3AttachmentStorageService implements AttachmentStorageService
 {
-    private const string STORAGE_PROVIDER = 's3';
-
-    public function store(
-        UploadedFile $file,
-        ?string $role = null
-    ): AttachmentModel {
-        $attachment = new AttachmentModel([
-            'original_name'    => $file->getClientOriginalName(),
-            'extension'        => $file->getClientOriginalExtension() ?: null,
-            'mime_type'        => $file->getClientMimeType(),
-            'size_bytes'       => $file->getSize(),
-            'storage_provider' => self::STORAGE_PROVIDER,
-            'role'             => $role,
-        ]);
-
-        $attachment->setUniqueIds();
-        $attachment->storage_key = $this->storageKey($attachment, $file);
-
-        $stored = Storage::disk('attachments')->putFileAs(
-            dirname($attachment->storage_key),
-            $file,
-            basename($attachment->storage_key)
-        );
-
-        if ($stored === false) {
-            throw new RuntimeException('Attachment file could not be stored.');
-        }
-
-        return $attachment;
+    public function getProvider(): string
+    {
+        return 's3';
     }
 
-    public function temporaryUrl(AttachmentModel $attachment): string
+    public function getDiskName(): string
     {
-        return Storage::disk('attachments')->temporaryUrl(
-            $attachment->storage_key,
+        return 'attachments';
+    }
+
+    public function store(UploadedFile $file, string $path): bool
+    {
+        return Storage::disk($this->getDiskName())->putFileAs(
+            dirname($path),
+            $file,
+            basename($path)
+        );
+    }
+
+    public function exists(string $path): bool
+    {
+        return Storage::disk($this->getDiskName())->exists($path);
+    }
+
+    public function delete(string $path): void
+    {
+        Storage::disk($this->getDiskName())->delete($path);
+    }
+
+    public function temporaryUrl(string $path): string
+    {
+        return Storage::disk($this->getDiskName())->temporaryUrl(
+            $path,
             now()->addMinutes((int) config('filesystems.attachments_temporary_url_ttl_minutes'))
         );
     }
 
-    public function streamResponse(AttachmentModel $attachment): StreamedResponse
+    public function streamResponse(string $path, ?string $originName = null): StreamedResponse
     {
-        return Storage::disk('attachments')->response(
-            $attachment->storage_key,
-            $attachment->original_name
-        );
-    }
-
-    public function exists(AttachmentModel $attachment): bool
-    {
-        return Storage::disk('attachments')->exists($attachment->storage_key);
-    }
-
-    public function delete(AttachmentModel $attachment): void
-    {
-        Storage::disk('attachments')->delete($attachment->storage_key);
-    }
-
-    private function storageKey(AttachmentModel $attachment, UploadedFile $file): string
-    {
-        $extension = $file->getClientOriginalExtension();
-
-        if ($extension === '') {
-            return "attachments/{$attachment->id}";
+        if (!$originName) {
+            $originName = basename($path);
         }
 
-        return "attachments/{$attachment->id}.{$extension}";
+        return Storage::disk($this->getDiskName())->response(
+            $path,
+            $originName
+        );
     }
 }

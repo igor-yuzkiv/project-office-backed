@@ -1,64 +1,66 @@
 <?php
 
-use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
-use App\Domains\Shared\ValueObjects\EntityRef;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
-it('stores a file and creates an attachment record', function () {
+it('stores a file at the given path', function () {
     Storage::fake('attachments');
 
     $service = app(AttachmentStorageService::class);
     $file = UploadedFile::fake()->createWithContent('proposal.pdf', 'attachment content');
+    $path = 'attachments/some-uuid.pdf';
 
-    $attachment = $service->store($file, new EntityRef('task-1', 'task'), 'document');
+    $result = $service->store($file, $path);
 
-    expect($attachment)->toBeInstanceOf(AttachmentModel::class)
-        ->and($attachment->exists)->toBeTrue()
-        ->and($attachment->original_name)->toBe('proposal.pdf')
-        ->and($attachment->extension)->toBe('pdf')
-        ->and($attachment->mime_type)->toBe('application/pdf')
-        ->and($attachment->size_bytes)->toBe(strlen('attachment content'))
-        ->and($attachment->storage_provider)->toBe('s3')
-        ->and($attachment->storage_key)->toStartWith('attachments/')
-        ->and($attachment->storage_key)->toEndWith('.pdf')
-        ->and($attachment->storage_key)->not->toStartWith('http')
-        ->and($attachment->entity_type)->toBe('task')
-        ->and($attachment->entity_id)->toBe('task-1')
-        ->and($attachment->role)->toBe('document');
-
-    Storage::disk('attachments')->assertExists($attachment->storage_key);
-    expect(AttachmentModel::query()->whereKey($attachment->id)->exists())->toBeTrue();
+    expect($result)->toBeTrue();
+    Storage::disk('attachments')->assertExists($path);
 });
 
-it('generates a temporary url for an attachment', function () {
+it('checks file existence by path', function () {
     Storage::fake('attachments');
 
     $service = app(AttachmentStorageService::class);
-    $attachment = $service->store(
-        UploadedFile::fake()->createWithContent('image.png', 'png bytes')
-    );
+    $file = UploadedFile::fake()->createWithContent('notes.txt', 'notes');
+    $path = 'attachments/some-uuid.txt';
 
-    expect($service->temporaryUrl($attachment))
+    $service->store($file, $path);
+
+    expect($service->exists($path))->toBeTrue();
+
+    Storage::disk('attachments')->delete($path);
+
+    expect($service->exists($path))->toBeFalse();
+});
+
+it('deletes a file by path', function () {
+    Storage::fake('attachments');
+
+    $service = app(AttachmentStorageService::class);
+    $file = UploadedFile::fake()->createWithContent('report.docx', 'docx bytes');
+    $path = 'attachments/some-uuid.docx';
+
+    $service->store($file, $path);
+    Storage::disk('attachments')->assertExists($path);
+
+    $service->delete($path);
+
+    Storage::disk('attachments')->assertMissing($path);
+});
+
+it('generates a temporary url for a path', function () {
+    Storage::fake('attachments');
+
+    $service = app(AttachmentStorageService::class);
+    $file = UploadedFile::fake()->createWithContent('image.png', 'png bytes');
+    $path = 'attachments/some-uuid.png';
+
+    $service->store($file, $path);
+
+    expect($service->temporaryUrl($path))
         ->toBeString()
-        ->toContain($attachment->storage_key);
-});
-
-it('checks attachment file existence', function () {
-    Storage::fake('attachments');
-
-    $service = app(AttachmentStorageService::class);
-    $attachment = $service->store(
-        UploadedFile::fake()->createWithContent('notes.txt', 'notes')
-    );
-
-    expect($service->exists($attachment))->toBeTrue();
-
-    Storage::disk('attachments')->delete($attachment->storage_key);
-
-    expect($service->exists($attachment))->toBeFalse();
+        ->toContain($path);
 });

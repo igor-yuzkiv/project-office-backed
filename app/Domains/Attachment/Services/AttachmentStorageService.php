@@ -2,22 +2,22 @@
 
 namespace App\Domains\Attachment\Services;
 
-use App\Domains\Attachment\Models\AttachmentModel;
 use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 interface AttachmentStorageService
 {
-    public function store(
-        UploadedFile $file,
-        ?string $role = null
-    ): AttachmentModel;
+    public function getProvider(): string;
 
-    public function temporaryUrl(AttachmentModel $attachment): string;
+    public function getDiskName(): string;
 
-    public function streamResponse(AttachmentModel $attachment): StreamedResponse;
+    public function store(UploadedFile $file, string $path): bool;
 
-    public function exists(AttachmentModel $attachment): bool;
+    public function exists(string $path): bool;
 
-    public function delete(AttachmentModel $attachment): void;
+    public function delete(string $path): void;
+
+    public function temporaryUrl(string $path): string;
+
+    public function streamResponse(string $path, ?string $originName = null): StreamedResponse;
 }

@@ -8,6 +8,7 @@ use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Http\Controllers\ResourceController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttachmentsController extends ResourceController
 {
@@ -30,6 +31,16 @@ class AttachmentsController extends ResourceController
 
     public function content(AttachmentModel $attachment): RedirectResponse
     {
-        return redirect($this->storage->temporaryUrl($attachment));
+        return redirect($this->storage->temporaryUrl($attachment->storage_key));
+    }
+
+    public function download(AttachmentModel $attachment): StreamedResponse
+    {
+        return $this->storage->streamResponse($attachment->storage_key, $attachment->original_name);
+    }
+
+    public function temporaryUrl(AttachmentModel $attachment): JsonResponse
+    {
+        return response()->json(['url' => $this->storage->temporaryUrl($attachment->storage_key)]);
     }
 }

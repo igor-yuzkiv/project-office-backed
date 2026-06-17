@@ -13,7 +13,7 @@ class DeleteAttachmentHandler
 
     public function handle(AttachmentModel $attachment): void
     {
-        $this->storage->delete($attachment);
+        $this->storage->delete($attachment->storage_key);
         $attachment->delete();
     }
 }
