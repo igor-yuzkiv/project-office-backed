@@ -15,6 +15,8 @@ export function useUpsertTaskComment(taskId: MaybeRefOrGetter<string>) {
 
     async function upsert(payload: UpsertPayload) {
         try {
+            console.log('payload', { taskId, payload })
+
             if (payload.mode === 'create') {
                 await createMutation.mutateAsync({ content: payload.content })
             } else {

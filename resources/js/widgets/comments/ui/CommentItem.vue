@@ -7,19 +7,17 @@ import { UserAvatar } from '@/widgets/user/user-avatar'
 import type { IComment } from '@/entities/comment'
 import CommentInputForm from './CommentInputForm.vue'
 
-const props = defineProps<{
-    comment: IComment
-}>()
+const props = defineProps<{ comment: IComment }>()
 
 const emit = defineEmits<{
-    update: [commentId: string, content: string]
-    delete: [commentId: string]
+    (e: 'update', value: { commentId: string; content: string }): void
+    (e: 'delete', commentId: string): void
 }>()
 
 const isEditing = ref(false)
 
 function handleEditSubmit(content: string) {
-    emit('update', props.comment.id, content)
+    emit('update', { commentId: props.comment.id, content })
     isEditing.value = false
 }
 

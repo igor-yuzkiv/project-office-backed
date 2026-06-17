@@ -28,6 +28,8 @@ class CommentModel extends Model
     /** @use HasFactory<CommentModelFactory> */
     use HasFactory;
 
+    // todo: use ulid
+
     protected $table = 'comments';
 
     public static function newFactory(): CommentModelFactory

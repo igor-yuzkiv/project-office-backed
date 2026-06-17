@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import Divider from 'primevue/divider'
 import Paginator from 'primevue/paginator'
 import { UserAvatar } from '@/widgets/user/user-avatar'
@@ -12,9 +11,9 @@ import CommentInputForm from '@/widgets/comments/ui/CommentInputForm.vue'
 import CommentItem from '@/widgets/comments/ui/CommentItem.vue'
 import { TASK_MODULE_NAME } from '@/entities/task/config/task-module.config'
 import { TASK_ATTACHMENT_ROLES } from '@/entities/task/config/task-attachment.config'
+import { useRouteParams } from '@vueuse/router'
 
-const route = useRoute()
-const taskId = route.params.id as string
+const taskId = useRouteParams<string>('id')
 
 const authStore = useAuthStore()
 const page = ref(1)
@@ -30,6 +29,14 @@ const showPaginator = computed(() => paginationMeta.value && paginationMeta.valu
 function onPageChange(event: { page: number }) {
     page.value = event.page + 1
 }
+
+function handleCreateComment(content: string) {
+    upsert({ mode: 'create', content: content })
+}
+
+function handleUpdateComment(value: { commentId: string; content: string }) {
+    upsert({ ...value, mode: 'edit' })
+}
 </script>
 
 <template>
@@ -42,7 +49,7 @@ function onPageChange(event: { page: number }) {
                     :image_entity_id="taskId"
                     :image_entity_type="TASK_MODULE_NAME"
                     :image_role="TASK_ATTACHMENT_ROLES.COMMENTS"
-                    @submit="upsert({ mode: 'create', content: $event })"
+                    @submit="handleCreateComment"
                 />
             </div>
         </div>
@@ -58,8 +65,8 @@ function onPageChange(event: { page: number }) {
                 v-for="comment in comments"
                 :key="comment.id"
                 :comment="comment"
-                @update="upsert({ mode: 'edit', commentId: $event[0], content: $event[1] })"
-                @delete="deleteComment($event)"
+                @update="handleUpdateComment"
+                @delete="deleteComment"
             />
         </div>
 
