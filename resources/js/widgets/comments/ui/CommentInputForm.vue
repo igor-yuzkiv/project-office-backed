@@ -2,11 +2,9 @@
 import { ref } from 'vue'
 import Button from 'primevue/button'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import { useCreateTaskCommentMutation, useUpdateCommentMutation } from '@/entities/comment'
 import type { AttachmentRole } from '@/entities/attachment/types'
 
 const props = defineProps<{
-    taskId: string
     mode: 'create' | 'edit'
     commentId?: string
     initialContent?: string
@@ -16,28 +14,20 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+    submit: [content: string]
     cancel: []
-    submitted: []
 }>()
 
 const content = ref(props.initialContent ?? '')
 
-const createMutation = useCreateTaskCommentMutation(props.taskId)
-const updateMutation = useUpdateCommentMutation()
-
-const isPending = props.mode === 'create' ? createMutation.isPending : updateMutation.isPending
-
-async function handleSubmit() {
+function handleSubmit() {
     if (!content.value.trim()) return
 
-    if (props.mode === 'create') {
-        await createMutation.mutateAsync({ content: content.value })
-        content.value = ''
-    } else if (props.commentId) {
-        await updateMutation.mutateAsync({ commentId: props.commentId, data: { content: content.value } })
-    }
+    emit('submit', content.value)
 
-    emit('submitted')
+    if (props.mode === 'create') {
+        content.value = ''
+    }
 }
 </script>
 
@@ -54,7 +44,6 @@ async function handleSubmit() {
             <Button
                 :label="mode === 'create' ? 'Add Comment' : 'Save'"
                 size="small"
-                :loading="isPending"
                 :disabled="!content.trim()"
                 @click="handleSubmit"
             />

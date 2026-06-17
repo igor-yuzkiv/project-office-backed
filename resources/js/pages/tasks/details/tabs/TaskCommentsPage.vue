@@ -4,7 +4,8 @@ import { useRoute } from 'vue-router'
 import Divider from 'primevue/divider'
 import Paginator from 'primevue/paginator'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import { useTaskCommentsQuery } from '@/entities/comment'
+import { useTaskCommentsQuery, useUpsertTaskComment } from '@/entities/task'
+import { useDeleteCommentMutation } from '@/entities/comment'
 import { PAGE_SIZE } from '@/app/config'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import CommentInputForm from '@/widgets/comments/ui/CommentInputForm.vue'
@@ -21,6 +22,8 @@ const page = ref(1)
 const pagination = computed(() => ({ page: page.value, per_page: PAGE_SIZE }))
 
 const { comments, paginationMeta, isPending } = useTaskCommentsQuery(taskId, pagination)
+const { upsert } = useUpsertTaskComment(taskId)
+const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 const showPaginator = computed(() => paginationMeta.value && paginationMeta.value.last_page > 1)
 
@@ -35,11 +38,11 @@ function onPageChange(event: { page: number }) {
             <UserAvatar :user-name="authStore.user?.name ?? ''" size="medium" class="mt-1 shrink-0" />
             <div class="min-w-0 flex-1">
                 <CommentInputForm
-                    :task-id="taskId"
                     mode="create"
                     :image_entity_id="taskId"
                     :image_entity_type="TASK_MODULE_NAME"
                     :image_role="TASK_ATTACHMENT_ROLES.COMMENTS"
+                    @submit="upsert({ mode: 'create', content: $event })"
                 />
             </div>
         </div>
@@ -51,7 +54,13 @@ function onPageChange(event: { page: number }) {
         <div v-else-if="comments.length === 0" class="text-surface-400 text-sm">No comments yet.</div>
 
         <div v-else class="divide-surface-200 dark:divide-surface-700 flex flex-col divide-y">
-            <CommentItem v-for="comment in comments" :key="comment.id" :comment="comment" :task-id="taskId" />
+            <CommentItem
+                v-for="comment in comments"
+                :key="comment.id"
+                :comment="comment"
+                @update="upsert({ mode: 'edit', commentId: $event[0], content: $event[1] })"
+                @delete="deleteComment($event)"
+            />
         </div>
 
         <Paginator

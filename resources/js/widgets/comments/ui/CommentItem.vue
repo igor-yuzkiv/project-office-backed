@@ -4,33 +4,27 @@ import Button from 'primevue/button'
 import { MarkdownPreview } from '@/shared/components/md-editor'
 import { DisplayDate } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import { useDeleteCommentMutation } from '@/entities/comment'
 import type { IComment } from '@/entities/comment'
 import CommentInputForm from './CommentInputForm.vue'
 
 const props = defineProps<{
     comment: IComment
-    taskId: string
+}>()
+
+const emit = defineEmits<{
+    update: [commentId: string, content: string]
+    delete: [commentId: string]
 }>()
 
 const isEditing = ref(false)
 
-const deleteMutation = useDeleteCommentMutation()
-
-function handleEdit() {
-    isEditing.value = true
-}
-
-function handleEditCancel() {
-    isEditing.value = false
-}
-
-function handleEditSubmitted() {
+function handleEditSubmit(content: string) {
+    emit('update', props.comment.id, content)
     isEditing.value = false
 }
 
 function handleDelete() {
-    deleteMutation.mutateWithConfirm(props.comment.id)
+    emit('delete', props.comment.id)
 }
 </script>
 
@@ -52,7 +46,7 @@ function handleDelete() {
                         rounded
                         size="small"
                         severity="secondary"
-                        @click="handleEdit"
+                        @click="isEditing = true"
                     />
                     <Button
                         v-if="comment.can.delete"
@@ -61,7 +55,6 @@ function handleDelete() {
                         rounded
                         size="small"
                         severity="danger"
-                        :loading="deleteMutation.isPending.value"
                         @click="handleDelete"
                     />
                 </div>
@@ -69,12 +62,11 @@ function handleDelete() {
 
             <CommentInputForm
                 v-if="isEditing"
-                :task-id="taskId"
                 mode="edit"
                 :comment-id="comment.id"
                 :initial-content="comment.content"
-                @cancel="handleEditCancel"
-                @submitted="handleEditSubmitted"
+                @submit="handleEditSubmit"
+                @cancel="isEditing = false"
             />
 
             <MarkdownPreview v-else :model-value="comment.content" />
