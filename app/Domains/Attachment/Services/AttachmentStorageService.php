@@ -3,7 +3,6 @@
 namespace App\Domains\Attachment\Services;
 
 use App\Domains\Attachment\Models\AttachmentModel;
-use App\Domains\Shared\ValueObjects\EntityRef;
 use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -11,7 +10,6 @@ interface AttachmentStorageService
 {
     public function store(
         UploadedFile $file,
-        ?EntityRef $entityRef = null,
         ?string $role = null
     ): AttachmentModel;
 

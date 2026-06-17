@@ -1,39 +1,41 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDropZone } from '@vueuse/core'
-import type { ModuleName } from '@/shared/types'
-import type { AttachmentRole } from '@/entities/attachment/types'
 import { useToast } from '@/shared/composables'
-import { useAttachmentUpload } from '../composables/use.attachment-upload'
 
 const props = withDefaults(
     defineProps<{
-        entityType: ModuleName
-        entityId: string
-        role?: AttachmentRole | null
+        isUploading?: boolean
         maxFileSizeBytes?: number
     }>(),
-    { role: null }
+    { isUploading: false }
 )
+
+const emit = defineEmits<{
+    'file-drop': [file: File]
+}>()
+
+const DEFAULT_MAX_FILE_SIZE = 25 * 1024 * 1024
 
 const toast = useToast()
 const dropZoneRef = ref<HTMLElement>()
 
-const { uploadFile, isPending } = useAttachmentUpload({
-    entityType: () => props.entityType,
-    entityId: () => props.entityId,
-    role: () => props.role,
-    maxFileSizeBytes: () => props.maxFileSizeBytes,
-})
-
 function onDrop(files: File[] | null) {
-    if (isPending.value || !files || files.length === 0) return
+    if (props.isUploading || !files || files.length === 0) return
 
     if (files.length > 1) {
         toast.info('Only the first file will be uploaded.')
     }
 
-    uploadFile(files[0])
+    const file = files[0]
+    const maxSize = props.maxFileSizeBytes ?? DEFAULT_MAX_FILE_SIZE
+
+    if (file.size > maxSize) {
+        toast.error('File exceeds the maximum allowed size.')
+        return
+    }
+
+    emit('file-drop', file)
 }
 
 const { isOverDropZone } = useDropZone(dropZoneRef, { onDrop })
@@ -44,7 +46,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, { onDrop })
         <slot />
         <Transition name="fade">
             <div
-                v-if="isOverDropZone && !isPending"
+                v-if="isOverDropZone && !isUploading"
                 class="inset-0 rounded-lg border-primary bg-primary/10 absolute z-10 flex items-center justify-center border-2 border-dashed"
             >
                 <span class="text-primary font-medium">Drop file to upload</span>

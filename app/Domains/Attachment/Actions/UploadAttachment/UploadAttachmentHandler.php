@@ -13,10 +13,17 @@ class UploadAttachmentHandler
 
     public function handle(UploadAttachmentCommand $command): AttachmentModel
     {
-        return $this->storageService->store(
+        $attachment = $this->storageService->store(
             file: $command->file,
-            entityRef: $command->entityRef,
             role: $command->role,
         );
+
+        if ($command->attachable !== null) {
+            $attachment->attachable()->associate($command->attachable);
+        }
+
+        $attachment->save();
+
+        return $attachment;
     }
 }

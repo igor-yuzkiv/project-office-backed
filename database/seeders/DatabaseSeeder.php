@@ -16,20 +16,20 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $users = UserModel::factory(15)->create();
+        $users = UserModel::factory(5)->create();
         $tags = TagModel::factory(100)->create();
 
-        ProjectModel::factory(50)->create()->each(function (ProjectModel $project) use ($tags, $users): void {
+        ProjectModel::factory(5)->create()->each(function (ProjectModel $project) use ($tags, $users): void {
             $project->tags()->attach(
                 $tags->random(rand(0, 3))->pluck('id')->toArray()
             );
 
-            TaskModel::factory(200)->create(['project_id' => $project->id])->each(function (TaskModel $task) use ($tags, $users): void {
+            TaskModel::factory(rand(10, 50))->create(['project_id' => $project->id])->each(function (TaskModel $task) use ($tags, $users): void {
                 $task->tags()->attach(
-                    $tags->random(rand(0, 3))->pluck('id')->toArray()
+                    $tags->random(rand(1, 10))->pluck('id')->toArray()
                 );
 
-                CommentModel::factory(rand(10, 100))->make()->each(function (CommentModel $comment) use ($task, $users): void {
+                CommentModel::factory(rand(10, 50))->make()->each(function (CommentModel $comment) use ($task, $users): void {
                     $task->comments()->create([
                         'content'   => $comment->content,
                         'author_id' => $users->random()->id,

@@ -6,7 +6,8 @@ import { InputContainer } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
-import { taskPriorityOptions, taskStatusOptions, TASK_MODULE_NAME, TASK_ATTACHMENT_ROLES } from '@/entities/task/config'
+import { taskPriorityOptions, taskStatusOptions, TaskAttachmentRoles } from '@/entities/task/config'
+import { uploadTaskAttachmentRequest } from '@/entities/task/api/task-attachments.api'
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
@@ -74,6 +75,13 @@ function navigateBack() {
     } else {
         router.push({ name: 'task-details', params: { id: taskId } })
     }
+}
+
+async function handleImageUpload(files: File[], callback: (urls: string[]) => void) {
+    const results = await Promise.all(
+        files.map((file) => uploadTaskAttachmentRequest(taskId, file, TaskAttachmentRoles.DESCRIPTION))
+    )
+    callback(results.map((res) => res.data.url))
 }
 
 function submit() {
@@ -221,9 +229,7 @@ useBreadcrumbs(() => [
                 v-model="formData.description"
                 preview
                 style="height: 100%"
-                :image_entity_type="TASK_MODULE_NAME"
-                :image_entity_id="taskId"
-                :image_role="TASK_ATTACHMENT_ROLES.DESCRIPTION"
+                :handle-image-upload="handleImageUpload"
             />
         </div>
 

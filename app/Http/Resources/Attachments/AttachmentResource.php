@@ -22,8 +22,6 @@ class AttachmentResource extends JsonResource
             'size_bytes'       => $this->size_bytes,
             'storage_provider' => $this->storage_provider,
             'storage_key'      => $this->storage_key,
-            'entity_type'      => $this->entity_type,
-            'entity_id'        => $this->entity_id,
             'role'             => $this->role,
             'created_by'       => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
             'updated_by'       => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),

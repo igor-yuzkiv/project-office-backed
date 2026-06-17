@@ -36,9 +36,5 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         Gate::policy(CommentModel::class, CommentPolicy::class);
-
-        // Relation::enforceMorphMap([
-        //     'task' => TaskModel::class,
-        // ]);
     }
 }

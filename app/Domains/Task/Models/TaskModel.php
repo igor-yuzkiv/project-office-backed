@@ -2,6 +2,7 @@
 
 namespace App\Domains\Task\Models;
 
+use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Tag\Models\TagModel;
@@ -94,6 +95,11 @@ class TaskModel extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(CommentModel::class, 'commentable');
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(AttachmentModel::class, 'attachable');
     }
 
     public static function newFactory(): TaskModelFactory

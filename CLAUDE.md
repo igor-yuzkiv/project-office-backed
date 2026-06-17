@@ -282,6 +282,19 @@ shared/
 └── utils/            # pure utility functions
 ```
 
+### Vue Emits
+
+Always use the call-signature form for `defineEmits`:
+
+```ts
+const emit = defineEmits<{
+    (e: 'update', value: { commentId: string; content: string }): void
+    (e: 'delete', commentId: string): void
+}>()
+```
+
+Do not use the shorthand object/tuple syntax (`{ update: [value: ...] }`).
+
 ### Vue `<script setup>` and composable structure
 
 Use a consistent internal order in both Vue `<script setup>` blocks and composables:

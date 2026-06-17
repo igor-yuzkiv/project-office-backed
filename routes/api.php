@@ -3,9 +3,11 @@
 use App\Http\Controllers\Attachments\AttachmentsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Comment\CommentController;
+use App\Http\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\Controllers\Projects\ProjectsController;
 use App\Http\Controllers\Tags\TagsController;
 use App\Http\Controllers\TaskLists\TaskListsController;
+use App\Http\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\Controllers\Tasks\TaskCommentsController;
 use App\Http\Controllers\Tasks\TasksController;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +56,18 @@ Route::group([
 });
 
 /**
+ * Project Attachments
+ */
+Route::group([
+    'prefix'     => 'projects/{project}/attachments',
+    'as'         => 'projects.attachments.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectAttachmentsController::class,
+], function () {
+    Route::post('/', 'store')->name('store');
+});
+
+/**
  * Task Comments
  */
 Route::group([
@@ -61,6 +75,19 @@ Route::group([
     'as'         => 'tasks.comments.',
     'middleware' => ['auth:sanctum'],
     'controller' => TaskCommentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+});
+
+/**
+ * Task Attachments
+ */
+Route::group([
+    'prefix'     => 'tasks/{task}/attachments',
+    'as'         => 'tasks.attachments.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => TaskAttachmentsController::class,
 ], function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
@@ -75,8 +102,6 @@ Route::group([
     'middleware' => ['auth:sanctum'],
     'controller' => AttachmentsController::class,
 ], function () {
-    Route::post('search', 'search')->name('search');
-    Route::post('/', 'store')->name('store');
     Route::delete('{attachment}', 'destroy')->name('destroy');
     Route::get('{attachment}/content', 'content')->name('content');
 });

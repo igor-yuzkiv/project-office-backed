@@ -2,6 +2,7 @@
 
 namespace App\Domains\Project\Models;
 
+use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Project\Enums\ProjectStatus;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
@@ -100,6 +102,11 @@ class ProjectModel extends Model implements Archivable
     public function taskLists(): HasMany
     {
         return $this->hasMany(TaskListModel::class, 'project_id');
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(AttachmentModel::class, 'attachable');
     }
 
     public function tags(): MorphToMany

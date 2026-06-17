@@ -2,16 +2,12 @@
 import { computed } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
-import { uploadAttachmentRequest } from '@/entities/attachment/api'
-import type { AttachmentRole } from '@/entities/attachment/types'
 import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
 
 const props = withDefaults(
     defineProps<{
         preview?: boolean
-        image_entity_type?: string
-        image_entity_id?: string
-        image_role?: AttachmentRole
+        handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
     }>(),
     { preview: false }
 )
@@ -51,21 +47,9 @@ const toolbars: ToolbarNames[] = [
     'fullscreen',
 ]
 
-async function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
+function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
     if (!files.length) return
-
-    const responses = await Promise.all(
-        files.map((file) =>
-            uploadAttachmentRequest({
-                file,
-                entity_type: props.image_entity_type,
-                entity_id: props.image_entity_id,
-                role: props.image_role,
-            })
-        )
-    )
-
-    callback(responses.map((res) => res.data.url))
+    props.handleImageUpload?.(files, callback)
 }
 </script>
 

@@ -14,3 +14,9 @@ export const TaskCommentQueryKey = {
     taskCommentsPaginated: (taskId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
         [...TaskCommentQueryKey.taskComments(taskId), pagination] as const,
 }
+
+export const TaskAttachmentQueryKey = {
+    taskAttachments: (taskId: MaybeRefOrGetter<string>) => ['attachments', 'tasks', taskId] as const,
+    taskAttachmentsPaginated: (taskId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
+        [...TaskAttachmentQueryKey.taskAttachments(taskId), pagination] as const,
+}

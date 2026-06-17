@@ -2,15 +2,12 @@
 import { ref } from 'vue'
 import Button from 'primevue/button'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import type { AttachmentRole } from '@/entities/attachment/types'
 
 const props = defineProps<{
     mode: 'create' | 'edit'
     commentId?: string
     initialContent?: string
-    image_entity_id?: string
-    image_entity_type?: string
-    image_role?: AttachmentRole
+    handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
 }>()
 
 const emit = defineEmits<{
@@ -33,12 +30,7 @@ function handleSubmit() {
 
 <template>
     <div class="gap-3 flex flex-col">
-        <MarkdownEditor
-            v-model="content"
-            :image_entity_id="image_entity_id"
-            :image_entity_type="image_entity_type"
-            :image_role="image_role"
-        />
+        <MarkdownEditor v-model="content" :handle-image-upload="handleImageUpload" />
         <div class="gap-2 flex justify-end">
             <Button v-if="mode === 'edit'" label="Cancel" severity="secondary" size="small" @click="emit('cancel')" />
             <Button

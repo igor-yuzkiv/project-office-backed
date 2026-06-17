@@ -4,9 +4,12 @@ import { useRoute } from 'vue-router'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { PAGE_SIZE } from '@/app/config'
-import { TASK_ATTACHMENT_ROLES, TASK_MODULE_NAME } from '@/entities/task/config'
-import { useAttachmentsSearchQuery } from '@/entities/attachment/queries'
+import { TaskAttachmentRoles } from '@/entities/task/config'
+import { useTaskAttachmentsQuery } from '@/entities/task/queries'
+import { useUploadTaskAttachmentMutation } from '@/entities/task/mutations'
 import { useDeleteAttachmentMutation } from '@/entities/attachment/mutations'
+import { ApiError } from '@/shared/api'
+import { useToast } from '@/shared/composables'
 import type { IAttachment } from '@/entities/attachment/types'
 import { IconButton } from '@/shared/components/button'
 import { AttachmentsTableView } from '@/widgets/attachments/views/table'
@@ -18,16 +21,24 @@ const taskId = computed(() => route.params.id as string)
 
 const page = ref(1)
 
-const searchParams = computed(() => ({
-    filters: [
-        { filter_key: 'text', field_name: 'entity_type', value: TASK_MODULE_NAME, matchMode: 'equals', params: {} },
-        { filter_key: 'lookup', field_name: 'entity_id', value: taskId.value, matchMode: 'equals', params: {} },
-    ],
-    page: page.value,
-    per_page: PAGE_SIZE,
-}))
+const pagination = computed(() => ({ page: page.value, per_page: PAGE_SIZE }))
 
-const { attachments, paginationMeta, isPending } = useAttachmentsSearchQuery(searchParams)
+const { attachments, paginationMeta, isPending } = useTaskAttachmentsQuery(taskId, pagination)
+
+const toast = useToast()
+const { mutate: uploadAttachment, isPending: isUploading } = useUploadTaskAttachmentMutation(taskId)
+
+function upload(file: File) {
+    uploadAttachment(
+        { file, role: TaskAttachmentRoles.UPLOAD },
+        {
+            onSuccess: () => toast.success('File uploaded successfully.'),
+            onError: (error) => {
+                toast.error(error instanceof ApiError ? error.displayMessage : 'Failed to upload file.')
+            },
+        }
+    )
+}
 
 const { mutateWithConfirm: deleteAttachment } = useDeleteAttachmentMutation()
 
@@ -65,14 +76,10 @@ function onPageChange(newPage: number) {
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="flex h-full w-full flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-end">
-                <UploadAttachmentButton
-                    :entity-type="TASK_MODULE_NAME"
-                    :entity-id="taskId"
-                    :role="TASK_ATTACHMENT_ROLES.UPLOAD"
-                />
+                <UploadAttachmentButton :is-uploading="isUploading" @file-selected="upload" />
             </div>
 
-            <AttachmentDropZone :entity-type="TASK_MODULE_NAME" :entity-id="taskId">
+            <AttachmentDropZone :is-uploading="isUploading" @file-drop="upload">
                 <AttachmentsTableView
                     :attachments="attachments"
                     :is-pending="isPending"

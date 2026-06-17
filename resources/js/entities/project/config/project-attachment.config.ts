@@ -1,5 +1,5 @@
 import type { AttachmentRole } from '@/entities/attachment/types'
 
-export const PROJECT_ATTACHMENT_ROLES = {
+export const ProjectAttachmentRoles = {
     DESCRIPTION: 'projects.description',
 } as const satisfies Record<string, AttachmentRole>

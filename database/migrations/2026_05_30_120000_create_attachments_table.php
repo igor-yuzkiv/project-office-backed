@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('size_bytes')->nullable();
             $table->string('storage_provider');
             $table->string('storage_key');
-            $table->string('entity_type')->nullable();
-            $table->string('entity_id')->nullable();
+            $table->string('attachable_type')->nullable();
+            $table->string('attachable_id')->nullable();
+            $table->index(['attachable_type', 'attachable_id']);
             $table->string('role')->nullable();
 
             $table->foreignUlid('created_by')->nullable()->constrained('users')->nullOnDelete();

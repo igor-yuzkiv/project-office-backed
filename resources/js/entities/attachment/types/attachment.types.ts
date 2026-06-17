@@ -1,4 +1,4 @@
-import type { IEntity, ModuleName } from '@/shared/types'
+import type { IEntity } from '@/shared/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 
 export type AttachmentRole = string
@@ -11,8 +11,6 @@ export interface IAttachment extends IEntity {
     size_bytes: number | null
     storage_provider: string
     storage_key: string
-    entity_type: ModuleName | null
-    entity_id: string | null
     role: AttachmentRole | null
 
     created_by?: UserOverviewDto

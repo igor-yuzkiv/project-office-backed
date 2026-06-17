@@ -3,7 +3,6 @@
 namespace App\Domains\Attachment\Services;
 
 use App\Domains\Attachment\Models\AttachmentModel;
-use App\Domains\Shared\ValueObjects\EntityRef;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -15,7 +14,6 @@ class S3AttachmentStorageService implements AttachmentStorageService
 
     public function store(
         UploadedFile $file,
-        ?EntityRef $entityRef = null,
         ?string $role = null
     ): AttachmentModel {
         $attachment = new AttachmentModel([
@@ -24,8 +22,6 @@ class S3AttachmentStorageService implements AttachmentStorageService
             'mime_type'        => $file->getClientMimeType(),
             'size_bytes'       => $file->getSize(),
             'storage_provider' => self::STORAGE_PROVIDER,
-            'entity_type'      => $entityRef?->module,
-            'entity_id'        => $entityRef?->id,
             'role'             => $role,
         ]);
 
@@ -41,8 +37,6 @@ class S3AttachmentStorageService implements AttachmentStorageService
         if ($stored === false) {
             throw new RuntimeException('Attachment file could not be stored.');
         }
-
-        $attachment->save();
 
         return $attachment;
     }

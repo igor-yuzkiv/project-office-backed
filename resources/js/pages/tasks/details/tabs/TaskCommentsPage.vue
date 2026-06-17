@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toValue } from 'vue'
 import Divider from 'primevue/divider'
 import Paginator from 'primevue/paginator'
 import { UserAvatar } from '@/widgets/user/user-avatar'
@@ -9,8 +9,8 @@ import { PAGE_SIZE } from '@/app/config'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import CommentInputForm from '@/widgets/comments/ui/CommentInputForm.vue'
 import CommentItem from '@/widgets/comments/ui/CommentItem.vue'
-import { TASK_MODULE_NAME } from '@/entities/task/config/task-module.config'
-import { TASK_ATTACHMENT_ROLES } from '@/entities/task/config/task-attachment.config'
+import { TaskAttachmentRoles } from '@/entities/task/config/task-attachment.config'
+import { uploadTaskAttachmentRequest } from '@/entities/task/api/task-attachments.api'
 import { useRouteParams } from '@vueuse/router'
 
 const taskId = useRouteParams<string>('id')
@@ -37,6 +37,13 @@ function handleCreateComment(content: string) {
 function handleUpdateComment(value: { commentId: string; content: string }) {
     upsert({ ...value, mode: 'edit' })
 }
+
+async function handleCommentImageUpload(files: File[], callback: (urls: string[]) => void) {
+    const results = await Promise.all(
+        files.map((file) => uploadTaskAttachmentRequest(toValue(taskId), file, TaskAttachmentRoles.COMMENTS))
+    )
+    callback(results.map((res) => res.data.url))
+}
 </script>
 
 <template>
@@ -46,9 +53,7 @@ function handleUpdateComment(value: { commentId: string; content: string }) {
             <div class="min-w-0 flex-1">
                 <CommentInputForm
                     mode="create"
-                    :image_entity_id="taskId"
-                    :image_entity_type="TASK_MODULE_NAME"
-                    :image_role="TASK_ATTACHMENT_ROLES.COMMENTS"
+                    :handle-image-upload="handleCommentImageUpload"
                     @submit="handleCreateComment"
                 />
             </div>

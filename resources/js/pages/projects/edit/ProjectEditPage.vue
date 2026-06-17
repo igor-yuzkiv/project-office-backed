@@ -6,7 +6,8 @@ import { InputContainer } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
-import { projectStatusOptions, PROJECT_MODULE_NAME, PROJECT_ATTACHMENT_ROLES } from '@/entities/project/config'
+import { projectStatusOptions, ProjectAttachmentRoles } from '@/entities/project/config'
+import { uploadProjectAttachmentRequest } from '@/entities/project/api'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useUpdateProjectMutation } from '@/entities/project/mutations'
 import type { IUpdateProjectInput, ProjectStatusValue } from '@/entities/project/types'
@@ -68,6 +69,13 @@ function navigateBack() {
 function formatDateForApi(date: Date | null): string | null {
     if (!date) return null
     return date.toISOString().split('T')[0]
+}
+
+async function handleImageUpload(files: File[], callback: (urls: string[]) => void) {
+    const results = await Promise.all(
+        files.map((file) => uploadProjectAttachmentRequest(projectId, file, ProjectAttachmentRoles.DESCRIPTION))
+    )
+    callback(results.map((res) => res.data.url))
 }
 
 function submit() {
@@ -189,9 +197,7 @@ useBreadcrumbs(() => [
                 v-model="formData.description"
                 preview
                 style="height: 100%"
-                :image_entity_type="PROJECT_MODULE_NAME"
-                :image_entity_id="projectId"
-                :image_role="PROJECT_ATTACHMENT_ROLES.DESCRIPTION"
+                :handle-image-upload="handleImageUpload"
             />
         </div>
 

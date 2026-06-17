@@ -2,28 +2,19 @@
 import { ref } from 'vue'
 import Button from 'primevue/button'
 import { Icon } from '@iconify/vue'
-import type { ModuleName } from '@/shared/types'
-import type { AttachmentRole } from '@/entities/attachment/types'
-import { useAttachmentUpload } from '../composables/use.attachment-upload'
 
 const props = withDefaults(
     defineProps<{
-        entityType: ModuleName
-        entityId: string
-        role?: AttachmentRole | null
-        maxFileSizeBytes?: number
+        isUploading?: boolean
     }>(),
-    { role: null }
+    { isUploading: false }
 )
 
-const fileInputRef = ref<HTMLInputElement>()
+const emit = defineEmits<{
+    'file-selected': [file: File]
+}>()
 
-const { uploadFile, isPending } = useAttachmentUpload({
-    entityType: () => props.entityType,
-    entityId: () => props.entityId,
-    role: () => props.role,
-    maxFileSizeBytes: () => props.maxFileSizeBytes,
-})
+const fileInputRef = ref<HTMLInputElement>()
 
 function openFilePicker() {
     fileInputRef.value?.click()
@@ -32,13 +23,13 @@ function openFilePicker() {
 function handleFileChange(event: Event) {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
-    if (file) uploadFile(file)
+    if (file) emit('file-selected', file)
     input.value = ''
 }
 </script>
 
 <template>
-    <Button label="Upload" severity="info" text :disabled="isPending" @click="openFilePicker">
+    <Button label="Upload" severity="info" text :disabled="props.isUploading" @click="openFilePicker">
         <template #icon>
             <Icon icon="material-symbols-light:upload-rounded" class="text-lg" />
         </template>

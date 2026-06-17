@@ -6,12 +6,12 @@ use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
-use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[Fillable([
     'id',
@@ -21,8 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'size_bytes',
     'storage_provider',
     'storage_key',
-    'entity_type',
-    'entity_id',
+    'attachable_type',
+    'attachable_id',
     'role',
     'created_by',
     'updated_by',
@@ -48,9 +48,13 @@ class AttachmentModel extends Model
     public static function allowedFilters(): array
     {
         return [
-            new FilterDefinition(TextFilter::class, ['entity_type', 'role']),
-            new FilterDefinition(LookupFilter::class, ['entity_id']),
+            new FilterDefinition(TextFilter::class, ['role']),
         ];
+    }
+
+    public function attachable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function createdBy(): BelongsTo

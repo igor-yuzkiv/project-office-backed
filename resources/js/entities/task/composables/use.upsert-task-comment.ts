@@ -4,9 +4,7 @@ import { ApiError } from '@/shared/api/api.error'
 import { useUpdateCommentMutation } from '@/entities/comment'
 import { useCreateTaskCommentMutation } from '../mutations/use.create-task-comment.mutation'
 
-type UpsertPayload =
-    | { mode: 'create'; content: string }
-    | { mode: 'edit'; commentId: string; content: string }
+type UpsertPayload = { mode: 'create'; content: string } | { mode: 'edit'; commentId: string; content: string }
 
 export function useUpsertTaskComment(taskId: MaybeRefOrGetter<string>) {
     const toast = useToast()
