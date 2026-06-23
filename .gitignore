@@ -1,5 +1,6 @@
 *.log
 .DS_Store
+.project-office/
 .env
 .env.backup
 .env.production
