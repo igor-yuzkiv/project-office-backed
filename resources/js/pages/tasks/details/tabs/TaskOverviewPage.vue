@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Panel from 'primevue/panel'
+import Button from 'primevue/button'
 import { useTaskQuery } from '@/entities/task/queries'
+import { useTaskOwnersQuery } from '@/entities/task-owner/queries'
 import { DisplayFields } from '@/shared/components/display'
 import type { DisplayFieldConfig } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { TagList } from '@/widgets/tags/metadata'
+import { ManageTaskOwnersDialog } from '@/widgets/task-owners/manage-dialog'
+import { TaskOwnersTable } from '@/widgets/task-owners/owners-table'
 import { formatDate, formatDateTime } from '@/shared/utils/date.util'
 import type { ITask } from '@/entities/task/types'
 
@@ -14,6 +19,9 @@ const route = useRoute()
 const taskId = route.params.id as string
 
 const { task } = useTaskQuery(taskId)
+const { owners, isPending: isOwnersLoading } = useTaskOwnersQuery(taskId)
+
+const isManageOwnersDialogVisible = ref(false)
 
 const generalFields: DisplayFieldConfig<ITask>[] = [
     { name: 'key', label: 'Key' },
@@ -83,5 +91,18 @@ const systemFields: DisplayFieldConfig<ITask>[] = [
                 </template>
             </DisplayFields>
         </Panel>
+
+        <Panel :toggleable="true">
+            <template #header>
+                <div class="flex flex-1 items-center justify-between">
+                    <span>Task Owners</span>
+                    <Button label="Assign" size="small" outlined @click="isManageOwnersDialogVisible = true" />
+                </div>
+            </template>
+
+            <TaskOwnersTable :owners="owners" :is-pending="isOwnersLoading" />
+        </Panel>
     </div>
+
+    <ManageTaskOwnersDialog v-model:visible="isManageOwnersDialogVisible" :task-id="taskId" />
 </template>

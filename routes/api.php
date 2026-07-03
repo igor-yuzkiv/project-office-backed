@@ -9,7 +9,9 @@ use App\Http\Controllers\Tags\TagsController;
 use App\Http\Controllers\TaskLists\TaskListsController;
 use App\Http\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\Controllers\Tasks\TaskCommentsController;
+use App\Http\Controllers\Tasks\TaskOwnersController;
 use App\Http\Controllers\Tasks\TasksController;
+use App\Http\Controllers\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -107,6 +109,24 @@ Route::group([
     Route::get('{attachment}/download', 'download')->name('download');
     Route::get('{attachment}/temporary-url', 'temporaryUrl')->name('temporaryUrl');
 });
+
+/**
+ * Task Owners
+ */
+Route::group([
+    'prefix'     => 'tasks/{task}/owners',
+    'as'         => 'tasks.owners.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => TaskOwnersController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::put('/', 'sync')->name('sync');
+});
+
+/**
+ * Users
+ */
+Route::get('users', [UsersController::class, 'index'])->middleware(['auth:sanctum'])->name('users.index');
 
 /**
  * Comments

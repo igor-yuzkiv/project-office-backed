@@ -12,7 +12,7 @@ beforeEach(function () {
     $this->project = ProjectModel::factory()->create();
 });
 
-it('creates a task without priority', function () {
+it('creates a task with the default None priority when none is provided', function () {
     $response = $this->postJson('/api/tasks', [
         'project_id' => $this->project->id,
         'name'       => 'New Task',
@@ -20,7 +20,8 @@ it('creates a task without priority', function () {
 
     $response->assertCreated()
         ->assertJsonPath('data.name', 'New Task')
-        ->assertJsonPath('data.priority', null);
+        ->assertJsonPath('data.priority.value', TaskPriority::None->value)
+        ->assertJsonPath('data.priority.name', TaskPriority::None->name);
 });
 
 it('creates a task with priority', function () {
