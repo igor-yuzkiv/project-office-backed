@@ -102,7 +102,7 @@ const systemFields: DisplayFieldConfig<ITask>[] = [
 
             <TaskOwnersTable :owners="owners" :is-pending="isOwnersLoading" />
         </Panel>
-    </div>
 
-    <ManageTaskOwnersDialog v-model:visible="isManageOwnersDialogVisible" :task-id="taskId" />
+        <ManageTaskOwnersDialog v-model:visible="isManageOwnersDialogVisible" :task-id="taskId" />
+    </div>
 </template>
