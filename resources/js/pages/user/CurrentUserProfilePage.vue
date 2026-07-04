@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import Panel from 'primevue/panel'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -6,8 +7,13 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { InputContainer } from '@/shared/components/input'
 import { UserAvatar } from '@/widgets/user/user-avatar'
+import { ApiTokensTable, CreateApiTokenDialog } from '@/widgets/api-tokens'
+import { useApiTokensQuery } from '@/entities/user/queries'
 
 const authStore = useAuthStore()
+
+const { tokens: apiTokens, isPending: isApiTokensPending } = useApiTokensQuery()
+const isCreateTokenDialogVisible = ref(false)
 </script>
 
 <template>
@@ -87,5 +93,18 @@ const authStore = useAuthStore()
                 </div>
             </div>
         </Panel>
+
+        <Panel :toggleable="true">
+            <template #header>
+                <div class="flex flex-1 items-center justify-between">
+                    <span>API Tokens</span>
+                    <Button label="Create" size="small" @click="isCreateTokenDialogVisible = true" />
+                </div>
+            </template>
+
+            <ApiTokensTable :tokens="apiTokens" :is-pending="isApiTokensPending" />
+        </Panel>
+
+        <CreateApiTokenDialog v-model:visible="isCreateTokenDialogVisible" />
     </div>
 </template>

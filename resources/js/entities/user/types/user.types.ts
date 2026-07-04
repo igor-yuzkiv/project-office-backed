@@ -12,3 +12,19 @@ export interface ILoginCredentials {
     password: string
     remember?: boolean
 }
+
+export interface IApiToken extends IEntity {
+    name: string
+    expires_at: string | null
+    created_at: string
+}
+
+export interface CreateApiTokenPayload {
+    name: string
+    expires_at: string
+}
+
+export interface CreateApiTokenResult {
+    token: IApiToken
+    plain_text_token: string
+}

@@ -11,6 +11,7 @@ use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
 use App\Http\WebApi\Controllers\Tasks\TasksController;
+use App\Http\WebApi\Controllers\Users\ApiTokensController;
 use App\Http\WebApi\Controllers\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -127,6 +128,20 @@ Route::group([
  * Users
  */
 Route::get('users', [UsersController::class, 'index'])->middleware(['auth:sanctum'])->name('users.index');
+
+/**
+ * API Tokens
+ */
+Route::group([
+    'prefix'     => 'api-tokens',
+    'as'         => 'api-tokens.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ApiTokensController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+    Route::delete('{token}', 'destroy')->name('destroy');
+});
 
 /**
  * Comments
