@@ -1,17 +1,17 @@
 <?php
 
-use App\Http\Controllers\Attachments\AttachmentsController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Comment\CommentController;
-use App\Http\Controllers\Projects\ProjectAttachmentsController;
-use App\Http\Controllers\Projects\ProjectsController;
-use App\Http\Controllers\Tags\TagsController;
-use App\Http\Controllers\TaskLists\TaskListsController;
-use App\Http\Controllers\Tasks\TaskAttachmentsController;
-use App\Http\Controllers\Tasks\TaskCommentsController;
-use App\Http\Controllers\Tasks\TaskOwnersController;
-use App\Http\Controllers\Tasks\TasksController;
-use App\Http\Controllers\Users\UsersController;
+use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
+use App\Http\WebApi\Controllers\AuthController;
+use App\Http\WebApi\Controllers\Comment\CommentController;
+use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
+use App\Http\WebApi\Controllers\Projects\ProjectsController;
+use App\Http\WebApi\Controllers\Tags\TagsController;
+use App\Http\WebApi\Controllers\TaskLists\TaskListsController;
+use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
+use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
+use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
+use App\Http\WebApi\Controllers\Tasks\TasksController;
+use App\Http\WebApi\Controllers\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
 /**

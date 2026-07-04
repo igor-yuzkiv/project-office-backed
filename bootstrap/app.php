@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
+        then: function () {
+            Route::middleware('api')
+                ->prefix('api/cli')
+                ->name('api-cli.')
+                ->group(base_path('routes/api-cli.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
