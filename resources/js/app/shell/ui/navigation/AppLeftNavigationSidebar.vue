@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import type { SidebarNavItem } from '../../types'
 import { APP_NAME } from '@/app/config'
@@ -47,14 +48,15 @@ const layoutStore = useAppLayoutStore()
                 <Icon icon="heroicons:cog-6-tooth" class="h-4 w-4 shrink-0" />
                 <span v-if="!layoutStore.sidebarCollapsed">Settings</span>
             </button>
-            <button
+            <RouterLink
+                :to="{ name: 'profile' }"
                 class="rounded-md text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
                 :class="layoutStore.sidebarCollapsed ? 'p-2 justify-center' : 'gap-3 px-3 py-2'"
                 :title="layoutStore.sidebarCollapsed ? 'Profile' : undefined"
             >
                 <Icon icon="heroicons:user-circle" class="h-4 w-4 shrink-0" />
                 <span v-if="!layoutStore.sidebarCollapsed">Profile</span>
-            </button>
+            </RouterLink>
         </div>
     </aside>
 </template>
