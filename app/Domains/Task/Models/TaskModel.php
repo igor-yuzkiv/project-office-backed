@@ -18,6 +18,7 @@ use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,6 +57,19 @@ class TaskModel extends Model
             'priority'   => TaskPriority::class,
             'status'     => TaskStatus::class,
         ];
+    }
+
+    /**
+     * Allows route-model binding by ULID id or by the human-readable key (e.g. PROJ-123).
+     *
+     * @param  Builder<TaskModel>  $query
+     * @return Builder<TaskModel>
+     */
+    public function resolveRouteBindingQuery($query, $value, $field = null)
+    {
+        return $query->where(function (Builder $q) use ($value): void {
+            $q->where($this->getKeyName(), $value)->orWhere('key', $value);
+        });
     }
 
     public function toSearchableArray(): array
