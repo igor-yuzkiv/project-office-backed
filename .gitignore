@@ -1,6 +1,5 @@
 *.log
 .DS_Store
-.project-office/settings.json
 .env
 .env.backup
 .env.production
@@ -30,4 +29,4 @@ Thumbs.db
 /.ai/
 /_tmp/
 /.omc/
-/.project-office/
+/.project-office/repo-settings.json

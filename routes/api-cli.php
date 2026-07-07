@@ -4,9 +4,12 @@ use App\Http\CliApi\Controllers\Projects\ProjectsController;
 use App\Http\CliApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\CliApi\Controllers\Tasks\TasksController;
 use App\Http\CliApi\Controllers\TestController;
+use App\Http\CliApi\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('test', [TestController::class, 'index'])->middleware('auth:sanctum');
+
+Route::get('me', [UserController::class, 'me'])->middleware('auth:sanctum')->name('me');
 
 /**
  * Projects
