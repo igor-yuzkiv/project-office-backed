@@ -5,8 +5,8 @@ namespace App\Http\WebApi\Controllers\Tasks;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentCommand;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentHandler;
 use App\Domains\Task\Models\TaskModel;
+use App\Http\Shared\Resources\Attachments\AttachmentResource;
 use App\Http\WebApi\Requests\Tasks\StoreTaskAttachmentRequest;
-use App\Http\WebApi\Resources\Attachments\AttachmentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

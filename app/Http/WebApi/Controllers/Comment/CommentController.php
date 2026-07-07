@@ -6,8 +6,8 @@ use App\Domains\Comment\Actions\DeleteComment\DeleteCommentHandler;
 use App\Domains\Comment\Actions\UpdateComment\UpdateCommentCommand;
 use App\Domains\Comment\Actions\UpdateComment\UpdateCommentHandler;
 use App\Domains\Comment\Models\CommentModel;
+use App\Http\Shared\Resources\Comment\CommentResource;
 use App\Http\WebApi\Requests\Comment\UpdateCommentRequest;
-use App\Http\WebApi\Resources\Comment\CommentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 

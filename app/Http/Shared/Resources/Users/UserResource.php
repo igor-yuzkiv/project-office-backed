@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\WebApi\Resources\Users;
+namespace App\Http\Shared\Resources\Users;
 
 use App\Domains\User\Models\UserModel;
 use Illuminate\Http\Request;

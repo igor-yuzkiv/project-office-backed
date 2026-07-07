@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\WebApi\Resources\Tasks;
+namespace App\Http\Shared\Resources\Tasks;
 
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\ValueObjects\TaskPriorityData;
-use App\Http\WebApi\Resources\Projects\ProjectOverviewResource;
-use App\Http\WebApi\Resources\Tags\TagResource;
-use App\Http\WebApi\Resources\TaskLists\TaskListResource;
-use App\Http\WebApi\Resources\Users\UserOverviewResource;
+use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
+use App\Http\Shared\Resources\Tags\TagResource;
+use App\Http\Shared\Resources\TaskLists\TaskListResource;
+use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

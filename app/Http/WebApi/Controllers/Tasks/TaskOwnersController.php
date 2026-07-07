@@ -4,8 +4,8 @@ namespace App\Http\WebApi\Controllers\Tasks;
 
 use App\Domains\Task\Actions\SyncTaskOwners\SyncTaskOwnersHandler;
 use App\Domains\Task\Models\TaskModel;
+use App\Http\Shared\Resources\Tasks\TaskOwnerResource;
 use App\Http\WebApi\Requests\Tasks\SyncTaskOwnersRequest;
-use App\Http\WebApi\Resources\Tasks\TaskOwnerResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TaskOwnersController

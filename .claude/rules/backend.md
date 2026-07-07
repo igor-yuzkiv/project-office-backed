@@ -52,14 +52,44 @@ Conventions:
 
 ## HTTP Layer
 
+The HTTP layer is split into two independent APIs plus a cross-API shared layer:
+
+- `app/Http/WebApi/` — the web application API (routes: `routes/api.php`).
+- `app/Http/CliApi/` — the agent-facing CLI API (routes: `routes/api-cli.php`).
+- `app/Http/Shared/` — `Requests` and `Resources` shared across both APIs.
+
+Each API owns its `Controllers`, and may own its `Requests` and `Resources`, grouped by
+entity:
+
 ```
 app/Http/
-├── Controllers/{Entity}/   # one controller per entity, grouped by entity
-├── Requests/{Entity}/      # form request validation classes
-└── Resources/{Entity}/     # API resource transformers
+├── WebApi/
+│   ├── Controllers/{Entity}/
+│   ├── Requests/{Entity}/
+│   └── Resources/{Entity}/
+├── CliApi/
+│   ├── Controllers/{Entity}/
+│   ├── Requests/{Entity}/     # add per API as needed
+│   └── Resources/{Entity}/    # add per API as needed
+└── Shared/
+    ├── Requests/
+    └── Resources/
 ```
 
-Conventions:
+### API boundaries
+
+- **Controllers are fully API-owned.** `WebApi` and `CliApi` never share controllers —
+  each API has its own, even for the same entity. A controller lives under exactly one
+  API namespace.
+- **Requests and Resources may be API-owned or shared.** Each API may define its own
+  `Requests`/`Resources`, or reuse a shared one from `Http/Shared/`.
+- **`Http/Shared/`** holds `Requests` and `Resources` common to both APIs. Put a class
+  here only when both APIs genuinely use the same shape.
+- **An API may extend a shared class to override it.** When an API needs most of a shared
+  `Request`/`Resource` but must change part of it, extend the `Http/Shared/` class in the
+  API's own namespace and override only what differs — do not fork the whole class.
+
+Conventions (both APIs):
 
 - Controllers are thin: validate via `FormRequest`, delegate to a domain `Handler`,
   return a `Resource`.

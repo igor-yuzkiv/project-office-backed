@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\WebApi\Resources\Attachments;
+namespace App\Http\Shared\Resources\Attachments;
 
 use App\Domains\Attachment\Models\AttachmentModel;
-use App\Http\WebApi\Resources\Users\UserOverviewResource;
+use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;

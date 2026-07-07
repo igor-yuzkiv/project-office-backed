@@ -3,7 +3,7 @@
 namespace App\Http\WebApi\Controllers\Users;
 
 use App\Domains\User\Models\UserModel;
-use App\Http\WebApi\Resources\Users\UserOverviewResource;
+use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\WebApi\Resources\Projects;
+namespace App\Http\Shared\Resources\Projects;
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Http\WebApi\Resources\Tags\TagResource;
-use App\Http\WebApi\Resources\TaskLists\TaskListResource;
-use App\Http\WebApi\Resources\Tasks\TaskResource;
-use App\Http\WebApi\Resources\Users\UserOverviewResource;
+use App\Http\Shared\Resources\Tags\TagResource;
+use App\Http\Shared\Resources\TaskLists\TaskListResource;
+use App\Http\Shared\Resources\Tasks\TaskResource;
+use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\WebApi\Resources\Comment;
+namespace App\Http\Shared\Resources\Comment;
 
 use App\Domains\Comment\Models\CommentModel;
-use App\Http\WebApi\Resources\Users\UserOverviewResource;
+use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

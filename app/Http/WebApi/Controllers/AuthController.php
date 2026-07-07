@@ -2,7 +2,7 @@
 
 namespace App\Http\WebApi\Controllers;
 
-use App\Http\WebApi\Resources\Users\UserResource;
+use App\Http\Shared\Resources\Users\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

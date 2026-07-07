@@ -5,8 +5,8 @@ namespace App\Http\WebApi\Controllers\Projects;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentCommand;
 use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentHandler;
 use App\Domains\Project\Models\ProjectModel;
+use App\Http\Shared\Resources\Attachments\AttachmentResource;
 use App\Http\WebApi\Requests\Projects\StoreProjectAttachmentRequest;
-use App\Http\WebApi\Resources\Attachments\AttachmentResource;
 use Illuminate\Http\JsonResponse;
 
 class ProjectAttachmentsController

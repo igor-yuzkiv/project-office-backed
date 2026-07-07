@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\WebApi\Resources\Tags;
+namespace App\Http\Shared\Resources\Tags;
 
 use App\Domains\Tag\Models\TagModel;
 use Illuminate\Http\Request;
