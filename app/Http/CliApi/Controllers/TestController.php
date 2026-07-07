@@ -6,8 +6,9 @@ class TestController
 {
     public function index()
     {
+        $user = auth()->user();
         return response()->json([
-            'test' => 1,
+            'test' => $user->toArray(),
         ]);
     }
 }
