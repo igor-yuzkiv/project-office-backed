@@ -53,3 +53,22 @@ it('excludes closed tasks', function () {
     $statuses = collect($response->json('data'))->pluck('status')->all();
     expect($statuses)->not->toContain(TaskStatus::Closed->value);
 });
+
+it('excludes backlog tasks', function () {
+    TaskModel::factory()->count(2)->create([
+        'project_id' => $this->project->id,
+        'status'     => TaskStatus::Open->value,
+    ]);
+    TaskModel::factory()->count(3)->create([
+        'project_id' => $this->project->id,
+        'status'     => TaskStatus::Backlog->value,
+    ]);
+
+    $response = $this->getJson("/api/cli/projects/{$this->project->id}/tasks/list");
+
+    $response->assertOk();
+    expect($response->json('meta.total'))->toBe(2);
+
+    $statuses = collect($response->json('data'))->pluck('status')->all();
+    expect($statuses)->not->toContain(TaskStatus::Backlog->value);
+});

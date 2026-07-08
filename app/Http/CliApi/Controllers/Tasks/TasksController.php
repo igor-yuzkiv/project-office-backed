@@ -37,7 +37,7 @@ class TasksController extends ResourceController
         $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
 
         $tasks = TaskModel::where('project_id', $project->id)
-            ->where('status', '!=', TaskStatus::Closed->value)
+            ->whereNotIn('status', [TaskStatus::Backlog->value, TaskStatus::Closed->value])
             ->with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);

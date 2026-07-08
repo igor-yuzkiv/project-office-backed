@@ -1,4 +1,5 @@
 export type TaskStatusValue =
+    | 'backlog'
     | 'open'
     | 'ready_for_development'
     | 'in_progress'
