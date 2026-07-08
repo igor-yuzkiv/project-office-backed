@@ -3,6 +3,7 @@
 namespace App\Http\CliApi\Controllers\Tasks;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Tag\Actions\CreateTags\CreateTagsHandler;
 use App\Domains\Task\Actions\CreateTask\CreateTaskHandler;
 use App\Domains\Task\Actions\UpdateTask\UpdateTaskHandler;
 use App\Domains\Task\Models\TaskModel;
@@ -22,6 +23,7 @@ class TasksController extends ResourceController
     public function __construct(
         private readonly CreateTaskHandler $createHandler,
         private readonly UpdateTaskHandler $updateHandler,
+        private readonly CreateTagsHandler $createTagsHandler,
     ) {}
 
     protected function getAllowedIncludes(): array
@@ -65,7 +67,12 @@ class TasksController extends ResourceController
 
     public function store(ProjectModel $project, StoreTaskRequest $request): JsonResponse
     {
-        $task = $this->createHandler->handle($request->toCommand($project));
+        $tagDtos = $request->getTagDtos();
+        $tagIds = $tagDtos->isNotEmpty()
+            ? $this->createTagsHandler->handle($tagDtos)->pluck('id')->all()
+            : null;
+
+        $task = $this->createHandler->handle($request->toCommand($project, $tagIds));
         $task->load(['createdBy', 'updatedBy']);
 
         return (new TaskResource($task))

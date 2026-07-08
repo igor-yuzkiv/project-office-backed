@@ -2,6 +2,7 @@
 
 namespace App\Http\WebApi\Requests\Tag;
 
+use App\Domains\Tag\DTO\CreateTagDTO;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateTagRequest extends FormRequest
@@ -26,5 +27,13 @@ class CreateTagRequest extends FormRequest
         return [
             'name.unique' => 'Tag with this name already exists.',
         ];
+    }
+
+    public function toDto(): CreateTagDTO
+    {
+        return new CreateTagDTO(
+            name: $this->validated('name'),
+            color: $this->validated('color'),
+        );
     }
 }
