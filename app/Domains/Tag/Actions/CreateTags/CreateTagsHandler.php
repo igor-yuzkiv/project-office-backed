@@ -4,6 +4,7 @@ namespace App\Domains\Tag\Actions\CreateTags;
 
 use App\Domains\Tag\DTO\CreateTagDTO;
 use App\Domains\Tag\Models\TagModel;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 
 class CreateTagsHandler
@@ -22,10 +23,7 @@ class CreateTagsHandler
             ->keyBy('name');
 
         $newTags = $dtosByNormalizedName->except($existingTags->keys())
-            ->map(fn (CreateTagDTO $dto): TagModel => TagModel::create([
-                'name'  => $dto->getNormalizedName(),
-                'color' => $dto->getColor(),
-            ]))
+            ->map(fn (CreateTagDTO $dto): TagModel => $this->createOrFetch($dto))
             ->keyBy('name');
 
         /** @var Collection<int, TagModel> $tags */
@@ -34,5 +32,22 @@ class CreateTagsHandler
             ->values();
 
         return $tags;
+    }
+
+    /**
+     * A concurrent request may create the same tag between our existence check and this
+     * insert; on a unique-constraint violation, another request already won, so we just
+     * fetch its row instead of failing.
+     */
+    private function createOrFetch(CreateTagDTO $dto): TagModel
+    {
+        try {
+            return TagModel::create([
+                'name'  => $dto->getNormalizedName(),
+                'color' => $dto->getColor(),
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            return TagModel::where('name', $dto->getNormalizedName())->firstOrFail();
+        }
     }
 }

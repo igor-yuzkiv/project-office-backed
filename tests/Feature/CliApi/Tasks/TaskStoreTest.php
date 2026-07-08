@@ -74,3 +74,13 @@ it('ignores an empty tags string', function () {
     $task = TaskModel::findOrFail($response->json('data.id'));
     expect($task->tags()->count())->toBe(0);
 });
+
+it('rejects a tag name longer than 64 characters', function () {
+    $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks", [
+        'name' => 'New Task',
+        'tags' => str_repeat('a', 65),
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['tags']);
+});

@@ -87,6 +87,21 @@ it('replaces tags from a comma-separated tags string', function () {
     expect($names)->toBe(['alpha', 'beta']);
 });
 
+it('reuses an existing tag matched by normalized name and does not duplicate it', function () {
+    $existing = TagModel::create(['name' => 'alpha', 'color' => '#111111']);
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
+        'tags' => 'Alpha,beta',
+    ]);
+
+    $response->assertOk();
+
+    $tagIds = $task->fresh()->tags()->pluck('tags.id')->sort()->values()->all();
+    expect($tagIds)->toContain($existing->id);
+    expect(TagModel::where('name', 'alpha')->count())->toBe(1);
+});
+
 it('clears tags when tags is an empty string', function () {
     $existing = TagModel::create(['name' => 'alpha', 'color' => '#111111']);
     $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
