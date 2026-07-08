@@ -30,6 +30,7 @@ const page = ref(1)
 const tableColumnsDef: EntityTableColumnDef[] = [
     { field: 'key', header: 'Key', style: 'width: 10rem' },
     { field: 'name', header: 'Task Name' },
+    { field: 'task_list.name', header: 'Task List' },
     { field: 'status', header: 'Status', style: 'width: 9rem' },
     { field: 'priority', header: 'Priority', style: 'width: 7rem' },
     { field: 'tags', header: 'Tags' },
@@ -38,6 +39,7 @@ const tableColumnsDef: EntityTableColumnDef[] = [
 
 const searchParams = computed<TaskSearchParams>(() => ({
     query: searchQuery.value,
+    include: ['taskList'],
     filters: [
         {
             filter_key: 'lookup',
