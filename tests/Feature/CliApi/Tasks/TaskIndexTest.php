@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 it('returns a paginated list of tasks belonging to the project', function () {
-    TaskModel::factory()->count(3)->create(['project_id' => $this->project->id]);
+    TaskModel::factory()->count(3)->create(['project_id' => $this->project->id, 'status' => TaskStatus::Open->value]);
 
     $response = $this->getJson("/api/cli/projects/{$this->project->id}/tasks/list");
 
@@ -26,8 +26,8 @@ it('returns a paginated list of tasks belonging to the project', function () {
 
 it('does not include tasks from other projects', function () {
     $otherProject = ProjectModel::factory()->create();
-    TaskModel::factory()->count(2)->create(['project_id' => $this->project->id]);
-    TaskModel::factory()->count(5)->create(['project_id' => $otherProject->id]);
+    TaskModel::factory()->count(2)->create(['project_id' => $this->project->id, 'status' => TaskStatus::Open->value]);
+    TaskModel::factory()->count(5)->create(['project_id' => $otherProject->id, 'status' => TaskStatus::Open->value]);
 
     $response = $this->getJson("/api/cli/projects/{$this->project->id}/tasks/list");
 
