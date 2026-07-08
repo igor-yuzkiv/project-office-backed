@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,4 +33,23 @@ it('does not include tasks from other projects', function () {
 
     $response->assertOk();
     expect($response->json('meta.total'))->toBe(2);
+});
+
+it('excludes closed tasks', function () {
+    TaskModel::factory()->count(2)->create([
+        'project_id' => $this->project->id,
+        'status'     => TaskStatus::Open->value,
+    ]);
+    TaskModel::factory()->count(3)->create([
+        'project_id' => $this->project->id,
+        'status'     => TaskStatus::Closed->value,
+    ]);
+
+    $response = $this->getJson("/api/cli/projects/{$this->project->id}/tasks/list");
+
+    $response->assertOk();
+    expect($response->json('meta.total'))->toBe(2);
+
+    $statuses = collect($response->json('data'))->pluck('status')->all();
+    expect($statuses)->not->toContain(TaskStatus::Closed->value);
 });

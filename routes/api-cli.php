@@ -28,7 +28,6 @@ Route::middleware('auth:sanctum')
             ->scopeBindings()
             ->group(function () {
                 Route::get('list', [TasksController::class, 'index'])->name('index');
-                Route::post('search', [TasksController::class, 'search'])->name('search');
                 Route::post('/', [TasksController::class, 'store'])->name('store');
                 Route::get('{task}', [TasksController::class, 'show'])->name('show');
                 Route::put('{task}', [TasksController::class, 'update'])->name('update');

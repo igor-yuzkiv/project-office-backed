@@ -6,14 +6,13 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Tag\Actions\CreateTags\CreateTagsHandler;
 use App\Domains\Task\Actions\CreateTask\CreateTaskHandler;
 use App\Domains\Task\Actions\UpdateTask\UpdateTaskHandler;
+use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Http\CliApi\Requests\Tasks\StoreTaskRequest;
 use App\Http\CliApi\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Shared\Resources\Tasks\TaskOverviewResource;
 use App\Http\Shared\Resources\Tasks\TaskResource;
 use App\Http\WebApi\Controllers\ResourceController;
-use App\Http\WebApi\Requests\Shared\SearchRequest;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -38,29 +37,10 @@ class TasksController extends ResourceController
         $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
 
         $tasks = TaskModel::where('project_id', $project->id)
+            ->where('status', '!=', TaskStatus::Closed->value)
             ->with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
-
-        return TaskOverviewResource::collection($tasks);
-    }
-
-    public function search(ProjectModel $project, SearchRequest $request): AnonymousResourceCollection
-    {
-        $sort = $this->getSortParams();
-        $pagination = $this->getPaginationParams();
-        $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
-
-        $tasks = TaskModel::search((string) $request->input('query', ''))
-            ->orderBy($sort->field, $sort->direction)
-            ->query(function (Builder $q) use ($project, $request, $includes): Builder {
-                /** @var Builder<TaskModel> $q */
-                return $q
-                    ->where('project_id', $project->id)
-                    ->with($includes)
-                    ->filter((array) $request->input('filters', []));
-            })
-            ->paginate($pagination->perPage, 'page', $pagination->page);
 
         return TaskOverviewResource::collection($tasks);
     }

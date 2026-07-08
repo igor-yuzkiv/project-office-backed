@@ -1,4 +1,10 @@
-export type TaskStatusValue = 'open' | 'in_progress' | 'completed' | 'closed'
+export type TaskStatusValue =
+    | 'open'
+    | 'ready_for_development'
+    | 'in_progress'
+    | 'ready_to_test'
+    | 'completed'
+    | 'closed'
 
 import type { HexColor } from '@/shared/types'
 
