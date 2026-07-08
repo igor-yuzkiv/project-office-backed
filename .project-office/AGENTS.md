@@ -14,11 +14,14 @@ kept separate from this code repo. All project data is reached through the `proj
   `project:link-repo` writes it).
 - **Look up a command's exact usage** with `project-office instructions <command>` (e.g.
   `project-office instructions task:create`) rather than guessing flags.
-- **Statuses:** `open → in_progress → completed → closed`. The agent may claim
-  (`open → in_progress`) and, **only after the user confirms**, hand off
-  (`in_progress → completed`). `closed` is **user-only**. There is no `Blocked` status.
-- **`task:update` changes only `status` and `description`.** Everything else — progress,
-  decisions, open questions — goes in **comments** (`task:comment-add`).
+- **Statuses:** `open → ready_for_development → in_progress → ready_to_test → completed →
+  closed`. The agent may claim a task (`→ in_progress`) and, once the work is implemented
+  **and verified**, hand it off to testing (`→ ready_to_test`). `ready_for_development`,
+  `completed`, and `closed` are **user-side** decisions — do not set them unless the user
+  explicitly says so. There is no `Blocked` status.
+- **Comments are the work log.** Progress, decisions, open questions, verification results, and
+  artifacts worth keeping go in **comments** (`task:comment-add`) — `task:update` is for the
+  task's name/status/description/tags themselves.
 <!-- project-office:managed:end -->
 
 ## Working flow (defaults — edit or extend for this project)
