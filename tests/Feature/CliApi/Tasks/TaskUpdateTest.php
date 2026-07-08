@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
@@ -30,20 +31,86 @@ it('updates the status and description', function () {
         ->assertJsonPath('data.description', 'Updated description');
 });
 
-it('ignores fields other than status and description', function () {
+it('updates the name', function () {
     $task = TaskModel::factory()->create([
         'project_id' => $this->project->id,
         'name'       => 'Original name',
     ]);
 
     $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
-        'name'   => 'Renamed task',
-        'status' => TaskStatus::Closed->value,
+        'name' => 'Renamed task',
     ]);
 
     $response->assertOk()
-        ->assertJsonPath('data.name', 'Original name')
+        ->assertJsonPath('data.name', 'Renamed task');
+
+    expect($task->fresh()->name)->toBe('Renamed task');
+});
+
+it('ignores task_list_id, priority, and dates', function () {
+    $task = TaskModel::factory()->create([
+        'project_id' => $this->project->id,
+        'name'       => 'Original name',
+    ]);
+    $original = $task->fresh();
+
+    $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
+        'task_list_id' => '01k00000000000000000000000',
+        'priority'     => 100,
+        'start_date'   => '2026-01-01',
+        'due_date'     => '2026-01-02',
+        'status'       => TaskStatus::Closed->value,
+    ]);
+
+    $response->assertOk()
         ->assertJsonPath('data.status', TaskStatus::Closed->value);
 
-    expect($task->fresh()->name)->toBe('Original name');
+    $fresh = $task->fresh();
+    expect($fresh->task_list_id)->toBe($original->task_list_id);
+    expect($fresh->priority)->toBe($original->priority);
+    expect($fresh->start_date?->toIso8601String())->toBe($original->start_date?->toIso8601String());
+    expect($fresh->due_date?->toIso8601String())->toBe($original->due_date?->toIso8601String());
+});
+
+it('replaces tags from a comma-separated tags string', function () {
+    $existing = TagModel::create(['name' => 'alpha', 'color' => '#111111']);
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
+    $task->tags()->attach([$existing->id]);
+
+    $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
+        'tags' => 'alpha,beta',
+    ]);
+
+    $response->assertOk();
+
+    $names = $task->fresh()->tags()->pluck('name')->sort()->values()->all();
+    expect($names)->toBe(['alpha', 'beta']);
+});
+
+it('clears tags when tags is an empty string', function () {
+    $existing = TagModel::create(['name' => 'alpha', 'color' => '#111111']);
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
+    $task->tags()->attach([$existing->id]);
+
+    $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
+        'tags' => '',
+    ]);
+
+    $response->assertOk();
+
+    expect($task->fresh()->tags()->count())->toBe(0);
+});
+
+it('does not change tags when tags is absent from the payload', function () {
+    $existing = TagModel::create(['name' => 'alpha', 'color' => '#111111']);
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
+    $task->tags()->attach([$existing->id]);
+
+    $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
+        'status' => TaskStatus::Closed->value,
+    ]);
+
+    $response->assertOk();
+
+    expect($task->fresh()->tags()->pluck('id')->all())->toBe([$existing->id]);
 });

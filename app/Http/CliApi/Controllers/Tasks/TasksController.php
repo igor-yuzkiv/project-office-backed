@@ -89,7 +89,15 @@ class TasksController extends ResourceController
 
     public function update(ProjectModel $project, TaskModel $task, UpdateTaskRequest $request): JsonResource
     {
-        $task = $this->updateHandler->handle($request->toCommand($task));
+        $tagIds = null;
+        if ($request->has('tags')) {
+            $tagDtos = $request->getTagDtos();
+            $tagIds = $tagDtos->isNotEmpty()
+                ? $this->createTagsHandler->handle($tagDtos)->pluck('id')->all()
+                : [];
+        }
+
+        $task = $this->updateHandler->handle($request->toCommand($task, $tagIds));
         $task->load(['createdBy', 'updatedBy']);
 
         return new TaskResource($task);

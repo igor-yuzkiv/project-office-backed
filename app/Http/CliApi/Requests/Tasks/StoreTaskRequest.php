@@ -3,16 +3,17 @@
 namespace App\Http\CliApi\Requests\Tasks;
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\Tag\DTO\CreateTagDTO;
 use App\Domains\Task\Actions\CreateTask\CreateTaskCommand;
 use App\Domains\Task\Enums\TaskPriority;
+use App\Http\CliApi\Requests\Tasks\Concerns\HasTagDtos;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class StoreTaskRequest extends FormRequest
 {
+    use HasTagDtos;
+
     public function rules(): array
     {
         return [
@@ -42,30 +43,5 @@ class StoreTaskRequest extends FormRequest
             dueDate: $dueDate ? Carbon::parse($dueDate) : null,
             tagIds: $tagIds,
         );
-    }
-
-    /**
-     * @return Collection<int, CreateTagDTO>
-     */
-    public function getTagDtos(): Collection
-    {
-        return $this->parseTagNames($this->validated('tags'))
-            ->map(fn (string $name): CreateTagDTO => new CreateTagDTO(name: $name));
-    }
-
-    /**
-     * @return Collection<int, non-empty-string>
-     */
-    private function parseTagNames(?string $tags): Collection
-    {
-        if ($tags === null) {
-            return collect();
-        }
-
-        return collect(explode(',', $tags))
-            ->map(fn (string $name): string => trim($name))
-            ->filter(fn (string $name): bool => $name !== '')
-            ->unique()
-            ->values();
     }
 }
