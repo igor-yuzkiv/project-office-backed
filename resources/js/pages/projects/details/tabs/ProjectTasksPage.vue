@@ -51,6 +51,8 @@ const searchParams = computed<TaskSearchParams>(() => ({
     ],
     page: page.value,
     per_page: PAGE_SIZE,
+    sort_by: 'priority',
+    sort_order: 'desc'
 }))
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
