@@ -53,7 +53,7 @@ const sortFieldDefs: SortFieldDef[] = [
     { field: 'updated_at', label: 'Updated' },
 ]
 
-const sort = useSortDialog(sortFieldDefs, 'priority', 'desc')
+const sort = useSortDialog(sortFieldDefs, 'created_at', 'desc')
 
 const searchInput = ref('')
 const searchQuery = ref('')
