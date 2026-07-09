@@ -71,8 +71,8 @@ const searchParams = computed(() => ({
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
 
-function onRowClick(task: TaskOverviewDto) {
-    router.push({ name: 'task-details', params: { id: task.id } })
+function taskDetailsRoute(task: TaskOverviewDto) {
+    return { name: 'task-details', params: { id: task.id } }
 }
 
 function onSortApply() {
@@ -116,7 +116,7 @@ useHeaderActions([
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    @row-click="onRowClick"
+                    :to="taskDetailsRoute"
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">

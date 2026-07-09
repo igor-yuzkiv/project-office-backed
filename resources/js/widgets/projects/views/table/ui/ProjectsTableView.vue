@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
@@ -12,6 +13,7 @@ defineProps<{
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
+    to?: (project: ProjectOverviewDto) => RouteLocationRaw
 }>()
 
 defineEmits<{
@@ -36,6 +38,7 @@ const columns: EntityTableColumnDef[] = [
         :pagination-meta="paginationMeta"
         :page="page"
         row-clickable
+        :to="to"
         @row-click="$emit('rowClick', $event)"
         @page-change="$emit('pageChange', $event)"
     >

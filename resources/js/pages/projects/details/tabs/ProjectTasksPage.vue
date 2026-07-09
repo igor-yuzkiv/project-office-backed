@@ -28,13 +28,12 @@ const searchQuery = ref('')
 const page = ref(1)
 
 const tableColumnsDef: EntityTableColumnDef[] = [
-    { field: 'key', header: 'Key', style: 'width: 10rem' },
-    { field: 'name', header: 'Task Name' },
-    { field: 'task_list.name', header: 'Task List' },
-    { field: 'status', header: 'Status', style: 'width: 9rem' },
-    { field: 'priority', header: 'Priority', style: 'width: 7rem' },
-    { field: 'tags', header: 'Tags' },
-    { field: 'created_at', header: 'Created', style: 'width: 12rem' },
+    { field: 'key', header: 'Key', style: 'min-width: 10rem' },
+    { field: 'name', header: 'Task Name', style: 'min-width: 30rem' },
+    { field: 'task_list.name', header: 'Task List', style: 'min-width: 15rem' },
+    { field: 'status', header: 'Status', style: 'min-width: 9rem' },
+    { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
+    { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
 ]
 
 const searchParams = computed<TaskSearchParams>(() => ({
@@ -52,7 +51,7 @@ const searchParams = computed<TaskSearchParams>(() => ({
     page: page.value,
     per_page: PAGE_SIZE,
     sort_by: 'priority',
-    sort_order: 'desc'
+    sort_order: 'desc',
 }))
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
@@ -82,8 +81,8 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
     rowMenu.value?.toggle(event)
 }
 
-function onRowClick(task: TaskOverviewDto) {
-    router.push({ name: 'task-details', params: { id: task.id } })
+function taskDetailsRoute(task: TaskOverviewDto) {
+    return { name: 'task-details', params: { id: task.id } }
 }
 
 function onSearchSubmit() {
@@ -120,7 +119,7 @@ function onPageChange(newPage: number) {
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    @row-click="onRowClick"
+                    :to="taskDetailsRoute"
                     @page-change="onPageChange"
                     :columns="tableColumnsDef"
                 >

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
 import type { TaskOverviewDto } from '@/entities/task/types'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
@@ -13,6 +14,7 @@ const props = defineProps<{
     paginationMeta?: PaginationMeta
     page: number
     columns?: EntityTableColumnDef[]
+    to?: (task: TaskOverviewDto) => RouteLocationRaw
 }>()
 
 defineEmits<{
@@ -27,12 +29,11 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
     return [
         { field: 'key', header: 'Key', style: 'min-width: 10rem' },
-        { field: 'name', header: 'Task Name', style: 'min-width: 16rem' },
-        { field: 'project', header: 'Project', style: 'min-width: 12rem' },
+        { field: 'name', header: 'Task Name', style: 'min-width: 30rem' },
+        { field: 'project', header: 'Project', style: 'min-width: 15rem' },
         { field: 'status', header: 'Status', style: 'min-width: 9rem' },
         { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
         { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
-        { field: 'created_at', header: 'Created', style: 'min-width: 12rem' },
     ]
 })
 </script>
@@ -45,6 +46,7 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         :pagination-meta="paginationMeta"
         :page="page"
         row-clickable
+        :to="to"
         @row-click="$emit('rowClick', $event)"
         @page-change="$emit('pageChange', $event)"
     >

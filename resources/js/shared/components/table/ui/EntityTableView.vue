@@ -1,4 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
+import { computed } from 'vue'
+import { useRouter, type RouteLocationRaw } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Paginator from 'primevue/paginator'
@@ -14,6 +16,8 @@ const props = withDefaults(
         paginationMeta?: PaginationMeta
         page: number
         rowClickable?: boolean
+        /** Resolves a row to its route. When set, clicking a row navigates to it; Ctrl/Cmd-click opens it in a new tab. */
+        to?: (row: T) => RouteLocationRaw
         selectionMode?: 'multiple'
         dataKey?: string
     }>(),
@@ -27,7 +31,26 @@ const emit = defineEmits<{
     rowClick: [row: T]
 }>()
 
-function onRowClick(event: { data: T }) {
+const router = useRouter()
+
+const isClickable = computed(() => props.rowClickable || !!props.to)
+
+function onRowClick(event: { data: T; originalEvent: Event }) {
+    if (!isClickable.value) {
+        return
+    }
+
+    if (props.to) {
+        const target = props.to(event.data)
+        const mouseEvent = event.originalEvent as MouseEvent
+        if (mouseEvent.ctrlKey || mouseEvent.metaKey) {
+            window.open(router.resolve(target).href, '_blank')
+        } else {
+            router.push(target)
+        }
+        return
+    }
+
     emit('rowClick', event.data)
 }
 
@@ -46,13 +69,13 @@ function onPageChange(event: { page: number }) {
         lazy
         striped-rows
         class="p-0 w-full"
-        :class="{ 'cursor-pointer': props.rowClickable }"
+        :class="{ 'cursor-pointer': isClickable }"
         scrollable
         scroll-height="flex"
         size="small"
-        :row-hover="props.rowClickable"
+        :row-hover="isClickable"
         pt:footer:class="p-0 border-none"
-        @row-click="props.rowClickable ? onRowClick($event) : undefined"
+        @row-click="onRowClick"
     >
         <Column v-if="props.selectionMode === 'multiple'" selection-mode="multiple" header-style="width: 3rem" />
 

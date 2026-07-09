@@ -91,8 +91,8 @@ function onSearchSubmit() {
     page.value = 1
 }
 
-function onRowClick(project: ProjectOverviewDto) {
-    router.push({ name: 'project-details.tasks', params: { id: project.id } })
+function projectTasksRoute(project: ProjectOverviewDto) {
+    return { name: 'project-details.tasks', params: { id: project.id } }
 }
 
 function openRowMenu(event: MouseEvent, project: ProjectOverviewDto) {
@@ -128,7 +128,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    @row-click="onRowClick"
+                    :to="projectTasksRoute"
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
