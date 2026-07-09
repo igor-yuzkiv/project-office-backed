@@ -17,6 +17,7 @@ class ProjectDocumentTasksController
     public function index(ProjectDocumentModel $projectDocument): AnonymousResourceCollection
     {
         $tasks = $projectDocument->tasks()
+            ->with(['tags'])
             ->orderBy('name')
             ->paginate(perPage: 50);
 
