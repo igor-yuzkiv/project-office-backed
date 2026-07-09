@@ -20,7 +20,7 @@ The test database is created in two places, both already wired up:
 - **Fresh container init** — `docker-entrypoint-initdb.d/01-init.sh` creates
   `<APP_DB_NAME>_test` when the Postgres container initializes an empty data
   directory (owned by the app user).
-- **On demand** — `scripts/init_testing_pg_database.sh` (re)creates the test
+- **On demand** — `scripts/init_testing_pg_databases.sh` (re)creates the test
   database inside the already-running container, without recreating the container
   or wiping the dev database.
 
@@ -29,9 +29,9 @@ The test database is created in two places, both already wired up:
 Run when you need a clean test database (config is read from `scripts/.env`):
 
 ```bash
-./scripts/init_testing_pg_database.sh
+./scripts/init_testing_pg_databases.sh
 # or with an explicit name:
-./scripts/init_testing_pg_database.sh task_manager_test
+./scripts/init_testing_pg_databases.sh task_manager_test
 ```
 
 It refuses to run if the resolved name equals the primary database, terminates

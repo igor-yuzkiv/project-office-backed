@@ -35,22 +35,35 @@ Prefer incremental changes that are easy to review and verify.
 
 ### 3. Validation and review
 
-Run validation proportional to the change (see `Validation gate` below).
+Run validation proportional to the change (see `Validation gate` below). Validation
+is always required; review is conditional.
 
-After implementation, run an independent code review when the agent environment provides
-such a mechanism. The review must be independent from the implementation context: use a
-separate subagent, review lane, or equivalent mechanism when available.
+**Review is not triggered by re-entering this phase — it is triggered by the nature
+of the change.**
 
-After review, report briefly:
+- First time a task reaches review → run an independent review (separate subagent,
+  review lane, or equivalent when available).
+- Follow-up edits to an already-reviewed task:
+    - low-blast-radius local change (same test as `Clarify before acting` /
+      `Change strategy`: naming, internal control flow, small local edits) →
+      re-validate only, no new review;
+    - change to a contract, business logic, a layer/abstraction, or anything reaching
+      outside local scope → run review again;
+    - unclear which → ask the user via `AskUserQuestion` whether to run review before
+      running it.
+
+The review, when run, must be independent from the implementation context.
+
+After review (or after re-validation when no review was needed), report briefly:
 
 - what was changed;
 - what was verified;
 - important risks or assumptions;
 - anything that still needs attention.
 
-At the end of the report, explicitly ask the user whether any corrections are needed. Do
-not move to the documentation phase until the user either confirms that no corrections are
-needed or provides corrections and they are handled.
+At the end of the report, explicitly ask the user whether any corrections are needed.
+Do not move to the documentation phase until the user either confirms no corrections
+are needed or provides corrections and they are handled.
 
 ### 4. Documentation
 

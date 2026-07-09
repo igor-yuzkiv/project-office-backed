@@ -204,7 +204,7 @@ The test suite uses a dedicated PostgreSQL database named `task_manager_test`.
 To recreate it inside the running PostgreSQL container:
 
 ```bash
-./scripts/init_testing_pg_database.sh
+./scripts/init_testing_pg_databases.sh
 ```
 
 Then migrate and run tests:

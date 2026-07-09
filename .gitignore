@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+.env.e2e
 .phpactor.json
 .phpunit.result.cache
 /.codex
@@ -30,3 +31,7 @@ Thumbs.db
 /_tmp/
 /.omc/
 /.project-office/repo-settings.json
+/scripts/.env
+/test-results/
+/playwright/.cache/
+/playwright-report/
