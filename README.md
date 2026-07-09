@@ -216,27 +216,6 @@ php artisan test
 
 See [Testing](./docs/testing.md) for more details.
 
-## Documentation
-
-Project documentation lives in [`docs/`](./docs):
-
-- [Filtering system](./docs/filtering-system.md)
-- [Include system](./docs/include-system.md)
-- [Project documents](./docs/project-documents.md)
-- [Sorting system](./docs/sorting-system.md)
-- [Testing](./docs/testing.md)
-
-Some deeper technical documents still need English cleanup before publication.
-
-## Configuration Notes
-
-- `.env` must never be committed.
-- API tokens are managed through the user profile UI and authenticated via Sanctum.
-- Attachments use the `attachments` filesystem disk, backed by S3-compatible storage.
-- Local development can use MinIO from `docker-compose.yml`.
-- Generated build output, Docker data, local IDE files, and Project Office repo settings
-  are ignored by git.
-
 ## Related Repository
 
 `project-office-cli` is the companion CLI that agents use to access a controlled subset
