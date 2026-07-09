@@ -77,8 +77,8 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                 <Tab value="task-lists" class="px-4 py-2">Task Lists</Tab>
                 <Tab value="tasks" class="px-4 py-2">Tasks</Tab>
                 <Tab value="issues" class="px-4 py-2">Issues</Tab>
-                <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
                 <Tab value="documentation" class="px-4 py-2">Documentation</Tab>
+                <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
             </TabList>
 
             <div class="min-h-0 flex-1 overflow-auto">

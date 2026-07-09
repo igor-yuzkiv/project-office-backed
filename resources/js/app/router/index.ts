@@ -114,10 +114,16 @@ const router = createRouter({
             meta: { requiresAuth: true, layout: 'default', title: 'Edit Task' },
         },
         {
-            path: '/documents',
-            name: 'documents',
-            component: () => import('@/pages/documents/list/DocumentsPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Documents' },
+            path: '/project-documents/:id',
+            name: 'project-document-details',
+            component: () => import('@/pages/project-documents/details/ProjectDocumentOverviewPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Document' },
+        },
+        {
+            path: '/project-documents/:id/edit',
+            name: 'project-document-edit',
+            component: () => import('@/pages/project-documents/edit/ProjectDocumentEditPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit Document' },
         },
         {
             path: '/profile',

@@ -3,6 +3,7 @@
 use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
 use App\Http\WebApi\Controllers\Tags\TagsController;
@@ -44,6 +45,22 @@ Route::apiResource('task-lists', TaskListsController::class)->middleware(['auth:
  */
 Route::post('tasks/search', [TasksController::class, 'search'])->middleware(['auth:sanctum'])->name('tasks.search');
 Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']);
+
+/**
+ * Project Documents
+ */
+Route::group([
+    'prefix'     => 'projects/{project}/project-documents',
+    'as'         => 'projects.project-documents.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectDocumentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+});
+Route::apiResource('project-documents', ProjectDocumentsController::class)
+    ->only(['show', 'update'])
+    ->middleware(['auth:sanctum']);
 
 /**
  * Tags
