@@ -17,6 +17,7 @@ use App\Libs\EloquentFilters\Filters\TaskFilter;
 use Database\Factories\ProjectDocumentModelFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +32,8 @@ use Illuminate\Support\Carbon;
  * @property string $id
  * @property string $project_id
  * @property string|null $parent_id
+ * @property string $key
+ * @property int $sequence_number
  * @property string $title
  * @property string|null $content
  * @property ProjectDocumentStatus $status
@@ -47,7 +50,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, TagModel> $tags
  * @property-read UserModel|null $archivedBy
  */
-#[Fillable(['id', 'project_id', 'parent_id', 'title', 'content', 'status', 'created_by', 'updated_by'])]
+#[Fillable(['id', 'project_id', 'parent_id', 'key', 'sequence_number', 'title', 'content', 'status', 'created_by', 'updated_by'])]
 class ProjectDocumentModel extends Model implements Archivable
 {
     /** @use HasFactory<ProjectDocumentModelFactory> */
@@ -111,6 +114,19 @@ class ProjectDocumentModel extends Model implements Archivable
 
         $this->path = $parent->path.'.'.$this->id;
         $this->depth = $parent->depth + 1;
+    }
+
+    /**
+     * Allows route-model binding by ULID id or by the human-readable key (e.g. DOC-PROJ-1).
+     *
+     * @param  Builder<ProjectDocumentModel>  $query
+     * @return Builder<ProjectDocumentModel>
+     */
+    public function resolveRouteBindingQuery($query, $value, $field = null)
+    {
+        return $query->where(function (Builder $q) use ($value): void {
+            $q->where($this->getKeyName(), $value)->orWhere('key', $value);
+        });
     }
 
     public function wasStatusChangedToArchived(): bool

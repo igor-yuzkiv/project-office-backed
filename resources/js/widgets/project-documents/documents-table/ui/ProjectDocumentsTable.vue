@@ -6,7 +6,7 @@ import { EntityTreeTableView, type EntityTreeNode, type EntityTreeTableColumnDef
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { TagList } from '@/widgets/tags/metadata'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import { DisplayDate } from '@/shared/components/display'
+import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 
 defineProps<{
     treeNodes: EntityTreeNode<ProjectDocumentTreeNodeDto>[]
@@ -61,6 +61,7 @@ function onPageChange(page: number) {
                 class="app-link gap-2 flex items-center"
             >
                 <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
+                <CopyToClipboard :text="row.key" class="text-surface-500" />
                 <span>{{ row.title }}</span>
                 <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
             </RouterLink>

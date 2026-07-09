@@ -9,6 +9,7 @@ export type ProjectDocumentStatusValue = 'draft' | 'in_review' | 'active' | 'dep
 export interface IProjectDocument extends IEntity {
     project_id: string
     parent_id: string | null
+    key: string
     title: string
     content: string | null
     status: ProjectDocumentStatusValue
@@ -28,6 +29,7 @@ export type ProjectDocumentOverviewDto = Pick<
     | 'id'
     | 'project_id'
     | 'parent_id'
+    | 'key'
     | 'title'
     | 'status'
     | 'depth'
@@ -43,6 +45,7 @@ export type ProjectDocumentOverviewDto = Pick<
 export interface ProjectDocumentTreeNodeDto {
     id: string
     parent_id: string | null
+    key: string
     title: string
     status: ProjectDocumentStatusValue
     depth: number

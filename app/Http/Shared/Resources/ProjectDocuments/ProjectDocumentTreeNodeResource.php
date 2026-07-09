@@ -16,6 +16,7 @@ class ProjectDocumentTreeNodeResource extends JsonResource
         return [
             'id'           => $this->id,
             'parent_id'    => $this->parent_id,
+            'key'          => $this->key,
             'title'        => $this->title,
             'status'       => $this->status->value,
             'depth'        => $this->depth,

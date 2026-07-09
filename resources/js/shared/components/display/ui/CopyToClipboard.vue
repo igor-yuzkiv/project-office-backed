@@ -12,7 +12,7 @@ const { copy, copied } = useClipboard()
 </script>
 
 <template>
-    <div v-if="text" class="gap-2 inline-flex cursor-pointer items-center" @click="copy(text)">
+    <div v-if="text" class="gap-2 inline-flex cursor-pointer items-center" @click.stop="copy(text)">
         <Icon
             v-if="!hideCopyIcon"
             :class="[

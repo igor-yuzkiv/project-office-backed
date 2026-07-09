@@ -19,6 +19,7 @@ class ProjectDocumentOverviewResource extends JsonResource
             'id'         => $this->id,
             'project_id' => $this->project_id,
             'parent_id'  => $this->parent_id,
+            'key'        => $this->key,
             'title'      => $this->title,
             'status'     => $this->status->value,
             'depth'      => $this->depth,

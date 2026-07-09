@@ -18,6 +18,10 @@ return new class extends Migration
             $table->foreignUlid('project_id')->constrained('projects')->cascadeOnDelete();
             $table->ulid('parent_id')->nullable();
 
+            $table->string('key')->unique();
+            $table->unsignedInteger('sequence_number');
+            $table->unique(['project_id', 'sequence_number']);
+
             $table->string('title');
             $table->longText('content')->nullable();
             $table->string('status', 100)->default(ProjectDocumentStatus::Draft->value);

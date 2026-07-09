@@ -15,10 +15,14 @@ class ProjectDocumentModelFactory extends Factory
 
     public function definition(): array
     {
+        $sequence = fake()->unique()->numberBetween(1, 99999);
+
         return [
-            'title'   => fake()->unique()->words(3, true),
-            'content' => fake()->boolean(60) ? fake()->paragraphs(2, true) : null,
-            'status'  => ProjectDocumentStatus::Draft->value,
+            'key'             => 'DOC-'.$sequence,
+            'sequence_number' => $sequence,
+            'title'           => fake()->unique()->words(3, true),
+            'content'         => fake()->boolean(60) ? fake()->paragraphs(2, true) : null,
+            'status'          => ProjectDocumentStatus::Draft->value,
         ];
     }
 }
