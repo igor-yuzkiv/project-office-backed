@@ -5,6 +5,7 @@ namespace App\Domains\Task\Models;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Enums\TaskPriority;
 use App\Domains\Task\Enums\TaskStatus;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -37,6 +39,7 @@ use Laravel\Scout\Searchable;
  * @property Carbon|null $start_date
  * @property Carbon|null $due_date
  * @property Collection<int, TagModel> $tags
+ * @property-read Collection<int, ProjectDocumentModel> $projectDocuments
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -121,6 +124,12 @@ class TaskModel extends Model implements Commentable
     public function taskOwners(): HasMany
     {
         return $this->hasMany(TaskOwnerModel::class, 'task_id');
+    }
+
+    public function projectDocuments(): BelongsToMany
+    {
+        return $this->belongsToMany(ProjectDocumentModel::class, 'project_document_task', 'task_id', 'project_document_id')
+            ->withTimestamps();
     }
 
     public static function newFactory(): TaskModelFactory

@@ -14,7 +14,7 @@ export function useDeleteTaskMutation() {
         },
     })
 
-    async function mutateWithConfirm(id: string, message?: string) {
+    async function mutateWithConfirm(id: string, message?: string, onSuccess?: () => void) {
         const confirmed = await confirm.requireAsync({
             header: 'Delete',
             message: message ?? 'Are you sure you want to delete this item?',
@@ -23,7 +23,7 @@ export function useDeleteTaskMutation() {
         })
 
         if (confirmed) {
-            mutate(id)
+            mutate(id, onSuccess ? { onSuccess } : undefined)
         }
     }
 

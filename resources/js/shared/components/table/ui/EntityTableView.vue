@@ -6,14 +6,21 @@ import type { PaginationMeta } from '@/shared/types'
 import { PAGE_SIZE } from '@/app/config'
 import type { EntityTableColumnDef } from '../entity-table.types'
 
-const props = defineProps<{
-    rows: T[]
-    columns: EntityTableColumnDef[]
-    isPending: boolean
-    paginationMeta?: PaginationMeta
-    page: number
-    rowClickable?: boolean
-}>()
+const props = withDefaults(
+    defineProps<{
+        rows: T[]
+        columns: EntityTableColumnDef[]
+        isPending: boolean
+        paginationMeta?: PaginationMeta
+        page: number
+        rowClickable?: boolean
+        selectionMode?: 'multiple'
+        dataKey?: string
+    }>(),
+    { dataKey: 'id' }
+)
+
+const selection = defineModel<T[]>('selection', { default: () => [] })
 
 const emit = defineEmits<{
     pageChange: [page: number]
@@ -31,8 +38,11 @@ function onPageChange(event: { page: number }) {
 
 <template>
     <DataTable
+        v-model:selection="selection"
         :value="props.rows"
         :loading="props.isPending"
+        :selection-mode="props.selectionMode"
+        :data-key="props.selectionMode ? props.dataKey : undefined"
         lazy
         striped-rows
         class="p-0 w-full"
@@ -44,6 +54,8 @@ function onPageChange(event: { page: number }) {
         pt:footer:class="p-0 border-none"
         @row-click="props.rowClickable ? onRowClick($event) : undefined"
     >
+        <Column v-if="props.selectionMode === 'multiple'" selection-mode="multiple" header-style="width: 3rem" />
+
         <Column v-if="$slots.actions" style="width: 3rem">
             <template #body="{ data }">
                 <slot name="actions" :row="data as T" />

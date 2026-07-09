@@ -23,11 +23,11 @@ class ProjectDocumentsController extends ResourceController
         private readonly GetProjectDocumentAncestorPathQuery $ancestorPathQuery,
     ) {}
 
-    private const array FULL_RELATIONS = ['tags', 'tasks', 'project', 'createdBy', 'updatedBy'];
+    private const array FULL_RELATIONS = ['tags', 'project', 'createdBy', 'updatedBy'];
 
     protected function getAllowedIncludes(): array
     {
-        return self::FULL_RELATIONS;
+        return [...self::FULL_RELATIONS, 'tasks'];
     }
 
     public function index(ProjectModel $project): AnonymousResourceCollection

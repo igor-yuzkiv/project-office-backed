@@ -26,7 +26,7 @@ class TasksController extends ResourceController
 
     protected function getAllowedIncludes(): array
     {
-        return ['project', 'taskList', 'createdBy', 'updatedBy', 'tags'];
+        return ['project', 'taskList', 'createdBy', 'updatedBy', 'tags', 'projectDocuments'];
     }
 
     public function index(): AnonymousResourceCollection

@@ -6,6 +6,7 @@ use App\Http\WebApi\Controllers\Comment\CommentController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTasksController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
@@ -14,6 +15,7 @@ use App\Http\WebApi\Controllers\TaskLists\TaskListsController;
 use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
+use App\Http\WebApi\Controllers\Tasks\TaskProjectDocumentsController;
 use App\Http\WebApi\Controllers\Tasks\TasksController;
 use App\Http\WebApi\Controllers\Users\ApiTokensController;
 use App\Http\WebApi\Controllers\Users\UsersController;
@@ -93,6 +95,19 @@ Route::group([
 });
 
 /**
+ * Project Document Tasks
+ */
+Route::group([
+    'prefix'     => 'project-documents/{project_document}/tasks',
+    'as'         => 'project-documents.tasks.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectDocumentTasksController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::put('/', 'sync')->name('sync');
+});
+
+/**
  * Tags
  */
 Route::group([
@@ -142,6 +157,12 @@ Route::group([
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
 });
+
+/**
+ * Task Project Documents
+ */
+Route::get('tasks/{task}/project-documents', [TaskProjectDocumentsController::class, 'index'])
+    ->middleware(['auth:sanctum'])->name('tasks.project-documents.index');
 
 /**
  * Attachments

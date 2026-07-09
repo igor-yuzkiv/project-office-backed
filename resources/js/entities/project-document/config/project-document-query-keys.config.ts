@@ -18,3 +18,9 @@ export const ProjectDocumentCommentQueryKey = {
     documentCommentsPaginated: (documentId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
         [...ProjectDocumentCommentQueryKey.documentComments(documentId), pagination] as const,
 }
+
+export const ProjectDocumentTaskQueryKey = {
+    documentTasks: (documentId: MaybeRefOrGetter<string>) => ['tasks', 'project-documents', documentId] as const,
+    documentTasksPaginated: (documentId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
+        [...ProjectDocumentTaskQueryKey.documentTasks(documentId), pagination] as const,
+}

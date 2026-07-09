@@ -1,0 +1,15 @@
+import { httpClient } from '@/shared/api'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
+import type { ProjectDocumentOverviewDto } from '@/entities/project-document/types'
+
+export async function fetchTaskProjectDocumentsRequest(
+    taskId: string,
+    page?: number,
+    perPage?: number
+): PromisePaginatedResponse<ProjectDocumentOverviewDto> {
+    return httpClient
+        .get<PaginatedResponse<ProjectDocumentOverviewDto>>(`/tasks/${taskId}/project-documents`, {
+            params: { page, per_page: perPage },
+        })
+        .then((res) => res.data)
+}

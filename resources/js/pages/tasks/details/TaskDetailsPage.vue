@@ -5,6 +5,7 @@ import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useTaskQuery } from '@/entities/task/queries'
+import { useDeleteTaskMutation } from '@/entities/task/mutations'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -20,6 +21,11 @@ const toast = useToast()
 const taskId = route.params.id as string
 
 const { task, isError } = useTaskQuery(taskId)
+const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
+
+function handleDeleteTask() {
+    deleteTask(taskId, `Are you sure you want to delete "${task.value?.name}"?`, () => router.push({ name: 'tasks' }))
+}
 
 const activeTab = computed(
     () =>
@@ -46,6 +52,7 @@ function onTabChange(value: string | number) {
 
 useHeaderActions([
     { key: 'edit-task', title: 'Edit Task', to: { name: 'task-edit', params: { id: taskId } }, is_primary: true },
+    { key: 'delete-task', title: 'Delete', action: handleDeleteTask },
 ])
 
 useBreadcrumbs(() => [
@@ -95,6 +102,7 @@ useBreadcrumbs(() => [
                 <Tab value="description" class="px-4 py-2">Description</Tab>
                 <Tab value="comments" class="px-4 py-2">Comments</Tab>
                 <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
+                <Tab value="related-docs" class="px-4 py-2">Related Docs</Tab>
             </TabList>
 
             <div class="min-h-0 flex-1 overflow-auto">

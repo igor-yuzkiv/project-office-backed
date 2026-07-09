@@ -99,6 +99,11 @@ const router = createRouter({
                     name: 'task-details.attachments',
                     component: () => import('@/pages/tasks/details/tabs/TaskAttachmentsPage.vue'),
                 },
+                {
+                    path: 'related-docs',
+                    name: 'task-details.related-docs',
+                    component: () => import('@/pages/tasks/details/tabs/TaskRelatedDocsPage.vue'),
+                },
             ],
         },
         {

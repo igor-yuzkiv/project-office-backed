@@ -193,13 +193,11 @@ it('rejects an unknown include on the project document list', function () {
     $response->assertUnprocessable();
 });
 
-it('shows a single project document including its content, project and linked tasks', function () {
+it('shows a single project document including its content and project', function () {
     $document = ProjectDocumentModel::factory()->create([
         'project_id' => $this->project->id,
         'title'      => 'Shown Document',
     ]);
-    $task = TaskModel::factory()->for($this->project, 'project')->create();
-    $document->tasks()->attach($task);
 
     $response = $this->getJson('/api/project-documents/'.$document->id);
 
@@ -207,7 +205,17 @@ it('shows a single project document including its content, project and linked ta
         ->assertJsonPath('data.id', $document->id)
         ->assertJsonPath('data.title', 'Shown Document')
         ->assertJsonPath('data.project.id', $this->project->id)
-        ->assertJsonPath('data.tasks.0.id', $task->id);
+        ->assertJsonMissingPath('data.tasks');
+});
+
+it('includes linked tasks when explicitly requested via include', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $task = TaskModel::factory()->for($this->project, 'project')->create();
+    $document->tasks()->attach($task);
+
+    $response = $this->getJson('/api/project-documents/'.$document->id.'?include=tasks');
+
+    $response->assertOk()->assertJsonPath('data.tasks.0.id', $task->id);
 });
 
 it('does not include the ancestor path by default', function () {
