@@ -24,6 +24,7 @@ class CreateProjectDocumentHandler
             'key'             => $documentKey->value,
             'sequence_number' => $documentKey->sequenceNumber,
             'title'           => $command->title,
+            'content'         => $command->content,
         ]);
 
         if ($command->tagIds !== null) {

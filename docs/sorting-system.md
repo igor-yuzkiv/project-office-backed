@@ -7,89 +7,100 @@ updated_date: '2026-06-24 19:34'
 ---
 # Sorting System
 
-Система сортування складається з frontend модуля `resources/js/shared/sort/` і backend `SortParams` DTO. Параметри сортування передаються в кожному пошуковому запиті разом з фільтрами.
+The sorting system consists of the frontend `resources/js/shared/sort/` module and the
+backend `SortParams` DTO. Sorting parameters are sent with each search request alongside
+filters.
 
 ---
 
 ## Frontend: shared/sort
 
-### Де живе
+### Location
 
-```
+```txt
 resources/js/shared/sort/
 ├── types/
 │   └── sort.types.ts          # SortDirection, SortFieldDef, SortParams
 ├── composables/
 │   └── use.sort-dialog.ts     # useSortDialog() composable
 ├── ui/
-│   ├── SortButton.vue         # кнопка з поточним полем у label
-│   └── SortDialog.vue         # PrimeVue Dialog з вибором поля і напрямку
+│   ├── SortButton.vue         # button with the current field in the label
+│   └── SortDialog.vue         # PrimeVue Dialog for choosing field and direction
 └── index.ts                   # barrel export
 ```
 
-Імпортувати тільки з barrel-файлу: `import { ... } from '@/shared/sort'`.
+Import only from the barrel file:
 
-### Типи
+```ts
+import { ... } from '@/shared/sort'
+```
+
+### Types
 
 ```ts
 type SortDirection = 'asc' | 'desc'
 
 type SortFieldDef = {
-    field: string   // ім'я поля, відправляється у sort_by
-    label: string   // текст для відображення у UI
+    field: string   // field name sent as sort_by
+    label: string   // display text in the UI
 }
 
-// передається у API-запит разом з іншими params
+// sent with other API request params
 type SortParams = {
     sort_by?: string
     sort_order?: SortDirection
 }
 ```
 
-`SortParams` використовується у типах параметрів API-функцій (наприклад, `ProjectSearchParams`), щоб гарантувати що `sort_by` / `sort_order` завжди передаються в запит.
+`SortParams` is used by API function parameter types, for example `ProjectSearchParams`,
+to guarantee that `sort_by` / `sort_order` can be passed to the request.
 
 ### Composable: useSortDialog
 
-Управляє видимістю діалогу і реалізує draft/committed state — зміна поля сортування у діалозі не застосовується до запиту до натиснення Apply.
+Manages dialog visibility and implements the draft/committed state pattern. Changing
+the sort field inside the dialog does not affect the query until Apply is pressed.
 
 ```ts
 const sort = useSortDialog(
-    fields,        // SortFieldDef[] — список доступних полів
-    defaultField,  // string — поле за замовчуванням (опціонально, дефолт = перше поле)
-    defaultOrder   // SortDirection — напрямок за замовчуванням (дефолт = 'asc')
+    fields,        // SortFieldDef[] - available fields
+    defaultField,  // string - default field (optional, defaults to the first field)
+    defaultOrder   // SortDirection - default direction (defaults to 'asc')
 )
 ```
 
-Повертає:
+Returns:
 
-| Властивість / метод | Тип | Опис |
+| Property / method | Type | Description |
 |---|---|---|
-| `visible` | `Ref<boolean>` | видимість діалогу |
-| `sortBy` | `Ref<string>` | **committed** поле — використовується у query params |
-| `sortOrder` | `Ref<SortDirection>` | **committed** напрямок |
-| `draftSortBy` | `Ref<string>` | поле у відкритому діалозі (змінюється до Apply) |
-| `draftSortOrder` | `Ref<SortDirection>` | напрямок у відкритому діалозі |
-| `activeSortLabel` | `ComputedRef<string>` | label committed поля (для кнопки) |
-| `open()` | `() => void` | синхронізує draft ← committed, відкриває діалог |
-| `close()` | `() => void` | закриває діалог без збереження |
-| `setDraftField(field)` | `(string) => void` | оновлює `draftSortBy` |
-| `setDraftOrder(order)` | `(SortDirection) => void` | оновлює `draftSortOrder` |
-| `apply()` | `() => void` | копіює draft → committed |
-| `reset()` | `() => void` | скидає draft до дефолтних значень |
+| `visible` | `Ref<boolean>` | Dialog visibility. |
+| `sortBy` | `Ref<string>` | **Committed** field used in query params. |
+| `sortOrder` | `Ref<SortDirection>` | **Committed** direction. |
+| `draftSortBy` | `Ref<string>` | Field inside the open dialog; changes before Apply. |
+| `draftSortOrder` | `Ref<SortDirection>` | Direction inside the open dialog. |
+| `activeSortLabel` | `ComputedRef<string>` | Label of the committed field, used by the button. |
+| `open()` | `() => void` | Syncs draft from committed state and opens the dialog. |
+| `close()` | `() => void` | Closes the dialog without saving. |
+| `setDraftField(field)` | `(string) => void` | Updates `draftSortBy`. |
+| `setDraftOrder(order)` | `(SortDirection) => void` | Updates `draftSortOrder`. |
+| `apply()` | `() => void` | Copies draft state to committed state. |
+| `reset()` | `() => void` | Resets draft state to defaults. |
 
-**Важливо:** `open()` завжди синхронізує draft з committed перед відкриттям. Якщо користувач відкрив діалог, щось змінив і закрив без Apply — наступного разу побачить актуально застосоване сортування, а не незбережені зміни.
+**Important:** `open()` always syncs draft state from committed state before opening.
+If the user opens the dialog, changes something, and closes without Apply, the next
+open shows the currently applied sorting, not unsaved changes.
 
-### UI компоненти
+### UI components
 
-**SortButton** — відображає поточне поле сортування у label:
+**SortButton** displays the current sort field in its label:
 
 ```vue
 <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
 ```
 
-Пропси: `label?: string`. Emit: `click: []` (без `MouseEvent` — діалог не потребує позиції).
+Props: `label?: string`. Emits: `click: []`; no `MouseEvent` is needed because the dialog
+does not need an anchor position.
 
-**SortDialog** — PrimeVue Dialog з двома Select і кнопками Cancel/Apply:
+**SortDialog** is a PrimeVue Dialog with two Select controls and Cancel/Apply buttons:
 
 ```vue
 <SortDialog
@@ -104,9 +115,10 @@ const sort = useSortDialog(
 />
 ```
 
-`@apply` і `@update:visible` — окремі events, тому Apply і Cancel обробляються незалежно.
+`@apply` and `@update:visible` are separate events, so Apply and Cancel are handled
+independently.
 
-### Повний приклад інтеграції у Page компонент
+### Full page integration example
 
 ```vue
 <script setup lang="ts">
@@ -119,7 +131,7 @@ const sortFieldDefs: SortFieldDef[] = [
     { field: 'updated_at', label: 'Updated' },
 ]
 
-// дефолтне сортування: updated_at desc
+// default sorting: updated_at desc
 const sort = useSortDialog(sortFieldDefs, 'updated_at', 'desc')
 
 const page = ref(1)
@@ -136,7 +148,7 @@ function onSortApply() {
     sort.close()
 }
 
-// скидати сторінку при зміні сортування
+// reset pagination when sorting changes
 watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
@@ -175,20 +187,21 @@ class SortParams
 }
 ```
 
-Дефолти: сортування за `created_at desc`. Будь-який endpoint, що не отримав явних sort params, поверне цей порядок.
+Defaults: `created_at desc`. Any endpoint that does not receive explicit sort params
+returns this order.
 
-### Як sort params потрапляють у контролер
+### How sort params reach controllers
 
-`Controller` базовий клас надає `getSortParams()`:
+The base `Controller` provides `getSortParams()`:
 
 ```php
-// у будь-якому контролері
-$sort = $this->getSortParams(); // читає sort_by, sort_order з request
+// in any controller
+$sort = $this->getSortParams(); // reads sort_by, sort_order from the request
 ```
 
-Повертає `SortParams` з `field` і `direction`.
+It returns a `SortParams` instance with `field` and `direction`.
 
-### Сортування у звичайному Eloquent запиті
+### Sorting regular Eloquent queries
 
 ```php
 $projects = ProjectModel::query()
@@ -196,25 +209,30 @@ $projects = ProjectModel::query()
     ->paginate($pagination->perPage, page: $pagination->page);
 ```
 
-### Сортування у Scout запиті
+### Sorting Scout queries
 
-При використанні Laravel Scout (CollectionEngine) сортування має бути на рівні Scout Builder — **до** `->query()` callback:
+When using Laravel Scout with `CollectionEngine`, sorting must be applied at the Scout
+Builder level, **before** the `->query()` callback:
 
 ```php
 ProjectModel::search($query)
-    ->orderBy($sort->field, $sort->direction)  // ← Scout Builder level (правильно)
+    ->orderBy($sort->field, $sort->direction)  // correct: Scout Builder level
     ->query(function (Builder $q) use ($filters): Builder {
         return $q->filter($filters);
-        // НЕ додавати orderBy тут — CollectionEngine ігнорує його при формуванні порядку
+        // Do not add orderBy here; CollectionEngine ignores it when building result order.
     })
     ->paginate($perPage, 'page', $page);
 ```
 
-**Чому:** `CollectionEngine::searchModels()` впорядковує результати виключно через `$builder->orders` (Scout Builder). `orderBy` всередині `->query()` callback потрапляє у `queryScoutModelsByIds()` при re-fetch, але потім `map()` перезаписує порядок позиціями з `searchModels()` — які формуються без урахування `queryCallback`.
+**Why:** `CollectionEngine::searchModels()` orders results exclusively through
+`$builder->orders` on the Scout Builder. `orderBy` inside the `->query()` callback reaches
+`queryScoutModelsByIds()` during re-fetch, but `map()` then overwrites the order with
+positions from `searchModels()`, which were built without considering the query callback.
 
 ### SearchProjectsQuery
 
-Логіка пошуку проектів винесена з контролера у `app/Domains/Project/Queries/SearchProjectsQuery.php`:
+Project search logic is extracted from the controller into
+`app/Domains/Project/Queries/SearchProjectsQuery.php`:
 
 ```php
 class SearchProjectsQuery
@@ -239,7 +257,7 @@ class SearchProjectsQuery
 }
 ```
 
-Контролер лише делегує:
+The controller only delegates:
 
 ```php
 public function search(Request $request): AnonymousResourceCollection
@@ -255,10 +273,11 @@ public function search(Request $request): AnonymousResourceCollection
 }
 ```
 
-### Додавання сортування до нового search endpoint
+### Adding sorting to a new search endpoint
 
-1. Прийняти `sort_by` і `sort_order` з request через `$this->getSortParams()`.
-2. Передати `SortParams` у Query клас або використати в inline запиті.
-3. Для Scout: `->orderBy($sort->field, $sort->direction)` до `->query()`.
-4. Для Eloquent: `->orderBy($sort->field, $sort->direction)` на Builder.
-5. На фронті: додати `sort_by` і `sort_order` у params об'єкт API-функції (через `SortParams` тип).
+1. Read `sort_by` and `sort_order` from the request through `$this->getSortParams()`.
+2. Pass `SortParams` into a Query class or use it inline.
+3. For Scout: call `->orderBy($sort->field, $sort->direction)` before `->query()`.
+4. For Eloquent: call `->orderBy($sort->field, $sort->direction)` on the Builder.
+5. On the frontend: add `sort_by` and `sort_order` to the API function params object
+   through the `SortParams` type.

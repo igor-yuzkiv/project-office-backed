@@ -11,6 +11,7 @@ class CreateProjectDocumentCommand
         public readonly string $projectId,
         public readonly string $title,
         public readonly ?string $parentId = null,
+        public readonly ?string $content = null,
         public readonly ?array $tagIds = null,
     ) {}
 }
