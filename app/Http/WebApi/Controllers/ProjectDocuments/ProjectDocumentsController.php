@@ -4,6 +4,7 @@ namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentHandler;
 use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\Queries\GetProjectDocumentAncestorPathQuery;
@@ -20,6 +21,7 @@ class ProjectDocumentsController extends ResourceController
     public function __construct(
         private readonly CreateProjectDocumentHandler $createHandler,
         private readonly UpdateProjectDocumentHandler $updateHandler,
+        private readonly DeleteProjectDocumentHandler $deleteHandler,
         private readonly GetProjectDocumentAncestorPathQuery $ancestorPathQuery,
     ) {}
 
@@ -71,5 +73,12 @@ class ProjectDocumentsController extends ResourceController
         $document->load(self::FULL_RELATIONS);
 
         return new ProjectDocumentResource($document);
+    }
+
+    public function destroy(ProjectDocumentModel $projectDocument): JsonResponse
+    {
+        $this->deleteHandler->handle($projectDocument);
+
+        return response()->json(['message' => 'Project document deleted.']);
     }
 }

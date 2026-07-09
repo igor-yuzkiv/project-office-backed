@@ -124,7 +124,7 @@ watch(currentTasks, () => {
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal :closable="true" :style="{ width: '44rem' }">
+    <Dialog v-model:visible="visible" modal :closable="true" :style="{ width: '55rem' }">
         <template #header>
             <div class="gap-2 flex items-center">
                 <i class="pi pi-file text-primary" />

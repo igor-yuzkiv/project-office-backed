@@ -1,5 +1,7 @@
 <?php
 
+use App\Domains\Attachment\Models\AttachmentModel;
+use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
@@ -7,6 +9,8 @@ use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
@@ -318,4 +322,80 @@ it('leaves the title untouched when only content is updated', function () {
     $this->putJson('/api/project-documents/'.$document->id, ['content' => 'New body.'])
         ->assertOk()
         ->assertJsonPath('data.title', 'Untouched Title');
+});
+
+it('deletes a single project document', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->deleteJson('/api/project-documents/'.$document->id);
+
+    $response->assertOk()->assertJsonPath('message', 'Project document deleted.');
+    expect(ProjectDocumentModel::find($document->id))->toBeNull();
+});
+
+it('deletes nested children and grandchildren when the root document is deleted', function () {
+    $root = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $child = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id, 'parent_id' => $root->id]);
+    $grandchild = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id, 'parent_id' => $child->id]);
+
+    $this->deleteJson('/api/project-documents/'.$root->id)->assertOk();
+
+    expect(ProjectDocumentModel::find($root->id))->toBeNull();
+    expect(ProjectDocumentModel::find($child->id))->toBeNull();
+    expect(ProjectDocumentModel::find($grandchild->id))->toBeNull();
+});
+
+it('leaves sibling documents intact when a document is deleted', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $sibling = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $this->deleteJson('/api/project-documents/'.$document->id)->assertOk();
+
+    expect(ProjectDocumentModel::find($sibling->id))->not->toBeNull();
+});
+
+it('cleans up task links, tag pivots and comments when a document is deleted', function () {
+    $tag = TagModel::create(['name' => 'cleanup', 'color' => '#555555']);
+    $task = TaskModel::factory()->for($this->project, 'project')->create();
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $document->tags()->attach($tag->id);
+    $document->tasks()->attach($task->id);
+    $comment = CommentModel::factory()->create([
+        'commentable_id'   => $document->id,
+        'commentable_type' => $document->getMorphClass(),
+        'author_id'        => UserModel::factory()->create()->id,
+    ]);
+
+    $this->deleteJson('/api/project-documents/'.$document->id)->assertOk();
+
+    expect(TaskModel::find($task->id))->not->toBeNull();
+    expect(DB::table('project_document_task')->where('project_document_id', $document->id)->exists())->toBeFalse();
+    expect(DB::table('taggables')->where('taggable_id', $document->id)->exists())->toBeFalse();
+    expect(CommentModel::find($comment->id))->toBeNull();
+    expect(TagModel::find($tag->id))->not->toBeNull();
+});
+
+it('deletes attachments through the storage-aware flow when a document is deleted', function () {
+    Storage::fake('attachments');
+
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    Storage::disk('attachments')->put('project-documents/'.$document->id.'/file.txt', 'content');
+    $attachment = AttachmentModel::create([
+        'original_name'    => 'file.txt',
+        'storage_provider' => 's3',
+        'storage_key'      => 'project-documents/'.$document->id.'/file.txt',
+        'attachable_id'    => $document->id,
+        'attachable_type'  => $document->getMorphClass(),
+    ]);
+
+    $this->deleteJson('/api/project-documents/'.$document->id)->assertOk();
+
+    expect(AttachmentModel::find($attachment->id))->toBeNull();
+    Storage::disk('attachments')->assertMissing('project-documents/'.$document->id.'/file.txt');
+});
+
+it('returns not found when deleting a non-existent document', function () {
+    $response = $this->deleteJson('/api/project-documents/'.((string) Str::ulid()));
+
+    $response->assertNotFound();
 });

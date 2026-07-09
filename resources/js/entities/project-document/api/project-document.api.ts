@@ -44,6 +44,10 @@ export async function updateProjectDocumentRequest(
     return httpClient.put<IProjectDocumentResponse>(`/project-documents/${id}`, data).then((res) => res.data)
 }
 
+export async function deleteProjectDocumentRequest(id: string): Promise<{ message: string }> {
+    return httpClient.delete<{ message: string }>(`/project-documents/${id}`).then((res) => res.data)
+}
+
 export async function fetchProjectDocumentTreeRequest(
     projectId: string,
     params?: ProjectDocumentTreeFetchParams

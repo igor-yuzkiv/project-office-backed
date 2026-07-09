@@ -64,7 +64,7 @@ Route::group([
     Route::post('/', 'store')->name('store');
 });
 Route::apiResource('project-documents', ProjectDocumentsController::class)
-    ->only(['show', 'update'])
+    ->only(['show', 'update', 'destroy'])
     ->middleware(['auth:sanctum']);
 Route::get('projects/{project}/project-documents/tree', [ProjectDocumentTreeController::class, 'index'])
     ->middleware(['auth:sanctum'])->name('projects.project-documents.tree');

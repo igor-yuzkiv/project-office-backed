@@ -5,7 +5,11 @@ import { useRouteParams } from '@vueuse/router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
-import { useProjectDocumentQuery, canProjectDocumentHaveChildren } from '@/entities/project-document'
+import {
+    useProjectDocumentQuery,
+    useDeleteProjectDocumentMutation,
+    canProjectDocumentHaveChildren,
+} from '@/entities/project-document'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -23,6 +27,7 @@ const documentId = useRouteParams<string>('id')
 
 const { projectDocument, isError } = useProjectDocumentQuery(documentId, { with_path: true })
 const createDialog = useProjectDocumentCreateDialog()
+const { mutateWithConfirm: deleteProjectDocument } = useDeleteProjectDocumentMutation()
 
 const canCreateSubDocument = computed(() => canProjectDocumentHaveChildren(projectDocument.value?.depth ?? Infinity))
 
@@ -34,6 +39,17 @@ function openCreateSubDocumentDialog() {
         key: projectDocument.value.key,
         title: projectDocument.value.title,
     })
+}
+
+function handleDeleteProjectDocument() {
+    if (!projectDocument.value) return
+
+    const projectId = projectDocument.value.project_id
+    deleteProjectDocument(
+        projectDocument.value.id,
+        `Are you sure you want to delete "${projectDocument.value.title}"? This will also delete all nested documents, comments, attachments, tags, and task links.`,
+        () => router.push({ name: 'project-details.documentation', params: { id: projectId } })
+    )
 }
 
 const activeTab = computed(
@@ -69,6 +85,7 @@ useHeaderActions(() => [
     ...(canCreateSubDocument.value
         ? [{ key: 'create-sub-document', title: 'Create Sub-Document', action: openCreateSubDocumentDialog }]
         : []),
+    { key: 'delete-project-document', title: 'Delete', action: handleDeleteProjectDocument },
 ])
 
 useBreadcrumbs(() => [
