@@ -14,9 +14,15 @@ class IgorTestCommand extends Command
 
     public function handle(): void
     {
+        // UserModel::create([
+        //     'name'     => 'Igor Yuzkiv',
+        //     'email'    => 'iy@crmoz.com',
+        //     'password' => Hash::make('qwert123'),
+        // ]);
+
         UserModel::create([
-            'name'     => 'Igor Yuzkiv',
-            'email'    => 'iy@crmoz.com',
+            'name'     => 'Claude Code',
+            'email'    => 'claude-code@mail.com',
             'password' => Hash::make('qwert123'),
         ]);
     }
