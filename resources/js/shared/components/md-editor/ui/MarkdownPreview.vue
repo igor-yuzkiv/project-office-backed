@@ -17,6 +17,6 @@ const previewTheme = computed(() => (themeStore.isDark ? 'dark' : 'light'))
         :theme="previewTheme"
         :code-foldable="false"
         preview-theme="github"
-        code-theme="github"
     />
+    <!-- code-theme="github" -->
 </template>
