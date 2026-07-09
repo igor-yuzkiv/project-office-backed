@@ -1,10 +1,13 @@
 import { httpClient } from '@/shared/api'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
 import type {
     ICreateProjectDocumentInput,
     IProjectDocumentResponse,
     IProjectDocumentsResponse,
     IUpdateProjectDocumentInput,
     ProjectDocumentFetchParams,
+    ProjectDocumentTreeFetchParams,
+    ProjectDocumentTreeNodeDto,
 } from '../types'
 
 export async function fetchProjectDocumentsRequest(
@@ -36,4 +39,15 @@ export async function updateProjectDocumentRequest(
     data: IUpdateProjectDocumentInput
 ): Promise<IProjectDocumentResponse> {
     return httpClient.put<IProjectDocumentResponse>(`/project-documents/${id}`, data).then((res) => res.data)
+}
+
+export async function fetchProjectDocumentTreeRequest(
+    projectId: string,
+    params?: ProjectDocumentTreeFetchParams
+): PromisePaginatedResponse<ProjectDocumentTreeNodeDto> {
+    return httpClient
+        .get<PaginatedResponse<ProjectDocumentTreeNodeDto>>(`/projects/${projectId}/project-documents/tree`, {
+            params,
+        })
+        .then((res) => res.data)
 }

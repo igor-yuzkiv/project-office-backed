@@ -34,6 +34,18 @@ it('builds the path and depth from the parent document', function () {
     expect($root->children->pluck('id'))->toEqual(collect([$child->id]));
 });
 
+it('rejects creating a document beyond the maximum nesting depth', function () {
+    $project = ProjectModel::factory()->create();
+
+    $root = ProjectDocumentModel::factory()->for($project, 'project')->create();
+    $child = ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $root->id]);
+    $grandchild = ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $child->id]);
+
+    expect($grandchild->depth)->toBe(ProjectDocumentModel::MAX_DEPTH);
+
+    ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $grandchild->id]);
+})->throws(DomainException::class);
+
 it('rejects a child document whose parent belongs to a different project', function () {
     $projectA = ProjectModel::factory()->create();
     $projectB = ProjectModel::factory()->create();

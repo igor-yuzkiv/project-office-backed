@@ -1,3 +1,5 @@
+import type { PagingParams } from '@/shared/types'
+import type { FilterPayloadItem } from '@/shared/filters'
 import type { IProjectDocument, ProjectDocumentOverviewDto } from './project-document.types'
 
 export type ProjectDocumentInclude = 'project' | 'tags' | 'tasks' | 'createdBy' | 'updatedBy'
@@ -12,6 +14,11 @@ export interface IProjectDocumentsResponse {
 
 export interface ProjectDocumentFetchParams {
     include?: ProjectDocumentInclude[]
+}
+
+export type ProjectDocumentTreeFetchParams = PagingParams & {
+    parent_id?: string | null
+    filters?: FilterPayloadItem[]
 }
 
 export interface ICreateProjectDocumentInput {

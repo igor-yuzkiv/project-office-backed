@@ -4,6 +4,7 @@ use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
 use App\Http\WebApi\Controllers\Tags\TagsController;
@@ -61,6 +62,8 @@ Route::group([
 Route::apiResource('project-documents', ProjectDocumentsController::class)
     ->only(['show', 'update'])
     ->middleware(['auth:sanctum']);
+Route::get('projects/{project}/project-documents/tree', [ProjectDocumentTreeController::class, 'index'])
+    ->middleware(['auth:sanctum'])->name('projects.project-documents.tree');
 
 /**
  * Tags

@@ -39,3 +39,16 @@ export type ProjectDocumentOverviewDto = Pick<
     | 'created_by'
     | 'updated_by'
 >
+
+export interface ProjectDocumentTreeNodeDto {
+    id: string
+    parent_id: string | null
+    title: string
+    status: ProjectDocumentStatusValue
+    depth: number
+    has_children: boolean
+    updated_at: string
+
+    tags?: ITag[]
+    updated_by?: UserOverviewDto
+}

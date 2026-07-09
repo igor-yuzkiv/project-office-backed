@@ -10,6 +10,10 @@ use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasArchivableColumns;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Infrastructure\Models\Contracts\Archivable;
+use App\Libs\EloquentFilters\Concerns\HasFilters;
+use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\TagFilter;
+use App\Libs\EloquentFilters\Filters\TaskFilter;
 use Database\Factories\ProjectDocumentModelFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -47,7 +51,10 @@ use Illuminate\Support\Carbon;
 class ProjectDocumentModel extends Model implements Archivable
 {
     /** @use HasFactory<ProjectDocumentModelFactory> */
-    use HasArchivableColumns, HasAuditableColumns, HasFactory, HasUlids;
+    use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids;
+
+    /** Maximum allowed nesting depth (0, 1, 2 — a document at MAX_DEPTH cannot have children). */
+    public const int MAX_DEPTH = 2;
 
     protected $table = 'project_documents';
 
@@ -96,6 +103,10 @@ class ProjectDocumentModel extends Model implements Archivable
 
         if ($this->exists && in_array($this->id, explode('.', (string) $parent->path), true)) {
             throw new DomainException('A document cannot be moved under its own descendant.');
+        }
+
+        if ($parent->depth >= self::MAX_DEPTH) {
+            throw new DomainException('Maximum document nesting depth ('.(self::MAX_DEPTH + 1).' levels) exceeded.');
         }
 
         $this->path = $parent->path.'.'.$this->id;
@@ -151,5 +162,13 @@ class ProjectDocumentModel extends Model implements Archivable
     public static function newFactory(): ProjectDocumentModelFactory
     {
         return ProjectDocumentModelFactory::new();
+    }
+
+    public static function allowedFilters(): array
+    {
+        return [
+            new FilterDefinition(TagFilter::class, []),
+            new FilterDefinition(TaskFilter::class, []),
+        ];
     }
 }

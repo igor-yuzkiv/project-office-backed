@@ -1,0 +1,88 @@
+<script setup lang="ts">
+import { Icon } from '@iconify/vue'
+import type { PaginationMeta } from '@/shared/types'
+import type { ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
+import { EntityTreeTableView, type EntityTreeNode, type EntityTreeTableColumnDef } from '@/shared/components/table'
+import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
+import { TagList } from '@/widgets/tags/metadata'
+import { UserAvatar } from '@/widgets/user/user-avatar'
+import { DisplayDate } from '@/shared/components/display'
+
+defineProps<{
+    treeNodes: EntityTreeNode<ProjectDocumentTreeNodeDto>[]
+    paginationMeta?: PaginationMeta
+    isPending: boolean
+    page: number
+    expandedKeys: Record<string, boolean>
+}>()
+
+const emit = defineEmits<{
+    (e: 'expand-node', nodeId: string): void
+    (e: 'collapse-node', nodeId: string): void
+    (e: 'page-change', page: number): void
+}>()
+
+const columns: EntityTreeTableColumnDef[] = [
+    { field: 'title', header: 'Title', expander: true },
+    { field: 'status', header: 'Status', style: 'width: 9rem' },
+    { field: 'tags', header: 'Tags' },
+    { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
+    { field: 'updated_at', header: 'Updated At', style: 'width: 10rem' },
+]
+
+function onNodeExpand(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
+    emit('expand-node', node.key)
+}
+
+function onNodeCollapse(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
+    emit('collapse-node', node.key)
+}
+
+function onPageChange(page: number) {
+    emit('page-change', page)
+}
+</script>
+
+<template>
+    <EntityTreeTableView
+        :nodes="treeNodes"
+        :columns="columns"
+        :is-pending="isPending"
+        :pagination-meta="paginationMeta"
+        :page="page"
+        :expanded-keys="expandedKeys"
+        @node-expand="onNodeExpand"
+        @node-collapse="onNodeCollapse"
+        @page-change="onPageChange"
+    >
+        <template #column:title="{ row }">
+            <RouterLink
+                :to="{ name: 'project-document-details', params: { id: row.id } }"
+                class="app-link gap-2 flex items-center"
+            >
+                <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
+                <span>{{ row.title }}</span>
+                <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
+            </RouterLink>
+        </template>
+
+        <template #column:status="{ row }">
+            <ProjectDocumentStatusTag :status="row.status" variant="light" />
+        </template>
+
+        <template #column:tags="{ row }">
+            <TagList :tags="row.tags ?? []" />
+        </template>
+
+        <template #column:updated_by="{ row }">
+            <div v-if="row.updated_by" class="gap-2 flex items-center">
+                <UserAvatar :user-name="row.updated_by.name" size="small" />
+                <span class="text-surface-700 dark:text-surface-300">{{ row.updated_by.name }}</span>
+            </div>
+        </template>
+
+        <template #column:updated_at="{ row }">
+            <DisplayDate :date="row.updated_at" />
+        </template>
+    </EntityTreeTableView>
+</template>
