@@ -24,14 +24,10 @@ function createLevelState(isExpanded: boolean): LevelState {
     return { rows: [], page: 1, isLoading: false, isExpanded }
 }
 
-/**
- * Owns the lazy, paginated document tree state for a project. Reusable across any
- * consumer that embeds `<ProjectDocumentsTable>` (project documentation tab today,
- * a task's linked-documents tab in the future via `filters`).
- */
 export function useProjectDocumentTree(
     projectId: MaybeRefOrGetter<string>,
-    filters?: MaybeRefOrGetter<FilterPayloadItem[]>
+    filters?: MaybeRefOrGetter<FilterPayloadItem[]>,
+    rootParentId?: MaybeRefOrGetter<string | null>
 ) {
     const levels = reactive(new Map<string, LevelState>())
 
@@ -110,7 +106,7 @@ export function useProjectDocumentTree(
     }
 
     async function loadRoot(page = 1) {
-        await fetchLevel(ROOT_KEY, null, page)
+        await fetchLevel(ROOT_KEY, toValue(rootParentId) ?? null, page)
     }
 
     async function expandNode(nodeId: string) {

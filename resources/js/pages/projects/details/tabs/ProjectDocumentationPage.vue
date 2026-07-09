@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import Button from 'primevue/button'
 import { Icon } from '@iconify/vue'
 import { ProjectDocumentCreateDialog, useProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
-import { ProjectDocumentsTable, useProjectDocumentTree } from '@/widgets/project-documents/documents-table'
+import { ProjectDocumentationTreeTableView, useProjectDocumentTree } from '@/widgets/project-documents/views/tree-table'
 
 const route = useRoute()
 const projectId = route.params.id as string
@@ -45,7 +45,7 @@ onMounted(() => {
             </div>
 
             <div class="flex h-full w-full flex-col overflow-hidden">
-                <ProjectDocumentsTable
+                <ProjectDocumentationTreeTableView
                     :tree-nodes="tree.treeNodes.value"
                     :is-pending="tree.isPending.value"
                     :pagination-meta="tree.paginationMeta.value"

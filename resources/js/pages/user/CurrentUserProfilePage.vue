@@ -7,7 +7,7 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { InputContainer } from '@/shared/components/input'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import { ApiTokensTable, CreateApiTokenDialog } from '@/widgets/api-tokens'
+import { ApiTokensTable, CreateApiTokenDialog } from '@/widgets/user/api-tokens'
 import { useApiTokensQuery } from '@/entities/user/queries'
 
 const authStore = useAuthStore()

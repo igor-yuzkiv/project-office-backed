@@ -1,35 +1,38 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { watch } from 'vue'
 import { useRouteParams } from '@vueuse/router'
-import { useProjectDocumentQuery, useProjectDocumentChildrenQuery } from '@/entities/project-document'
-import { ProjectDocumentationFlatTableView } from '@/widgets/project-documents/views/flat-table'
-import { PAGE_SIZE } from '@/app/config'
+import { useProjectDocumentQuery } from '@/entities/project-document'
+import { ProjectDocumentationTreeTableView, useProjectDocumentTree } from '@/widgets/project-documents/views/tree-table'
 
 const documentId = useRouteParams<string>('id')
 
 const { projectDocument } = useProjectDocumentQuery(documentId)
 
-const page = ref(1)
-const pagination = computed(() => ({ page: page.value, per_page: PAGE_SIZE }))
-const { children, paginationMeta, isPending } = useProjectDocumentChildrenQuery(
-    () => projectDocument.value?.project_id ?? '',
-    documentId,
-    pagination
-)
+const tree = useProjectDocumentTree(() => projectDocument.value?.project_id ?? '', undefined, documentId)
 
-function onPageChange(newPage: number) {
-    page.value = newPage
+function onPageChange(page: number) {
+    tree.loadRoot(page)
 }
+
+watch(
+    () => projectDocument.value?.project_id,
+    (projectId) => {
+        if (projectId) tree.loadRoot()
+    },
+    { immediate: true }
+)
 </script>
 
 <template>
-    <div class="p-4">
-        <ProjectDocumentationFlatTableView
-            :documents="children"
-            :is-pending="isPending"
-            :pagination-meta="paginationMeta"
-            :page="page"
-            empty-message="No child documents yet."
+    <div class="p-4 flex h-full w-full flex-col overflow-hidden">
+        <ProjectDocumentationTreeTableView
+            :tree-nodes="tree.treeNodes.value"
+            :is-pending="tree.isPending.value"
+            :pagination-meta="tree.paginationMeta.value"
+            :page="tree.page.value"
+            :expanded-keys="tree.expandedKeys.value"
+            @expand-node="tree.expandNode"
+            @collapse-node="tree.collapseNode"
             @page-change="onPageChange"
         />
     </div>

@@ -1,5 +1,4 @@
 export { useProjectDocumentQuery } from './use.project-document.query'
 export { useProjectDocumentsQuery } from './use.project-documents.query'
-export { useProjectDocumentChildrenQuery } from './use.project-document-children.query'
 export { useProjectDocumentCommentsQuery } from './use.project-document-comments.query'
 export { useProjectDocumentTasksQuery } from './use.project-document-tasks.query'
