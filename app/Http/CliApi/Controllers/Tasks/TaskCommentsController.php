@@ -53,7 +53,7 @@ class TaskCommentsController
             return collect($request->validated('comments'))
                 ->map(function (array $comment) use ($task, $user) {
                     $created = $this->createHandler->handle(new CreateCommentCommand(
-                        task: $task,
+                        commentable: $task,
                         author: $user,
                         content: $comment['content'],
                     ));

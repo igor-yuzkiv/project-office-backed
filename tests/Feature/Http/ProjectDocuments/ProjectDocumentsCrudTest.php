@@ -72,6 +72,66 @@ it('allows the same title in different projects', function () {
     $response->assertCreated();
 });
 
+it('creates a sub-document under a given parent', function () {
+    $parent = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'Child Document',
+        'parent_id' => $parent->id,
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.parent_id', $parent->id)
+        ->assertJsonPath('data.depth', 1);
+});
+
+it('allows the same title under different parents', function () {
+    $parentA = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $parentB = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    ProjectDocumentModel::factory()->create([
+        'project_id' => $this->project->id,
+        'parent_id'  => $parentA->id,
+        'title'      => 'Shared Child Title',
+    ]);
+
+    $response = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'Shared Child Title',
+        'parent_id' => $parentB->id,
+    ]);
+
+    $response->assertCreated();
+});
+
+it('rejects creating a sub-document with a title that already exists under the same parent', function () {
+    $parent = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    ProjectDocumentModel::factory()->create([
+        'project_id' => $this->project->id,
+        'parent_id'  => $parent->id,
+        'title'      => 'Duplicate Child',
+    ]);
+
+    $response = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'Duplicate Child',
+        'parent_id' => $parent->id,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['title']);
+});
+
+it('rejects creating a document with a parent from another project', function () {
+    $otherProject = ProjectModel::factory()->create();
+    $foreignParent = ProjectDocumentModel::factory()->create(['project_id' => $otherProject->id]);
+
+    $response = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'Cross Project Child',
+        'parent_id' => $foreignParent->id,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['parent_id']);
+});
+
 it('rejects creating a document for a non-existent project', function () {
     $response = $this->postJson('/api/projects/'.((string) Str::ulid()).'/project-documents', [
         'title' => 'Orphan Document',
@@ -150,6 +210,30 @@ it('shows a single project document including its content, project and linked ta
         ->assertJsonPath('data.tasks.0.id', $task->id);
 });
 
+it('does not include the ancestor path by default', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->getJson('/api/project-documents/'.$document->id);
+
+    $response->assertOk()->assertJsonMissingPath('data.path');
+});
+
+it('includes the ancestor path from root to the document when requested via with_path', function () {
+    $root = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id, 'title' => 'Root']);
+    $child = ProjectDocumentModel::factory()->create([
+        'project_id' => $this->project->id,
+        'parent_id'  => $root->id,
+        'title'      => 'Child',
+    ]);
+
+    $response = $this->getJson('/api/project-documents/'.$child->id.'?with_path=1');
+
+    $response->assertOk()
+        ->assertJsonCount(2, 'data.path')
+        ->assertJsonPath('data.path.0.id', $root->id)
+        ->assertJsonPath('data.path.1.id', $child->id);
+});
+
 it('updates the title, content and tags of a project document', function () {
     $tag = TagModel::create(['name' => 'reviewed', 'color' => '#333333']);
 
@@ -173,6 +257,32 @@ it('updates the title, content and tags of a project document', function () {
     expect($document->title)->toBe('New Title');
     expect($document->content)->toBe('Updated body.');
     expect($document->tags()->pluck('id')->all())->toBe([$tag->id]);
+});
+
+it('updates the status of a project document', function () {
+    $document = ProjectDocumentModel::factory()->create([
+        'project_id' => $this->project->id,
+        'status'     => ProjectDocumentStatus::Draft->value,
+    ]);
+
+    $response = $this->putJson('/api/project-documents/'.$document->id, [
+        'status' => ProjectDocumentStatus::Active->value,
+    ]);
+
+    $response->assertOk()->assertJsonPath('data.status', ProjectDocumentStatus::Active->value);
+
+    $document->refresh();
+    expect($document->status)->toBe(ProjectDocumentStatus::Active);
+});
+
+it('rejects an invalid status value on update', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->putJson('/api/project-documents/'.$document->id, [
+        'status' => 'not-a-real-status',
+    ]);
+
+    $response->assertUnprocessable()->assertJsonValidationErrors(['status']);
 });
 
 it('clears the content when explicitly updated with null', function () {

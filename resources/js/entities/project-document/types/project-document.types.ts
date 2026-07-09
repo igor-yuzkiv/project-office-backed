@@ -6,6 +6,12 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 
 export type ProjectDocumentStatusValue = 'draft' | 'in_review' | 'active' | 'deprecated' | 'archived'
 
+export interface ProjectDocumentPathNodeDto {
+    id: string
+    key: string
+    title: string
+}
+
 export interface IProjectDocument extends IEntity {
     project_id: string
     parent_id: string | null
@@ -20,6 +26,7 @@ export interface IProjectDocument extends IEntity {
     project?: ProjectOverviewDto
     tags?: ITag[]
     tasks?: TaskOverviewDto[]
+    path?: ProjectDocumentPathNodeDto[]
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
 }

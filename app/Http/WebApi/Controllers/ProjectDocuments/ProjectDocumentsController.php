@@ -6,6 +6,7 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
+use App\Domains\ProjectDocument\Queries\GetProjectDocumentAncestorPathQuery;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentOverviewResource;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentResource;
 use App\Http\WebApi\Controllers\ResourceController;
@@ -19,6 +20,7 @@ class ProjectDocumentsController extends ResourceController
     public function __construct(
         private readonly CreateProjectDocumentHandler $createHandler,
         private readonly UpdateProjectDocumentHandler $updateHandler,
+        private readonly GetProjectDocumentAncestorPathQuery $ancestorPathQuery,
     ) {}
 
     private const array FULL_RELATIONS = ['tags', 'tasks', 'project', 'createdBy', 'updatedBy'];
@@ -44,7 +46,13 @@ class ProjectDocumentsController extends ResourceController
         $includes = $this->resolveIncludes(required: self::FULL_RELATIONS, requested: $this->parseRequestedIncludes());
         $projectDocument->load($includes);
 
-        return new ProjectDocumentResource($projectDocument);
+        $resource = new ProjectDocumentResource($projectDocument);
+
+        if (request()->boolean('with_path')) {
+            $resource->withPath($this->ancestorPathQuery->handle($projectDocument));
+        }
+
+        return $resource;
     }
 
     public function store(StoreProjectDocumentRequest $request, ProjectModel $project): JsonResponse

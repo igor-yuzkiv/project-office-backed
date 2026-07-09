@@ -2,10 +2,18 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
 import { InputContainer } from '@/shared/components/input'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import { useProjectDocumentQuery, useUpdateProjectDocumentMutation } from '@/entities/project-document'
+import {
+    useProjectDocumentQuery,
+    useUpdateProjectDocumentMutation,
+    uploadProjectDocumentAttachmentRequest,
+    ProjectDocumentAttachmentRoles,
+} from '@/entities/project-document'
 import type { IUpdateProjectDocumentInput } from '@/entities/project-document'
+import { projectDocumentStatusOptions } from '@/entities/project-document/config'
+import type { ProjectDocumentStatusValue } from '@/entities/project-document/types'
 import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
@@ -19,6 +27,7 @@ import { IconButton } from '@/shared/components/button'
 interface ProjectDocumentEditFormData {
     title: string
     content: string
+    status: ProjectDocumentStatusValue
     tags: ITag[]
 }
 
@@ -34,6 +43,7 @@ const { mutate: updateProjectDocument } = useUpdateProjectDocumentMutation()
 const formData = ref<ProjectDocumentEditFormData>({
     title: '',
     content: '',
+    status: 'draft',
     tags: [],
 })
 const isFormInitialized = ref(false)
@@ -46,6 +56,15 @@ function handleError(error: unknown) {
     } else {
         toast.error(error instanceof ApiError ? error.displayMessage : 'Failed to save document.')
     }
+}
+
+async function handleContentImageUpload(files: File[], callback: (urls: string[]) => void) {
+    const results = await Promise.all(
+        files.map((file) =>
+            uploadProjectDocumentAttachmentRequest(documentId, file, ProjectDocumentAttachmentRoles.CONTENT)
+        )
+    )
+    callback(results.map((res) => res.data.url))
 }
 
 function navigateBack() {
@@ -64,6 +83,7 @@ function submit() {
     const input: IUpdateProjectDocumentInput = {
         title: formData.value.title,
         content: formData.value.content,
+        status: formData.value.status,
         tag_ids: formData.value.tags.map((t) => t.id),
     }
 
@@ -87,6 +107,7 @@ watch(
             formData.value = {
                 title: doc.title,
                 content: doc.content ?? '',
+                status: doc.status,
                 tags: doc.tags ?? [],
             }
             isFormInitialized.value = true
@@ -129,12 +150,22 @@ useBreadcrumbs(() => [
 <template>
     <div v-if="projectDocument" class="p-2 flex flex-1 flex-col overflow-hidden">
         <div class="flex flex-1 flex-col overflow-hidden">
-            <div class="p-3">
+            <div class="md:grid-cols-2 gap-3 p-3 grid grid-cols-1">
                 <InputContainer label="Title" :error="validationErrors.title" required>
                     <InputText
                         v-model="formData.title"
                         placeholder="Document title..."
                         :invalid="!!validationErrors.title"
+                    />
+                </InputContainer>
+
+                <InputContainer label="Status" :error="validationErrors.status">
+                    <Select
+                        v-model="formData.status"
+                        :options="projectDocumentStatusOptions()"
+                        option-label="label"
+                        option-value="value"
+                        :invalid="!!validationErrors.status"
                     />
                 </InputContainer>
             </div>
@@ -154,7 +185,12 @@ useBreadcrumbs(() => [
             </div>
 
             <div class="flex-1 overflow-auto">
-                <MarkdownEditor v-model="formData.content" preview style="height: 100%" />
+                <MarkdownEditor
+                    v-model="formData.content"
+                    preview
+                    style="height: 100%"
+                    :handle-image-upload="handleContentImageUpload"
+                />
             </div>
         </div>
 

@@ -22,8 +22,11 @@ export async function fetchProjectDocumentsRequest(
         .then((res) => res.data)
 }
 
-export async function fetchProjectDocumentRequest(id: string): Promise<IProjectDocumentResponse> {
-    return httpClient.get<IProjectDocumentResponse>(`/project-documents/${id}`).then((res) => res.data)
+export async function fetchProjectDocumentRequest(
+    id: string,
+    params?: ProjectDocumentFetchParams
+): Promise<IProjectDocumentResponse> {
+    return httpClient.get<IProjectDocumentResponse>(`/project-documents/${id}`, { params }).then((res) => res.data)
 }
 
 export async function createProjectDocumentRequest(

@@ -9,7 +9,7 @@ class CreateCommentHandler
     public function handle(CreateCommentCommand $command): CommentModel
     {
         /** @var CommentModel $comment */
-        $comment = $command->task->comments()->create([
+        $comment = $command->commentable->comments()->create([
             'author_id' => $command->author->id,
             'content'   => $command->content,
         ]);

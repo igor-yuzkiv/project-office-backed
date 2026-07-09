@@ -43,19 +43,10 @@ const isSingle = computed(() => props.actions.length === 1)
 
     <template v-else-if="primaryAction">
         <SplitButton
-            v-if="primaryAction.to"
-            :as="RouterLink"
-            :to="primaryAction.to"
             :label="primaryAction.title"
             :model="dropdownItems"
             size="small"
-        />
-        <SplitButton
-            v-else
-            :label="primaryAction.title"
-            :model="dropdownItems"
-            size="small"
-            @click="primaryAction.action?.()"
+            @click="primaryAction.to ? router.push(primaryAction.to) : primaryAction.action?.()"
         />
     </template>
 </template>

@@ -116,8 +116,32 @@ const router = createRouter({
         {
             path: '/project-documents/:id',
             name: 'project-document-details',
-            component: () => import('@/pages/project-documents/details/ProjectDocumentOverviewPage.vue'),
+            component: () => import('@/pages/project-documents/details/ProjectDocumentDetailsPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Document' },
+            redirect: (to) => ({ name: 'project-document-details.details', params: to.params }),
+            children: [
+                {
+                    path: 'details',
+                    name: 'project-document-details.details',
+                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentOverviewPage.vue'),
+                },
+                {
+                    path: 'content',
+                    name: 'project-document-details.content',
+                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentContentPage.vue'),
+                },
+                {
+                    path: 'related-tasks',
+                    name: 'project-document-details.related-tasks',
+                    component: () =>
+                        import('@/pages/project-documents/details/tabs/ProjectDocumentRelatedTasksPage.vue'),
+                },
+                {
+                    path: 'comments',
+                    name: 'project-document-details.comments',
+                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentCommentsPage.vue'),
+                },
+            ],
         },
         {
             path: '/project-documents/:id/edit',

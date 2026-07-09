@@ -3,6 +3,8 @@
 use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
@@ -64,6 +66,31 @@ Route::apiResource('project-documents', ProjectDocumentsController::class)
     ->middleware(['auth:sanctum']);
 Route::get('projects/{project}/project-documents/tree', [ProjectDocumentTreeController::class, 'index'])
     ->middleware(['auth:sanctum'])->name('projects.project-documents.tree');
+
+/**
+ * Project Document Comments
+ */
+Route::group([
+    'prefix'     => 'project-documents/{project_document}/comments',
+    'as'         => 'project-documents.comments.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectDocumentCommentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+});
+
+/**
+ * Project Document Attachments
+ */
+Route::group([
+    'prefix'     => 'project-documents/{project_document}/attachments',
+    'as'         => 'project-documents.attachments.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectDocumentAttachmentsController::class,
+], function () {
+    Route::post('/', 'store')->name('store');
+});
 
 /**
  * Tags

@@ -11,6 +11,7 @@ use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Infrastructure\Models\Contracts\Commentable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\LookupFilter;
@@ -40,7 +41,7 @@ use Laravel\Scout\Searchable;
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
 #[Fillable(['id', 'project_id', 'task_list_id', 'key', 'sequence_number', 'name', 'description', 'start_date', 'due_date', 'priority', 'status', 'created_by', 'updated_by'])]
-class TaskModel extends Model
+class TaskModel extends Model implements Commentable
 {
     /** @use HasFactory<TaskModelFactory> */
     use HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\WebApi\Controllers\Tasks;
+namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
 use App\Domains\Comment\Actions\CreateComment\CreateCommentCommand;
 use App\Domains\Comment\Actions\CreateComment\CreateCommentHandler;
 use App\Domains\Comment\Models\CommentModel;
-use App\Domains\Task\Models\TaskModel;
+use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\User\Models\UserModel;
 use App\Http\Shared\Resources\Comment\CommentResource;
 use App\Http\WebApi\Requests\Comment\StoreCommentRequest;
@@ -13,15 +13,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
 
-class TaskCommentsController
+class ProjectDocumentCommentsController
 {
     public function __construct(
         private readonly CreateCommentHandler $createHandler,
     ) {}
 
-    public function index(TaskModel $task): AnonymousResourceCollection
+    public function index(ProjectDocumentModel $projectDocument): AnonymousResourceCollection
     {
-        $comments = $task->comments()
+        $comments = $projectDocument->comments()
             ->with('author')
             ->orderBy('created_at', 'desc')
             ->paginate(perPage: 50);
@@ -29,7 +29,7 @@ class TaskCommentsController
         return CommentResource::collection($comments);
     }
 
-    public function store(StoreCommentRequest $request, TaskModel $task): JsonResponse
+    public function store(StoreCommentRequest $request, ProjectDocumentModel $projectDocument): JsonResponse
     {
         Gate::authorize('create', CommentModel::class);
 
@@ -37,7 +37,7 @@ class TaskCommentsController
         $user = $request->user();
 
         $comment = $this->createHandler->handle(new CreateCommentCommand(
-            commentable: $task,
+            commentable: $projectDocument,
             author: $user,
             content: $request->validated('content'),
         ));

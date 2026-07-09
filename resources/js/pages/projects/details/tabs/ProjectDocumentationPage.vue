@@ -63,6 +63,7 @@ onMounted(() => {
             v-model:form-data="createDialog.formData.value"
             :validation-errors="createDialog.validationErrors.value"
             :is-pending="createDialog.isPending.value"
+            :parent-document="createDialog.parentDocument.value"
             @submit="createDialog.submit()"
         />
     </div>

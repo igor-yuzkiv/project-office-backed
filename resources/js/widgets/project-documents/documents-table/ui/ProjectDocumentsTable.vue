@@ -24,7 +24,8 @@ const emit = defineEmits<{
 
 const columns: EntityTreeTableColumnDef[] = [
     { field: 'title', header: 'Title', expander: true },
-    { field: 'status', header: 'Status', style: 'width: 9rem' },
+    { field: 'key', header: 'Key', style: 'width: 14rem' },
+    { field: 'status', header: 'Status', style: 'width: 12rem' },
     { field: 'tags', header: 'Tags' },
     { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
     { field: 'updated_at', header: 'Updated At', style: 'width: 10rem' },
@@ -61,10 +62,14 @@ function onPageChange(page: number) {
                 class="app-link gap-2 flex items-center"
             >
                 <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
-                <CopyToClipboard :text="row.key" class="text-surface-500" />
+
                 <span>{{ row.title }}</span>
                 <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
             </RouterLink>
+        </template>
+
+        <template #column:key="{ row }">
+            <CopyToClipboard :text="row.key" class="text-surface-500" />
         </template>
 
         <template #column:status="{ row }">

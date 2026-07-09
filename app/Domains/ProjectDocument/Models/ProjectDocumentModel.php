@@ -2,6 +2,8 @@
 
 namespace App\Domains\ProjectDocument\Models;
 
+use App\Domains\Attachment\Models\AttachmentModel;
+use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use App\Domains\Tag\Models\TagModel;
@@ -10,6 +12,7 @@ use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasArchivableColumns;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Infrastructure\Models\Contracts\Archivable;
+use App\Infrastructure\Models\Contracts\Commentable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\TagFilter;
@@ -25,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 
@@ -48,10 +52,12 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, ProjectDocumentModel> $children
  * @property-read Collection<int, TaskModel> $tasks
  * @property-read Collection<int, TagModel> $tags
+ * @property-read Collection<int, CommentModel> $comments
+ * @property-read Collection<int, AttachmentModel> $attachments
  * @property-read UserModel|null $archivedBy
  */
 #[Fillable(['id', 'project_id', 'parent_id', 'key', 'sequence_number', 'title', 'content', 'status', 'created_by', 'updated_by'])]
-class ProjectDocumentModel extends Model implements Archivable
+class ProjectDocumentModel extends Model implements Archivable, Commentable
 {
     /** @use HasFactory<ProjectDocumentModelFactory> */
     use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids;
@@ -158,6 +164,16 @@ class ProjectDocumentModel extends Model implements Archivable
     public function tags(): MorphToMany
     {
         return $this->morphToMany(TagModel::class, 'taggable', relatedPivotKey: 'tag_id')->withPivot('created_at');
+    }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(CommentModel::class, 'commentable');
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(AttachmentModel::class, 'attachable');
     }
 
     public function createdBy(): BelongsTo

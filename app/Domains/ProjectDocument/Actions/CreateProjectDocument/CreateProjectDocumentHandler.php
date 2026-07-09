@@ -20,7 +20,7 @@ class CreateProjectDocumentHandler
 
         $document = ProjectDocumentModel::create([
             'project_id'      => $command->projectId,
-            'parent_id'       => null,
+            'parent_id'       => $command->parentId,
             'key'             => $documentKey->value,
             'sequence_number' => $documentKey->sequenceNumber,
             'title'           => $command->title,

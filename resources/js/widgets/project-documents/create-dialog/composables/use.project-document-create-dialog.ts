@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCreateProjectDocumentMutation } from '@/entities/project-document'
+import type { ProjectDocumentPathNodeDto } from '@/entities/project-document/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
@@ -21,13 +22,15 @@ export function useProjectDocumentCreateDialog() {
 
     const visible = ref(false)
     const projectId = ref<string | null>(null)
+    const parentDocument = ref<ProjectDocumentPathNodeDto | null>(null)
     const formData = ref<ProjectDocumentCreateFormData>(getDefaultFormData())
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: create, isPending } = useCreateProjectDocumentMutation()
 
-    function open(id: string) {
+    function open(id: string, parent?: ProjectDocumentPathNodeDto) {
         projectId.value = id
+        parentDocument.value = parent ?? null
         formData.value = getDefaultFormData()
         validationErrors.value = {}
         visible.value = true
@@ -51,7 +54,11 @@ export function useProjectDocumentCreateDialog() {
         validationErrors.value = {}
 
         create(
-            { project_id: projectId.value, title: formData.value.title },
+            {
+                project_id: projectId.value,
+                title: formData.value.title,
+                parent_id: parentDocument.value?.id,
+            },
             {
                 onSuccess: (response) => {
                     close()
@@ -65,6 +72,7 @@ export function useProjectDocumentCreateDialog() {
     return {
         visible,
         formData,
+        parentDocument,
         validationErrors,
         isPending,
         open,

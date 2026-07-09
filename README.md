@@ -1,58 +1,244 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Project Office Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel backend and Vue single-page application for Project Office, a project and task
+management system designed for both human users and agent-facing CLI workflows.
 
-## About Laravel
+This repository owns:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- The web application served by Laravel and Vite.
+- The authenticated web API used by the Vue application.
+- A smaller authenticated CLI API used by `project-office-cli`.
+- Domain models for projects, task lists, tasks, comments, tags, attachments, task
+  ownership, users, and project documents.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3+
+- Laravel
+- PostgreSQL
+- Redis
+- Laravel Sanctum
+- Laravel Horizon
+- Laravel Reverb support
+- Laravel Scout
+- Vue 3
+- TypeScript
+- Vite
+- PrimeVue
+- MinIO/S3-compatible attachment storage
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.3 or newer
+- Composer
+- Node.js and npm
+- Docker, for the local PostgreSQL, Redis, and MinIO services
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Local Setup
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Install PHP dependencies:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Install frontend dependencies:
 
-## Contributing
+```bash
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Create the Laravel environment file:
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Start local infrastructure:
 
-## Security Vulnerabilities
+```bash
+docker compose up -d
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Review `.env` before running migrations. The current Docker setup expects PostgreSQL
+and MinIO values to be aligned with `docker-compose.yml`; `.env.example` is intentionally
+kept as the next cleanup target.
 
-## License
+Run migrations:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate
+```
+
+Start the development processes:
+
+```bash
+composer run dev
+```
+
+That script runs the Laravel server, queue listener, log tailing, and Vite dev server
+together.
+
+## Common Commands
+
+```bash
+# Backend server only
+php artisan serve
+
+# Frontend dev server only
+npm run dev
+
+# Build frontend assets
+npm run build
+
+# Run the test suite
+php artisan test
+
+# Run PHP static analysis
+vendor/bin/phpstan analyse
+
+# Format PHP code
+vendor/bin/pint
+
+# Check frontend types
+npm run types:check
+
+# Check frontend linting
+npm run lint:check
+```
+
+## HTTP Surfaces
+
+### Web Application
+
+The root route serves the Vue SPA:
+
+```txt
+GET /
+```
+
+The SPA includes authenticated pages for projects, tasks, project documents, user
+profile, API tokens, comments, attachments, filters, sorting, and related management
+workflows.
+
+### Web API
+
+The main JSON API is mounted under Laravel's standard API prefix:
+
+```txt
+/api
+```
+
+It is protected with Sanctum where required and includes endpoints for:
+
+- Authentication and current user lookup
+- Projects and project search
+- Task lists and task-list search
+- Tasks and task search
+- Project documents and project-document trees
+- Tags
+- Attachments
+- Task comments
+- Task owners
+- Users
+- API tokens
+- Generic comments
+
+### CLI API
+
+The agent-facing CLI API is mounted at:
+
+```txt
+/api/cli
+```
+
+It is intentionally smaller than the web API and supports the workflows needed by
+`project-office-cli`:
+
+- Current user lookup
+- Project lookup
+- Task list/read/create/update
+- Task comment list/create/update
+
+CLI requests are authenticated with Sanctum tokens.
+
+## Domain Structure
+
+Backend domain code lives under `app/Domains/`:
+
+```txt
+app/Domains/
+  Attachment/
+  Comment/
+  Project/
+  ProjectDocument/
+  Shared/
+  Tag/
+  Task/
+  TaskList/
+  User/
+```
+
+HTTP controllers, requests, and resources are split by surface:
+
+```txt
+app/Http/WebApi/
+app/Http/CliApi/
+app/Http/Shared/
+```
+
+Frontend code lives under `resources/js/` and follows the same broad separation:
+
+```txt
+resources/js/app/
+resources/js/entities/
+resources/js/pages/
+resources/js/shared/
+resources/js/widgets/
+```
+
+## Testing
+
+The test suite uses a dedicated PostgreSQL database named `task_manager_test`.
+
+To recreate it inside the running PostgreSQL container:
+
+```bash
+./scripts/init_testing_pg_database.sh
+```
+
+Then migrate and run tests:
+
+```bash
+php artisan migrate --env=testing
+php artisan test
+```
+
+See [Testing](./docs/testing.md) for more details.
+
+## Documentation
+
+Project documentation lives in [`docs/`](./docs):
+
+- [Filtering system](./docs/filtering-system.md)
+- [Include system](./docs/include-system.md)
+- [Project documents](./docs/project-documents.md)
+- [Sorting system](./docs/sorting-system.md)
+- [Testing](./docs/testing.md)
+
+Some deeper technical documents still need English cleanup before publication.
+
+## Configuration Notes
+
+- `.env` must never be committed.
+- API tokens are managed through the user profile UI and authenticated via Sanctum.
+- Attachments use the `attachments` filesystem disk, backed by S3-compatible storage.
+- Local development can use MinIO from `docker-compose.yml`.
+- Generated build output, Docker data, local IDE files, and Project Office repo settings
+  are ignored by git.
+
+## Related Repository
+
+`project-office-cli` is the companion CLI that agents use to access a controlled subset
+of this backend through `/api/cli`.
