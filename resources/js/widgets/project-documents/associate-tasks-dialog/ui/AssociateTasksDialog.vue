@@ -53,6 +53,7 @@ const searchParams = computed<TaskSearchParams>(() => ({
     ],
     page: page.value,
     per_page: PAGE_SIZE,
+    include: ['taskList'],
 }))
 
 const { tasks: searchResults, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
@@ -66,6 +67,7 @@ const availableTasks = computed(() => searchResults.value.filter((t) => !draftTa
 const columns: EntityTableColumnDef[] = [
     { field: 'key', header: 'Key', style: 'width: 8rem' },
     { field: 'name', header: 'Task Name' },
+    { field: 'task_list.name', header: 'Task List' },
     { field: 'status', header: 'Status', style: 'width: 9rem' },
 ]
 
@@ -179,7 +181,7 @@ watch(currentTasks, () => {
                     :pagination-meta="paginationMeta"
                     :page="page"
                     selection-mode="multiple"
-                    class="max-h-64"
+                    class="max-h-96"
                     @page-change="onPageChange"
                 >
                     <template #column:key="{ row }">

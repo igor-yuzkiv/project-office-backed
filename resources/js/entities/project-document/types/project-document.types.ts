@@ -49,7 +49,7 @@ export type ProjectDocumentOverviewDto = Pick<
     | 'updated_by'
 >
 
-export interface ProjectDocumentTreeNodeDto {
+export interface ProjectDocumentTreeNodeDto extends Record<string, unknown> {
     id: string
     parent_id: string | null
     key: string

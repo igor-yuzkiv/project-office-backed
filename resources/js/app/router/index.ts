@@ -104,6 +104,11 @@ const router = createRouter({
                     name: 'task-details.related-docs',
                     component: () => import('@/pages/tasks/details/tabs/TaskRelatedDocsPage.vue'),
                 },
+                {
+                    path: 'owners',
+                    name: 'task-details.owners',
+                    component: () => import('@/pages/tasks/details/tabs/TaskOwnersPage.vue'),
+                },
             ],
         },
         {
@@ -145,6 +150,11 @@ const router = createRouter({
                     path: 'comments',
                     name: 'project-document-details.comments',
                     component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentCommentsPage.vue'),
+                },
+                {
+                    path: 'children',
+                    name: 'project-document-details.children',
+                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentChildrenPage.vue'),
                 },
             ],
         },

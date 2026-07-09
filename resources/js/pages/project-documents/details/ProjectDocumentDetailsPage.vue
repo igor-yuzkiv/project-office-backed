@@ -163,6 +163,7 @@ useBreadcrumbs(() => [
             <TabList>
                 <Tab value="details" class="px-4 py-2">Details</Tab>
                 <Tab value="content" class="px-4 py-2">Content</Tab>
+                <Tab value="children" class="px-4 py-2">Child Documents</Tab>
                 <Tab value="related-tasks" class="px-4 py-2">Related Tasks</Tab>
                 <Tab value="comments" class="px-4 py-2">Comments</Tab>
             </TabList>

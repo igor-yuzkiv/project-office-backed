@@ -31,8 +31,6 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         { field: 'project', header: 'Project', style: 'min-width: 12rem' },
         { field: 'status', header: 'Status', style: 'min-width: 9rem' },
         { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
-        { field: 'start_date', header: 'Start Date', style: 'min-width: 10rem' },
-        { field: 'due_date', header: 'Due Date', style: 'min-width: 10rem' },
         { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
         { field: 'created_at', header: 'Created', style: 'min-width: 12rem' },
     ]

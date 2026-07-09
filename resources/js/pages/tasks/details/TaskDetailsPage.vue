@@ -103,6 +103,7 @@ useBreadcrumbs(() => [
                 <Tab value="comments" class="px-4 py-2">Comments</Tab>
                 <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
                 <Tab value="related-docs" class="px-4 py-2">Related Docs</Tab>
+                <Tab value="owners" class="px-4 py-2">Owners</Tab>
             </TabList>
 
             <div class="min-h-0 flex-1 overflow-auto">

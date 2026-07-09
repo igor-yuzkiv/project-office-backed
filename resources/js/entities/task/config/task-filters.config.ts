@@ -19,7 +19,7 @@ export function createDefaultTaskFiltersDefMap() {
                         placeholder: 'Select status',
                     })
                     .enabled(true)
-                    .value(['closed'])
+                    .value(['closed', 'backlog'])
             )
             .addField('priority', 'select', (d) =>
                 d.label('Priority').matchMode('in').setInputProps({
