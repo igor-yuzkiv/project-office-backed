@@ -40,7 +40,7 @@ class StoreProjectDocumentRequest extends FormRequest
     public function toCommand(ProjectModel $project): CreateProjectDocumentCommand
     {
         return new CreateProjectDocumentCommand(
-            projectId: $project->id,
+            project: $project,
             title: $this->validated('title'),
             parentId: $this->validated('parent_id'),
             tagIds: $this->validated('tag_ids'),

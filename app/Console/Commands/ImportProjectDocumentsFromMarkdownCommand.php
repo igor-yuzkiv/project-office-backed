@@ -108,7 +108,7 @@ class ImportProjectDocumentsFromMarkdownCommand extends Command
             // must not poison the surrounding transaction (Postgres aborts the whole
             // transaction on error) and block every import after it.
             $document = DB::transaction(fn () => $createHandler->handle(new CreateProjectDocumentCommand(
-                projectId: $project->id,
+                project: $project,
                 title: $title,
                 parentId: $parentId,
                 content: $content,
