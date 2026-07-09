@@ -61,9 +61,8 @@ Start local infrastructure:
 docker compose up -d
 ```
 
-Review `.env` before running migrations. The current Docker setup expects PostgreSQL
-and MinIO values to be aligned with `docker-compose.yml`; `.env.example` is intentionally
-kept as the next cleanup target.
+Review `.env` before running migrations. The provided `.env.example` defaults are aligned
+with `docker-compose.yml` for PostgreSQL, Redis, and MinIO local development.
 
 Run migrations:
 

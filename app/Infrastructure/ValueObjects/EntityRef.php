@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Shared\ValueObjects;
+namespace App\Infrastructure\ValueObjects;
 
 readonly class EntityRef
 {
