@@ -29,9 +29,9 @@ const page = ref(1)
 
 const tableColumnsDef: EntityTableColumnDef[] = [
     { field: 'key', header: 'Key', style: 'min-width: 10rem' },
+    { field: 'status', header: 'Status', style: 'min-width: 9rem' },
     { field: 'name', header: 'Task Name', style: 'min-width: 30rem' },
     { field: 'task_list.name', header: 'Task List', style: 'min-width: 15rem' },
-    { field: 'status', header: 'Status', style: 'min-width: 9rem' },
     { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
     { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
 ]

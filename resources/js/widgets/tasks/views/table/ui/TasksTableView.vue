@@ -30,9 +30,9 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
     return [
         { field: 'key', header: 'Key', style: 'min-width: 10rem' },
+        { field: 'status', header: 'Status', style: 'min-width: 9rem' },
         { field: 'name', header: 'Task Name', style: 'min-width: 30rem' },
         { field: 'project', header: 'Project', style: 'min-width: 15rem' },
-        { field: 'status', header: 'Status', style: 'min-width: 9rem' },
         { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
         { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
         { field: 'updated_by', header: 'Updated By', style: 'min-width: 12rem' },
