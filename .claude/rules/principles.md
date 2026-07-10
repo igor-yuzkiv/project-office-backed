@@ -46,13 +46,6 @@ Prefer minimal, surgical changes:
 Decision priority: correctness → minimal change → consistency with the codebase →
 maintainability → architectural improvements (only when requested).
 
-## Validation is proportional
-
-Match the amount of verification to the change's blast radius — prefer targeted checks over
-expensive project-wide validation. Concrete commands live in the scoped rules
-(`backend.md`, `frontend.md`); the workflow's validation gate applies this principle at
-phase 3.
-
 ## Git safety
 
 Hard constraints — never bypass without explicit user confirmation:

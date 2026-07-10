@@ -109,8 +109,8 @@ approval — same gate as the first time.
 
 ## Validation gate
 
-Validation is proportional and selective (see **Validation is proportional** in
-`principles.md`). Match the checks to the change instead of running everything:
+Validation is proportional and selective — match the checks to the change instead of running
+everything:
 
 - Pick only the cheap checks relevant to what changed — e.g. a small frontend change → lint
   + type check only; a small backend change → Pint and/or PHPStan. Skip what the change does
