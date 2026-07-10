@@ -98,9 +98,15 @@ Conventions (both APIs):
 
 ## Cross-cutting entities
 
-Universal entities (`Comment`, `Tag`, `Attachment`) must not know about their consumers.
-Operations scoped to a consuming entity belong in that entity's controller
-(`TaskCommentsController`, not `CommentController`). See `conventions.md` for the full rule.
+Universal entities (`Comment`, `Tag`, `Attachment`) never reference their consumers — a
+universal controller operates on the entity by its own ID only.
+
+- Operations scoped to a consuming entity belong in that entity's controller:
+  `GET /tasks/{task}/comments` → `TaskCommentsController`, not `CommentController`.
+- A universal controller must not receive a consuming-entity model (no `TaskModel`
+  parameter in `CommentController`).
+- When another entity needs comments, it gets its own set (`ProjectCommentsController`).
+  Duplication across consumers is preferred over a shared abstraction.
 
 ## Tooling
 

@@ -72,10 +72,15 @@ shared/
 
 ### Cross-cutting entities
 
-Universal entities (`comment`, `tag`, `attachment`) must not know about their consumers.
-Operations scoped to a consuming entity live in that entity's module
-(`fetchTaskCommentsRequest` in `entities/task/api/`, not `entities/comment/`). See
-`conventions.md` for the full rule.
+Universal entities (`comment`, `tag`, `attachment`) never reference their consumers — a
+universal entity module operates on the entity by its own ID only
+(`deleteCommentRequest(commentId)`, `updateCommentRequest(commentId, data)`).
+
+- Operations scoped to a consuming entity live in that entity's module:
+  `fetchTaskCommentsRequest` / `useTaskCommentsQuery` / `useCreateTaskCommentMutation` in
+  `entities/task/`, not `entities/comment/`.
+- When another entity needs comments, it gets its own set (`useProjectCommentsQuery`).
+  Duplication across consumers is preferred over a shared abstraction.
 
 ## Vue Emits
 
