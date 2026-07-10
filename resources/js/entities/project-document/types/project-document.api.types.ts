@@ -42,4 +42,5 @@ export interface IUpdateProjectDocumentInput {
     content?: string
     status?: ProjectDocumentStatusValue
     tag_ids?: string[]
+    parent_id?: string | null
 }

@@ -14,12 +14,17 @@ defineProps<{
     isPending: boolean
     page: number
     expandedKeys: Record<string, boolean>
+    // Selection mode: render the title as a pickable button instead of a link to details.
+    selectable?: boolean
+    selectedId?: string | null
+    disabledId?: string | null
 }>()
 
 const emit = defineEmits<{
     (e: 'expand-node', nodeId: string): void
     (e: 'collapse-node', nodeId: string): void
     (e: 'page-change', page: number): void
+    (e: 'select-node', node: ProjectDocumentTreeNodeDto): void
 }>()
 
 const columns: EntityTreeTableColumnDef[] = [
@@ -42,6 +47,10 @@ function onNodeCollapse(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
 function onPageChange(page: number) {
     emit('page-change', page)
 }
+
+function onSelectNode(row: ProjectDocumentTreeNodeDto) {
+    emit('select-node', row)
+}
 </script>
 
 <template>
@@ -57,7 +66,22 @@ function onPageChange(page: number) {
         @page-change="onPageChange"
     >
         <template #column:title="{ row }">
+            <button
+                v-if="selectable"
+                type="button"
+                class="app-link disabled:text-surface-400 gap-2 flex items-center disabled:cursor-not-allowed"
+                :class="{ 'font-semibold text-primary-600 dark:text-primary-400': row.id === selectedId }"
+                :disabled="row.id === disabledId"
+                @click="onSelectNode(row)"
+            >
+                <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
+
+                <span>{{ row.title }}</span>
+                <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
+            </button>
+
             <RouterLink
+                v-else
                 :to="{ name: 'project-document-details', params: { id: row.id } }"
                 class="app-link gap-2 flex items-center"
             >
