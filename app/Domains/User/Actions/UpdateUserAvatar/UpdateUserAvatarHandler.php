@@ -9,9 +9,12 @@ use App\Domains\Attachment\Actions\UploadAttachment\UploadAttachmentHandler;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Support\Facades\DB;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class UpdateUserAvatarHandler
 {
+    use AsAction;
+
     public function __construct(
         private readonly UploadAttachmentHandler $uploadHandler,
         private readonly DeleteAttachmentHandler $deleteHandler,

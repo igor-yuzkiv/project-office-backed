@@ -3,9 +3,12 @@
 namespace App\Domains\Task\Actions\UpdateTask;
 
 use App\Domains\Task\Models\TaskModel;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class UpdateTaskHandler
 {
+    use AsAction;
+
     public function handle(UpdateTaskCommand $command): TaskModel
     {
         $command->task->update([

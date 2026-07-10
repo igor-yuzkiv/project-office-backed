@@ -6,9 +6,12 @@ use App\Domains\Tag\DTO\CreateTagDTO;
 use App\Domains\Tag\Models\TagModel;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateTagsHandler
 {
+    use AsAction;
+
     /**
      * @return Collection<int, TagModel>
      */

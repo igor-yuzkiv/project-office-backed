@@ -49,6 +49,10 @@ Conventions:
   that only needs a model to delete wraps it in a `Command` (e.g. `DeleteTaskCommand { public
   readonly TaskModel $task }`) instead of accepting the model directly.
 - `Command` is a plain input DTO — no behavior, only data.
+- Every `Handler` uses the `Lorisleiva\Actions\Concerns\AsAction` trait (from
+  `lorisleiva/laravel-actions`). This project only uses the trait itself; the package's
+  `asController()` / automatic request-mapping is **not** used — controllers keep building
+  `Command`s from `FormRequest`s manually and call `handle()` directly.
 - Controllers delegate to handlers — no business logic in controllers.
 - Models extend Eloquent and live in `Models/`. Use the `ModelName` suffix
   (e.g., `ProjectModel`).

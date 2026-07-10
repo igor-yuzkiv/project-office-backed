@@ -4,9 +4,12 @@ namespace App\Domains\Task\Actions\SyncTaskProjectDocuments;
 
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Illuminate\Database\Eloquent\Collection;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class SyncTaskProjectDocumentsHandler
 {
+    use AsAction;
+
     /**
      * @return Collection<int, ProjectDocumentModel>
      */

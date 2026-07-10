@@ -3,9 +3,12 @@
 namespace App\Domains\Comment\Actions\CreateComment;
 
 use App\Domains\Comment\Models\CommentModel;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateCommentHandler
 {
+    use AsAction;
+
     public function handle(CreateCommentCommand $command): CommentModel
     {
         /** @var CommentModel $comment */

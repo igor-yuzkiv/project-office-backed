@@ -6,9 +6,12 @@ use App\Domains\Task\Exceptions\InvalidTaskOwnerAssignmentException;
 use App\Domains\Task\Models\TaskOwnerModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class SyncTaskOwnersHandler
 {
+    use AsAction;
+
     public function handle(SyncTaskOwnersCommand $command): Collection
     {
         $primaryCount = count(array_filter($command->owners, fn (TaskOwnerItemDTO $o) => $o->isPrimary));

@@ -4,9 +4,12 @@ namespace App\Domains\ProjectDocument\Actions\CreateProjectDocument;
 
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\ProjectDocumentKeyResolver;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateProjectDocumentHandler
 {
+    use AsAction;
+
     public function __construct(
         private readonly ProjectDocumentKeyResolver $projectDocumentKeyResolver,
     ) {}

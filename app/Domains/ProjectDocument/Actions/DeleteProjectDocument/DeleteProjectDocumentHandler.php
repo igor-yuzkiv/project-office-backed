@@ -6,9 +6,12 @@ use App\Domains\Attachment\Actions\DeleteAttachment\DeleteAttachmentCommand;
 use App\Domains\Attachment\Actions\DeleteAttachment\DeleteAttachmentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Illuminate\Support\Facades\DB;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class DeleteProjectDocumentHandler
 {
+    use AsAction;
+
     public function __construct(
         private readonly DeleteAttachmentHandler $deleteAttachmentHandler,
     ) {}

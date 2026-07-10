@@ -3,9 +3,12 @@
 namespace App\Domains\Project\Actions\CreateProject;
 
 use App\Domains\Project\Models\ProjectModel;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateProjectHandler
 {
+    use AsAction;
+
     public function handle(CreateProjectCommand $command): ProjectModel
     {
         $project = ProjectModel::create([

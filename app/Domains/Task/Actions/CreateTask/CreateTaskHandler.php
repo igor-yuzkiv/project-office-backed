@@ -6,9 +6,12 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\TaskKeyResolver;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateTaskHandler
 {
+    use AsAction;
+
     public function __construct(
         private readonly TaskKeyResolver $taskKeyResolver,
     ) {}

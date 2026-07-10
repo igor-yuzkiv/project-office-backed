@@ -5,9 +5,12 @@ namespace App\Domains\Attachment\Actions\UploadAttachment;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Attachment\ValueObjects\AttachmentStorageKey;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class UploadAttachmentHandler
 {
+    use AsAction;
+
     public function __construct(
         private readonly AttachmentStorageService $storageService,
     ) {}

@@ -3,9 +3,12 @@
 namespace App\Domains\ProjectDocument\Actions\UpdateProjectDocument;
 
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class UpdateProjectDocumentHandler
 {
+    use AsAction;
+
     public function handle(UpdateProjectDocumentCommand $command): ProjectDocumentModel
     {
         if ($command->attributes !== []) {
