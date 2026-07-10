@@ -1,19 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Panel from 'primevue/panel'
-import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { InputContainer } from '@/shared/components/input'
 import { UserAvatar } from '@/widgets/user/user-avatar'
+import { UploadAttachmentButton } from '@/widgets/attachments/attachment-uploader'
 import { ApiTokensTable, CreateApiTokenDialog } from '@/widgets/user/api-tokens'
 import { useApiTokensQuery } from '@/entities/user/queries'
+import { useUploadUserAvatarMutation } from '@/entities/user/mutations'
+import { useToast } from '@/shared/composables/use.toast'
 
 const authStore = useAuthStore()
+const toast = useToast()
 
 const { tokens: apiTokens, isPending: isApiTokensPending } = useApiTokensQuery()
 const isCreateTokenDialogVisible = ref(false)
+
+const { mutate: uploadAvatar, isPending: isUploadingAvatar } = useUploadUserAvatarMutation()
+
+function handleAvatarSelected(file: File) {
+    uploadAvatar(file, {
+        onError() {
+            toast.error('Failed to upload avatar. Please try again.')
+        },
+    })
+}
 </script>
 
 <template>
@@ -23,9 +36,8 @@ const isCreateTokenDialogVisible = ref(false)
                 Your photo will be visible to your teammates across the platform.
             </p>
             <div class="gap-3 flex items-center">
-                <UserAvatar :user-name="authStore.user.name" size="xlarge" />
-                <Button label="Upload photo" icon="pi pi-upload" size="small" />
-                <Button label="Remove" severity="secondary" size="small" text />
+                <UserAvatar :initials="authStore.user.initials" :avatar-url="authStore.user.avatar_url" size="xlarge" />
+                <UploadAttachmentButton :is-uploading="isUploadingAvatar" @file-selected="handleAvatarSelected" />
             </div>
             <p class="text-xs text-surface-400 mt-3">JPG, PNG or GIF. Maximum 5 MB. Recommended 256×256px.</p>
         </Panel>

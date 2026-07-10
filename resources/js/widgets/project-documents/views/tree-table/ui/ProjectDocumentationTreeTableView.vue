@@ -82,7 +82,7 @@ function onPageChange(page: number) {
 
         <template #column:updated_by="{ row }">
             <div v-if="row.updated_by" class="gap-2 flex items-center">
-                <UserAvatar :user-name="row.updated_by.name" size="small" />
+                <UserAvatar :initials="row.updated_by.initials" :avatar-url="row.updated_by.avatar_url" size="small" />
                 <span class="text-surface-700 dark:text-surface-300">{{ row.updated_by.name }}</span>
             </div>
         </template>

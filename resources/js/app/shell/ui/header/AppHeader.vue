@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import Avatar from 'primevue/avatar'
+import { ref } from 'vue'
 import Breadcrumb from 'primevue/breadcrumb'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { IconButton } from '@/shared/components/button'
-import { getInitials } from '@/shared/utils/string.util'
+import { UserAvatar } from '@/widgets/user/user-avatar'
 import { UserProfilePopover } from '@/widgets/user/profile'
 import HeaderActionButton from './HeaderActionButton.vue'
 import type { BreadcrumbItem, HeaderAction } from '../../types'
@@ -23,8 +22,6 @@ const themeStore = useAppThemeStore()
 const layoutStore = useAppLayoutStore()
 const router = useRouter()
 const profilePopover = ref<InstanceType<typeof UserProfilePopover>>()
-
-const userInitials = computed(() => getInitials(authStore.user?.name ?? ''))
 
 async function handleLogout() {
     await authStore.logout()
@@ -78,10 +75,10 @@ async function handleLogout() {
             <IconButton icon="heroicons:bell" size="medium" severity="secondary" />
             <IconButton icon="heroicons:cog-6-tooth" size="medium" severity="secondary" />
 
-            <Avatar
-                :label="userInitials"
-                shape="circle"
-                size="normal"
+            <UserAvatar
+                :initials="authStore.user?.initials ?? ''"
+                :avatar-url="authStore.user?.avatar_url"
+                size="medium"
                 class="cursor-pointer"
                 @click="profilePopover?.toggle($event)"
             />

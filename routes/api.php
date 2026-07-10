@@ -18,6 +18,7 @@ use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
 use App\Http\WebApi\Controllers\Tasks\TaskProjectDocumentsController;
 use App\Http\WebApi\Controllers\Tasks\TasksController;
 use App\Http\WebApi\Controllers\Users\ApiTokensController;
+use App\Http\WebApi\Controllers\Users\UserAvatarController;
 use App\Http\WebApi\Controllers\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -204,6 +205,11 @@ Route::group([
  * Users
  */
 Route::get('users', [UsersController::class, 'index'])->middleware(['auth:sanctum'])->name('users.index');
+
+/**
+ * User Avatar
+ */
+Route::post('user/avatar', [UserAvatarController::class, 'store'])->middleware(['auth:sanctum'])->name('user.avatar.store');
 
 /**
  * API Tokens

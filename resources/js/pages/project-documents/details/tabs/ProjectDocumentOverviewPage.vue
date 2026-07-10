@@ -55,13 +55,21 @@ const systemFields: DisplayFieldConfig<IProjectDocument>[] = [
             <DisplayFields :item="projectDocument" :fields="systemFields">
                 <template #[`field:created_by:value`]="{ item }">
                     <div v-if="item.created_by" class="gap-2 flex items-center">
-                        <UserAvatar :user-name="item.created_by.name" size="small" />
+                        <UserAvatar
+                            :initials="item.created_by.initials"
+                            :avatar-url="item.created_by.avatar_url"
+                            size="small"
+                        />
                         <span class="text-surface-700 dark:text-surface-300">{{ item.created_by.name }}</span>
                     </div>
                 </template>
                 <template #[`field:updated_by:value`]="{ item }">
                     <div v-if="item.updated_by" class="gap-2 flex items-center">
-                        <UserAvatar :user-name="item.updated_by.name" size="small" />
+                        <UserAvatar
+                            :initials="item.updated_by.initials"
+                            :avatar-url="item.updated_by.avatar_url"
+                            size="small"
+                        />
                         <span class="text-surface-700 dark:text-surface-300">{{ item.updated_by.name }}</span>
                     </div>
                 </template>

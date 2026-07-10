@@ -29,7 +29,7 @@ Thumbs.db
 /docker/
 /.ai/
 /_tmp/
-/.omc/
+.omc/
 /.project-office/repo-settings.json
 /scripts/.env
 /test-results/

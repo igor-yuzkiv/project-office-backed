@@ -18,3 +18,14 @@ export async function logoutRequest() {
 export async function fetchUserRequest(): Promise<UserResponse> {
     return httpClient.get<UserResponse>('/user').then((res) => res.data)
 }
+
+export async function uploadUserAvatarRequest(file: File): Promise<UserResponse> {
+    const formData = new FormData()
+    formData.append('avatar', file)
+
+    return httpClient
+        .post<UserResponse>('/user/avatar', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((res) => res.data)
+}

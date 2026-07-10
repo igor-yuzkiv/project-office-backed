@@ -17,7 +17,7 @@ class TaskProjectDocumentsController
     public function index(TaskModel $task): AnonymousResourceCollection
     {
         $documents = $task->projectDocuments()
-            ->with(['tags'])
+            ->with(['tags', 'updatedBy'])
             ->orderBy('title')
             ->paginate(perPage: 50);
 

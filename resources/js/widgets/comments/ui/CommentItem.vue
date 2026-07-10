@@ -28,7 +28,12 @@ function handleDelete() {
 
 <template>
     <div class="gap-3 py-4 first:pt-0 flex">
-        <UserAvatar :user-name="comment.author.name" size="medium" class="mt-0.5 shrink-0" />
+        <UserAvatar
+            :initials="comment.author.initials"
+            :avatar-url="comment.author.avatar_url"
+            size="medium"
+            class="mt-0.5 shrink-0"
+        />
 
         <div class="gap-2 min-w-0 flex flex-1 flex-col">
             <div class="gap-4 flex items-center justify-between">

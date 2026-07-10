@@ -2,24 +2,24 @@
 import { computed } from 'vue'
 import Avatar from 'primevue/avatar'
 import type { ComponentSize } from '@/shared/types'
-import { getInitials } from '@/shared/utils/string.util'
 import { USER_AVATAR_SIZE_MAP } from '../user-avatar.config'
 
 const props = withDefaults(
     defineProps<{
-        userName: string
+        initials: string
+        avatarUrl?: string | null
         size?: ComponentSize
     }>(),
     { size: 'medium' }
 )
 
-const initials = computed(() => getInitials(props.userName))
 const sizeClasses = computed(() => USER_AVATAR_SIZE_MAP[props.size])
 </script>
 
 <template>
     <Avatar
-        :label="initials"
+        :image="avatarUrl ?? undefined"
+        :label="avatarUrl ? undefined : initials"
         shape="circle"
         :pt="{
             root: { class: ['!bg-indigo-500 !text-white !font-semibold', sizeClasses.root] },

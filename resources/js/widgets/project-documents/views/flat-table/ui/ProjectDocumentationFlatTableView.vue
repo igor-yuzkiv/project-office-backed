@@ -5,6 +5,7 @@ import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { TagList } from '@/widgets/tags/metadata'
+import { UserAvatar } from '@/widgets/user/user-avatar'
 
 withDefaults(
     defineProps<{
@@ -26,6 +27,7 @@ const columns: EntityTableColumnDef[] = [
     { field: 'title', header: 'Title' },
     { field: 'status', header: 'Status', style: 'width: 10rem' },
     { field: 'tags', header: 'Tags', style: 'width: 14rem' },
+    { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
     { field: 'updated_at', header: 'Updated At', style: 'width: 12rem' },
 ]
 </script>
@@ -55,6 +57,13 @@ const columns: EntityTableColumnDef[] = [
 
         <template #column:tags="{ row }">
             <TagList v-if="row.tags" :tags="row.tags" inline />
+        </template>
+
+        <template #column:updated_by="{ row }">
+            <div v-if="row.updated_by" class="gap-2 flex items-center">
+                <UserAvatar :initials="row.updated_by.initials" :avatar-url="row.updated_by.avatar_url" size="small" />
+                <span class="text-surface-700 dark:text-surface-300">{{ row.updated_by.name }}</span>
+            </div>
         </template>
 
         <template #column:updated_at="{ row }">

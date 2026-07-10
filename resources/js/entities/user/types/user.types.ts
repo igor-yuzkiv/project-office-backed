@@ -3,9 +3,11 @@ import type { IEntity } from '@/shared/types'
 export interface IUser extends IEntity {
     name: string
     email: string
+    initials: string
+    avatar_url: string | null
 }
 
-export type UserOverviewDto = Pick<IUser, 'id' | 'name'>
+export type UserOverviewDto = Pick<IUser, 'id' | 'name' | 'initials' | 'avatar_url'>
 
 export interface ILoginCredentials {
     email: string

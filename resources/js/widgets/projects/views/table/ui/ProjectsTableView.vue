@@ -7,6 +7,7 @@ import { DisplayDate } from '@/shared/components/display'
 import { ProjectStatusTag } from '@/widgets/projects/status-tag'
 import { TagList } from '@/widgets/tags/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
+import { UserAvatar } from '@/widgets/user/user-avatar'
 
 defineProps<{
     projects: ProjectOverviewDto[]
@@ -26,6 +27,7 @@ const columns: EntityTableColumnDef[] = [
     { field: 'status', header: 'Status', style: 'width: 8rem' },
     { field: 'name', header: 'Project Name' },
     { field: 'tags', header: 'Tags' },
+    { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
     { field: 'created_at', header: 'Created', style: 'width: 12rem' },
 ]
 </script>
@@ -51,6 +53,13 @@ const columns: EntityTableColumnDef[] = [
 
         <template #column:tags="{ row }">
             <TagList v-if="row.tags" :tags="row.tags" inline />
+        </template>
+
+        <template #column:updated_by="{ row }">
+            <div v-if="row.updated_by" class="gap-2 flex items-center">
+                <UserAvatar :initials="row.updated_by.initials" :avatar-url="row.updated_by.avatar_url" size="small" />
+                <span class="text-surface-700 dark:text-surface-300">{{ row.updated_by.name }}</span>
+            </div>
         </template>
 
         <template #column:created_at="{ row }">

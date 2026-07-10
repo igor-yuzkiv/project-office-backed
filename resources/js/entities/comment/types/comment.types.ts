@@ -1,6 +1,8 @@
 export interface CommentAuthor {
     id: string
     name: string
+    initials: string
+    avatar_url: string | null
 }
 
 export interface CommentCan {

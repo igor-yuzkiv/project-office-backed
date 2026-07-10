@@ -7,6 +7,7 @@ import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { computed } from 'vue'
 import { TagList } from '@/widgets/tags/metadata'
+import { UserAvatar } from '@/widgets/user/user-avatar'
 
 const props = defineProps<{
     tasks: TaskOverviewDto[]
@@ -34,6 +35,7 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         { field: 'status', header: 'Status', style: 'min-width: 9rem' },
         { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
         { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
+        { field: 'updated_by', header: 'Updated By', style: 'min-width: 12rem' },
     ]
 })
 </script>
@@ -91,6 +93,13 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
         <template #column:created_at="{ row }">
             <DisplayDate :date="row.created_at" />
+        </template>
+
+        <template #column:updated_by="{ row }">
+            <div v-if="row.updated_by" class="gap-2 flex items-center">
+                <UserAvatar :initials="row.updated_by.initials" :avatar-url="row.updated_by.avatar_url" size="small" />
+                <span class="text-surface-700 dark:text-surface-300">{{ row.updated_by.name }}</span>
+            </div>
         </template>
     </EntityTableView>
 </template>
