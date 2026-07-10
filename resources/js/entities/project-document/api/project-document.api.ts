@@ -2,10 +2,13 @@ import { httpClient } from '@/shared/api'
 import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
 import type {
     ICreateProjectDocumentInput,
+    IProjectDocument,
     IProjectDocumentResponse,
     IProjectDocumentsResponse,
     IUpdateProjectDocumentInput,
     ProjectDocumentFetchParams,
+    ProjectDocumentOverviewDto,
+    ProjectDocumentSearchParams,
     ProjectDocumentTreeFetchParams,
     ProjectDocumentTreeNodeDto,
 } from '../types'
@@ -18,6 +21,20 @@ export async function fetchProjectDocumentsRequest(
     return httpClient
         .get<IProjectDocumentsResponse>(`/projects/${projectId}/project-documents`, {
             params: { include: include?.join(',') },
+        })
+        .then((res) => res.data)
+}
+
+export async function searchProjectDocumentsRequest(
+    params: ProjectDocumentSearchParams
+): PromisePaginatedResponse<ProjectDocumentOverviewDto> {
+    const { query = '', filters = [], include, ...pagination } = params
+    return httpClient
+        .post<PaginatedResponse<IProjectDocument>>('/project-documents/search', {
+            query,
+            filters,
+            include,
+            ...pagination,
         })
         .then((res) => res.data)
 }

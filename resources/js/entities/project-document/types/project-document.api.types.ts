@@ -1,8 +1,16 @@
 import type { PagingParams } from '@/shared/types'
 import type { FilterPayloadItem } from '@/shared/filters'
+import type { SortParams } from '@/shared/sort'
 import type { IProjectDocument, ProjectDocumentOverviewDto, ProjectDocumentStatusValue } from './project-document.types'
 
 export type ProjectDocumentInclude = 'project' | 'tags' | 'tasks' | 'createdBy' | 'updatedBy'
+
+export type ProjectDocumentSearchParams = PagingParams &
+    SortParams & {
+        query?: string
+        filters?: FilterPayloadItem[]
+        include?: ProjectDocumentInclude[]
+    }
 
 export interface IProjectDocumentResponse {
     data: IProjectDocument

@@ -13,6 +13,8 @@ use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentResource;
 use App\Http\WebApi\Controllers\ResourceController;
 use App\Http\WebApi\Requests\ProjectDocuments\StoreProjectDocumentRequest;
 use App\Http\WebApi\Requests\ProjectDocuments\UpdateProjectDocumentRequest;
+use App\Http\WebApi\Requests\Shared\SearchRequest;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -39,6 +41,25 @@ class ProjectDocumentsController extends ResourceController
         $documents = ProjectDocumentModel::where('project_id', $project->id)
             ->with($includes)
             ->get();
+
+        return ProjectDocumentOverviewResource::collection($documents);
+    }
+
+    public function search(SearchRequest $request): AnonymousResourceCollection
+    {
+        $sort = $this->getSortParams();
+        $pagination = $this->getPaginationParams();
+        $includes = $this->resolveIncludes(required: ['tags'], requested: $this->parseRequestedIncludes());
+
+        $documents = ProjectDocumentModel::search((string) $request->input('query', ''))
+            ->orderBy($sort->field, $sort->direction)
+            ->query(function (Builder $q) use ($request, $includes): Builder {
+                /** @var Builder<ProjectDocumentModel> $q */
+                return $q
+                    ->with($includes)
+                    ->filter((array) $request->input('filters', []));
+            })
+            ->paginate($pagination->perPage, 'page', $pagination->page);
 
         return ProjectDocumentOverviewResource::collection($documents);
     }

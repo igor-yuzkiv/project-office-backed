@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import type { PagingParams } from '@/shared/types'
-import type { ProjectDocumentFetchParams, ProjectDocumentTreeFetchParams } from '../types'
+import type { ProjectDocumentFetchParams, ProjectDocumentSearchParams, ProjectDocumentTreeFetchParams } from '../types'
 
 export const ProjectDocumentQueryKey = {
     all: ['project-documents'] as const,
@@ -10,6 +10,8 @@ export const ProjectDocumentQueryKey = {
         [...ProjectDocumentQueryKey.all, 'detail', id, params] as const,
     tree: (projectId: MaybeRefOrGetter<string>, params?: MaybeRefOrGetter<ProjectDocumentTreeFetchParams>) =>
         [...ProjectDocumentQueryKey.all, 'tree', projectId, params] as const,
+    search: (params: MaybeRefOrGetter<ProjectDocumentSearchParams>) =>
+        [...ProjectDocumentQueryKey.all, 'search', params] as const,
 }
 
 export const ProjectDocumentCommentQueryKey = {

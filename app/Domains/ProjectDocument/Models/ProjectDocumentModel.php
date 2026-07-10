@@ -15,6 +15,7 @@ use App\Infrastructure\Models\Contracts\Archivable;
 use App\Infrastructure\Models\Contracts\Commentable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TaskFilter;
 use Database\Factories\ProjectDocumentModelFactory;
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
+use Laravel\Scout\Searchable;
 
 /**
  * @property string $id
@@ -60,7 +62,7 @@ use Illuminate\Support\Carbon;
 class ProjectDocumentModel extends Model implements Archivable, Commentable
 {
     /** @use HasFactory<ProjectDocumentModelFactory> */
-    use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids;
+    use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
     /** Maximum allowed nesting depth (0, 1, 2 — a document at MAX_DEPTH cannot have children). */
     public const int MAX_DEPTH = 2;
@@ -135,6 +137,16 @@ class ProjectDocumentModel extends Model implements Archivable, Commentable
         });
     }
 
+    public function toSearchableArray(): array
+    {
+        return [
+            'id'      => $this->id,
+            'key'     => $this->key,
+            'title'   => $this->title,
+            'content' => $this->content,
+        ];
+    }
+
     public function wasStatusChangedToArchived(): bool
     {
         return $this->isDirty('status') && $this->status === ProjectDocumentStatus::Archived;
@@ -201,6 +213,7 @@ class ProjectDocumentModel extends Model implements Archivable, Commentable
         return [
             new FilterDefinition(TagFilter::class, []),
             new FilterDefinition(TaskFilter::class, []),
+            new FilterDefinition(LookupFilter::class, ['project_id']),
         ];
     }
 }

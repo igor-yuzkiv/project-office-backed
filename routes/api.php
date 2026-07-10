@@ -63,6 +63,7 @@ Route::group([
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
 });
+Route::post('project-documents/search', [ProjectDocumentsController::class, 'search'])->middleware(['auth:sanctum'])->name('project-documents.search');
 Route::apiResource('project-documents', ProjectDocumentsController::class)
     ->only(['show', 'update', 'destroy'])
     ->middleware(['auth:sanctum']);
@@ -161,8 +162,15 @@ Route::group([
 /**
  * Task Project Documents
  */
-Route::get('tasks/{task}/project-documents', [TaskProjectDocumentsController::class, 'index'])
-    ->middleware(['auth:sanctum'])->name('tasks.project-documents.index');
+Route::group([
+    'prefix'     => 'tasks/{task}/project-documents',
+    'as'         => 'tasks.project-documents.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => TaskProjectDocumentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::put('/', 'sync')->name('sync');
+});
 
 /**
  * Attachments
