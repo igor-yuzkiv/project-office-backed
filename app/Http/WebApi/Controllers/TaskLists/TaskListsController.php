@@ -4,6 +4,7 @@ namespace App\Http\WebApi\Controllers\TaskLists;
 
 use App\Domains\TaskList\Actions\CreateTaskList\CreateTaskListCommand;
 use App\Domains\TaskList\Actions\CreateTaskList\CreateTaskListHandler;
+use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListCommand;
 use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListHandler;
 use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListCommand;
 use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListHandler;
@@ -100,7 +101,7 @@ class TaskListsController extends ResourceController
 
     public function destroy(TaskListModel $taskList): JsonResponse
     {
-        $this->deleteHandler->handle($taskList);
+        $this->deleteHandler->handle(new DeleteTaskListCommand($taskList));
 
         return response()->json(['message' => 'Task list deleted.']);
     }

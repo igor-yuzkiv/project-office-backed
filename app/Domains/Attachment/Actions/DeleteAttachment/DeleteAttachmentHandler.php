@@ -2,7 +2,6 @@
 
 namespace App\Domains\Attachment\Actions\DeleteAttachment;
 
-use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 
 class DeleteAttachmentHandler
@@ -11,9 +10,9 @@ class DeleteAttachmentHandler
         private readonly AttachmentStorageService $storage,
     ) {}
 
-    public function handle(AttachmentModel $attachment): void
+    public function handle(DeleteAttachmentCommand $command): void
     {
-        $this->storage->delete($attachment->storage_key);
-        $attachment->delete();
+        $this->storage->delete($command->attachment->storage_key);
+        $command->attachment->delete();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentCommand;
 use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentHandler;
 use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
@@ -98,7 +99,7 @@ class ProjectDocumentsController extends ResourceController
 
     public function destroy(ProjectDocumentModel $projectDocument): JsonResponse
     {
-        $this->deleteHandler->handle($projectDocument);
+        $this->deleteHandler->handle(new DeleteProjectDocumentCommand($projectDocument));
 
         return response()->json(['message' => 'Project document deleted.']);
     }

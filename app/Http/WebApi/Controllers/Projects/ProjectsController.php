@@ -3,6 +3,7 @@
 namespace App\Http\WebApi\Controllers\Projects;
 
 use App\Domains\Project\Actions\CreateProject\CreateProjectHandler;
+use App\Domains\Project\Actions\DeleteProject\DeleteProjectCommand;
 use App\Domains\Project\Actions\DeleteProject\DeleteProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
@@ -90,7 +91,7 @@ class ProjectsController extends ResourceController
 
     public function destroy(ProjectModel $project): JsonResponse
     {
-        $this->deleteHandler->handle($project);
+        $this->deleteHandler->handle(new DeleteProjectCommand($project));
 
         return response()->json(['message' => 'Project deleted.']);
     }

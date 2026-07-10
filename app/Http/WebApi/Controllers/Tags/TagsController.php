@@ -2,6 +2,7 @@
 
 namespace App\Http\WebApi\Controllers\Tags;
 
+use App\Domains\Tag\Actions\CreateTags\CreateTagsCommand;
 use App\Domains\Tag\Actions\CreateTags\CreateTagsHandler;
 use App\Domains\Tag\Models\TagModel;
 use App\Http\Shared\Resources\Tags\TagResource;
@@ -40,7 +41,7 @@ class TagsController extends ResourceController
 
     public function store(CreateTagRequest $request): JsonResponse
     {
-        $tag = $this->createHandler->handle(collect([$request->toDto()]))->first();
+        $tag = $this->createHandler->handle(new CreateTagsCommand(collect([$request->toDto()])))->first();
 
         return (new TagResource($tag))
             ->response()

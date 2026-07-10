@@ -2,6 +2,7 @@
 
 namespace App\Http\WebApi\Controllers\Comment;
 
+use App\Domains\Comment\Actions\DeleteComment\DeleteCommentCommand;
 use App\Domains\Comment\Actions\DeleteComment\DeleteCommentHandler;
 use App\Domains\Comment\Actions\UpdateComment\UpdateCommentCommand;
 use App\Domains\Comment\Actions\UpdateComment\UpdateCommentHandler;
@@ -36,7 +37,7 @@ class CommentController
     {
         Gate::authorize('delete', $comment);
 
-        $this->deleteHandler->handle($comment);
+        $this->deleteHandler->handle(new DeleteCommentCommand($comment));
 
         return response()->json(['message' => 'Comment deleted.']);
     }

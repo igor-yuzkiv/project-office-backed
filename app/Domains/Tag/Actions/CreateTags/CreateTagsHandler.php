@@ -10,12 +10,11 @@ use Illuminate\Support\Collection;
 class CreateTagsHandler
 {
     /**
-     * @param  Collection<int, CreateTagDTO>  $dtos
      * @return Collection<int, TagModel>
      */
-    public function handle(Collection $dtos): Collection
+    public function handle(CreateTagsCommand $command): Collection
     {
-        $dtosByNormalizedName = $dtos->keyBy(fn (CreateTagDTO $dto): string => $dto->getNormalizedName());
+        $dtosByNormalizedName = $command->dtos->keyBy(fn (CreateTagDTO $dto): string => $dto->getNormalizedName());
 
         $existingTags = TagModel::query()
             ->whereIn('name', $dtosByNormalizedName->keys())

@@ -2,12 +2,10 @@
 
 namespace App\Domains\Project\Actions\DeleteProject;
 
-use App\Domains\Project\Models\ProjectModel;
-
 class DeleteProjectHandler
 {
-    public function handle(ProjectModel $project): void
+    public function handle(DeleteProjectCommand $command): void
     {
-        $project->delete();
+        $command->project->delete();
     }
 }

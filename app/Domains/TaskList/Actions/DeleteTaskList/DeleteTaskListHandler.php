@@ -2,12 +2,10 @@
 
 namespace App\Domains\TaskList\Actions\DeleteTaskList;
 
-use App\Domains\TaskList\Models\TaskListModel;
-
 class DeleteTaskListHandler
 {
-    public function handle(TaskListModel $taskList): void
+    public function handle(DeleteTaskListCommand $command): void
     {
-        $taskList->delete();
+        $command->taskList->delete();
     }
 }

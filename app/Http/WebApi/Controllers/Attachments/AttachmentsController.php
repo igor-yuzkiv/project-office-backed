@@ -2,6 +2,7 @@
 
 namespace App\Http\WebApi\Controllers\Attachments;
 
+use App\Domains\Attachment\Actions\DeleteAttachment\DeleteAttachmentCommand;
 use App\Domains\Attachment\Actions\DeleteAttachment\DeleteAttachmentHandler;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
@@ -24,7 +25,7 @@ class AttachmentsController extends ResourceController
 
     public function destroy(AttachmentModel $attachment): JsonResponse
     {
-        $this->deleteHandler->handle($attachment);
+        $this->deleteHandler->handle(new DeleteAttachmentCommand($attachment));
 
         return response()->json(['message' => 'Attachment deleted.']);
     }

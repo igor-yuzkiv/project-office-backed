@@ -3,6 +3,7 @@
 namespace App\Http\CliApi\Controllers\Tasks;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Tag\Actions\CreateTags\CreateTagsCommand;
 use App\Domains\Tag\Actions\CreateTags\CreateTagsHandler;
 use App\Domains\Task\Actions\CreateTask\CreateTaskHandler;
 use App\Domains\Task\Actions\UpdateTask\UpdateTaskHandler;
@@ -49,7 +50,7 @@ class TasksController extends ResourceController
     {
         $tagDtos = $request->getTagDtos();
         $tagIds = $tagDtos->isNotEmpty()
-            ? $this->createTagsHandler->handle($tagDtos)->pluck('id')->all()
+            ? $this->createTagsHandler->handle(new CreateTagsCommand($tagDtos))->pluck('id')->all()
             : null;
 
         $task = $this->createHandler->handle($request->toCommand($project, $tagIds));
@@ -73,7 +74,7 @@ class TasksController extends ResourceController
         if ($request->has('tags')) {
             $tagDtos = $request->getTagDtos();
             $tagIds = $tagDtos->isNotEmpty()
-                ? $this->createTagsHandler->handle($tagDtos)->pluck('id')->all()
+                ? $this->createTagsHandler->handle(new CreateTagsCommand($tagDtos))->pluck('id')->all()
                 : [];
         }
 

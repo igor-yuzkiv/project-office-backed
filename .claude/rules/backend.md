@@ -30,7 +30,7 @@ app/Domains/
     ├── Actions/
     │   └── {Verb}{Entity}/
     │       ├── {Verb}{Entity}Handler.php   # entry point, contains business logic
-    │       ├── {Verb}{Entity}Command.php   # input DTO (optional)
+    │       ├── {Verb}{Entity}Command.php   # input DTO
     │       └── {Verb}{Entity}DTO.php       # output or intermediate DTO (optional)
     ├── Models/
     ├── Queries/
@@ -45,6 +45,9 @@ Conventions:
 
 - `Handler` is the single entry point for an action. It receives a `Command` and executes
   business logic.
+- `handle()` always takes exactly one `Command` argument — no exceptions. Even a handler
+  that only needs a model to delete wraps it in a `Command` (e.g. `DeleteTaskCommand { public
+  readonly TaskModel $task }`) instead of accepting the model directly.
 - `Command` is a plain input DTO — no behavior, only data.
 - Controllers delegate to handlers — no business logic in controllers.
 - Models extend Eloquent and live in `Models/`. Use the `ModelName` suffix

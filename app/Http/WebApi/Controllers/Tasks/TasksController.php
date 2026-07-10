@@ -3,6 +3,7 @@
 namespace App\Http\WebApi\Controllers\Tasks;
 
 use App\Domains\Task\Actions\CreateTask\CreateTaskHandler;
+use App\Domains\Task\Actions\DeleteTask\DeleteTaskCommand;
 use App\Domains\Task\Actions\DeleteTask\DeleteTaskHandler;
 use App\Domains\Task\Actions\UpdateTask\UpdateTaskHandler;
 use App\Domains\Task\Models\TaskModel;
@@ -88,7 +89,7 @@ class TasksController extends ResourceController
 
     public function destroy(TaskModel $task): JsonResponse
     {
-        $this->deleteHandler->handle($task);
+        $this->deleteHandler->handle(new DeleteTaskCommand($task));
 
         return response()->json(['message' => 'Task deleted.']);
     }

@@ -2,12 +2,10 @@
 
 namespace App\Domains\Comment\Actions\DeleteComment;
 
-use App\Domains\Comment\Models\CommentModel;
-
 class DeleteCommentHandler
 {
-    public function handle(CommentModel $comment): void
+    public function handle(DeleteCommentCommand $command): void
     {
-        $comment->delete();
+        $command->comment->delete();
     }
 }

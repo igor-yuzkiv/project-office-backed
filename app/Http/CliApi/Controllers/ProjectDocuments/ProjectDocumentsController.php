@@ -7,6 +7,7 @@ use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocum
 use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\Queries\GetProjectDocumentAncestorPathQuery;
+use App\Domains\Tag\Actions\CreateTags\CreateTagsCommand;
 use App\Domains\Tag\Actions\CreateTags\CreateTagsHandler;
 use App\Http\CliApi\Requests\ProjectDocuments\StoreProjectDocumentRequest;
 use App\Http\CliApi\Requests\ProjectDocuments\UpdateProjectDocumentRequest;
@@ -33,7 +34,7 @@ class ProjectDocumentsController
     {
         $tagDtos = $request->getTagDtos();
         $tagIds = $tagDtos->isNotEmpty()
-            ? $this->createTagsHandler->handle($tagDtos)->pluck('id')->all()
+            ? $this->createTagsHandler->handle(new CreateTagsCommand($tagDtos))->pluck('id')->all()
             : null;
 
         $document = $this->createHandler->handle($request->toCommand($project, $tagIds));
@@ -50,7 +51,7 @@ class ProjectDocumentsController
         if ($request->has('tags')) {
             $tagDtos = $request->getTagDtos();
             $tagIds = $tagDtos->isNotEmpty()
-                ? $this->createTagsHandler->handle($tagDtos)->pluck('id')->all()
+                ? $this->createTagsHandler->handle(new CreateTagsCommand($tagDtos))->pluck('id')->all()
                 : [];
         }
 
