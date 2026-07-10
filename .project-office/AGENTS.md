@@ -32,6 +32,7 @@ from this code repo. All project data is reached through the `project-office` CL
 - **While working** — log events as comments (below); keep `description` as the statement of intent, never running progress.
 - **Hand off** — `in_progress → ready_to_test` once implemented **and verified**, with a hand-off comment. `completed` / `closed` come later, from the user.
 - **Can't proceed** — don't park it in a status: leave it `in_progress`, comment the blocker, raise it with the user.
+- **Creating or rewriting tasks** — follow the `./task-description-pattern.md`. Use only the sections relevant to the task; keep simple tasks compact.
 
 ### Comments — the work log
 
