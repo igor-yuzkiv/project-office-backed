@@ -5,7 +5,7 @@ namespace App\Http\CliApi\Requests\Tasks;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Actions\CreateTask\CreateTaskCommand;
 use App\Domains\Task\Enums\TaskPriority;
-use App\Http\CliApi\Requests\Tasks\Concerns\HasTagDtos;
+use App\Http\CliApi\Requests\Concerns\HasTagDtos;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;

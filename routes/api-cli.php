@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\CliApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\CliApi\Controllers\Projects\ProjectsController;
 use App\Http\CliApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\CliApi\Controllers\Tasks\TasksController;
@@ -42,5 +43,17 @@ Route::middleware('auth:sanctum')
                         Route::post('/', [TaskCommentsController::class, 'store'])->name('store');
                         Route::put('{comment}', [TaskCommentsController::class, 'update'])->name('update');
                     });
+            });
+
+        /**
+         * Project Documents
+         */
+        Route::prefix('docs')
+            ->name('docs.')
+            ->scopeBindings()
+            ->group(function () {
+                Route::post('/', [ProjectDocumentsController::class, 'store'])->name('store');
+                Route::get('{document}', [ProjectDocumentsController::class, 'show'])->name('show');
+                Route::put('{document}', [ProjectDocumentsController::class, 'update'])->name('update');
             });
     });

@@ -4,6 +4,7 @@ namespace App\Domains\Project\Models;
 
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Project\Enums\ProjectStatus;
+use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\TaskList\Models\TaskListModel;
@@ -40,6 +41,7 @@ use Laravel\Scout\Searchable;
  * @property Collection<int, TagModel> $tags
  * @property Collection<int, TaskModel> $tasks
  * @property Collection<int, TaskListModel> $taskLists
+ * @property Collection<int, ProjectDocumentModel> $documents
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -102,6 +104,11 @@ class ProjectModel extends Model implements Archivable
     public function taskLists(): HasMany
     {
         return $this->hasMany(TaskListModel::class, 'project_id');
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ProjectDocumentModel::class, 'project_id');
     }
 
     public function attachments(): MorphMany

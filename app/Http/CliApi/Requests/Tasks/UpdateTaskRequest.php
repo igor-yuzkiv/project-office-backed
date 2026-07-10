@@ -5,7 +5,7 @@ namespace App\Http\CliApi\Requests\Tasks;
 use App\Domains\Task\Actions\UpdateTask\UpdateTaskCommand;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
-use App\Http\CliApi\Requests\Tasks\Concerns\HasTagDtos;
+use App\Http\CliApi\Requests\Concerns\HasTagDtos;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

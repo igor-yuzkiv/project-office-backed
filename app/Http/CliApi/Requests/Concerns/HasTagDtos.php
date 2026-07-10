@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\CliApi\Requests\Tasks\Concerns;
+namespace App\Http\CliApi\Requests\Concerns;
 
 use App\Domains\Tag\DTO\CreateTagDTO;
 use Illuminate\Support\Collection;
