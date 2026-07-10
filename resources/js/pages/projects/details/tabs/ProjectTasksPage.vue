@@ -102,7 +102,6 @@ function onPageChange(newPage: number) {
                 <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
                 <Button
                     severity="info"
-                    outlined
                     text
                     label="New Task"
                     :disabled="!project"

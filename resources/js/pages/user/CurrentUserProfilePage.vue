@@ -25,7 +25,7 @@ const isCreateTokenDialogVisible = ref(false)
             <div class="gap-3 flex items-center">
                 <UserAvatar :user-name="authStore.user.name" size="xlarge" />
                 <Button label="Upload photo" icon="pi pi-upload" size="small" />
-                <Button label="Remove" severity="secondary" size="small" outlined />
+                <Button label="Remove" severity="secondary" size="small" text />
             </div>
             <p class="text-xs text-surface-400 mt-3">JPG, PNG or GIF. Maximum 5 MB. Recommended 256×256px.</p>
         </Panel>

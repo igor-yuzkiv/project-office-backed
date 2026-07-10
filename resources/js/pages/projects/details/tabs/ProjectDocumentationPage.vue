@@ -27,7 +27,6 @@ onMounted(() => {
             <div class="gap-2 p-1 flex items-center justify-end">
                 <Button
                     severity="secondary"
-                    outlined
                     text
                     label="Expand All"
                     title="Expands the direct children of every root document on this page"
@@ -37,7 +36,7 @@ onMounted(() => {
                         <Icon icon="heroicons:arrows-pointing-out" class="text-lg" />
                     </template>
                 </Button>
-                <Button severity="info" outlined text label="New Document" @click="createDialog.open(projectId)">
+                <Button severity="info" size="small" text label="New Document" @click="createDialog.open(projectId)">
                     <template #icon>
                         <Icon icon="material-symbols:add" class="text-lg" />
                     </template>

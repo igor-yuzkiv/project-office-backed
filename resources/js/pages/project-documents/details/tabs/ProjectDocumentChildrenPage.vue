@@ -4,6 +4,7 @@ import { useRouteParams } from '@vueuse/router'
 import { canProjectDocumentHaveChildren, useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentationTreeTableView, useProjectDocumentTree } from '@/widgets/project-documents/views/tree-table'
 import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
 import { ProjectDocumentCreateDialog, useProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 
 const documentId = useRouteParams<string>('id')
@@ -45,10 +46,15 @@ watch(
                 <Button
                     label="Create Sub-Document"
                     size="small"
-                    outlined
+                    severity="info"
+                    text
                     :disabled="!canCreateSubDocument"
                     @click="openCreateSubDocumentDialog"
-                />
+                >
+                    <template #icon>
+                        <Icon icon="material-symbols:add" class="text-lg" />
+                    </template>
+                </Button>
             </div>
 
             <ProjectDocumentationTreeTableView

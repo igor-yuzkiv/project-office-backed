@@ -71,6 +71,11 @@ const columns: EntityTableColumnDef[] = [
     { field: 'status', header: 'Status', style: 'width: 9rem' },
 ]
 
+// Guards against wiping in-progress user edits: the authoritative currentTasks fetch
+// resolves asynchronously after the dialog opens, so it re-inits the draft at most once
+// per open (right when real data arrives), not on every change afterwards.
+let hasSyncedCurrentTasks = false
+
 function initDraft() {
     draftTasks.value = [...currentTasks.value]
     selectedToAdd.value = []
@@ -117,11 +122,17 @@ function onPageChange(newPage: number) {
 }
 
 watch(visible, (isVisible) => {
-    if (isVisible) initDraft()
+    if (isVisible) {
+        hasSyncedCurrentTasks = false
+        initDraft()
+    }
 })
 
 watch(currentTasks, () => {
-    if (visible.value) initDraft()
+    if (visible.value && !hasSyncedCurrentTasks) {
+        initDraft()
+        hasSyncedCurrentTasks = true
+    }
 })
 </script>
 

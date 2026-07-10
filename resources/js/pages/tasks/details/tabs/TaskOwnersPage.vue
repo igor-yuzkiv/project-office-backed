@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
 import { useTaskOwnersQuery } from '@/entities/task-owner/queries'
 import { ManageTaskOwnersDialog } from '@/widgets/task-owners/manage-dialog'
 import { TaskOwnersTable } from '@/widgets/task-owners/owners-table'
@@ -17,7 +18,11 @@ const isManageOwnersDialogVisible = ref(false)
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-1 flex justify-end">
-            <Button label="Assign" size="small" outlined @click="isManageOwnersDialogVisible = true" />
+            <Button label="Assign" severity="info" size="small" text @click="isManageOwnersDialogVisible = true">
+                <template #icon>
+                    <Icon icon="material-symbols:add" class="text-lg" />
+                </template>
+            </Button>
         </div>
 
         <div class="flex h-full w-full flex-col overflow-hidden">

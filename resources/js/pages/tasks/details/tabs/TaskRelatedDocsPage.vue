@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouteParams } from '@vueuse/router'
 import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
 import { useTaskProjectDocumentsQuery, useTaskQuery } from '@/entities/task/queries'
 import { ProjectDocumentationFlatTableView } from '@/widgets/project-documents/views/flat-table'
 import { AssociateProjectDocumentsDialog } from '@/widgets/tasks/associate-project-documents-dialog'
@@ -26,7 +27,17 @@ const isAssociateDialogVisible = ref(false)
 <template>
     <div class="p-4">
         <div class="gap-2 pb-2 flex items-center justify-end">
-            <Button label="Associate Document" size="small" outlined @click="isAssociateDialogVisible = true" />
+            <Button
+                label="Associate Document"
+                severity="info"
+                size="small"
+                text
+                @click="isAssociateDialogVisible = true"
+            >
+                <template #icon>
+                    <Icon icon="material-symbols:add" class="text-lg" />
+                </template>
+            </Button>
         </div>
 
         <ProjectDocumentationFlatTableView

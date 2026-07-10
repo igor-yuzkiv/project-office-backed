@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouteParams } from '@vueuse/router'
 import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
 import { useProjectDocumentQuery, useProjectDocumentTasksQuery } from '@/entities/project-document'
 import type { TaskOverviewDto } from '@/entities/task/types'
 import { TasksTableView } from '@/widgets/tasks/views/table'
@@ -31,7 +32,17 @@ const isAssociateDialogVisible = ref(false)
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="flex h-full w-full flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-end">
-                <Button label="Associate Task" size="small" outlined @click="isAssociateDialogVisible = true" />
+                <Button
+                    label="Associate Task"
+                    severity="info"
+                    text
+                    size="small"
+                    @click="isAssociateDialogVisible = true"
+                >
+                    <template #icon>
+                        <Icon icon="material-symbols:add" class="text-lg" />
+                    </template>
+                </Button>
             </div>
 
             <TasksTableView
