@@ -16,6 +16,19 @@
     z-index: 1;
 }
 
+.md-editor-preview ul:not(.md-editor-codetab-label) {
+    list-style-type: disc;
+}
+
+.md-editor-preview ol {
+    list-style-type: decimal;
+}
+
+.md-editor-preview ul .task-list-item,
+.md-editor-preview ol .task-list-item {
+    list-style-type: none;
+}
+
 .md-editor-previewOnly {
     background-color: transparent !important;
 }
