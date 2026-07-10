@@ -6,15 +6,17 @@ import type { MenuItem } from 'primevue/menuitem'
 import { useTasksSearchQuery } from '@/entities/task/queries'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
 import type { TaskOverviewDto } from '@/entities/task/types'
+import { useTaskViewsQuery } from '@/entities/task-view'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
-import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
+import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
+import { TaskViewSelect, useTaskViewSwitcher } from '@/shared/task-views'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { useHeaderActions } from '@/app/shell'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTableView } from '@/widgets/tasks/views/table'
-import { createDefaultTaskFiltersDefMap } from '@/entities/task/config'
+import { createDefaultTaskFiltersDefMap, taskSortFieldDefs, taskTableColumnDefs } from '@/entities/task/config'
 
 const router = useRouter()
 
@@ -45,15 +47,10 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
 
 const filterSidebar = useFilterSidebar(createDefaultTaskFiltersDefMap())
 
-const sortFieldDefs: SortFieldDef[] = [
-    { field: 'name', label: 'Name' },
-    { field: 'status', label: 'Status' },
-    { field: 'priority', label: 'Priority' },
-    { field: 'created_at', label: 'Created' },
-    { field: 'updated_at', label: 'Updated' },
-]
+const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
+const taskViewSwitcher = useTaskViewSwitcher(taskViews)
 
-const sort = useSortDialog(sortFieldDefs, 'created_at', 'desc')
+const sort = useSortDialog(taskSortFieldDefs, 'created_at', 'desc')
 
 const searchInput = ref('')
 const searchQuery = ref('')
@@ -61,15 +58,19 @@ const page = ref(1)
 
 const searchParams = computed(() => ({
     query: searchQuery.value,
-    filters: filterSidebar.resolvedFilters.value,
+    filters: [...taskViewSwitcher.activeViewFilters.value, ...filterSidebar.resolvedFilters.value],
     page: page.value,
     per_page: PAGE_SIZE,
     sort_by: sort.sortBy.value,
     sort_order: sort.sortOrder.value,
-    include: ['project' as const],
+    include: ['project' as const, 'taskList' as const],
 }))
 
-const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
+// Gate the search until the task views are settled, otherwise it fires once with no view
+// filters and again once the default view (All Open) loads.
+const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams, {
+    enabled: computed(() => !isTaskViewsPending.value),
+})
 
 function taskDetailsRoute(task: TaskOverviewDto) {
     return { name: 'task-details', params: { id: task.id } }
@@ -82,6 +83,12 @@ function onSortApply() {
 
 function onSearchSubmit() {
     searchQuery.value = searchInput.value
+    page.value = 1
+}
+
+function onViewSelect(key: string) {
+    taskViewSwitcher.select(key)
+    filterSidebar.clear()
     page.value = 1
 }
 
@@ -105,6 +112,11 @@ useHeaderActions([
             <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
+                    <TaskViewSelect
+                        :model-value="taskViewSwitcher.activeViewKey.value"
+                        :options="taskViews"
+                        @update:model-value="onViewSelect"
+                    />
                     <FilterButton v-bind="filterSidebar.buttonProps.value" />
                     <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
                 </div>
@@ -117,6 +129,7 @@ useHeaderActions([
                     :pagination-meta="paginationMeta"
                     :page="page"
                     :to="taskDetailsRoute"
+                    :columns="taskTableColumnDefs"
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
@@ -132,7 +145,7 @@ useHeaderActions([
 
         <SortDialog
             :visible="sort.visible.value"
-            :fields="sortFieldDefs"
+            :fields="taskSortFieldDefs"
             :sort-by="sort.draftSortBy.value"
             :sort-order="sort.draftSortOrder.value"
             @update:visible="sort.visible.value = $event"

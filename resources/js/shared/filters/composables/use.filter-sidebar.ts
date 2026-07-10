@@ -31,6 +31,11 @@ export function useFilterSidebar(initialDefs: FilterDefMap) {
         draftDefMap.value = copyDefMap(initialDefs)
     }
 
+    function clear(): void {
+        committedDefMap.value = copyDefMap(initialDefs)
+        draftDefMap.value = copyDefMap(initialDefs)
+    }
+
     const sidebarProps = computed(() => ({
         visible: visible.value,
         'onUpdate:visible': (v: boolean) => {
@@ -56,6 +61,7 @@ export function useFilterSidebar(initialDefs: FilterDefMap) {
         updateFilter,
         apply,
         reset,
+        clear,
         sidebarProps,
         buttonProps,
     }

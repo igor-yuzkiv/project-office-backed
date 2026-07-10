@@ -9,17 +9,12 @@ export function createDefaultTaskFiltersDefMap() {
         map
             .addField('name', 'text', (d) => d.label('Name'))
             .addField('status', 'select', (d) =>
-                d
-                    .label('Status')
-                    .matchMode('notIn')
-                    .setInputProps({
-                        options: taskStatusOptions(),
-                        optionLabel: 'label',
-                        optionValue: 'value',
-                        placeholder: 'Select status',
-                    })
-                    .enabled(true)
-                    .value(['closed', 'backlog'])
+                d.label('Status').matchMode('in').setInputProps({
+                    options: taskStatusOptions(),
+                    optionLabel: 'label',
+                    optionValue: 'value',
+                    placeholder: 'Select status',
+                })
             )
             .addField('priority', 'select', (d) =>
                 d.label('Priority').matchMode('in').setInputProps({

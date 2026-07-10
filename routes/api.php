@@ -17,6 +17,7 @@ use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
 use App\Http\WebApi\Controllers\Tasks\TaskProjectDocumentsController;
 use App\Http\WebApi\Controllers\Tasks\TasksController;
+use App\Http\WebApi\Controllers\TaskViews\TaskViewsController;
 use App\Http\WebApi\Controllers\Users\ApiTokensController;
 use App\Http\WebApi\Controllers\Users\UserAvatarController;
 use App\Http\WebApi\Controllers\Users\UsersController;
@@ -51,6 +52,11 @@ Route::apiResource('task-lists', TaskListsController::class)->middleware(['auth:
  */
 Route::post('tasks/search', [TasksController::class, 'search'])->middleware(['auth:sanctum'])->name('tasks.search');
 Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']);
+
+/**
+ * Task Views
+ */
+Route::get('task-views', [TaskViewsController::class, 'index'])->middleware(['auth:sanctum'])->name('task-views.index');
 
 /**
  * Project Documents
