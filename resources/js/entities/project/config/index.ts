@@ -10,5 +10,4 @@ export const ProjectQueryKey = {
 }
 
 export * from './project-attachment.config'
-export * from './project-module.config'
 export * from './project-status.config'
