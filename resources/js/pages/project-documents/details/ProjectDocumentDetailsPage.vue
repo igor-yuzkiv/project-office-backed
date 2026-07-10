@@ -5,11 +5,7 @@ import { useRouteParams } from '@vueuse/router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
-import {
-    useProjectDocumentQuery,
-    useDeleteProjectDocumentMutation,
-    canProjectDocumentHaveChildren,
-} from '@/entities/project-document'
+import { useProjectDocumentQuery, useDeleteProjectDocumentMutation } from '@/entities/project-document'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -17,7 +13,6 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TagList } from '@/widgets/tags/metadata'
-import { ProjectDocumentCreateDialog, useProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 
 const route = useRoute()
 const router = useRouter()
@@ -26,20 +21,7 @@ const toast = useToast()
 const documentId = useRouteParams<string>('id')
 
 const { projectDocument, isError } = useProjectDocumentQuery(documentId, { with_path: true })
-const createDialog = useProjectDocumentCreateDialog()
 const { mutateWithConfirm: deleteProjectDocument } = useDeleteProjectDocumentMutation()
-
-const canCreateSubDocument = computed(() => canProjectDocumentHaveChildren(projectDocument.value?.depth ?? Infinity))
-
-function openCreateSubDocumentDialog() {
-    if (!projectDocument.value) return
-
-    createDialog.open(projectDocument.value.project_id, {
-        id: projectDocument.value.id,
-        key: projectDocument.value.key,
-        title: projectDocument.value.title,
-    })
-}
 
 function handleDeleteProjectDocument() {
     if (!projectDocument.value) return
@@ -82,9 +64,6 @@ useHeaderActions(() => [
         to: { name: 'project-document-edit', params: { id: documentId.value } },
         is_primary: true,
     },
-    ...(canCreateSubDocument.value
-        ? [{ key: 'create-sub-document', title: 'Create Sub-Document', action: openCreateSubDocumentDialog }]
-        : []),
     { key: 'delete-project-document', title: 'Delete', action: handleDeleteProjectDocument },
 ])
 
@@ -176,14 +155,5 @@ useBreadcrumbs(() => [
                 </router-view>
             </div>
         </Tabs>
-
-        <ProjectDocumentCreateDialog
-            v-model:visible="createDialog.visible.value"
-            v-model:form-data="createDialog.formData.value"
-            :validation-errors="createDialog.validationErrors.value"
-            :is-pending="createDialog.isPending.value"
-            :parent-document="createDialog.parentDocument.value"
-            @submit="createDialog.submit()"
-        />
     </div>
 </template>
