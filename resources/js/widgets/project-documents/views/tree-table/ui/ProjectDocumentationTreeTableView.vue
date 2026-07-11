@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import type { PaginationMeta } from '@/shared/types'
 import type { ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
@@ -8,28 +9,40 @@ import { TagList } from '@/widgets/tags/metadata'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
 
-defineProps<{
+const props = defineProps<{
     treeNodes: EntityTreeNode<ProjectDocumentTreeNodeDto>[]
     paginationMeta?: PaginationMeta
     isPending: boolean
     page: number
     expandedKeys: Record<string, boolean>
+    columns?: EntityTreeTableColumnDef[]
+    // Selection mode: render the title as a pickable button instead of a link to details.
+    selectable?: boolean
+    selectedId?: string | null
+    disabledId?: string | null
 }>()
 
 const emit = defineEmits<{
     (e: 'expand-node', nodeId: string): void
     (e: 'collapse-node', nodeId: string): void
     (e: 'page-change', page: number): void
+    (e: 'select-node', node: ProjectDocumentTreeNodeDto): void
 }>()
 
-const columns: EntityTreeTableColumnDef[] = [
-    { field: 'title', header: 'Title', expander: true },
-    { field: 'key', header: 'Key', style: 'width: 14rem' },
-    { field: 'status', header: 'Status', style: 'width: 12rem' },
-    { field: 'tags', header: 'Tags' },
-    { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
-    { field: 'updated_at', header: 'Updated At', style: 'width: 10rem' },
-]
+const defaultColumns = computed<EntityTreeTableColumnDef[]>(() => {
+    if (props.columns) {
+        return props.columns
+    }
+
+    return [
+        { field: 'title', header: 'Title', expander: true },
+        { field: 'key', header: 'Key', style: 'width: 14rem' },
+        { field: 'status', header: 'Status', style: 'width: 12rem' },
+        { field: 'tags', header: 'Tags' },
+        { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
+        { field: 'updated_at', header: 'Updated At', style: 'width: 10rem' },
+    ]
+})
 
 function onNodeExpand(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
     emit('expand-node', node.key)
@@ -42,12 +55,16 @@ function onNodeCollapse(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
 function onPageChange(page: number) {
     emit('page-change', page)
 }
+
+function onSelectNode(row: ProjectDocumentTreeNodeDto) {
+    emit('select-node', row)
+}
 </script>
 
 <template>
     <EntityTreeTableView
         :nodes="treeNodes"
-        :columns="columns"
+        :columns="props.columns ?? defaultColumns"
         :is-pending="isPending"
         :pagination-meta="paginationMeta"
         :page="page"
@@ -57,7 +74,22 @@ function onPageChange(page: number) {
         @page-change="onPageChange"
     >
         <template #column:title="{ row }">
+            <button
+                v-if="selectable"
+                type="button"
+                class="app-link disabled:text-surface-400 gap-2 flex items-center disabled:cursor-not-allowed"
+                :class="{ 'font-semibold text-primary-600 dark:text-primary-400': row.id === selectedId }"
+                :disabled="row.id === disabledId"
+                @click="onSelectNode(row)"
+            >
+                <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
+
+                <span>{{ row.title }}</span>
+                <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
+            </button>
+
             <RouterLink
+                v-else
                 :to="{ name: 'project-document-details', params: { id: row.id } }"
                 class="app-link gap-2 flex items-center"
             >

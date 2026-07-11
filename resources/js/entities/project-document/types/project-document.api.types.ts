@@ -43,3 +43,7 @@ export interface IUpdateProjectDocumentInput {
     status?: ProjectDocumentStatusValue
     tag_ids?: string[]
 }
+
+export interface IMoveProjectDocumentInput {
+    parent_id: string | null
+}

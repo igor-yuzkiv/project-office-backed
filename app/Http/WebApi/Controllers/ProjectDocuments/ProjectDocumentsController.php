@@ -6,12 +6,14 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentCommand;
 use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\MoveProjectDocument\MoveProjectDocumentHandler;
 use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\Queries\GetProjectDocumentAncestorPathQuery;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentOverviewResource;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentResource;
 use App\Http\WebApi\Controllers\ResourceController;
+use App\Http\WebApi\Requests\ProjectDocuments\MoveProjectDocumentRequest;
 use App\Http\WebApi\Requests\ProjectDocuments\StoreProjectDocumentRequest;
 use App\Http\WebApi\Requests\ProjectDocuments\UpdateProjectDocumentRequest;
 use App\Http\WebApi\Requests\Shared\SearchRequest;
@@ -25,6 +27,7 @@ class ProjectDocumentsController extends ResourceController
         private readonly CreateProjectDocumentHandler $createHandler,
         private readonly UpdateProjectDocumentHandler $updateHandler,
         private readonly DeleteProjectDocumentHandler $deleteHandler,
+        private readonly MoveProjectDocumentHandler $moveHandler,
         private readonly GetProjectDocumentAncestorPathQuery $ancestorPathQuery,
     ) {}
 
@@ -95,6 +98,20 @@ class ProjectDocumentsController extends ResourceController
         $document->load(self::FULL_RELATIONS);
 
         return new ProjectDocumentResource($document);
+    }
+
+    public function move(MoveProjectDocumentRequest $request, ProjectDocumentModel $projectDocument): ProjectDocumentResource
+    {
+        $document = $this->moveHandler->handle($request->toCommand($projectDocument));
+        $document->load(self::FULL_RELATIONS);
+
+        $resource = new ProjectDocumentResource($document);
+
+        if ($request->boolean('with_path')) {
+            $resource->withPath($this->ancestorPathQuery->handle($document));
+        }
+
+        return $resource;
     }
 
     public function destroy(ProjectDocumentModel $projectDocument): JsonResponse

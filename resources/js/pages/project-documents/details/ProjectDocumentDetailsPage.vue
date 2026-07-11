@@ -9,6 +9,7 @@ import { useProjectDocumentQuery, useDeleteProjectDocumentMutation } from '@/ent
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
+import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/project-documents/move-dialog'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
@@ -22,6 +23,7 @@ const documentId = useRouteParams<string>('id')
 
 const { projectDocument, isError } = useProjectDocumentQuery(documentId, { with_path: true })
 const { mutateWithConfirm: deleteProjectDocument } = useDeleteProjectDocumentMutation()
+const moveDialog = useProjectDocumentMove(() => documentId.value)
 
 function handleDeleteProjectDocument() {
     if (!projectDocument.value) return
@@ -64,6 +66,7 @@ useHeaderActions(() => [
         to: { name: 'project-document-edit', params: { id: documentId.value } },
         is_primary: true,
     },
+    { key: 'move-project-document', title: 'Move', action: moveDialog.open },
     { key: 'delete-project-document', title: 'Delete', action: handleDeleteProjectDocument },
 ])
 
@@ -155,5 +158,13 @@ useBreadcrumbs(() => [
                 </router-view>
             </div>
         </Tabs>
+
+        <ProjectDocumentMoveDialog
+            v-model:visible="moveDialog.visible.value"
+            :project-id="projectDocument.project_id"
+            :current-document-id="projectDocument.id"
+            :validation-errors="moveDialog.validationErrors.value"
+            @select="moveDialog.handleSelect"
+        />
     </div>
 </template>

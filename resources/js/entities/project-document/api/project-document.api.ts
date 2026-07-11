@@ -2,6 +2,7 @@ import { httpClient } from '@/shared/api'
 import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
 import type {
     ICreateProjectDocumentInput,
+    IMoveProjectDocumentInput,
     IProjectDocument,
     IProjectDocumentResponse,
     IProjectDocumentsResponse,
@@ -59,6 +60,13 @@ export async function updateProjectDocumentRequest(
     data: IUpdateProjectDocumentInput
 ): Promise<IProjectDocumentResponse> {
     return httpClient.put<IProjectDocumentResponse>(`/project-documents/${id}`, data).then((res) => res.data)
+}
+
+export async function moveProjectDocumentRequest(
+    id: string,
+    data: IMoveProjectDocumentInput
+): Promise<IProjectDocumentResponse> {
+    return httpClient.patch<IProjectDocumentResponse>(`/project-documents/${id}/move`, data).then((res) => res.data)
 }
 
 export async function deleteProjectDocumentRequest(id: string): Promise<{ message: string }> {

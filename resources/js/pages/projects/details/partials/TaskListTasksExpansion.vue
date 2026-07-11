@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { PAGE_SIZE } from '@/app/config'
 import { useTasksSearchQuery } from '@/entities/task/queries'
-import type { TaskSearchParams } from '@/entities/task/types'
+import type { TaskOverviewDto, TaskSearchParams } from '@/entities/task/types'
 import { taskTableColumnsExcluding } from '@/entities/task/config'
 import type { FilterPayloadItem } from '@/shared/filters'
 import { TasksTableView } from '@/widgets/tasks/views/table'
@@ -32,6 +32,10 @@ const searchParams = computed<TaskSearchParams>(() => {
 
 const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams)
 
+function taskDetailsRoute(task: TaskOverviewDto) {
+    return { name: 'task-details', params: { id: task.id } }
+}
+
 function onPageChange(newPage: number) {
     page.value = newPage
 }
@@ -45,5 +49,6 @@ function onPageChange(newPage: number) {
         :page="page"
         :columns="tableColumnsDef"
         @page-change="onPageChange"
+        :to="taskDetailsRoute"
     />
 </template>

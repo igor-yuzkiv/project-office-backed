@@ -74,6 +74,8 @@ Route::post('project-documents/search', [ProjectDocumentsController::class, 'sea
 Route::apiResource('project-documents', ProjectDocumentsController::class)
     ->only(['show', 'update', 'destroy'])
     ->middleware(['auth:sanctum']);
+Route::patch('project-documents/{project_document}/move', [ProjectDocumentsController::class, 'move'])
+    ->middleware(['auth:sanctum'])->name('project-documents.move');
 Route::get('projects/{project}/project-documents/tree', [ProjectDocumentTreeController::class, 'index'])
     ->middleware(['auth:sanctum'])->name('projects.project-documents.tree');
 

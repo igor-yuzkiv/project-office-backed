@@ -1,5 +1,6 @@
 export { useCreateProjectDocumentMutation } from './use.create-project-document.mutation'
 export { useUpdateProjectDocumentMutation } from './use.update-project-document.mutation'
+export { useMoveProjectDocumentMutation } from './use.move-project-document.mutation'
 export { useDeleteProjectDocumentMutation } from './use.delete-project-document.mutation'
 export { useCreateProjectDocumentCommentMutation } from './use.create-project-document-comment.mutation'
 export { useSyncProjectDocumentTasksMutation } from './use.sync-project-document-tasks.mutation'
