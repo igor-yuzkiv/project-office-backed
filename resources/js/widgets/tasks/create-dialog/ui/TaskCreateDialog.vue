@@ -5,12 +5,13 @@ import Button from 'primevue/button'
 import type { LaravelValidationErrors } from '@/shared/types'
 import type { TaskCreateFormData } from '../composables/use.task-create-dialog'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
+import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
 import { InputContainer } from '@/shared/components/input'
 
 const visible = defineModel<boolean>('visible', { default: false })
 const formData = defineModel<TaskCreateFormData>('formData', { required: true })
 
-const props = defineProps<{
+defineProps<{
     validationErrors: LaravelValidationErrors
     isPending: boolean
 }>()
@@ -21,6 +22,10 @@ const emit = defineEmits<{
 
 function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
     formData.value = { ...formData.value, [key]: value }
+
+    if (key === 'project') {
+        formData.value = { ...formData.value, taskList: null }
+    }
 }
 </script>
 
@@ -45,6 +50,16 @@ function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
                     class="w-full"
                     fluid
                     @update:model-value="handleFieldChanged('project', $event)"
+                />
+            </InputContainer>
+
+            <InputContainer v-if="formData.project" label="Task List" :error="validationErrors.task_list_id">
+                <TaskListLookupField
+                    :model-value="formData.taskList"
+                    :project-id="formData.project.id"
+                    :object="true"
+                    :invalid="!!validationErrors.task_list_id"
+                    @update:model-value="handleFieldChanged('taskList', $event)"
                 />
             </InputContainer>
         </form>

@@ -50,7 +50,7 @@ const filterSidebar = useFilterSidebar(createDefaultTaskFiltersDefMap())
 const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
 const taskViewSwitcher = useTaskViewSwitcher(taskViews)
 
-const sort = useSortDialog(taskSortFieldDefs, 'created_at', 'desc')
+const sort = useSortDialog(taskSortFieldDefs, 'updated_at', 'desc')
 
 const searchInput = ref('')
 const searchQuery = ref('')

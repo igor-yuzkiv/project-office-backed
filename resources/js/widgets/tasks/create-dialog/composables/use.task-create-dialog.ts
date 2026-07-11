@@ -2,18 +2,21 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCreateTaskMutation } from '@/entities/task/mutations'
 import type { ProjectOverviewDto } from '@/entities/project/types'
+import type { ITaskList } from '@/entities/task-list/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 
 export interface TaskCreateFormData {
     name: string
     project: ProjectOverviewDto | null
+    taskList: ITaskList | null
 }
 
 export function getDefaultFormData(): TaskCreateFormData {
     return {
         name: '',
         project: null,
+        taskList: null,
     }
 }
 
@@ -26,8 +29,12 @@ export function useTaskCreateDialog() {
 
     const { mutate: create, isPending } = useCreateTaskMutation()
 
-    function open(initialProject?: ProjectOverviewDto) {
-        formData.value = { ...getDefaultFormData(), project: initialProject ?? null }
+    function open(initialProject?: ProjectOverviewDto, initialTaskList?: ITaskList) {
+        formData.value = {
+            ...getDefaultFormData(),
+            project: initialProject ?? null,
+            taskList: initialTaskList ?? null,
+        }
         validationErrors.value = {}
         visible.value = true
     }
@@ -48,7 +55,11 @@ export function useTaskCreateDialog() {
         validationErrors.value = {}
 
         create(
-            { project_id: formData.value.project.id, name: formData.value.name },
+            {
+                project_id: formData.value.project.id,
+                name: formData.value.name,
+                task_list_id: formData.value.taskList?.id ?? null,
+            },
             {
                 onSuccess: (response) => {
                     close()

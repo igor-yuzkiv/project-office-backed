@@ -14,7 +14,9 @@ import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
+import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { Icon } from '@iconify/vue'
+import TaskListTasksExpansion from '../partials/TaskListTasksExpansion.vue'
 
 const projectId = useRouteParams<string>('id')
 
@@ -23,6 +25,7 @@ const { project } = useProjectQuery(projectId)
 const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
+const expandedRows = ref<ITaskList[]>([])
 
 const searchParams = computed<TaskListSearchParams>(() => {
     const projectFilter: FilterPayloadItem = {
@@ -44,11 +47,21 @@ const { taskLists, paginationMeta, isPending } = useTaskListsSearchQuery(searchP
 
 const upsertDialog = useTaskListUpsertDialog()
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
+const taskCreateDialog = useTaskCreateDialog()
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedTaskList = ref<ITaskList>()
 
 const rowMenuItems: MenuItem[] = [
+    {
+        label: 'Create Task',
+        icon: 'pi pi-plus',
+        command: () => {
+            if (project.value && selectedTaskList.value) {
+                taskCreateDialog.open(project.value, selectedTaskList.value)
+            }
+        },
+    },
     {
         label: 'Edit',
         icon: 'pi pi-pencil',
@@ -103,10 +116,12 @@ function onPageChange(newPage: number) {
             </div>
             <div class="flex h-full w-full flex-col overflow-hidden">
                 <TaskListsTableView
+                    v-model:expanded-rows="expandedRows"
                     :task-lists="taskLists"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
+                    expandable
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
@@ -115,6 +130,10 @@ function onPageChange(newPage: number) {
                             icon="pepicons-pop:dots-y"
                             @click.stop="openRowMenu($event, row)"
                         />
+                    </template>
+
+                    <template #expansion="{ row }">
+                        <TaskListTasksExpansion :task-list-id="row.id" />
                     </template>
                 </TaskListsTableView>
             </div>
@@ -131,6 +150,14 @@ function onPageChange(newPage: number) {
             @update:visible="upsertDialog.visible.value = $event"
             @update:form-data="upsertDialog.formData.value = $event"
             @submit="upsertDialog.submit()"
+        />
+
+        <TaskCreateDialog
+            v-model:visible="taskCreateDialog.visible.value"
+            v-model:form-data="taskCreateDialog.formData.value"
+            :validation-errors="taskCreateDialog.validationErrors.value"
+            :is-pending="taskCreateDialog.isPending.value"
+            @submit="taskCreateDialog.submit()"
         />
     </div>
 </template>

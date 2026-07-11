@@ -9,11 +9,14 @@ defineProps<{
     isPending: boolean
     paginationMeta?: PaginationMeta
     page: number
+    expandable?: boolean
 }>()
 
 defineEmits<{
     pageChange: [page: number]
 }>()
+
+const expandedRows = defineModel<ITaskList[]>('expandedRows', { default: () => [] })
 
 const columns: EntityTableColumnDef[] = [
     { field: 'name', header: 'Name' },
@@ -24,13 +27,19 @@ const columns: EntityTableColumnDef[] = [
 
 <template>
     <EntityTableView
+        v-model:expanded-rows="expandedRows"
         :rows="taskLists"
         :columns="columns"
         :is-pending="isPending"
         :pagination-meta="paginationMeta"
         :page="page"
+        :expandable="expandable"
         @page-change="$emit('pageChange', $event)"
     >
+        <template v-if="$slots.expansion" #expansion="{ row }">
+            <slot name="expansion" :row="row" />
+        </template>
+
         <template #column:tasks_count="{ row }">
             <span :class="(row.tasks_count ?? 0) === 0 ? 'text-surface-400' : ''">
                 {{ row.tasks_count ?? 0 }}
