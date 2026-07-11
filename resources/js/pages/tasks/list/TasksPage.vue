@@ -11,6 +11,7 @@ import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
 import { TaskViewSelect, useTaskViewSwitcher } from '@/shared/task-views'
+import { usePersistedListState } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { useHeaderActions } from '@/app/shell'
@@ -51,6 +52,19 @@ const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
 const taskViewSwitcher = useTaskViewSwitcher(taskViews)
 
 const sort = useSortDialog(taskSortFieldDefs, 'updated_at', 'desc')
+
+usePersistedListState(
+    {
+        filters: filterSidebar.filtersSnapshot,
+        sortBy: sort.sortBy,
+        sortOrder: sort.sortOrder,
+    },
+    {
+        validate: (data) =>
+            taskSortFieldDefs.some((f) => f.field === data.sortBy) &&
+            (data.sortOrder === 'asc' || data.sortOrder === 'desc'),
+    }
+)
 
 const searchInput = ref('')
 const searchQuery = ref('')

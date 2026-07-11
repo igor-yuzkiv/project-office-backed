@@ -13,6 +13,7 @@ import { ProjectCreateDialog, useProjectCreateDialog } from '@/widgets/projects/
 import { ProjectsTableView } from '@/widgets/projects/views/table'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
+import { usePersistedListState } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 
@@ -44,6 +45,19 @@ const sortFieldDefs: SortFieldDef[] = [
 ]
 
 const sort = useSortDialog(sortFieldDefs, 'updated_at', 'desc')
+
+usePersistedListState(
+    {
+        filters: filterSidebar.filtersSnapshot,
+        sortBy: sort.sortBy,
+        sortOrder: sort.sortOrder,
+    },
+    {
+        validate: (data) =>
+            sortFieldDefs.some((f) => f.field === data.sortBy) &&
+            (data.sortOrder === 'asc' || data.sortOrder === 'desc'),
+    }
+)
 
 const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 
