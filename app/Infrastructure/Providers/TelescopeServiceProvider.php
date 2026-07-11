@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace App\Infrastructure\Providers;
 
 use App\Domains\User\Models\UserModel;
 use Illuminate\Support\Facades\Gate;
