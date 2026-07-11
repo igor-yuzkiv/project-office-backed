@@ -40,6 +40,8 @@ class TaskResource extends JsonResource
             'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
 
             'project_documents' => $this->whenLoaded('projectDocuments', fn () => ProjectDocumentOverviewResource::collection($this->projectDocuments)),
+
+            'comments_count' => $this->whenCounted('comments', fn () => $this->comments_count),
         ];
     }
 }

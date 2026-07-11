@@ -48,7 +48,7 @@ it('creates a comment with the start marker when a comment is given', function (
     expect($response->json('comments'))->toHaveCount(1);
 
     $comment = CommentModel::query()->where('commentable_id', $task->id)->sole();
-    expect($comment->content)->toContain('[Start]')->toContain('Picking this up now.');
+    expect($comment->content)->toContain('# Start')->toContain('Picking this up now.');
 });
 
 it('does not create a comment when none is given', function () {

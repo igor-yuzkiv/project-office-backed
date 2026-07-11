@@ -72,6 +72,7 @@ class ProjectDocumentsController extends ResourceController
     {
         $includes = $this->resolveIncludes(required: self::FULL_RELATIONS, requested: $this->parseRequestedIncludes());
         $projectDocument->load($includes);
+        $projectDocument->loadCount('comments');
 
         $resource = new ProjectDocumentResource($projectDocument);
 

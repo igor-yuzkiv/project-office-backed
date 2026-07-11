@@ -26,7 +26,7 @@ it('creates a comment with the checkpoint marker and does not change the status'
 
     $comment = CommentModel::query()->where('commentable_id', $task->id)->sole();
     expect($comment->content)
-        ->toContain('[Checkpoint]')
+        ->toContain('# Checkpoint')
         ->toContain('Investigated the bug')
         ->toContain('Root cause found in the parser.');
 

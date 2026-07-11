@@ -147,7 +147,7 @@ useBreadcrumbs(() => [
                 <Tab value="content" class="px-4 py-2">Content</Tab>
                 <Tab value="children" class="px-4 py-2">Child Documents</Tab>
                 <Tab value="related-tasks" class="px-4 py-2">Related Tasks</Tab>
-                <Tab value="comments" class="px-4 py-2">Comments</Tab>
+                <Tab value="comments" class="px-4 py-2">Comments ({{ projectDocument.comments_count ?? 0 }})</Tab>
             </TabList>
 
             <div class="min-h-0 flex-1 overflow-auto">

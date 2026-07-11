@@ -28,6 +28,8 @@ export interface ITask extends IEntity {
     project?: ProjectOverviewDto
     task_list?: ITaskList
     project_documents?: ProjectDocumentOverviewDto[]
+
+    comments_count?: number
 }
 
 export type TaskOverviewDto = Pick<

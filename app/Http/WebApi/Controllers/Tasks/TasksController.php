@@ -65,6 +65,7 @@ class TasksController extends ResourceController
     public function show(TaskModel $task): TaskResource
     {
         $task->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'taskList', 'tags'], requested: $this->parseRequestedIncludes()));
+        $task->loadCount('comments');
 
         return new TaskResource($task);
     }

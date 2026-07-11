@@ -100,7 +100,7 @@ useBreadcrumbs(() => [
             <TabList>
                 <Tab value="details" class="px-4 py-2">Details</Tab>
                 <Tab value="description" class="px-4 py-2">Description</Tab>
-                <Tab value="comments" class="px-4 py-2">Comments</Tab>
+                <Tab value="comments" class="px-4 py-2">Comments ({{ task.comments_count ?? 0 }})</Tab>
                 <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
                 <Tab value="related-docs" class="px-4 py-2">Related Docs</Tab>
                 <Tab value="owners" class="px-4 py-2">Owners</Tab>

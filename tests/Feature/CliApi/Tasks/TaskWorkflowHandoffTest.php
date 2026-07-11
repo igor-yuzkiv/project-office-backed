@@ -26,7 +26,7 @@ it('creates a handoff resolution comment and sets the status to ready_to_test', 
     expect($response->json('data.status'))->toBe(TaskStatus::ReadyToTest->value);
 
     $comment = CommentModel::query()->where('commentable_id', $task->id)->sole();
-    expect($comment->content)->toContain('[Handoff]')->toContain('Implemented and covered with tests.');
+    expect($comment->content)->toContain('# Handoff')->toContain('Implemented and covered with tests.');
 
     expect($task->fresh()->status)->toBe(TaskStatus::ReadyToTest);
 });

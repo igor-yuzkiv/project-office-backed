@@ -29,6 +29,8 @@ export interface IProjectDocument extends IEntity {
     path?: ProjectDocumentPathNodeDto[]
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
+
+    comments_count?: number
 }
 
 export type ProjectDocumentOverviewDto = Pick<
