@@ -18,11 +18,17 @@ class HandoffTaskHandler
     {
         $task = $command->task;
 
-        DB::transaction(function () use ($command, $task): void {
+        $content = [
+            '# Handoff',
+            '## Resolution',
+            $command->resolution,
+        ];
+
+        DB::transaction(function () use ($command, $task, $content): void {
             $this->createCommentHandler->handle(new CreateCommentCommand(
                 commentable: $task,
                 author: $command->author,
-                content: "[Handoff] {$command->resolution}",
+                content: implode("\n\n", $content),
             ));
 
             $task->update(['status' => TaskStatus::ReadyToTest]);

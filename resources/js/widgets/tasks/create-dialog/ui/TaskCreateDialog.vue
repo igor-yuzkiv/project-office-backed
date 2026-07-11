@@ -21,11 +21,13 @@ const emit = defineEmits<{
 }>()
 
 function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
-    formData.value = { ...formData.value, [key]: value }
+    const nextValue = { ...formData.value, [key]: value }
 
     if (key === 'project') {
-        formData.value = { ...formData.value, taskList: null }
+        nextValue.taskList = null
     }
+
+    formData.value = nextValue
 }
 </script>
 
