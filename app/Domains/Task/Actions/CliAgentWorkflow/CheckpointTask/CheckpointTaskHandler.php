@@ -14,17 +14,10 @@ class CheckpointTaskHandler
 
     public function handle(CheckpointTaskCommand $command): CommentModel
     {
-        $content = [
-            '# Checkpoint',
-            '## '.$command->subject,
-            '## Notes',
-            $command->comment,
-        ];
-
         $comment = $this->createCommentHandler->handle(new CreateCommentCommand(
             commentable: $command->task,
             author: $command->author,
-            content: implode("\n\n", $content),
+            content: '# Checkpoint: '.$command->subject.'\n\n'.$command->comment,
         ));
 
         $command->task->touch();
