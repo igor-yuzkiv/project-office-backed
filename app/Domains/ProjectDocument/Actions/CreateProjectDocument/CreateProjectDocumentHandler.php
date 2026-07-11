@@ -15,19 +15,17 @@ class CreateProjectDocumentHandler
     {
         $documentKey = $this->projectDocumentKeyResolver->resolve($command->project);
 
-        $document = ProjectDocumentModel::create([
-            'project_id'      => $command->project->id,
-            'parent_id'       => $command->parentId,
-            'key'             => $documentKey->value,
-            'sequence_number' => $documentKey->sequenceNumber,
-            'title'           => $command->title,
-            'content'         => $command->content,
-        ]);
+        $document = ProjectDocumentModel::create($command->toModelAttributes($documentKey));
 
+        $this->syncTags($document, $command);
+
+        return $document->refresh();
+    }
+
+    private function syncTags(ProjectDocumentModel $document, CreateProjectDocumentCommand $command): void
+    {
         if ($command->tagIds !== null) {
             $document->tags()->sync($command->tagIds);
         }
-
-        return $document->refresh();
     }
 }

@@ -8,6 +8,7 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { AssociateTasksDialog } from '@/widgets/project-documents/associate-tasks-dialog'
 import { PAGE_SIZE } from '@/app/config'
+import { taskTableColumnsExcluding } from '@/entities/task'
 
 const documentId = useRouteParams<string>('id')
 
@@ -16,6 +17,8 @@ const { projectDocument } = useProjectDocumentQuery(documentId)
 const page = ref(1)
 const pagination = computed(() => ({ page: page.value, per_page: PAGE_SIZE }))
 const { tasks, paginationMeta, isPending } = useProjectDocumentTasksQuery(documentId, pagination)
+
+const tableColumnsDef = taskTableColumnsExcluding('project', 'task_list.name')
 
 function onPageChange(newPage: number) {
     page.value = newPage
@@ -52,6 +55,7 @@ const isAssociateDialogVisible = ref(false)
                 :page="page"
                 :to="taskDetailsRoute"
                 @page-change="onPageChange"
+                :columns="tableColumnsDef"
             />
         </div>
 

@@ -6,7 +6,6 @@ use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocum
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
 class UpdateProjectDocumentRequest extends FormRequest
@@ -26,7 +25,9 @@ class UpdateProjectDocumentRequest extends FormRequest
     {
         return new UpdateProjectDocumentCommand(
             document: $projectDocument,
-            attributes: Arr::only($this->validated(), ['title', 'content', 'status']),
+            title: $this->has('title') ? $this->validated('title') : $projectDocument->title,
+            content: $this->has('content') ? $this->validated('content') : $projectDocument->content,
+            status: $this->has('status') ? ProjectDocumentStatus::from($this->validated('status')) : $projectDocument->status,
             tagIds: $this->validated('tag_ids'),
         );
     }

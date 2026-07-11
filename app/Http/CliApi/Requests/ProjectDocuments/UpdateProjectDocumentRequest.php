@@ -6,7 +6,6 @@ use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocum
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Http\CliApi\Requests\Concerns\HasTagDtos;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
 class UpdateProjectDocumentRequest extends FormRequest
@@ -39,7 +38,9 @@ class UpdateProjectDocumentRequest extends FormRequest
     {
         return new UpdateProjectDocumentCommand(
             document: $document,
-            attributes: Arr::only($this->validated(), ['title', 'content']),
+            title: $this->has('title') ? $this->validated('title') : $document->title,
+            content: $this->has('content') ? $this->validated('content') : $document->content,
+            status: $document->status,
             tagIds: $tagIds,
         );
     }

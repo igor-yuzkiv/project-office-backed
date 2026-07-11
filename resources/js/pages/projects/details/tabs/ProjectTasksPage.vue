@@ -51,8 +51,6 @@ const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
 
-// The project scope is fixed on this page, so the Project column is dropped; Updated By is
-// not shown in the project-scoped list.
 const tableColumnsDef = taskTableColumnsExcluding('project', 'updated_by')
 
 const searchParams = computed<TaskSearchParams>(() => ({

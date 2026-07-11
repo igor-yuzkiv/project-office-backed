@@ -8,14 +8,17 @@ class UpdateProjectDocumentHandler
 {
     public function handle(UpdateProjectDocumentCommand $command): ProjectDocumentModel
     {
-        if ($command->attributes !== []) {
-            $command->document->update($command->attributes);
-        }
+        $command->document->update($command->toModelAttributes());
 
+        $this->syncTags($command);
+
+        return $command->document->fresh();
+    }
+
+    private function syncTags(UpdateProjectDocumentCommand $command): void
+    {
         if ($command->tagIds !== null) {
             $command->document->tags()->sync($command->tagIds);
         }
-
-        return $command->document->fresh();
     }
 }
