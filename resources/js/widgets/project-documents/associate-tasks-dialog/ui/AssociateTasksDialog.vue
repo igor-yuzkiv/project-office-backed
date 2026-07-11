@@ -23,8 +23,7 @@ const visible = defineModel<boolean>('visible', { required: true })
 
 const toast = useToast()
 
-// Fetches the authoritative full list of already-associated tasks (not the page's
-// possibly-paginated view) since Save replaces the entire association in one sync call.
+// TODO: Fetches the authoritative full list of already-associated tasks (not the page's possibly-paginated view) since Save replaces the entire association in one sync call.
 const { tasks: currentTasks } = useProjectDocumentTasksQuery(
     () => props.documentId,
     () => ({ page: 1, per_page: 1000 })

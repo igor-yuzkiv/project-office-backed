@@ -23,6 +23,8 @@ class DeleteProjectDocumentHandler
                 ->get();
 
             foreach ($subtree as $node) {
+
+                // TODO: implement bulk delete attachments
                 foreach ($node->attachments as $attachment) {
                     $this->deleteAttachmentHandler->handle(new DeleteAttachmentCommand($attachment));
                 }
