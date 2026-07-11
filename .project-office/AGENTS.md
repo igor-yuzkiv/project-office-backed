@@ -21,8 +21,8 @@ from this code repo. All project data is reached through the `project-office` CL
   `completed`, and `closed` are **user-side** decisions — do not set them unless the user
   explicitly says so. There is no `Blocked` status.
 - **Comments are the work log.** Milestones worth resuming from go in via `task:checkpoint`
-  (structured), ad-hoc notes via `task:comment-add`; `task:update` is only for the task's
-  name/description/tags.
+  (structured), ad-hoc notes via `task:comment-add`; `task:update` is for the task's
+  name/description/tags (and a user-directed `--status` the intent commands don't cover).
 <!-- project-office:managed:end -->
 
 ## Working flow (defaults — edit or extend for this project)
@@ -45,14 +45,14 @@ The intent commands carry their own records; plain comments are for the rest:
 - **An open question** — raise it with the user, not the log (record as a plain comment only if a resumer must see it).
 - **An ad-hoc note** — a passing observation not worth a checkpoint → `task:comment-add`.
 
-Keep the task's own state out of comments — name / description / tags change through `task:update`; status changes through the intent commands above, never a manual `--status`.
+Keep the task's own state out of comments — name / description / tags change through `task:update`. The agent's own transitions (`in_progress`, `ready_to_test`) go through the intent commands above, not a manual `--status`; a user-directed status they don't cover (`ready_for_development` / `completed` / `closed`) is set with `task:update --status`, only when the user explicitly asks.
 
 Findings along the way:
 
 - **Contextual** ("while doing X, noticed Y nearby is fragile") — a comment on this task.
 - **Standalone, needs its own action** — create a new task (skeleton), don't bury it in an unrelated task's comments where it won't be found.
 
-The `task:checkpoint` / `task:handoff` records are structured by markdown headings in the comment body (`# Checkpoint` / `## subject` / `## Notes`, `# Handoff`) — that's what distinguishes them from a plain note; there's no separate type field.
+The `task:start` / `task:checkpoint` / `task:handoff` records are structured by markdown headings in the comment body (`# Start`, `# Checkpoint` / `## subject` / `## Notes`, `# Handoff`) — that's what distinguishes them from a plain note; there's no separate type field.
 
 ### Documentation
 
