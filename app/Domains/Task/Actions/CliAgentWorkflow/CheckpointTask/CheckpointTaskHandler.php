@@ -17,7 +17,7 @@ class CheckpointTaskHandler
         $content = [
             '# Checkpoint',
             '## '.$command->subject,
-            '## Content',
+            '## Notes',
             $command->comment,
         ];
 

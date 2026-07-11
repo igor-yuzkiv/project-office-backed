@@ -25,7 +25,7 @@ class StartTaskHandler
             $this->createCommentHandler->handle(new CreateCommentCommand(
                 commentable: $task,
                 author: $command->author,
-                content: "[Start] {$command->comment}",
+                content: "# Start\n\n{$command->comment}",
             ));
         }
 
