@@ -17,7 +17,7 @@ class CheckpointTaskHandler
         $comment = $this->createCommentHandler->handle(new CreateCommentCommand(
             commentable: $command->task,
             author: $command->author,
-            content: '# Checkpoint: '.$command->subject.'\n\n'.$command->comment,
+            content: '# Checkpoint: '.$command->subject."\n\n".$command->comment,
         ));
 
         $command->task->touch();
