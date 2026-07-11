@@ -2,6 +2,7 @@
 
 use App\Http\CliApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\CliApi\Controllers\Projects\ProjectsController;
+use App\Http\CliApi\Controllers\Tasks\TaskAgenticWorkflowController;
 use App\Http\CliApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\CliApi\Controllers\Tasks\TasksController;
 use App\Http\CliApi\Controllers\TestController;
@@ -32,6 +33,17 @@ Route::middleware('auth:sanctum')
                 Route::post('/', [TasksController::class, 'store'])->name('store');
                 Route::get('{task}', [TasksController::class, 'show'])->name('show');
                 Route::put('{task}', [TasksController::class, 'update'])->name('update');
+
+                /**
+                 * Agentic Workflow
+                 */
+                Route::prefix('{task}/workflow')
+                    ->name('workflow.')
+                    ->group(function () {
+                        Route::post('start', [TaskAgenticWorkflowController::class, 'start'])->name('start');
+                        Route::post('checkpoint', [TaskAgenticWorkflowController::class, 'checkpoint'])->name('checkpoint');
+                        Route::post('handoff', [TaskAgenticWorkflowController::class, 'handoff'])->name('handoff');
+                    });
 
                 /**
                  * Task Comments
