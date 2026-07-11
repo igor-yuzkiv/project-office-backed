@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Task;
+namespace App\Domains\Task\Services;
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Models\TaskModel;
