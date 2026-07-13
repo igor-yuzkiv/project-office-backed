@@ -19,12 +19,12 @@ services:
             - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d/
             - ./docker/pg-data:/var/lib/postgresql/data
         ports:
-            - "5432:5432"
+            - "25432:5432"
     task_manager_redis:
         container_name: task_manager_redis
         image: redis
         ports:
-            - 6379:6379
+            - "26379:6379"
         networks:
             - app-network
     task-manager-minio:
