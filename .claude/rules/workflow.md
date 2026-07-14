@@ -1,125 +1,41 @@
 # Rule: Development workflow
 
-How to approach changes in this repository. The Git safety rules and the workspace
-layout live in `CLAUDE.md` and are not repeated here.
+Work moves through two human checkpoints. Between them the agent works on its own and does not
+invent extra gates. Git safety (commit/push/reset/rebase/merge) is enforced mechanically in
+`.claude/settings.json`, not by prose here.
 
-## Human-in-the-loop gates
+## Checkpoint 1 — Plan approval
 
-The user controls phase transitions. The agent never crosses a phase boundary or runs a
-gated action on its own — it stops, reports briefly, and waits for the user's explicit
-approval (ask via `AskUserQuestion`). Until the user says go, the agent stays in the current
-phase.
+Before writing code for anything non-trivial, present the plan: the intended change, the
+affected scope (backend, frontend, or both), and what must not change (contracts, API shapes,
+DTOs, component props). Wait for approval. `Clarify before acting` (`principles.md`) applies
+here, and the review gate (`review-gate.md`) fires once, here, for the plan artifact.
 
-Gated actions — never without explicit approval, even mid-phase:
+## Implementation (between checkpoints)
 
-- moving from one workflow phase to the next;
-- running an independent review;
-- running tests;
-- running the full validation suite (all checks at once);
-- any project-office status transition (e.g. `in_progress → ready_to_test`).
+Implement within the approved scope, following `principles.md`. If the work must go outside
+that scope, stop and report it — do not silently absorb it. Run the minimal relevant cheap
+checks for what changed — e.g. a small frontend change → lint + type check; a small backend
+change → Pint and/or PHPStan (concrete commands: `backend.md` / `frontend.md`).
 
-Inside the current phase, without asking, the agent may only:
+## Independent review
 
-- implement the requested change within scope;
-- run the minimal relevant cheap checks for that change (see Validation gate).
+Before final review, a separate agent — a different context from the author — reviews the
+diff: correctness, scope adherence, regressions, over-engineering. Clear blockers before
+handing off. Skip only for trivial changes, and say so.
 
-## Workflow phases
+## Checkpoint 2 — Final diff review
 
-Every task moves through the phases below in order, with a gate between each. The general
-principles in `principles.md` and the code conventions in `code-conventions.md` govern how
-each phase is carried out.
+Present what changed — and what the independent review flagged — before it is considered done.
+Run the full suite or tests only when asked. Do not run browser-based verification for
+frontend changes — the user verifies the UI manually.
 
-### 1. Intake and analysis
+## Documentation
 
-Requirements may arrive from a task tracker or directly in chat. Treat both as the source of
-what needs to be built.
-
-Before writing code, understand:
-
-- the requested behavior;
-- the affected scope (backend, frontend, or both);
-- the existing contracts and constraints (API shapes, DTOs, component props);
-- the risks and possible side effects.
-
-When requirements are incomplete or ambiguous, resolve them per **Clarify before acting**
-(`principles.md`) first.
-
-**Gate → Implementation:** present the understanding and the intended approach; wait for the
-user's approval before writing code.
-
-### 2. Implementation
-
-Implement the requested change with the minimal necessary edits, following **Change
-strategy** (`principles.md`) and the code conventions in `code-conventions.md`. Stay inside
-the requested scope — no opportunistic refactoring or unrelated cleanup — and change
-contracts only when the task requires it.
-
-Run the minimal relevant cheap checks for the change to confirm it holds together (see
-Validation gate). Do not run the full suite, tests, or a review here.
-
-**Gate → Validation and review:** report what changed and which cheap checks were run; wait
-for the user's approval before running review, the full validation suite, or tests.
-
-### 3. Validation and review
-
-Runs only after the user approves — nothing in this phase is auto-triggered.
-
-- **Review** — run an independent review (separate subagent / review lane) only when the
-  user approves it; it must be independent from the implementation context.
-- **Full validation / tests** — run the full suite and tests only when the user approves,
-  choosing what is relevant to the change.
-
-After validation/review, report briefly:
-
-- what was changed;
-- what was verified (and what was not);
-- important risks or assumptions;
-- anything that still needs attention.
-
-Ask whether corrections are needed and handle them per **Corrections** below. Do not advance
-to documentation, and do not change task status, without the user's approval.
-
-**Gate → Documentation / hand-off:** wait for the user's approval before moving to
-documentation or making any project-office status transition.
-
-### 4. Documentation
-
-A separate phase, entered only after the user approves it.
-
-Before writing or updating documentation, explicitly ask the user whether documentation is
-needed (`AskUserQuestion`). Do not create or update documentation unless the user confirms.
-
-When documentation is requested:
-
-- decide whether to create a new document or update an existing one;
-- keep all project documentation under `docs/`;
-- do not add documentation outside `docs/` unless the user explicitly asks for it.
+Ask whether documentation is needed before creating or updating it (`AskUserQuestion`). Keep
+project documentation under `docs/`.
 
 ## Corrections
 
-When the user gives corrections, do not restart the flow. Handle them in place:
-
-- apply the requested changes only, within their scope;
-- re-run only the minimal relevant cheap checks;
-- do not re-run review or tests, do not advance phases, do not change task status;
-- report the result and wait for the user's next instruction.
-
-Re-running review, the full suite, or tests after corrections happens only with the user's
-approval — same gate as the first time.
-
-## Validation gate
-
-Validation is proportional and selective — match the checks to the change instead of running
-everything:
-
-- Pick only the cheap checks relevant to what changed — e.g. a small frontend change → lint
-  + type check only; a small backend change → Pint and/or PHPStan. Skip what the change does
-  not touch.
-- The agent runs these relevant cheap checks on its own to close implementation.
-- The full run — all checks plus tests, typically before hand-off / closing — is a gated
-  action: run it only with the user's approval.
-
-Concrete commands live in the scoped rules (`backend.md`, `frontend.md`).
-
-Do not run browser-based verification for frontend changes — the user verifies the UI
-manually.
+Apply corrections in place, within scope. Re-run only the minimal relevant cheap checks. Do
+not restart the flow.

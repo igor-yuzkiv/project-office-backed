@@ -1,8 +1,7 @@
 # Rule: General principles
 
 Principles for any work in this repository — code, docs, plans, task proposals, even
-reorganizing these rules. Code-writing conventions live in `code-conventions.md`; workflow
-phases live in `workflow.md`.
+reorganizing these rules.
 
 ## Clarify before acting
 
@@ -39,17 +38,15 @@ Prefer minimal, surgical changes:
 - Preserve existing architecture, patterns, naming, and conventions unless the task explicitly requests refactoring.
 - Avoid opportunistic cleanup or unrelated "while I am here" refactors.
 - Minimize file count, diff size, and blast radius.
+- Before creating a new abstraction, component, composable, DTO, query, mutation, service, or
+  utility: search for an existing implementation and prefer extending it; follow the naming
+  and structure already present. Do not introduce a large abstraction until there are at
+  least two real use cases, and do not design for hypothetical future needs.
+- Do not add layers, services, managers, factories, or helpers just to look "architectural" —
+  solve the current problem; prefer explicit flow over generic, configuration-driven behavior.
 - Do not rename, move, reorganize, or replace things unless required.
 - When larger refactoring seems beneficial, propose it separately instead of doing it automatically.
 - Do not silently expand scope after an approved plan or reviewed artifact.
 
 Decision priority: correctness → minimal change → consistency with the codebase →
 maintainability → architectural improvements (only when requested).
-
-## Git safety
-
-Hard constraints — never bypass without explicit user confirmation:
-
-- Never create commits automatically.
-- Never push changes automatically.
-- Never perform merge, rebase, or reset operations without explicit user confirmation.

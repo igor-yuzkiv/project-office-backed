@@ -1,74 +1,20 @@
-# Rule: Review gate via Plannotator
+# Rule: Review gate
 
-Any assembled text artifact that needs the user's review, approval, or sign-off MUST be
-opened through the **Plannotator annotation gate**, not approved in chat alone. This gate is
-for review-worthy **text artifacts**, never for code review (`git diff`, PRs, source).
+At the plan-approval checkpoint, a plan or proposal that needs sign-off goes through the
+Plannotator gate, not chat alone. Applies to assembled review-worthy text (plans, task
+proposals, decompositions, technical docs, migration/architecture proposals) — never to code,
+diffs, or source.
 
-Applies to: implementation plans, proposed tasks, task decompositions, technical docs,
-architecture notes, migration/refactor proposals, release/handoff notes, or any assembled
-markdown the user should review as a whole before the agent continues.
+## Run
 
-## When to use
+    command -v plannotator >/dev/null && echo present || echo missing
+    plannotator annotate "/tmp/<slug>-review.md" --json
 
-When the artifact is already assembled and the next step depends on the user's approval —
-i.e. you are about to ask the user to bless a whole document.
+Write the artifact to a temp `.md` outside the repo. Always `annotate` (never `review`); prefer
+`--json`. If the binary is missing or the user opts out, fall back to chat approval and say so.
 
-Chat questions are still fine *while building* the artifact (choosing approaches, confirming
-scope, resolving requirements, picking naming/granularity). Once it is assembled, chat
-confirmation is not enough — it must go through Plannotator:
+## Result
 
-```text
-clarify details → assemble the artifact → open it in Plannotator → act on the result
-```
-
-## Preflight
-
-Check the binary is available:
-
-```bash
-command -v plannotator >/dev/null && echo present || echo missing
-```
-
-If it is missing, unavailable, or the user opts out → fall back to chat approval: show the
-full artifact in chat and state that Plannotator was not used.
-
-## Run the gate
-
-Write the artifact to a temporary markdown file **outside the repository**, then open it in
-annotation mode:
-
-```bash
-plannotator annotate "/tmp/<slug>-review.md" --json
-```
-
-- Always `plannotator annotate` — never `plannotator review`.
-- Prefer `--json` so the result parses reliably.
-- Do not pass source files, diffs, or repository files — only a temporary markdown copy.
-
-## Approval convention
-
-Treat the artifact as **approved** when either:
-
-1. The user closes the UI with no comments.
-2. The comments include an explicit approval (`approved`, `ok`, `go`, `погоджено`, or equivalent).
-
-These outputs also count as approval:
-
-```text
-empty output
-{"decision":"dismissed"}
-{"decision":"approved"}
-The user approved.
-```
-
-Comments returned without explicit approval are change requests:
-
-1. apply the requested changes to the artifact;
-2. open the revised artifact in Plannotator again;
-3. repeat until the user closes cleanly or explicitly approves.
-
-## After approval
-
-Continue using the approved version only. Do not silently expand scope or materially change
-the approved artifact; if it changes materially, run it through Plannotator again. Clean up
-temporary review files when done.
+Approved when the user closes with no comments, approves explicitly (`ok` / `go` / `approved` /
+`погоджено`), or the output is empty / `{"decision":"dismissed"|"approved"}`. Otherwise the
+comments are change requests: apply them, reopen, repeat. Clean up temp files after.

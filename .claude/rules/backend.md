@@ -120,8 +120,8 @@ universal controller operates on the entity by its own ID only.
 | Run all tests | `php artisan test` |
 | Run specific test | `php artisan test --filter=TestName` |
 
-Run `./vendor/bin/pint` and `./vendor/bin/phpstan analyse` before considering backend work
-complete. Run relevant tests after changes.
+Run `./vendor/bin/phpstan analyse` before considering backend work complete. Pint runs
+automatically on edited `app/**` files (PostToolUse hook). Run relevant tests after changes.
 
 PHPStan config: `phpstan.neon`. Current level: 5. When adding new models with enum casts,
 declare the cast types via `@property` PHPDoc on the model class so PHPStan can resolve them.
