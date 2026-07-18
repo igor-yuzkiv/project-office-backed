@@ -50,3 +50,19 @@ Prefer minimal, surgical changes:
 
 Decision priority: correctness → minimal change → consistency with the codebase →
 maintainability → architectural improvements (only when requested).
+
+## KISS / simple-first
+
+Keep implementations simple, direct, and easy to review. Solve the current problem without
+speculative architecture, generic abstractions, or future-proofing unless the task requires
+it. Prefer boring, readable code over clever code.
+
+- Reuse existing project patterns when they fit.
+- Do not add layers, services, managers, factories, or helpers just to look "architectural".
+- Extract a function only when it makes the code easier to read, test, or reuse right now.
+- Prefer explicit flow over generic, configuration-driven behavior.
+- Do not introduce a large abstraction until there are at least two real use cases; do not design a framework around hypothetical future commands.
+- Do not prepare for imaginary future requirements — leave the code easy to change later.
+
+A good change should be understandable from the diff without a map, a compass, and a senior
+architect.
