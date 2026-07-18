@@ -1,37 +1,66 @@
 {
-  "permissions": {
-    "deny": [
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(git reset:*)",
-      "Bash(git rebase:*)",
-      "Bash(git merge:*)",
-      "Bash(php artisan migrate)",
-      "Bash(php artisan migrate:*)"
-    ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/deny-test-infra-edits.sh"
-          }
+    "permissions": {
+        "defaultMode": "acceptEdits",
+        "allow": [
+            "Bash(git status:*)",
+            "Bash(git diff:*)",
+            "Bash(git log:*)",
+            "Bash(git branch:*)",
+            "Bash(ls:*)",
+            "Bash(find:*)",
+            "Bash(grep:*)",
+            "Bash(composer dump-autoload:*)",
+            "Bash(php artisan:*)",
+            "Bash(php -l:*)",
+            "Bash(./vendor/bin/pint:*)",
+            "Bash(./vendor/bin/phpstan analyse:*)",
+            "Read(//var/www/task-manager/mvp-task-manager/**)",
+            "Read(//tmp/**)"
+        ],
+        "ask": [
+            "Bash(composer install:*)",
+            "Bash(composer require:*)",
+            "Bash(composer remove:*)",
+            "Bash(composer update:*)",
+            "Bash(npm install:*)",
+            "Bash(npm uninstall:*)",
+            "Bash(npm update:*)",
+            "Bash(./scripts/init_testing_pg_databases.sh)"
+        ],
+        "deny": [
+            "Bash(git commit:*)",
+            "Bash(git push:*)",
+            "Bash(git reset:*)",
+            "Bash(git rebase:*)",
+            "Bash(git merge:*)",
+            "Bash(php artisan migrate)",
+            "Bash(php artisan migrate:*)",
+            "Read(.env)",
+            "Read(.env.testing)"
         ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pint-edited-app-file.sh"
-          }
+    },
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/deny-test-infra-edits.sh"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pint-edited-app-file.sh"
+                    }
+                ]
+            }
         ]
-      }
-    ]
-  }
+    }
 }
