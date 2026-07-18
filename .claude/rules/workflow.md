@@ -9,7 +9,7 @@ invent extra gates. Git safety (commit/push/reset/rebase/merge) is enforced mech
 Before writing code for anything non-trivial, present the plan: the intended change, the
 affected scope (backend, frontend, or both), and what must not change (contracts, API shapes,
 DTOs, component props). Wait for approval. `Clarify before acting` (`principles.md`) applies
-here, and the review gate (`review-gate.md`) fires once, here, for the plan artifact.
+here.
 
 ## Implementation (between checkpoints)
 

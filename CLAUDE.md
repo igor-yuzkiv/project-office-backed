@@ -26,7 +26,5 @@ needed to do and why.
   abstraction discipline, anti-over-engineering (always loaded).
 - `workflow.md` — two human checkpoints (plan approval, final diff review) and the scope
   contract (always loaded).
-- `communication.md` — language and answer style: which language to use, warm/concise/accurate/only what's asked (always loaded).
-- `review-gate.md` — review gate for assembled artifacts needing approval (always loaded).
 - `backend.md` — Laravel domain/HTTP architecture, conventions, cross-cutting entities, and tooling (scoped to `app/**`, `routes/**`, `database/**`, `tests/**`).
 - `frontend.md` — Vue/FSD architecture, conventions, cross-cutting entities, and tooling (scoped to `resources/js/**`).
