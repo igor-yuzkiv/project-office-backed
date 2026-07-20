@@ -3,164 +3,85 @@ paths:
   - "resources/js/**"
 ---
 
-# Rule: Frontend architecture and conventions
+# Frontend architecture
 
-Vue 3 + TypeScript + Vite. UI: PrimeVue + Tailwind CSS. Frontend source lives in
-`resources/js/`.
+Vue 3, TypeScript, Vite, PrimeVue, Tailwind CSS, Pinia, and TanStack Vue Query. Frontend source
+lives in `resources/js/` and follows a Feature-Sliced Design-inspired structure.
 
-## Architecture
+## Layer ownership
 
-Feature-Sliced Design inspired layered structure.
-
-```
+```text
 resources/js/
-├── app/              # app-level setup
-├── pages/            # route-level page components
-├── widgets/          # complex self-contained UI blocks
-├── entities/         # domain entity modules
-└── shared/           # cross-cutting code
+|- app/       bootstrap, plugins, router, shell, global stores, and application styles
+|- pages/     route-level composition
+|- widgets/   substantial feature UI assembled for a specific use case
+|- entities/  domain API, types, queries, mutations, composables, and configuration
+`- shared/    entity-agnostic UI and utilities
 ```
 
-### Layer reference
+- Pages compose widgets and entities and should remain thin.
+- Widgets own feature-specific UI, supporting components, and local composables.
+- Entities own server-facing API functions, TypeScript types, query keys, queries, mutations, and
+  entity-level composables.
+- Shared code must be genuinely entity-agnostic.
+- Expose module APIs through `index.ts`; prefer public imports over reaching into another module's
+  internals.
 
-**`app/`** — application bootstrap and shell.
+Dependencies should generally flow from app and pages toward widgets, entities, and shared code.
+Do not move feature knowledge downward into Shared merely to avoid a local import.
 
-```
-app/
-├── config/           # app-level config constants
-├── plugins/          # Vue plugins (PrimeVue, Vue Query, Laravel Echo)
-├── router/           # Vue Router setup
-├── shell/            # layouts, header, navigation sidebar
-└── stores/           # app-level Pinia stores (auth, layout)
-```
+## Server state and contracts
 
-**`pages/`** — one file per route. Thin: compose widgets and entities, no business logic.
+- Use TanStack Vue Query for server state, caching, loading state, invalidation, and mutations.
+- Keep query keys centralized in the owning entity's config.
+- Keep API requests and response types in the owning entity.
+- Keep backend Resources and frontend TypeScript types aligned. Do not silently compensate for a
+  backend contract mismatch in a component.
+- Handle meaningful pending, error, empty, and disabled states where the interaction requires them.
 
-**`widgets/`** — complex UI blocks with own composables and sub-components. Not reused
-across entities.
+Universal entities such as comment, tag, and attachment do not depend on their consumers.
+Consumer-scoped queries and mutations belong to the consuming entity, even when this creates small
+and explicit duplication.
 
-```
-widgets/{feature}/
-├── ui/               # Vue components
-├── composables/      # widget-local composables
-└── index.ts          # public API
-```
+## Component and composable conventions
 
-**`entities/`** — domain entity modules. Each entity owns its API layer, types, queries,
-and mutations.
+Use `<script setup lang="ts">`. Keep this internal order unless a local dependency is clearer when
+kept together:
 
-```
-entities/{entity}/
-├── api/              # API call functions
-├── types/            # TypeScript types for the entity
-├── queries/          # TanStack Vue Query query composables
-├── mutations/        # TanStack Vue Query mutation composables
-├── config/           # entity-level constants (query keys, route names, etc.)
-└── index.ts          # public API (re-exports)
-```
+1. imports;
+2. types and interfaces;
+3. component inputs or composable parameters;
+4. composables, stores, router, and injected services;
+5. reactive state;
+6. computed values;
+7. methods and event handlers;
+8. watchers;
+9. lifecycle hooks;
+10. public API through `defineExpose` or `return`.
 
-**`shared/`** — truly reusable, entity-agnostic code.
-
-```
-shared/
-├── api/              # HTTP client, error types
-├── components/       # generic UI components (buttons, etc.)
-├── composables/      # generic composables (toast, confirm dialog, etc.)
-├── types/            # shared TypeScript types (pagination, result, etc.)
-└── utils/            # pure utility functions
-```
-
-### Cross-cutting entities
-
-Universal entities (`comment`, `tag`, `attachment`) never reference their consumers — a
-universal entity module operates on the entity by its own ID only
-(`deleteCommentRequest(commentId)`, `updateCommentRequest(commentId, data)`).
-
-- Operations scoped to a consuming entity live in that entity's module:
-  `fetchTaskCommentsRequest` / `useTaskCommentsQuery` / `useCreateTaskCommentMutation` in
-  `entities/task/`, not `entities/comment/`.
-- When another entity needs comments, it gets its own set (`useProjectCommentsQuery`).
-  Duplication across consumers is preferred over a shared abstraction.
-
-## Vue Emits
-
-Always use the call-signature form for `defineEmits`:
+Use call signatures for `defineEmits`:
 
 ```ts
 const emit = defineEmits<{
-    (e: 'update', value: { commentId: string; content: string }): void
-    (e: 'delete', commentId: string): void
+    (e: 'update', value: Item): void
+    (e: 'delete', id: string): void
 }>()
 ```
 
-Do not use the shorthand object/tuple syntax (`{ update: [value: ...] }`).
+Do not introduce the shorthand tuple form in new or modified components.
 
-## `<script setup>` and composable structure
+## Libraries and reuse
 
-Use a consistent internal order in both Vue `<script setup>` blocks and composables:
+- Check installed packages before building a custom primitive.
+- Prefer PrimeVue components, VueUse composables, and established project wrappers where they fit.
+- Adapt library components through props, slots, pass-through configuration, and focused styles.
+- A wrapper or composition component is appropriate when it establishes a project contract or
+  combines existing pieces; do not recreate library behavior without a concrete need.
+- Never install a new dependency without user approval.
 
-1. Imports
-2. Types and interfaces
-3. Inputs:
-    - components — `defineProps`, `defineEmits`, `defineModel`
-    - composables — function parameters
-4. Composables, stores, router, injected services
-5. Reactive state: `ref`, `reactive`, constants related to state
-6. Computed values
-7. Methods and event handlers
-8. Watchers
-9. Lifecycle hooks
-10. Public API (placed last):
-    - components — `defineExpose`
-    - composables — `return`
+## Frontend verification boundary
 
-Keep lifecycle hooks near the end unless there is a strong reason to place them near
-related logic.
-
-## Component and library usage
-
-Prefer components and utilities from already-installed packages over writing custom
-implementations.
-
-- Always check installed packages first (PrimeVue, VueUse, etc.) before implementing
-  anything from scratch.
-- Never install new packages independently — propose them if needed and wait for
-  confirmation.
-- Customize existing components to match the design (via props, slots, CSS overrides,
-  PrimeVue `pt` API) rather than recreating them.
-- Create a custom component only as a last resort, when no installed package covers the
-  need.
-
-This restriction does not apply to:
-
-- Wrapper components that adapt a library component to project conventions.
-- Composition components that combine multiple existing components into a reusable block.
-
-## Key libraries
-
-| Library | Purpose |
-| --- | --- |
-| PrimeVue | UI component library |
-| Tailwind CSS | Utility-first styling |
-| TanStack Vue Query | Server state management (queries, mutations, caching) |
-| Pinia | Client state management |
-| Zod | Schema validation and type inference |
-| Vue Router | Client-side routing |
-| VueUse | Composable utilities |
-| Axios | HTTP client |
-
-## Tooling
-
-| Task | Command |
-| --- | --- |
-| Format code | `npm run format` |
-| Check formatting | `npm run format:check` |
-| Lint and auto-fix | `npm run lint` |
-| Check linting | `npm run lint:check` |
-| Type check | `npm run types:check` |
-
-Run `npm run format` and `npm run lint` before considering frontend work complete.
-Run `npm run types:check` after changes that touch types or interfaces.
-Run `npm run build` only when changes affect bundling, routing, or Vite config.
-
-Do not run browser-based verification — the user verifies the UI manually.
+Run formatting, linting, type checks, and builds proportionally as defined in `testing.md`.
+Playwright and browser-based visual verification are not part of the automatic pipeline yet. The
+user visually verifies UI changes; describe the affected interaction and any unverified states in
+the handoff.

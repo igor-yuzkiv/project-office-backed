@@ -1,68 +1,74 @@
-# Rule: General principles
+# General principles
 
-Principles for any work in this repository — code, docs, plans, task proposals, even
-reorganizing these rules.
+These principles apply to implementation, investigation, planning, tests, and documentation.
 
-## Clarify before acting
+## Investigate before asking
 
-Ask first for decisions about product behavior, business logic, or external contracts — not
-for small local implementation choices.
+First look for the answer in the request, the nearest implementation, its callers and consumers,
+related tests, and repository documentation. Do not ask the user to decide low-impact technical
+details already answered by local evidence or established project patterns.
 
-Stop and ask when:
+Ask when the unresolved choice would materially change business behavior, architecture, stored
+data, an API or UI contract, user-visible interaction, or task scope. State what is known, what is
+ambiguous, and why the answer changes the implementation.
 
-- Requirements, acceptance criteria, or expected behavior are missing or ambiguous.
-- Multiple reasonable approaches exist and the task does not specify which.
-- The task implies business logic, validation rules, or domain behavior that is not stated.
-- An architectural decision is needed (new abstraction, new layer, data model change, API contract).
-- A DTO structure, API shape, UI state, or data flow is not defined.
-- The change could affect behavior outside the explicitly requested scope.
-- Existing code contradicts the task description.
+## Work autonomously within clear boundaries
 
-Proceed without asking (investigate, decide, implement) when:
+Once behavior and scope are clear, choose local implementation details, make the change, run
+relevant verification, and fix in-scope failures without seeking intermediate approval.
 
-- The decision is a low-blast-radius local technical choice (naming, file placement, a small helper extraction, internal control flow).
-- The scope is obvious and the change stays within it.
-- A project convention already answers the question.
+Do not silently expand scope. Stop and surface the decision when implementation requires a
+materially broader change, contradicts the request, or crosses a Controlled-pipeline boundary.
 
-Never:
+## Make the smallest complete change
 
-- Invent business logic, validation, or domain behavior not specified in the task.
-- Choose between materially different product/contract approaches without surfacing them.
-- Treat an assumption as a fact — surface it explicitly.
+- Solve the full requested problem with the least unnecessary surface area.
+- Include tests and contract documentation when the behavior requires them.
+- Keep backend and frontend contracts aligned when both are in scope.
+- Preserve existing behavior outside the requested scope.
+- Avoid opportunistic cleanup, broad renaming, or unrelated refactoring.
+- Improve nearby code only when necessary to make the requested change correct and robust.
 
-## Change strategy
+Decision priority: correctness, scope, consistency, simplicity, maintainability, then architectural
+improvement when architecture is explicitly in scope.
 
-Prefer minimal, surgical changes:
+## Follow evidence, not assumptions
 
-- Default to the smallest change that solves the requested problem.
-- Preserve existing architecture, patterns, naming, and conventions unless the task explicitly requests refactoring.
-- Avoid opportunistic cleanup or unrelated "while I am here" refactors.
-- Minimize file count, diff size, and blast radius.
-- Before creating a new abstraction, component, composable, DTO, query, mutation, service, or
-  utility: search for an existing implementation and prefer extending it; follow the naming
-  and structure already present. Do not introduce a large abstraction until there are at
-  least two real use cases, and do not design for hypothetical future needs.
-- Do not add layers, services, managers, factories, or helpers just to look "architectural" —
-  solve the current problem; prefer explicit flow over generic, configuration-driven behavior.
-- Do not rename, move, reorganize, or replace things unless required.
-- When larger refactoring seems beneficial, propose it separately instead of doing it automatically.
-- Do not silently expand scope after an approved plan or reviewed artifact.
+- Inspect the closest current implementation and tests before selecting a pattern.
+- Treat proximity as evidence, not proof of a universal convention.
+- Do not invent business rules, validation, UI behavior, naming conventions, or architecture.
+- If code, tests, task text, design, and documentation disagree, identify the conflict instead of
+  choosing the most convenient interpretation.
+- State consequential assumptions in the plan or handoff.
 
-Decision priority: correctness → minimal change → consistency with the codebase →
-maintainability → architectural improvements (only when requested).
+## Preserve contracts and ownership
 
-## KISS / simple-first
+Do not casually change routes, request or response shapes, Commands, Resources, frontend types,
+component props or emits, task workflow semantics, database representations, or cross-domain
+ownership. Analyze known consumers and use the Controlled pipeline when a contract or boundary
+must change.
 
-Keep implementations simple, direct, and easy to review. Solve the current problem without
-speculative architecture, generic abstractions, or future-proofing unless the task requires
-it. Prefer boring, readable code over clever code.
+## Prefer simple, proportionate engineering
 
-- Reuse existing project patterns when they fit.
-- Do not add layers, services, managers, factories, or helpers just to look "architectural".
-- Extract a function only when it makes the code easier to read, test, or reuse right now.
-- Prefer explicit flow over generic, configuration-driven behavior.
-- Do not introduce a large abstraction until there are at least two real use cases; do not design a framework around hypothetical future commands.
-- Do not prepare for imaginary future requirements — leave the code easy to change later.
+- Reuse an existing abstraction or installed library when it fits the current need.
+- Add an abstraction only when it creates a real boundary, removes meaningful duplication, or
+  provides a necessary test seam now.
+- Do not add layers, managers, factories, services, composables, repositories, wrappers, or
+  configuration indirection for hypothetical future use.
+- Prefer explicit, readable control flow over clever or generic machinery.
+- Do not avoid a necessary small refactor when the alternative would leave the change fragile.
 
-A good change should be understandable from the diff without a map, a compass, and a senior
-architect.
+## Do not weaken verification
+
+Fix root causes. Never make a test less meaningful, suppress a valid failure, lower a quality
+threshold, alter shared test infrastructure, or change product behavior merely to obtain a green
+result. If the expected behavior itself is unclear, escalate the decision.
+
+## Respect the workspace
+
+- Existing uncommitted changes belong to the user unless proven otherwise.
+- Do not overwrite, revert, format, or reorganize unrelated work.
+- Use non-destructive inspection before modifying unfamiliar areas.
+- Keep generated files and temporary artifacts out of the repository unless they are requested
+  deliverables.
+- Report blockers and partial verification honestly; never imply a check passed when it was not run.
