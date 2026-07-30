@@ -2,6 +2,34 @@
 
 Guidance for Claude Code when working in this repository.
 
+<!-- composable-pipeline:begin -->
+## How work is done here
+
+Route the work before loading detail:
+
+- executable change → read `.claude/blocks/pipelines/run-task.md` before the first edit, including
+  when planning turns into execution in the same session;
+- unsettled approach or later execution → `.claude/blocks/pipelines/plan-work.md`;
+- review-only request → `/cp-review`; executable work stays in `run-task`, which decides whether
+  its risk warrants an independent review.
+
+Across all three:
+
+- deliver the requested scope; report adjacent work instead of silently adding it;
+- make routine local decisions, but surface choices that materially change behaviour, scope,
+  contracts, security, data, or lasting trade-offs;
+- distinguish verified facts from inference;
+- report partial or unverified work as partial or unverified.
+
+When the active pipeline does not already name what applies, use `.claude/blocks/index.yaml` to
+select additional rules, principles, coverage lenses, or operations. Open only the selected blocks.
+When an opened operation names `applies_rules`, open them; open its named principles only when they
+materially shape the work.
+
+Project-specific artifact destinations, exemplars, verification commands, and language are in
+`.claude/project-profile.yml`.
+<!-- composable-pipeline:end -->
+
 ## Project
 
 - Laravel 13 API backend and Vue 3 + TypeScript single-page application.
@@ -12,20 +40,14 @@ Guidance for Claude Code when working in this repository.
 
 ## Working model
 
-- Classify each task using `.claude/rules/workflow.md`, then follow that pipeline autonomously.
-- Investigate the nearest implementation and tests before making assumptions or asking the user.
-- Ask only when a decision affects business behavior, architecture, data, an external contract,
-  user-visible interaction, or the agreed scope.
-- Verification is part of implementation. Run relevant checks and fix in-scope failures before
-  handing work back.
+- Do not commit, push, migrate data, or perform destructive git operations on your own.
 - The user reviews the final diff and visually verifies UI changes. Do not add a separate final
   approval gate or mandatory agent review.
-- Do not commit, push, migrate data, or perform destructive git operations on your own.
+- Backend and frontend contracts are one change: keep Resources, request shapes, and frontend
+  types aligned when both sides are in scope.
 
 ## Project rules
 
-- `.claude/rules/principles.md` — decision-making and change discipline; always loaded.
-- `.claude/rules/workflow.md` — risk-based pipelines, escalation, and handoff; always loaded.
 - `.claude/rules/architecture.md` — Laravel architecture and API boundaries; path-scoped.
 - `.claude/rules/frontend.md` — Vue/FSD architecture and conventions; path-scoped.
 - `.claude/rules/testing.md` — backend, frontend, and E2E verification policy; path-scoped.
@@ -38,15 +60,4 @@ needed.
 
 When a request is attached to a Project Office task, read `.project-office/AGENTS.md` and use its
 CLI workflow for task context, durable checkpoints, and handoff. Project Office records the work;
-the development pipeline in `.claude/rules/workflow.md` governs how the work is performed.
-
-## Required handoff
-
-Every completed task ends with a concise handoff containing:
-
-- what was implemented and the reason for the chosen approach;
-- the main files changed;
-- tests and checks run, with their results;
-- anything not verified and why;
-- UI behavior that still needs the user's visual verification, when applicable;
-- remaining risks, assumptions, or follow-up work, when relevant.
+the pipeline in `.claude/blocks/pipelines/run-task.md` governs how the work is performed.
