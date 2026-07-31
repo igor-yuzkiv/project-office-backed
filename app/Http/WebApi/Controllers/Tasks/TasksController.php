@@ -2,6 +2,7 @@
 
 namespace App\Http\WebApi\Controllers\Tasks;
 
+use App\Domains\Task\Actions\BulkUpdateTaskStatus\BulkUpdateTaskStatusHandler;
 use App\Domains\Task\Actions\CreateTask\CreateTaskHandler;
 use App\Domains\Task\Actions\DeleteTask\DeleteTaskCommand;
 use App\Domains\Task\Actions\DeleteTask\DeleteTaskHandler;
@@ -11,6 +12,7 @@ use App\Http\Shared\Resources\Tasks\TaskOverviewResource;
 use App\Http\Shared\Resources\Tasks\TaskResource;
 use App\Http\WebApi\Controllers\ResourceController;
 use App\Http\WebApi\Requests\Shared\SearchRequest;
+use App\Http\WebApi\Requests\Tasks\BulkUpdateTaskStatusRequest;
 use App\Http\WebApi\Requests\Tasks\StoreTaskRequest;
 use App\Http\WebApi\Requests\Tasks\UpdateTaskRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,6 +25,7 @@ class TasksController extends ResourceController
         private readonly CreateTaskHandler $createHandler,
         private readonly UpdateTaskHandler $updateHandler,
         private readonly DeleteTaskHandler $deleteHandler,
+        private readonly BulkUpdateTaskStatusHandler $bulkUpdateStatusHandler,
     ) {}
 
     protected function getAllowedIncludes(): array
@@ -86,6 +89,13 @@ class TasksController extends ResourceController
         $task->load(['createdBy', 'updatedBy']);
 
         return new TaskResource($task);
+    }
+
+    public function bulkUpdateStatus(BulkUpdateTaskStatusRequest $request): JsonResponse
+    {
+        $updatedCount = $this->bulkUpdateStatusHandler->handle($request->toCommand());
+
+        return response()->json(['data' => ['updated_count' => $updatedCount]]);
     }
 
     public function destroy(TaskModel $task): JsonResponse

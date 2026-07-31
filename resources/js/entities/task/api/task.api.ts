@@ -1,6 +1,8 @@
 import { httpClient } from '@/shared/api'
 import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
 import type {
+    IBulkUpdateTaskStatusInput,
+    IBulkUpdateTaskStatusResult,
     ICreateTaskInput,
     ITask,
     IUpdateTaskInput,
@@ -35,6 +37,12 @@ export async function createTaskRequest(data: ICreateTaskInput): Promise<TaskRes
 
 export async function updateTaskRequest(taskId: string, data: IUpdateTaskInput): Promise<TaskResponse> {
     return httpClient.patch<TaskResponse>(`/tasks/${taskId}`, data).then((res) => res.data)
+}
+
+export async function bulkUpdateTaskStatusRequest(
+    data: IBulkUpdateTaskStatusInput
+): Promise<{ data: IBulkUpdateTaskStatusResult }> {
+    return httpClient.patch<{ data: IBulkUpdateTaskStatusResult }>('/tasks/bulk-status', data).then((res) => res.data)
 }
 
 export async function deleteTaskRequest(taskId: string): Promise<{ message: string }> {

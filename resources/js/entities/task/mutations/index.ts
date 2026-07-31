@@ -1,5 +1,6 @@
 export { useCreateTaskMutation } from './use.create-task.mutation'
 export { useUpdateTaskMutation } from './use.update-task.mutation'
+export { useBulkUpdateTaskStatusMutation } from './use.bulk-update-task-status.mutation'
 export { useDeleteTaskMutation } from './use.delete-task.mutation'
 export { useCreateTaskCommentMutation } from './use.create-task-comment.mutation'
 export { useUploadTaskAttachmentMutation } from './use.upload-task-attachment.mutation'

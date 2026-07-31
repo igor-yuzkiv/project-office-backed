@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { useTasksSearchQuery } from '@/entities/task/queries'
-import { useDeleteTaskMutation } from '@/entities/task/mutations'
-import type { TaskOverviewDto } from '@/entities/task/types'
+import { useBulkUpdateTaskStatusMutation, useDeleteTaskMutation } from '@/entities/task/mutations'
+import type { TaskOverviewDto, TaskStatusValue } from '@/entities/task/types'
 import { useTaskViewsQuery } from '@/entities/task-view'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
@@ -17,12 +17,36 @@ import { IconButton } from '@/shared/components/button'
 import { useHeaderActions } from '@/app/shell'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTableView } from '@/widgets/tasks/views/table'
+import { TaskBulkActionsBar } from '@/widgets/tasks/bulk-actions'
+import { useToast } from '@/shared/composables'
 import { createDefaultTaskFiltersDefMap, taskSortFieldDefs, taskTableColumnDefs } from '@/entities/task/config'
 
 const router = useRouter()
 
+const toast = useToast()
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
+const { mutate: bulkUpdateStatus, isPending: isBulkUpdatePending } = useBulkUpdateTaskStatusMutation()
+
+const selectedTasks = ref<TaskOverviewDto[]>([])
+
+// Emptying the selection unmounts the bar, which discards its dialog state with it.
+function clearSelection() {
+    selectedTasks.value = []
+}
+
+function applyBulkStatus(status: TaskStatusValue) {
+    bulkUpdateStatus(
+        { task_ids: selectedTasks.value.map((task) => task.id), status },
+        {
+            onSuccess: ({ data }) => {
+                toast.success(`Updated ${data.updated_count} task(s).`)
+                clearSelection()
+            },
+            onError: () => toast.error('Failed to update the selected tasks.'),
+        }
+    )
+}
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedTask = ref<TaskOverviewDto>()
@@ -114,6 +138,9 @@ watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
 
+// The selection only ever covers the rows currently on screen, so anything that changes them drops it.
+watch(searchParams, clearSelection)
+
 useHeaderActions([
     { key: 'add-task', title: 'Add Task', action: () => taskCreateDialog.open(), is_primary: true },
     { key: 'add-issue', title: 'Add Issue', action: () => console.log('test - Add Issue') },
@@ -136,8 +163,18 @@ useHeaderActions([
                 </div>
             </div>
 
+            <TaskBulkActionsBar
+                v-if="selectedTasks.length"
+                :selected-count="selectedTasks.length"
+                :is-pending="isBulkUpdatePending"
+                @apply="applyBulkStatus"
+                @clear="clearSelection"
+            />
+
             <div class="flex h-full w-full flex-col overflow-hidden">
                 <TasksTableView
+                    v-model:selection="selectedTasks"
+                    selection-mode="multiple"
                     :tasks="tasks"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"

@@ -16,7 +16,10 @@ const props = defineProps<{
     page: number
     columns?: EntityTableColumnDef[]
     to?: (task: TaskOverviewDto) => RouteLocationRaw
+    selectionMode?: 'multiple'
 }>()
+
+const selection = defineModel<TaskOverviewDto[]>('selection', { default: () => [] })
 
 defineEmits<{
     rowClick: [task: TaskOverviewDto]
@@ -42,6 +45,8 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
 <template>
     <EntityTableView
+        v-model:selection="selection"
+        :selection-mode="props.selectionMode"
         :rows="tasks"
         :columns="props.columns ?? defaultColumns"
         :is-pending="isPending"

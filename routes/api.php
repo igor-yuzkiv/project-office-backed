@@ -51,6 +51,7 @@ Route::apiResource('task-lists', TaskListsController::class)->middleware(['auth:
  * Tasks
  */
 Route::post('tasks/search', [TasksController::class, 'search'])->middleware(['auth:sanctum'])->name('tasks.search');
+Route::patch('tasks/bulk-status', [TasksController::class, 'bulkUpdateStatus'])->middleware(['auth:sanctum'])->name('tasks.bulk-status');
 Route::apiResource('tasks', TasksController::class)->middleware(['auth:sanctum']);
 
 /**

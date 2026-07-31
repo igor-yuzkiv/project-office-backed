@@ -26,6 +26,15 @@ export interface IUpdateTaskInput {
     tag_ids?: string[]
 }
 
+export interface IBulkUpdateTaskStatusInput {
+    task_ids: string[]
+    status: TaskStatusValue
+}
+
+export interface IBulkUpdateTaskStatusResult {
+    updated_count: number
+}
+
 export type TaskFetchParams = PagingParams &
     SortParams & {
         include?: TaskInclude[]

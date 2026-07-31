@@ -18,6 +18,7 @@ const props = withDefaults(
         rowClickable?: boolean
         /** Resolves a row to its route. When set, clicking a row navigates to it; Ctrl/Cmd-click opens it in a new tab. */
         to?: (row: T) => RouteLocationRaw
+        /** Adds a checkbox column. A row body click also selects, unless the row navigates. */
         selectionMode?: 'multiple'
         dataKey?: string
         expandable?: boolean
@@ -42,13 +43,19 @@ function onRowClick(event: { data: T; originalEvent: Event }) {
         return
     }
 
+    // PrimeVue emits row-click for the checkbox cell too, so ticking a row would otherwise navigate.
+    const target = event.originalEvent.target
+    if (target instanceof Element && target.closest('[data-p-selection-column="true"]')) {
+        return
+    }
+
     if (props.to) {
-        const target = props.to(event.data)
+        const to = props.to(event.data)
         const mouseEvent = event.originalEvent as MouseEvent
         if (mouseEvent.ctrlKey || mouseEvent.metaKey) {
-            window.open(router.resolve(target).href, '_blank')
+            window.open(router.resolve(to).href, '_blank')
         } else {
-            router.push(target)
+            router.push(to)
         }
         return
     }
@@ -67,7 +74,7 @@ function onPageChange(event: { page: number }) {
         v-model:expanded-rows="expandedRows"
         :value="props.rows"
         :loading="props.isPending"
-        :selection-mode="props.selectionMode"
+        :selection-mode="isClickable ? undefined : props.selectionMode"
         :data-key="props.selectionMode || props.expandable ? props.dataKey : undefined"
         lazy
         striped-rows
@@ -82,7 +89,7 @@ function onPageChange(event: { page: number }) {
     >
         <Column v-if="props.expandable" expander style="width: 3rem" />
 
-        <Column v-if="props.selectionMode === 'multiple'" selection-mode="multiple" header-style="width: 3rem" />
+        <Column v-if="props.selectionMode" selection-mode="multiple" header-style="width: 3rem" />
 
         <Column v-if="$slots.actions" style="width: 3rem">
             <template #body="{ data }">
