@@ -32,10 +32,6 @@
             "Read(//tmp/**)"
         ],
         "ask": [
-            "Bash(git commit)",
-            "Bash(git commit *)",
-            "Bash(git push)",
-            "Bash(git push *)",
             "Bash(composer install)",
             "Bash(composer install *)",
             "Bash(composer require *)",
