@@ -7,11 +7,11 @@ Guidance for Claude Code when working in this repository.
 
 Route the work before loading detail:
 
-- executable change → read `.claude/blocks/pipelines/run-task.md` before the first edit, including
-  when planning turns into execution in the same session;
-- unsettled approach or later execution → `.claude/blocks/pipelines/plan-work.md`;
-- review-only request → `/cp-review`; executable work stays in `run-task`, which decides whether
-  its risk warrants an independent review.
+- executable change → invoke `/composable-pipeline:run-task` before the first edit, including when
+  planning turns into execution in the same session;
+- unsettled approach or later execution → `/composable-pipeline:plan-work`;
+- review-only request → `/composable-pipeline:review`; executable work stays in `run-task`, which
+  decides whether its risk warrants an independent review.
 
 Across all three:
 
@@ -21,22 +21,16 @@ Across all three:
 - distinguish verified facts from inference;
 - report partial or unverified work as partial or unverified.
 
-When the active pipeline does not already name what applies, use `.claude/blocks/index.yaml` to
-select additional rules, principles, coverage lenses, or operations. Open only the selected blocks.
-When an opened operation names `applies_rules`, open them; open its named principles only when they
-materially shape the work.
+The rules, principles, coverage lenses, and operations those pipelines draw on ship with the
+composable-pipeline plugin; this repository does not keep its own copy.
 
 Project-specific artifact destinations, exemplars, verification commands, and language are in
-`.claude/project-profile.yml`.
+`.claude/composable-pipeline/project-profile.yml`.
 <!-- composable-pipeline:end -->
 
 ## Project
 
-- Laravel 13 API backend and Vue 3 + TypeScript single-page application.
 - The Web API serves the SPA; a separate CLI API is an agent-facing public contract.
-- Backend domain logic lives in `app/Domains/`. Frontend source lives in `resources/js/`.
-- PostgreSQL, Redis, Reverb, Horizon, Scout, and S3-compatible attachment storage are part of the
-  application environment.
 
 ## Working model
 
@@ -60,4 +54,4 @@ needed.
 
 When a request is attached to a Project Office task, read `.project-office/AGENTS.md` and use its
 CLI workflow for task context, durable checkpoints, and handoff. Project Office records the work;
-the pipeline in `.claude/blocks/pipelines/run-task.md` governs how the work is performed.
+`/composable-pipeline:run-task` governs how the work is performed.

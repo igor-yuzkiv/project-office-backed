@@ -8,7 +8,7 @@
 # Leave a field empty rather than guessing. Empty means "not asked yet" and will be
 # filled the first time something needs it. Wrong is silently wrong for months.
 #
-# Install location: .claude/project-profile.yml
+# Install location: .claude/composable-pipeline/project-profile.yml
 #
 # ---------------------------------------------------------------------------
 # Two hard constraints on the content of this file. They hold whether or not it
