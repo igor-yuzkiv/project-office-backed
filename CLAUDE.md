@@ -34,9 +34,16 @@ Project-specific artifact destinations, exemplars, verification commands, and la
 
 ## Working model
 
-- Do not commit, push, migrate data, or perform destructive git operations on your own.
-- The user reviews the final diff and visually verifies UI changes. Do not add a separate final
-  approval gate or mandatory agent review.
+- Do not push, migrate data, or perform destructive git operations on your own.
+- The user reviews the final diff and visually verifies UI changes. Do not add a mandatory agent
+  review.
+- `wrap-up-work` always runs in this order and never starts on its own initiative:
+  1. **ask for approval** — state the outcome, what was verified, and what remains, then wait;
+  2. **hand off** — `project-office task:handoff --task MTM-<n> --resolution @<file>`, which
+     records the resolution comment and moves the task to `ready_to_test` in one operation;
+  3. **commit**.
+
+  One approval covers both the handoff and the commit. Without it, neither happens.
 - Backend and frontend contracts are one change: keep Resources, request shapes, and frontend
   types aligned when both sides are in scope.
 
