@@ -10,7 +10,7 @@ class StoreCommentsRequest extends FormRequest
     {
         return [
             'comments'           => ['required', 'array', 'min:1'],
-            'comments.*.content' => ['required', 'string', 'max:10000'],
+            'comments.*.content' => ['required', 'string', 'max:100000'],
         ];
     }
 }
