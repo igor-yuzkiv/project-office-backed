@@ -1,64 +1,41 @@
 # Project Office
 
-Guidance for Claude Code when working in this repository.
+## What this is
 
-<!-- composable-pipeline:begin -->
-## How work is done here
+A task manager: Laravel 13 / PHP 8.3 API behind a Vue SPA. Two HTTP surfaces, not one —
+`WebApi` (`/api`) serves the SPA and may change with it; `CliApi` (`/api/cli`) is an
+agent-facing public contract whose consumers live outside this repository.
 
-Route the work before loading detail:
+## Architecture
 
-- executable change → invoke `/composable-pipeline:run-task` before the first edit, including when
-  planning turns into execution in the same session;
-- unsettled approach or later execution → `/composable-pipeline:plan-work`;
-- review-only request → `/composable-pipeline:review`; executable work stays in `run-task`, which
-  decides whether its risk warrants an independent review.
+- `app/Domains/` owns business behaviour; `app/Http/{WebApi,CliApi,Shared}` owns transport.
+  Full boundaries: `.claude/rules/architecture.md` (path-scoped, loads on `app/**`,
+  `routes/**`, `database/**`, `config/**`).
+- `resources/js` is FSD — app / pages / widgets / entities / shared. Details:
+  `.claude/rules/frontend.md`.
+- Backend and frontend contracts are one change: Resources, request shapes, and frontend types
+  stay aligned when both sides are in scope.
+- Cross-cutting mechanics have their own docs, and changing one without reading it breaks the
+  others: `docs/filtering-system.md`, `docs/sorting-system.md`, `docs/include-system.md`,
+  `docs/persisted-list-state.md`.
 
-Across all three:
+## Gotchas
 
-- deliver the requested scope; report adjacent work instead of silently adding it;
-- make routine local decisions, but surface choices that materially change behaviour, scope,
-  contracts, security, data, or lasting trade-offs;
-- distinguish verified facts from inference;
-- report partial or unverified work as partial or unverified.
+- Tests run **on the host**, not in a container: `docker compose` here provides only Postgres,
+  Redis and MinIO. The backend suite needs the separate `task_manager_test` database —
+  `docs/testing.md` has the setup and the recreate script.
+- `npm run test:e2e` reseeds the e2e database. Run it only when the user asks.
+- `.claude/settings.json` and `.claude/hooks/` enforce mechanical restrictions and automatic
+  formatting. Never work around a blocked action — say what was blocked and why it is needed.
 
-The rules, principles, coverage lenses, and operations those pipelines draw on ship with the
-composable-pipeline plugin; this repository does not keep its own copy.
+## External systems
 
-Project-specific artifact destinations, exemplars, verification commands, and language are in
-`.claude/composable-pipeline/project-profile.yml`.
-<!-- composable-pipeline:end -->
+- **CLI API** — an agent-facing public contract. Its other side is not in this repository, so
+  changes to it are review-worthy by default.
+- **Project Office** — the task board. When a request is attached to a task, read
+  `.project-office/AGENTS.md` and use its CLI for task context, checkpoints, and handoff.
 
-## Project
+## Conventions this project actually follows
 
-- The Web API serves the SPA; a separate CLI API is an agent-facing public contract.
-
-## Working model
-
-- Do not push, migrate data, or perform destructive git operations on your own.
-- The user reviews the final diff and visually verifies UI changes. Do not add a mandatory agent
-  review.
-- `wrap-up-work` always runs in this order and never starts on its own initiative:
-  1. **ask for approval** — state the outcome, what was verified, and what remains, then wait;
-  2. **hand off** — `project-office task:handoff --task MTM-<n> --resolution @<file>`, which
-     records the resolution comment and moves the task to `ready_to_test` in one operation;
-  3. **commit**.
-
-  One approval covers both the handoff and the commit. Without it, neither happens.
-- Backend and frontend contracts are one change: keep Resources, request shapes, and frontend
-  types aligned when both sides are in scope.
-
-## Project rules
-
-- `.claude/rules/architecture.md` — Laravel architecture and API boundaries; path-scoped.
-- `.claude/rules/frontend.md` — Vue/FSD architecture and conventions; path-scoped.
-- `.claude/rules/testing.md` — backend, frontend, and E2E verification policy; path-scoped.
-
-Mechanical restrictions and automatic formatting live in `.claude/settings.json` and
-`.claude/hooks/`. Never work around a blocked action. Explain what was blocked and why it is
-needed.
-
-## Project Office task workflow
-
-When a request is attached to a Project Office task, read `.project-office/AGENTS.md` and use its
-CLI workflow for task context, durable checkpoints, and handoff. Project Office records the work;
-`/composable-pipeline:run-task` governs how the work is performed.
+Named exemplar files per layer live in `.claude/composable-pipeline/project-profile.yml`, which
+the implementation step reads. Verification policy: `.claude/rules/testing.md`.
