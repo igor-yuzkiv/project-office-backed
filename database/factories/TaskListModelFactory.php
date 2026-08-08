@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Domains\TaskList\Enums\TaskListStatus;
 use App\Domains\TaskList\Models\TaskListModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,8 +15,14 @@ class TaskListModelFactory extends Factory
 
     public function definition(): array
     {
+        $sequenceNumber = fake()->unique()->numberBetween(1, 99999);
+
         return [
-            'name' => fake()->words(2, true),
+            'key'             => 'PRJ-TL-'.$sequenceNumber,
+            'sequence_number' => $sequenceNumber,
+            'name'            => fake()->words(2, true),
+            'status'          => TaskListStatus::Open->value,
+            'description'     => null,
         ];
     }
 }
