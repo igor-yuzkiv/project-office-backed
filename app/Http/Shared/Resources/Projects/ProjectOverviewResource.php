@@ -4,7 +4,7 @@ namespace App\Http\Shared\Resources\Projects;
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Http\Shared\Resources\Tags\TagResource;
-use App\Http\Shared\Resources\TaskLists\TaskListResource;
+use App\Http\Shared\Resources\TaskLists\TaskListOverviewResource;
 use App\Http\Shared\Resources\Tasks\TaskResource;
 use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
@@ -28,7 +28,7 @@ class ProjectOverviewResource extends JsonResource
             'archived_by' => $this->whenLoaded('archivedBy', fn () => new UserOverviewResource($this->archivedBy)),
             'tags'        => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'tasks'       => $this->whenLoaded('tasks', fn () => TaskResource::collection($this->tasks)),
-            'task_lists'  => $this->whenLoaded('taskLists', fn () => TaskListResource::collection($this->taskLists)),
+            'task_lists'  => $this->whenLoaded('taskLists', fn () => TaskListOverviewResource::collection($this->taskLists)),
         ];
     }
 }

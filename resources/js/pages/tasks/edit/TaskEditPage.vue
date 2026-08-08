@@ -11,7 +11,7 @@ import { uploadTaskAttachmentRequest } from '@/entities/task/api/task-attachment
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
-import type { ITaskList } from '@/entities/task-list/types'
+import type { ITaskListOverview } from '@/entities/task-list/types'
 import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
@@ -26,7 +26,7 @@ import { IconButton } from '@/shared/components/button'
 interface TaskEditFormData {
     name: string
     description: string
-    taskList: ITaskList | null
+    taskList: ITaskListOverview | null
     status: TaskStatusValue
     priority: number | null
     start_date: Date | null

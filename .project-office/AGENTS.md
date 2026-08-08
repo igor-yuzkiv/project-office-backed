@@ -138,3 +138,54 @@ Project Office documentation is a context source, not a mandatory workflow step.
 * Keep repo-specific instructions in the repository; keep shared or cross-repository
   documentation in the Project Office.
 <!-- project-office:managed:end -->
+
+## Project-specific conventions
+
+### Checkpoint the assembled workflow
+
+Work in this repository is executed through the composable pipeline, which assembles a workflow
+from the block catalog and shows it to the user for confirmation before the first edit.
+
+**Record that workflow as a checkpoint once the user has approved it, before starting step 1.**
+
+```bash
+project-office task:checkpoint --task MTM-1 --subject "Assembled workflow" --comment @/tmp/workflow.md
+```
+
+Use the subject `Assembled workflow` exactly — it is what makes these checkpoints findable across
+tasks.
+
+**Record the agreed version, not the proposal.** If the user confirmed it as sent, record it as
+sent. If they changed the lane, dropped a block, added one, or corrected what a block covers,
+record what was agreed. Never checkpoint a workflow the user has not approved, and never checkpoint
+one they rejected.
+
+Copy the workflow verbatim — the fenced block plus any scoping note that came with it:
+
+```text
+lane: standard — кілька файлів в одному домені (Task List), схема БД, але без декомпозиції
+
+1. orient-in-codebase — форма TaskListModel, ProjectDocumentKeyResolver,
+   Create/Update-хендлери списків і поточні allowedFilters
+2. implement-change — міграція, enum, resolver, relations, casts/filters/фабрика, хендлери
+3. verify-change — unit на TaskListKeyResolver + feature на ключ/резолвінг; міграцію
+   запускає користувач (агенту заборонено), тож частина перевірки — ручна
+4. review-change — зміна схеми й даних + backfill: тригер спрацював, не опційно
+5. assess-readiness ─┐ закриття: що ще винні, вирішується там
+6. wrap-up-work     ─┘ за гейтом хендофу
+```
+
+Keep the lane justification and the per-block scope lines. They are the point: the lane says how
+much ceremony the work earned, and each block line says what it covers *in this task* — that is
+what a later session or a reviewer cannot reconstruct from the diff.
+
+Add a short note under the block when the assembly made a scoping decision worth preserving, in the
+same words it was sent — for example, why orientation ran as one scope instead of two.
+
+**This replaces the generic `Implementation plan` checkpoint** for pipeline-executed work. Do not
+write both: the assembled workflow already states the steps and the sequencing. Add a separate plan
+checkpoint only when the task carries decisions the workflow block list does not express.
+
+### Task descriptions
+
+When creating or substantially rewriting a task, follow `./task-description-pattern.md`.

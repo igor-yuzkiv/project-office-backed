@@ -12,6 +12,7 @@ use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
 use App\Http\WebApi\Controllers\Tags\TagsController;
 use App\Http\WebApi\Controllers\TaskLists\TaskListsController;
+use App\Http\WebApi\Controllers\TaskLists\TaskListTasksController;
 use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
@@ -46,6 +47,18 @@ Route::apiResource('projects', ProjectsController::class)->middleware(['auth:san
  */
 Route::post('task-lists/search', [TaskListsController::class, 'search'])->middleware(['auth:sanctum'])->name('task-lists.search');
 Route::apiResource('task-lists', TaskListsController::class)->middleware(['auth:sanctum']);
+
+/**
+ * Task List Tasks
+ */
+Route::group([
+    'prefix'     => 'task-lists/{task_list}/tasks',
+    'as'         => 'task-lists.tasks.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => TaskListTasksController::class,
+], function () {
+    Route::post('/', 'store')->name('store');
+});
 
 /**
  * Tasks

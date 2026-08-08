@@ -3,7 +3,7 @@ import type { UserOverviewDto } from '@/entities/user/types'
 import type { ProjectStatusValue } from './project-status.types'
 import type { ITag } from '@/entities/tag/types'
 import type { ITask } from '@/entities/task/types'
-import type { ITaskList } from '@/entities/task-list/types'
+import type { ITaskListOverview } from '@/entities/task-list/types'
 
 export interface IProject extends IEntity {
     name: string
@@ -21,7 +21,7 @@ export interface IProject extends IEntity {
     updated_by?: UserOverviewDto
     tags?: ITag[]
     tasks?: ITask[]
-    task_lists?: ITaskList[]
+    task_lists?: ITaskListOverview[]
 }
 
 export type ProjectOverviewDto = Pick<

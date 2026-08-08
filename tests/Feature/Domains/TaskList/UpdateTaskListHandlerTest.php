@@ -26,6 +26,7 @@ it('updates name, status and description', function () {
         name: 'Sprint 4',
         status: TaskListStatus::Completed,
         description: '# Rewritten',
+        descriptionProvided: true,
     ));
 
     expect($updated->name)->toBe('Sprint 4')
@@ -42,6 +43,16 @@ it('leaves fields that were not provided untouched', function () {
     expect($updated->status)->toBe(TaskListStatus::InProgress)
         ->and($updated->name)->toBe('Backlog')
         ->and($updated->description)->toBe('Original');
+});
+
+it('clears the description when one is explicitly provided as null', function () {
+    $updated = $this->handler->handle(new UpdateTaskListCommand(
+        taskList: $this->taskList,
+        description: null,
+        descriptionProvided: true,
+    ));
+
+    expect($updated->description)->toBeNull();
 });
 
 it('never rewrites the key', function () {

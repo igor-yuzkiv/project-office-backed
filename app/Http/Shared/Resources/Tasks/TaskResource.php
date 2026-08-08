@@ -7,7 +7,7 @@ use App\Domains\Task\ValueObjects\TaskPriorityData;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentOverviewResource;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
 use App\Http\Shared\Resources\Tags\TagResource;
-use App\Http\Shared\Resources\TaskLists\TaskListResource;
+use App\Http\Shared\Resources\TaskLists\TaskListOverviewResource;
 use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -35,7 +35,7 @@ class TaskResource extends JsonResource
             'updated_at'      => $this->updated_at,
 
             'project'   => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
-            'task_list' => $this->whenLoaded('taskList', fn () => new TaskListResource($this->taskList)),
+            'task_list' => $this->whenLoaded('taskList', fn () => new TaskListOverviewResource($this->taskList)),
 
             'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
 
