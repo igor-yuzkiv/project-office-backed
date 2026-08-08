@@ -1,18 +1,26 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
 import { Icon } from '@iconify/vue'
 import { useRouteParams } from '@vueuse/router'
 import { useTaskListQuery } from '@/entities/task-list/queries'
 import { useTaskSearch } from '@/entities/task/composables'
+import { useDeleteTaskMutation } from '@/entities/task/mutations'
+import type { TaskOverviewDto } from '@/entities/task/types'
 import { taskSortFieldDefs, taskTableColumnsExcluding } from '@/entities/task/config'
 import { FilterSidebar, FilterButton } from '@/shared/filters'
 import { SortButton, SortDialog } from '@/shared/sort'
 import { TaskViewSelect } from '@/widgets/tasks/view-switcher'
 import { SearchInput } from '@/shared/components/input'
+import { IconButton } from '@/shared/components/button'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { AddTasksToTaskListDialog, useAddTasksToTaskListDialog } from '@/widgets/task-list/add-tasks-dialog'
 
+const router = useRouter()
 const taskListId = useRouteParams<string>('id')
 
 const { taskList } = useTaskListQuery(taskListId)
@@ -37,6 +45,29 @@ const search = useTaskSearch({
 const tableColumnsDef = taskTableColumnsExcluding('task_list.name', 'updated_by')
 
 const taskCreateDialog = useTaskCreateDialog()
+const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
+
+const rowMenu = ref<InstanceType<typeof Menu>>()
+const selectedTask = ref<TaskOverviewDto>()
+
+const rowMenuItems: MenuItem[] = [
+    {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => router.push({ name: 'task-edit', params: { id: selectedTask.value!.id } }),
+    },
+    {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () =>
+            deleteTask(selectedTask.value!.id, `Are you sure you want to delete "${selectedTask.value!.name}"?`),
+    },
+]
+
+function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
+    selectedTask.value = task
+    rowMenu.value?.toggle(event)
+}
 
 const addTasksDialog = useAddTasksToTaskListDialog(
     () => taskListId.value,
@@ -88,8 +119,18 @@ const addTasksDialog = useAddTasksToTaskListDialog(
                 :to="search.taskDetailsRoute"
                 :columns="tableColumnsDef"
                 @page-change="search.goToPage"
-            />
+            >
+                <template #actions="{ row }">
+                    <IconButton
+                        severity="secondary"
+                        icon="pepicons-pop:dots-y"
+                        @click.stop="openRowMenu($event, row)"
+                    />
+                </template>
+            </TasksTableView>
         </div>
+
+        <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
         <SortDialog
             :visible="search.sort.visible.value"
