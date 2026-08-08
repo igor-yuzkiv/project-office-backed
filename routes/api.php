@@ -11,6 +11,8 @@ use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
 use App\Http\WebApi\Controllers\Tags\TagsController;
+use App\Http\WebApi\Controllers\TaskLists\TaskListAttachmentsController;
+use App\Http\WebApi\Controllers\TaskLists\TaskListCommentsController;
 use App\Http\WebApi\Controllers\TaskLists\TaskListsController;
 use App\Http\WebApi\Controllers\TaskLists\TaskListTasksController;
 use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
@@ -57,6 +59,32 @@ Route::group([
     'middleware' => ['auth:sanctum'],
     'controller' => TaskListTasksController::class,
 ], function () {
+    Route::post('/', 'store')->name('store');
+});
+
+/**
+ * Task List Comments
+ */
+Route::group([
+    'prefix'     => 'task-lists/{task_list}/comments',
+    'as'         => 'task-lists.comments.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => TaskListCommentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+});
+
+/**
+ * Task List Attachments
+ */
+Route::group([
+    'prefix'     => 'task-lists/{task_list}/attachments',
+    'as'         => 'task-lists.attachments.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => TaskListAttachmentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
 });
 
