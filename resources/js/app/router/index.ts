@@ -124,6 +124,12 @@ const router = createRouter({
             meta: { requiresAuth: true, layout: 'default', title: 'Edit Task' },
         },
         {
+            path: '/task-lists/:id/edit',
+            name: 'task-list-edit',
+            component: () => import('@/pages/task-lists/edit/TaskListEditPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit Task List' },
+        },
+        {
             path: '/project-documents/:id',
             name: 'project-document-details',
             component: () => import('@/pages/project-documents/details/ProjectDocumentDetailsPage.vue'),
