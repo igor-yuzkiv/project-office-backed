@@ -13,10 +13,10 @@ import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
+import { taskListTableColumnsExcluding } from '@/entities/task-list/config'
 import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { Icon } from '@iconify/vue'
-import TaskListTasksExpansion from '../partials/TaskListTasksExpansion.vue'
 
 const projectId = useRouteParams<string>('id')
 
@@ -25,7 +25,9 @@ const { project } = useProjectQuery(projectId)
 const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
-const expandedRows = ref<ITaskList[]>([])
+
+// The project is already the page context, so its column carries nothing here.
+const tableColumnsDef = taskListTableColumnsExcluding('project')
 
 const searchParams = computed<TaskListSearchParams>(() => {
     const projectFilter: FilterPayloadItem = {
@@ -116,12 +118,11 @@ function onPageChange(newPage: number) {
             </div>
             <div class="flex h-full w-full flex-col overflow-hidden">
                 <TaskListsTableView
-                    v-model:expanded-rows="expandedRows"
                     :task-lists="taskLists"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    expandable
+                    :columns="tableColumnsDef"
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
@@ -130,10 +131,6 @@ function onPageChange(newPage: number) {
                             icon="pepicons-pop:dots-y"
                             @click.stop="openRowMenu($event, row)"
                         />
-                    </template>
-
-                    <template #expansion="{ row }">
-                        <TaskListTasksExpansion :task-list-id="row.id" />
                     </template>
                 </TaskListsTableView>
             </div>

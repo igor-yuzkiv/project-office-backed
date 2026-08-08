@@ -1,10 +1,18 @@
-import type { IEntity } from '@/shared/types'
+import type { HexColor, IEntity } from '@/shared/types'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
 import type { ITask } from '@/entities/task/types'
 
 export type TaskListStatusValue = 'open' | 'in_progress' | 'completed'
+
+export type TaskListStatusMetadata = {
+    label: string
+    value: TaskListStatusValue
+    color: HexColor
+}
+
+export type TaskListStatusMetadataMap = Record<TaskListStatusValue, TaskListStatusMetadata>
 
 export interface ITaskList extends IEntity {
     project_id: string
