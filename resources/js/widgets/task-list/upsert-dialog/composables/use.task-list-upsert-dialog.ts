@@ -14,7 +14,12 @@ function getDefaultFormData(): TaskListUpsertFormData {
     return { name: '', project: null }
 }
 
-export function useTaskListUpsertDialog() {
+interface TaskListUpsertDialogOptions {
+    /** Lets a caller pick up the freshly created list, e.g. to select it in a lookup field. */
+    onCreated?: (taskList: ITaskList) => void
+}
+
+export function useTaskListUpsertDialog(options: TaskListUpsertDialogOptions = {}) {
     const visible = ref(false)
     const editingTaskList = ref<ITaskList | undefined>()
     const mode = computed<'create' | 'update'>(() => (editingTaskList.value ? 'update' : 'create'))
@@ -51,7 +56,13 @@ export function useTaskListUpsertDialog() {
         if (mode.value === 'create') {
             create(
                 { project_id: formData.value.project.id, name: formData.value.name },
-                { onSuccess: close, onError: handleError }
+                {
+                    onSuccess: (response) => {
+                        close()
+                        options.onCreated?.(response.data)
+                    },
+                    onError: handleError,
+                }
             )
         } else if (editingTaskList.value) {
             update(

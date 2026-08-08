@@ -19,6 +19,8 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
+import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
+import type { ITaskList } from '@/entities/task-list/types'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
 import { IconButton } from '@/shared/components/button'
@@ -55,6 +57,14 @@ const formData = ref<TaskEditFormData>({
 const isFormInitialized = ref(false)
 const validationErrors = ref<LaravelValidationErrors>({})
 const showManageTagsDialog = ref(false)
+
+// A list created here belongs to the task's project and is selected right away, so the user
+// never has to leave the form to make one.
+const taskListUpsertDialog = useTaskListUpsertDialog({
+    onCreated: (taskList: ITaskList) => {
+        formData.value.taskList = taskList
+    },
+})
 
 function handleError(error: unknown) {
     if (error instanceof ApiError && error.isValidationError) {
@@ -161,12 +171,22 @@ useBreadcrumbs(() => [
                 </InputContainer>
 
                 <InputContainer label="Task List" :error="validationErrors.task_list_id">
-                    <TaskListLookupField
-                        v-model="formData.taskList"
-                        :project-id="task?.project_id"
-                        :object="true"
-                        :invalid="!!validationErrors.task_list_id"
-                    />
+                    <div class="gap-2 flex items-center">
+                        <TaskListLookupField
+                            v-model="formData.taskList"
+                            :project-id="task?.project_id"
+                            :object="true"
+                            :invalid="!!validationErrors.task_list_id"
+                            class="min-w-0 flex-1"
+                        />
+                        <IconButton
+                            icon="material-symbols:add"
+                            severity="success"
+                            title="New task list"
+                            :disabled="!task?.project"
+                            @click="task?.project && taskListUpsertDialog.open(task.project)"
+                        />
+                    </div>
                 </InputContainer>
 
                 <InputContainer label="Status" :error="validationErrors.status">
@@ -234,5 +254,16 @@ useBreadcrumbs(() => [
         </div>
 
         <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
+
+        <UpsertTaskListDialog
+            :visible="taskListUpsertDialog.visible.value"
+            :mode="taskListUpsertDialog.mode.value"
+            :form-data="taskListUpsertDialog.formData.value"
+            :validation-errors="taskListUpsertDialog.validationErrors.value"
+            :is-pending="taskListUpsertDialog.isPending.value"
+            @update:visible="taskListUpsertDialog.visible.value = $event"
+            @update:form-data="taskListUpsertDialog.formData.value = $event"
+            @submit="taskListUpsertDialog.submit()"
+        />
     </div>
 </template>
