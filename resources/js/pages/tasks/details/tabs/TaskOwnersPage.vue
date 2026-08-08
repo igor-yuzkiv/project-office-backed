@@ -18,7 +18,7 @@ const isManageOwnersDialogVisible = ref(false)
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-1 flex justify-end">
-            <Button label="Assign" severity="info" size="small" text @click="isManageOwnersDialogVisible = true">
+            <Button label="Add Owners" severity="info" size="small" text @click="isManageOwnersDialogVisible = true">
                 <template #icon>
                     <Icon icon="material-symbols:add" class="text-lg" />
                 </template>

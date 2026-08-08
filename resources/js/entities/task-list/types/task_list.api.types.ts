@@ -3,7 +3,7 @@ import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
 import type { TaskListStatusValue } from './task_list.types'
 
-export type TaskListInclude = 'tasks' | 'project' | 'tags' | 'createdBy' | 'updatedBy'
+export type TaskListInclude = 'project' | 'tags' | 'createdBy' | 'updatedBy'
 
 export interface ICreateTaskListInput {
     project_id: string
@@ -23,11 +23,6 @@ export interface IUpdateTaskListInput {
 export interface IAddTasksToTaskListInput {
     task_ids: string[]
 }
-
-export type TaskListFetchParams = PagingParams &
-    SortParams & {
-        include?: TaskListInclude[]
-    }
 
 export type TaskListSearchParams = PagingParams &
     SortParams & {

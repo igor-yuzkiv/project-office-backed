@@ -19,8 +19,8 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-    rowClick: [taskList: ITaskList]
-    pageChange: [page: number]
+    (e: 'rowClick', taskList: ITaskList): void
+    (e: 'pageChange', page: number): void
 }>()
 </script>
 
@@ -62,12 +62,6 @@ defineEmits<{
 
         <template #column:tags="{ row }">
             <TagList v-if="row.tags" :tags="row.tags" inline />
-        </template>
-
-        <template #column:tasks_count="{ row }">
-            <span :class="(row.tasks_count ?? 0) === 0 ? 'text-surface-400' : ''">
-                {{ row.tasks_count ?? 0 }}
-            </span>
         </template>
 
         <template #empty>

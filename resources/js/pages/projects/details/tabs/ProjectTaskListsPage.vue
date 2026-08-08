@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
@@ -14,10 +15,11 @@ import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { taskListTableColumnsExcluding } from '@/entities/task-list/config'
-import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
+import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { Icon } from '@iconify/vue'
 
+const router = useRouter()
 const projectId = useRouteParams<string>('id')
 
 const { project } = useProjectQuery(projectId)
@@ -42,12 +44,13 @@ const searchParams = computed<TaskListSearchParams>(() => {
         filters: [projectFilter],
         page: page.value,
         per_page: PAGE_SIZE,
+        include: ['tags'],
     }
 })
 
 const { taskLists, paginationMeta, isPending } = useTaskListsSearchQuery(searchParams)
 
-const upsertDialog = useTaskListUpsertDialog()
+const createDialog = useTaskListCreateDialog()
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 const taskCreateDialog = useTaskCreateDialog()
 
@@ -56,7 +59,7 @@ const selectedTaskList = ref<ITaskList>()
 
 const rowMenuItems: MenuItem[] = [
     {
-        label: 'Create Task',
+        label: 'New Task',
         icon: 'pi pi-plus',
         command: () => {
             if (project.value && selectedTaskList.value) {
@@ -69,7 +72,7 @@ const rowMenuItems: MenuItem[] = [
         icon: 'pi pi-pencil',
         command: () => {
             if (project.value && selectedTaskList.value) {
-                upsertDialog.open(project.value, selectedTaskList.value)
+                router.push({ name: 'task-list-edit', params: { id: selectedTaskList.value.id } })
             }
         },
     },
@@ -113,7 +116,7 @@ function onPageChange(newPage: number) {
                     text
                     label="New Task List"
                     :disabled="!project"
-                    @click="project && upsertDialog.open(project)"
+                    @click="project && createDialog.open(project)"
                 >
                     <template #icon>
                         <Icon icon="material-symbols:add" class="text-lg" />
@@ -143,15 +146,15 @@ function onPageChange(newPage: number) {
 
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
-        <UpsertTaskListDialog
-            :visible="upsertDialog.visible.value"
-            :mode="upsertDialog.mode.value"
-            :form-data="upsertDialog.formData.value"
-            :validation-errors="upsertDialog.validationErrors.value"
-            :is-pending="upsertDialog.isPending.value"
-            @update:visible="upsertDialog.visible.value = $event"
-            @update:form-data="upsertDialog.formData.value = $event"
-            @submit="upsertDialog.submit()"
+        <TaskListCreateDialog
+            :visible="createDialog.visible.value"
+            :form-data="createDialog.formData.value"
+            :validation-errors="createDialog.validationErrors.value"
+            :is-pending="createDialog.isPending.value"
+            project-locked
+            @update:visible="createDialog.visible.value = $event"
+            @update:form-data="createDialog.formData.value = $event"
+            @submit="createDialog.submit()"
         />
 
         <TaskCreateDialog

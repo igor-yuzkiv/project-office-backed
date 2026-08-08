@@ -85,7 +85,7 @@ exemplars:
   test_feature: tests/Feature/CliApi/Tasks/TaskWorkflowCheckpointTest.php
   # Frontend — resources/js is FSD: app / pages / widgets / entities / shared.
   component: resources/js/widgets/tasks/create-dialog/ui/TaskCreateDialog.vue
-  composable: resources/js/widgets/tasks/view-switcher/composables/use.task-view-switcher.ts
+  composable: resources/js/entities/task-view/composables/use.task-view-switcher.ts
   store: resources/js/app/stores/use.auth.store.ts
   api_client: resources/js/entities/task/api/task.api.ts
   e2e_spec: e2e/auth/login.smoke.spec.ts

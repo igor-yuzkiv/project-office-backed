@@ -21,7 +21,6 @@ const generalFields: DisplayFieldConfig<ITaskList>[] = [
     { name: 'sequence_number', label: 'Sequence Number', value: (l) => l.sequence_number },
     { name: 'status', label: 'Status' },
     { name: 'project', label: 'Project' },
-    { name: 'tasks_count', label: 'Tasks', value: (l) => l.tasks_count ?? 0 },
     { name: 'tags', label: 'Tags' },
 ]
 
@@ -35,11 +34,6 @@ const systemFields: DisplayFieldConfig<ITaskList>[] = [
 
 <template>
     <div v-if="taskList" class="gap-4 p-2 flex flex-col">
-        <Panel header="Description" :toggleable="true">
-            <MarkdownPreview v-if="taskList.description" :model-value="taskList.description" />
-            <p v-else class="text-sm text-surface-400 italic">No description available.</p>
-        </Panel>
-
         <Panel header="General" :toggleable="true">
             <DisplayFields :item="taskList" :fields="generalFields">
                 <template #[`field:status:value`]="{ item }">
@@ -83,6 +77,11 @@ const systemFields: DisplayFieldConfig<ITaskList>[] = [
                     </div>
                 </template>
             </DisplayFields>
+        </Panel>
+
+        <Panel header="Description" :toggleable="true">
+            <MarkdownPreview v-if="taskList.description" :model-value="taskList.description" />
+            <p v-else class="text-sm text-surface-400 italic">No description available.</p>
         </Panel>
     </div>
 </template>

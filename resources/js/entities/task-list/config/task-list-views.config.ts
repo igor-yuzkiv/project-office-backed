@@ -16,7 +16,6 @@ export const taskListTableColumnDefs: EntityTableColumnDef[] = [
     { field: 'status', header: 'Status', style: 'min-width: 9rem' },
     { field: 'project', header: 'Project', style: 'min-width: 15rem' },
     { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
-    { field: 'tasks_count', header: 'Tasks', style: 'width: 8rem' },
 ]
 
 export function taskListTableColumnsExcluding(...fields: string[]): EntityTableColumnDef[] {

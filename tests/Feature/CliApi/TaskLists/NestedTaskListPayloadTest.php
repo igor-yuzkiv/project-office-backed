@@ -58,6 +58,22 @@ it('nests the compact task list form in the CLI task list endpoint', function ()
         ->toBe(['id', 'project_id', 'key', 'name', 'status', 'created_at', 'updated_at']);
 });
 
+it('nests the compact task list form in the CLI workflow start payload', function () {
+    $task = TaskModel::factory()->create([
+        'project_id'   => $this->project->id,
+        'task_list_id' => $this->taskList->id,
+        'status'       => TaskStatus::Open->value,
+    ]);
+
+    $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/start");
+
+    $response->assertOk()
+        ->assertJsonPath('task.task_list.key', 'MTM-TL-1');
+
+    expect(array_keys($response->json('task.task_list')))
+        ->toBe(['id', 'project_id', 'key', 'name', 'status', 'created_at', 'updated_at']);
+});
+
 // The CLI project endpoint does not allow the taskLists include, so no task list reaches that
 // payload at all. Pinned so the slot is not opened up unnoticed.
 it('does not nest task lists in the CLI project payload', function () {

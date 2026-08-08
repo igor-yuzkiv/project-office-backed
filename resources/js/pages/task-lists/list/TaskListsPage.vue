@@ -18,10 +18,13 @@ import { usePersistedListState } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
+import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
+import { useHeaderActions } from '@/app/shell'
 
 const router = useRouter()
 
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
+const createDialog = useTaskListCreateDialog()
 
 const rowMenu = ref<InstanceType<typeof Menu>>()
 const selectedTaskList = ref<ITaskList>()
@@ -101,6 +104,10 @@ function onPageChange(newPage: number) {
 watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
+
+useHeaderActions([
+    { key: 'new-task-list', title: 'New Task List', action: () => createDialog.open(), is_primary: true },
+])
 </script>
 
 <template>
@@ -149,5 +156,15 @@ watch([sort.sortBy, sort.sortOrder], () => {
         <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
 
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
+
+        <TaskListCreateDialog
+            :visible="createDialog.visible.value"
+            :form-data="createDialog.formData.value"
+            :validation-errors="createDialog.validationErrors.value"
+            :is-pending="createDialog.isPending.value"
+            @update:visible="createDialog.visible.value = $event"
+            @update:form-data="createDialog.formData.value = $event"
+            @submit="createDialog.submit()"
+        />
     </div>
 </template>

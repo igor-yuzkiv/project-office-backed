@@ -21,17 +21,15 @@ const props = withDefaults(
         /** Adds a checkbox column. A row body click also selects, unless the row navigates. */
         selectionMode?: 'multiple'
         dataKey?: string
-        expandable?: boolean
     }>(),
-    { dataKey: 'id', expandable: false }
+    { dataKey: 'id' }
 )
 
 const selection = defineModel<T[]>('selection', { default: () => [] })
-const expandedRows = defineModel<T[]>('expandedRows', { default: () => [] })
 
 const emit = defineEmits<{
-    pageChange: [page: number]
-    rowClick: [row: T]
+    (e: 'pageChange', page: number): void
+    (e: 'rowClick', row: T): void
 }>()
 
 const router = useRouter()
@@ -71,11 +69,10 @@ function onPageChange(event: { page: number }) {
 <template>
     <DataTable
         v-model:selection="selection"
-        v-model:expanded-rows="expandedRows"
         :value="props.rows"
         :loading="props.isPending"
         :selection-mode="isClickable ? undefined : props.selectionMode"
-        :data-key="props.selectionMode || props.expandable ? props.dataKey : undefined"
+        :data-key="props.selectionMode ? props.dataKey : undefined"
         lazy
         striped-rows
         class="p-0 w-full"
@@ -87,8 +84,6 @@ function onPageChange(event: { page: number }) {
         pt:footer:class="p-0 border-none"
         @row-click="onRowClick"
     >
-        <Column v-if="props.expandable" expander style="width: 3rem" />
-
         <Column v-if="props.selectionMode" selection-mode="multiple" header-style="width: 3rem" />
 
         <Column v-if="$slots.actions" style="width: 3rem">
@@ -108,10 +103,6 @@ function onPageChange(event: { page: number }) {
                 <slot :name="`column:${col.field}`" :row="data as T" />
             </template>
         </Column>
-
-        <template v-if="props.expandable" #expansion="{ data }">
-            <slot name="expansion" :row="data as T" />
-        </template>
 
         <template #empty>
             <slot name="empty">

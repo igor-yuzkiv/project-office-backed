@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
-import { useTasksSearchQuery } from '@/entities/task/queries'
+import { useTaskSearch } from '@/entities/task/composables'
 import { useBulkUpdateTaskStatusMutation, useDeleteTaskMutation } from '@/entities/task/mutations'
 import type { TaskOverviewDto, TaskStatusValue } from '@/entities/task/types'
-import { useTaskViewsQuery } from '@/entities/task-view'
-import { PAGE_SIZE } from '@/app/config'
-import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
-import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
-import { TaskViewSelect, useTaskViewSwitcher } from '@/widgets/tasks/view-switcher'
-import { usePersistedListState } from '@/shared/composables'
+import { FilterSidebar, FilterButton } from '@/shared/filters'
+import { SortButton, SortDialog } from '@/shared/sort'
+import { TaskViewSelect } from '@/widgets/tasks/view-switcher'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { useHeaderActions } from '@/app/shell'
@@ -19,7 +16,7 @@ import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-di
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskBulkActionsBar } from '@/widgets/tasks/bulk-actions'
 import { useToast } from '@/shared/composables'
-import { createDefaultTaskFiltersDefMap, taskSortFieldDefs, taskTableColumnDefs } from '@/entities/task/config'
+import { taskSortFieldDefs, taskTableColumnDefs } from '@/entities/task/config'
 
 const router = useRouter()
 
@@ -27,6 +24,8 @@ const toast = useToast()
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 const { mutate: bulkUpdateStatus, isPending: isBulkUpdatePending } = useBulkUpdateTaskStatusMutation()
+
+const search = useTaskSearch({ include: ['project', 'taskList'] })
 
 const selectedTasks = ref<TaskOverviewDto[]>([])
 
@@ -70,96 +69,29 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
     rowMenu.value?.toggle(event)
 }
 
-const filterSidebar = useFilterSidebar(createDefaultTaskFiltersDefMap())
-
-const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
-const taskViewSwitcher = useTaskViewSwitcher(taskViews)
-
-const sort = useSortDialog(taskSortFieldDefs, 'updated_at', 'desc')
-
-usePersistedListState(
-    {
-        filters: filterSidebar.filtersSnapshot,
-        sortBy: sort.sortBy,
-        sortOrder: sort.sortOrder,
-    },
-    {
-        validate: (data) =>
-            taskSortFieldDefs.some((f) => f.field === data.sortBy) &&
-            (data.sortOrder === 'asc' || data.sortOrder === 'desc'),
-    }
-)
-
-const searchInput = ref('')
-const searchQuery = ref('')
-const page = ref(1)
-
-const searchParams = computed(() => ({
-    query: searchQuery.value,
-    filters: [...taskViewSwitcher.activeViewFilters.value, ...filterSidebar.resolvedFilters.value],
-    page: page.value,
-    per_page: PAGE_SIZE,
-    sort_by: sort.sortBy.value,
-    sort_order: sort.sortOrder.value,
-    include: ['project' as const, 'taskList' as const],
-}))
-
-// Gate the search until the task views are settled, otherwise it fires once with no view
-// filters and again once the default view (All Open) loads.
-const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams, {
-    enabled: computed(() => !isTaskViewsPending.value),
-})
-
-function taskDetailsRoute(task: TaskOverviewDto) {
-    return { name: 'task-details', params: { id: task.id } }
-}
-
-function onSortApply() {
-    sort.apply()
-    sort.close()
-}
-
-function onSearchSubmit() {
-    searchQuery.value = searchInput.value
-    page.value = 1
-}
-
-function onViewSelect(key: string) {
-    taskViewSwitcher.select(key)
-    filterSidebar.clear()
-    page.value = 1
-}
-
-function onPageChange(newPage: number) {
-    page.value = newPage
-}
-
-watch([sort.sortBy, sort.sortOrder], () => {
-    page.value = 1
-})
-
 // The selection only ever covers the rows currently on screen, so anything that changes them drops it.
-watch(searchParams, clearSelection)
+watch(search.searchParams, clearSelection)
 
-useHeaderActions([
-    { key: 'add-task', title: 'Add Task', action: () => taskCreateDialog.open(), is_primary: true },
-    { key: 'add-issue', title: 'Add Issue', action: () => console.log('test - Add Issue') },
-])
+useHeaderActions([{ key: 'add-task', title: 'New Task', action: () => taskCreateDialog.open(), is_primary: true }])
 </script>
 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-between">
-                <SearchInput v-model="searchInput" placeholder="Search tasks..." @submit="onSearchSubmit" />
+                <SearchInput
+                    v-model="search.searchInput.value"
+                    placeholder="Search tasks..."
+                    @submit="search.submitSearch"
+                />
                 <div class="gap-2 flex items-center">
                     <TaskViewSelect
-                        :model-value="taskViewSwitcher.activeViewKey.value"
-                        :options="taskViews"
-                        @update:model-value="onViewSelect"
+                        :model-value="search.viewSwitcher.activeViewKey.value"
+                        :options="search.taskViews.value"
+                        @update:model-value="search.selectView"
                     />
-                    <FilterButton v-bind="filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                    <FilterButton v-bind="search.filterSidebar.buttonProps.value" />
+                    <SortButton :label="`Sort: ${search.sort.activeSortLabel.value}`" @click="search.sort.open()" />
                 </div>
             </div>
 
@@ -175,13 +107,13 @@ useHeaderActions([
                 <TasksTableView
                     v-model:selection="selectedTasks"
                     selection-mode="multiple"
-                    :tasks="tasks"
-                    :is-pending="isPending"
-                    :pagination-meta="paginationMeta"
-                    :page="page"
-                    :to="taskDetailsRoute"
+                    :tasks="search.tasks.value"
+                    :is-pending="search.isPending.value"
+                    :pagination-meta="search.paginationMeta.value"
+                    :page="search.page.value"
+                    :to="search.taskDetailsRoute"
                     :columns="taskTableColumnDefs"
-                    @page-change="onPageChange"
+                    @page-change="search.goToPage"
                 >
                     <template #actions="{ row }">
                         <IconButton
@@ -195,17 +127,17 @@ useHeaderActions([
         </div>
 
         <SortDialog
-            :visible="sort.visible.value"
+            :visible="search.sort.visible.value"
             :fields="taskSortFieldDefs"
-            :sort-by="sort.draftSortBy.value"
-            :sort-order="sort.draftSortOrder.value"
-            @update:visible="sort.visible.value = $event"
-            @update:sort-by="sort.setDraftField"
-            @update:sort-order="sort.setDraftOrder"
-            @apply="onSortApply"
+            :sort-by="search.sort.draftSortBy.value"
+            :sort-order="search.sort.draftSortOrder.value"
+            @update:visible="search.sort.visible.value = $event"
+            @update:sort-by="search.sort.setDraftField"
+            @update:sort-order="search.sort.setDraftOrder"
+            @apply="search.applySort"
         />
 
-        <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
+        <FilterSidebar v-bind="search.filterSidebar.sidebarProps.value" @apply="search.goToPage(1)" />
 
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
 

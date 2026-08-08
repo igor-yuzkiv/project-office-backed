@@ -92,3 +92,34 @@ it('requires at least one task id', function () {
         ->assertStatus(422)
         ->assertJsonValidationErrors('task_ids');
 });
+
+it('rejects more than a hundred task ids', function () {
+    $taskIds = TaskModel::factory()
+        ->count(101)
+        ->create(['project_id' => $this->project->id, 'task_list_id' => null])
+        ->pluck('id')
+        ->all();
+
+    $this->postJson("/api/task-lists/{$this->taskList->id}/tasks", ['task_ids' => $taskIds])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('task_ids');
+});
+
+it('rejects a repeated task id', function () {
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'task_list_id' => null]);
+
+    $this->postJson("/api/task-lists/{$this->taskList->id}/tasks", ['task_ids' => [$task->id, $task->id]])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('task_ids.0');
+});
+
+it('requires authentication', function () {
+    auth()->forgetGuards();
+
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'task_list_id' => null]);
+
+    $this->postJson("/api/task-lists/{$this->taskList->id}/tasks", ['task_ids' => [$task->id]])
+        ->assertUnauthorized();
+
+    expect($task->fresh()->task_list_id)->toBeNull();
+});

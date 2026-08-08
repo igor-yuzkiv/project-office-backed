@@ -36,7 +36,7 @@ it('returns description, status, tags and metadata', function () {
         ->assertJsonPath('data.key', 'MTM-TL-3')
         ->assertJsonPath('data.status', 'in_progress')
         ->assertJsonPath('data.description', '# Notes')
-        ->assertJsonPath('data.tasks_count', 2)
+        ->assertJsonMissingPath('data.tasks_count')
         ->assertJsonPath('data.tags.0.id', $tag->id)
         ->assertJsonPath('data.project.id', $this->project->id);
 });

@@ -36,8 +36,7 @@ class TaskListsController extends ResourceController
 
         $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes());
 
-        $taskLists = TaskListModel::withCount('tasks')
-            ->with($includes)
+        $taskLists = TaskListModel::with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -55,7 +54,7 @@ class TaskListsController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskListModel> $q */
-                return $q->withCount('tasks')->with($includes)->filter((array) $request->input('filters', []));
+                return $q->with($includes)->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
@@ -64,7 +63,6 @@ class TaskListsController extends ResourceController
 
     public function show(TaskListModel $taskList): TaskListResource
     {
-        $taskList->loadCount('tasks');
         $taskList->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'tags'], requested: $this->parseRequestedIncludes()));
 
         return new TaskListResource($taskList);

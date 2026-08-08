@@ -44,7 +44,7 @@ watch(
         <div class="flex h-full w-full flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-end">
                 <Button
-                    label="Create Sub-Document"
+                    label="New Sub-Document"
                     size="small"
                     severity="info"
                     text

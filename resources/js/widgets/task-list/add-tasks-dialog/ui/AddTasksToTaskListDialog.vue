@@ -18,8 +18,8 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-    pageChange: [page: number]
-    submit: []
+    (e: 'pageChange', page: number): void
+    (e: 'submit'): void
 }>()
 
 const visible = defineModel<boolean>('visible', { required: true })
@@ -62,9 +62,7 @@ const columns: EntityTableColumnDef[] = [
                 </template>
 
                 <template #empty>
-                    <div class="py-6 text-sm text-surface-400 text-center">
-                        No tasks available to add. Every task of this project already belongs to a list.
-                    </div>
+                    <div class="py-6 text-sm text-surface-400 text-center">No tasks available to add.</div>
                 </template>
             </EntityTableView>
         </div>
@@ -73,7 +71,7 @@ const columns: EntityTableColumnDef[] = [
             <div class="gap-2 flex justify-end">
                 <Button label="Cancel" severity="secondary" text :disabled="isSaving" @click="visible = false" />
                 <Button
-                    :label="selected.length > 0 ? `Add ${selected.length} task(s)` : 'Add'"
+                    :label="selected.length > 0 ? `Add ${selected.length} task(s)` : 'Add Tasks'"
                     :loading="isSaving"
                     :disabled="!canSave"
                     @click="emit('submit')"

@@ -19,7 +19,7 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
-import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
+import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import type { ITaskList } from '@/entities/task-list/types'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
@@ -60,7 +60,7 @@ const showManageTagsDialog = ref(false)
 
 // A list created here belongs to the task's project and is selected right away, so the user
 // never has to leave the form to make one.
-const taskListUpsertDialog = useTaskListUpsertDialog({
+const taskListCreateDialog = useTaskListCreateDialog({
     onCreated: (taskList: ITaskList) => {
         formData.value.taskList = taskList
     },
@@ -184,7 +184,7 @@ useBreadcrumbs(() => [
                             severity="success"
                             title="New task list"
                             :disabled="!task?.project"
-                            @click="task?.project && taskListUpsertDialog.open(task.project)"
+                            @click="task?.project && taskListCreateDialog.open(task.project)"
                         />
                     </div>
                 </InputContainer>
@@ -255,15 +255,15 @@ useBreadcrumbs(() => [
 
         <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
 
-        <UpsertTaskListDialog
-            :visible="taskListUpsertDialog.visible.value"
-            :mode="taskListUpsertDialog.mode.value"
-            :form-data="taskListUpsertDialog.formData.value"
-            :validation-errors="taskListUpsertDialog.validationErrors.value"
-            :is-pending="taskListUpsertDialog.isPending.value"
-            @update:visible="taskListUpsertDialog.visible.value = $event"
-            @update:form-data="taskListUpsertDialog.formData.value = $event"
-            @submit="taskListUpsertDialog.submit()"
+        <TaskListCreateDialog
+            :visible="taskListCreateDialog.visible.value"
+            project-locked
+            :form-data="taskListCreateDialog.formData.value"
+            :validation-errors="taskListCreateDialog.validationErrors.value"
+            :is-pending="taskListCreateDialog.isPending.value"
+            @update:visible="taskListCreateDialog.visible.value = $event"
+            @update:form-data="taskListCreateDialog.formData.value = $event"
+            @submit="taskListCreateDialog.submit()"
         />
     </div>
 </template>

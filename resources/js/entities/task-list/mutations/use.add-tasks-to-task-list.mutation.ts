@@ -10,8 +10,7 @@ export function useAddTasksToTaskListMutation(taskListId: MaybeRefOrGetter<strin
     return useMutation({
         mutationFn: (taskIds: string[]) => addTasksToTaskListRequest(toValue(taskListId), { task_ids: taskIds }),
         onSuccess: () => {
-            // Task searches drive both the list's own tasks and the candidate pool; the task
-            // list itself carries the tasks_count shown on the tab.
+            // Task searches drive both the list's own tasks and the candidate pool.
             queryClient.invalidateQueries({ queryKey: TaskQueryKey.all })
             queryClient.invalidateQueries({ queryKey: TaskListQueryKey.all })
         },
