@@ -1,7 +1,7 @@
 # Project Office — how to work in this repo
 
 This repository is linked to the Project Office project `MVP Task Manager`
-(`projectId: <projectId>`). Tasks, comments, checkpoints, and workflow state are managed
+(`projectId: 01kwy335hfrzyzfcnzf0bt32yt`). Tasks, comments, checkpoints, and workflow state are managed
 through the `project-office` CLI.
 
 <!-- project-office:managed:start -->
@@ -138,22 +138,3 @@ Project Office documentation is a context source, not a mandatory workflow step.
 * Keep repo-specific instructions in the repository; keep shared or cross-repository
   documentation in the Project Office.
 <!-- project-office:managed:end -->
-
-## Project-specific conventions
-
-### Tags
-
-A task's tags tell you what it touches and how to approach it — read them before planning.
-
-* `repo:<name>` — which repository the work belongs to. This project spans `project-office-cli`
-  and `mvp-task-manager`. If a tag names another repository, stop and switch to it; no `repo:*`
-  tag means the task isn't repo-bound. `project-office project:view` lists the linked repos when
-  the mapping is unclear.
-* `<other tags>` — <what they signal and how the agent should act on them>.
-
-Tags narrow scope; they don't replace the description. When a tag and the description disagree,
-ask rather than guess.
-
-### Task descriptions
-
-When creating or substantially rewriting a task, follow `./task-description-pattern.md`.
