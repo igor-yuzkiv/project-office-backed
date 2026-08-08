@@ -1,4 +1,12 @@
+import type { SortFieldDef } from '@/shared/sort'
 import type { EntityTableColumnDef } from '@/shared/components/table'
+
+export const taskListSortFieldDefs: SortFieldDef[] = [
+    { field: 'name', label: 'Name' },
+    { field: 'status', label: 'Status' },
+    { field: 'created_at', label: 'Created' },
+    { field: 'updated_at', label: 'Updated' },
+]
 
 // All available task list table columns. Pages render the full set or drop the ones that
 // don't apply to their context via taskListTableColumnsExcluding().

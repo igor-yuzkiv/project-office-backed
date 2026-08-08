@@ -25,6 +25,13 @@ const navItems: SidebarNavItem[] = [
         activeWhen: '/projects',
     },
     { key: 'tasks', label: 'Tasks', icon: 'heroicons:check-circle', routeName: 'tasks', activeWhen: '/tasks' },
+    {
+        key: 'task-lists',
+        label: 'Task Lists',
+        icon: 'heroicons:queue-list',
+        routeName: 'task-lists',
+        activeWhen: '/task-lists',
+    },
 ]
 
 const recentProjects = [

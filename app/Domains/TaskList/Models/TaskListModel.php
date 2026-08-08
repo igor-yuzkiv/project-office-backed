@@ -13,6 +13,7 @@ use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Infrastructure\Models\Contracts\Commentable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
+use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskListModelFactory;
@@ -128,7 +129,10 @@ class TaskListModel extends Model implements Commentable
     public static function allowedFilters(): array
     {
         return [
+            // project_id stays on TextFilter as well: the project page's task lists tab sends it
+            // with filter_key 'text', and moving it would break that tab.
             new FilterDefinition(TextFilter::class, ['name', 'project_id', 'key', 'status']),
+            new FilterDefinition(LookupFilter::class, ['project_id']),
             new FilterDefinition(TagFilter::class, []),
         ];
     }

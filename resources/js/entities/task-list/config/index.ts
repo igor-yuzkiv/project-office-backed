@@ -5,6 +5,7 @@ import type { TaskListSearchParams } from '../types'
 export * from './task-list-status.config'
 export * from './task-list-views.config'
 export * from './task-list-attachment.config'
+export * from './task-list-filters.config'
 
 export const TaskListQueryKey = {
     all: ['task-lists'] as const,

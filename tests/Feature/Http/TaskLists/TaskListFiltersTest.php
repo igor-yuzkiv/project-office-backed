@@ -55,6 +55,25 @@ it('filters the list by tags', function () {
         ->and($response->json('data.0.id'))->toBe($tagged->id);
 });
 
+// The standalone list page filters through the shared filter sidebar, which sends 'lookup';
+// the project page's tab still sends 'text'. Both have to keep working on the same field.
+it('filters the list by project through the lookup filter', function () {
+    $otherProject = ProjectModel::factory()->create();
+    TaskListModel::factory()->count(2)->create(['project_id' => $this->project->id]);
+    TaskListModel::factory()->create(['project_id' => $otherProject->id]);
+
+    $response = searchTaskLists([[
+        'filter_key' => 'lookup',
+        'field_name' => 'project_id',
+        'value'      => $this->project->id,
+        'matchMode'  => 'equals',
+        'params'     => [],
+    ]]);
+
+    $response->assertOk();
+    expect($response->json('meta.total'))->toBe(2);
+});
+
 it('filters the list by project', function () {
     $otherProject = ProjectModel::factory()->create();
     TaskListModel::factory()->count(2)->create(['project_id' => $this->project->id]);

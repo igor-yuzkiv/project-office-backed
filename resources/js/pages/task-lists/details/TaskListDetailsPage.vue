@@ -23,15 +23,9 @@ const taskListId = route.params.id as string
 const { taskList, isError } = useTaskListQuery(taskListId)
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 
-// The standalone task lists page does not exist yet, so leaving the list returns to the
-// project's task lists tab.
 function handleDeleteTaskList() {
-    const projectId = taskList.value?.project_id
-
     deleteTaskList(taskListId, `Are you sure you want to delete "${taskList.value?.name}"?`, () =>
-        router.push(
-            projectId ? { name: 'project-details.task-lists', params: { id: projectId } } : { name: 'projects' }
-        )
+        router.push({ name: 'task-lists' })
     )
 }
 
@@ -69,7 +63,7 @@ useHeaderActions([
 ])
 
 useBreadcrumbs(() => [
-    { label: 'Projects', to: { name: 'projects' } },
+    { label: 'Task Lists', to: { name: 'task-lists' } },
     ...(taskList.value?.project
         ? [
               {
