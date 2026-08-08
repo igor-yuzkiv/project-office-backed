@@ -89,6 +89,10 @@ function openRowMenu(event: MouseEvent, taskList: ITaskList) {
     rowMenu.value?.toggle(event)
 }
 
+function taskListDetailsRoute(taskList: ITaskList) {
+    return { name: 'task-list-details', params: { id: taskList.id } }
+}
+
 function onSearchSubmit() {
     searchQuery.value = searchInput.value
     page.value = 1
@@ -123,6 +127,7 @@ function onPageChange(newPage: number) {
                     :pagination-meta="paginationMeta"
                     :page="page"
                     :columns="tableColumnsDef"
+                    :to="taskListDetailsRoute"
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">

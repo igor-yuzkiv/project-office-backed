@@ -56,10 +56,8 @@ function handleError(error: unknown) {
 function navigateBack() {
     if (window.history.state?.back) {
         router.back()
-    } else if (taskList.value) {
-        router.push({ name: 'project-details.task-lists', params: { id: taskList.value.project_id } })
     } else {
-        router.push({ name: 'projects' })
+        router.push({ name: 'task-list-details', params: { id: taskListId } })
     }
 }
 
@@ -127,7 +125,10 @@ useBreadcrumbs(() => [
               },
           ]
         : []),
-    { label: taskList.value?.key ?? 'Task List' },
+    {
+        label: taskList.value?.key ?? 'Task List',
+        to: { name: 'task-list-details', params: { id: taskListId } },
+    },
     { label: 'Edit' },
 ])
 </script>
