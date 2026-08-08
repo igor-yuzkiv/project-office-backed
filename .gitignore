@@ -35,3 +35,4 @@ Thumbs.db
 /test-results/
 /playwright/.cache/
 /playwright-report/
+.claude/settings.local.json
