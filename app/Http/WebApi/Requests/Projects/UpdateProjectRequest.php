@@ -14,26 +14,25 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => ['sometimes', 'required', 'string', 'max:255'],
-            'status'      => ['sometimes', Rule::enum(ProjectStatus::class)],
-            'description' => ['sometimes', 'nullable', 'string'],
-            'start_date'  => ['sometimes', 'nullable', 'date'],
-            'end_date'    => ['sometimes', 'nullable', 'date', 'after_or_equal:start_date'],
-            'tag_ids'     => ['sometimes', 'array'],
+            'name'        => ['required', 'string', 'max:255'],
+            'status'      => ['required', Rule::enum(ProjectStatus::class)],
+            'description' => ['nullable', 'string'],
+            'start_date'  => ['nullable', 'date'],
+            'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
+            'tag_ids'     => ['nullable', 'array'],
             'tag_ids.*'   => ['string', 'exists:tags,id'],
         ];
     }
 
     public function toCommand(ProjectModel $project): UpdateProjectCommand
     {
-        $statusValue = $this->validated('status');
         $startDate = $this->validated('start_date');
         $endDate = $this->validated('end_date');
 
         return new UpdateProjectCommand(
             project: $project,
             name: $this->validated('name'),
-            status: $statusValue ? ProjectStatus::from($statusValue) : null,
+            status: ProjectStatus::from($this->validated('status')),
             description: $this->validated('description'),
             startDate: $startDate ? Carbon::parse($startDate) : null,
             endDate: $endDate ? Carbon::parse($endDate) : null,

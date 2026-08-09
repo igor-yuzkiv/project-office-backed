@@ -92,6 +92,15 @@ function openRowMenu(event: MouseEvent, taskList: ITaskList) {
     rowMenu.value?.toggle(event)
 }
 
+function openCreateDialog() {
+    if (!project.value) {
+        console.warn('Cannot create a task list: the project is not loaded.')
+        return
+    }
+
+    createDialog.open(project.value)
+}
+
 function taskListDetailsRoute(taskList: ITaskList) {
     return { name: 'task-list-details', params: { id: taskList.id } }
 }
@@ -111,13 +120,7 @@ function onPageChange(newPage: number) {
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search task lists..." @submit="onSearchSubmit" />
-                <Button
-                    severity="info"
-                    text
-                    label="New Task List"
-                    :disabled="!project"
-                    @click="project && createDialog.open(project)"
-                >
+                <Button severity="info" text label="New Task List" :disabled="!project" @click="openCreateDialog">
                     <template #icon>
                         <Icon icon="material-symbols:add" class="text-lg" />
                     </template>
@@ -154,7 +157,7 @@ function onPageChange(newPage: number) {
             project-locked
             @update:visible="createDialog.visible.value = $event"
             @update:form-data="createDialog.formData.value = $event"
-            @submit="createDialog.submit()"
+            @submit="createDialog.submit"
         />
 
         <TaskCreateDialog
@@ -162,7 +165,7 @@ function onPageChange(newPage: number) {
             v-model:form-data="taskCreateDialog.formData.value"
             :validation-errors="taskCreateDialog.validationErrors.value"
             :is-pending="taskCreateDialog.isPending.value"
-            @submit="taskCreateDialog.submit()"
+            @submit="taskCreateDialog.submit"
         />
     </div>
 </template>

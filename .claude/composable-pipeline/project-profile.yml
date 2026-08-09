@@ -77,10 +77,12 @@ exemplars:
   model: app/Domains/Task/Models/TaskModel.php
   web_api_controller: app/Http/WebApi/Controllers/Tasks/TasksController.php
   cli_api_controller: app/Http/CliApi/Controllers/Tasks/TaskAgenticWorkflowController.php
-  form_request: app/Http/CliApi/Requests/Tasks/CheckpointTaskRequest.php
+  cli_form_request: app/Http/CliApi/Requests/Tasks/CheckpointTaskRequest.php
+  web_api_update_request: app/Http/WebApi/Requests/TaskLists/UpdateTaskListRequest.php
+  web_api_store_request: app/Http/WebApi/Requests/TaskLists/StoreTaskListRequest.php
   resource: app/Http/Shared/Resources/Tasks/TaskResource.php
   console_command: app/Console/Commands/ImportProjectDocumentsFromMarkdownCommand.php
-  migration: database/migrations/2026_07_09_100000_create_project_documents_table.php
+  migration: database/migrations/2026_08_08_120000_add_status_description_and_key_to_task_lists_table.php
   test_unit: tests/Unit/Libs/EloquentFilters/FilterResolverTest.php
   test_feature: tests/Feature/CliApi/Tasks/TaskWorkflowCheckpointTest.php
   # Frontend — resources/js is FSD: app / pages / widgets / entities / shared.

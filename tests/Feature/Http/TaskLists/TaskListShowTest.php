@@ -63,6 +63,7 @@ it('accepts status, description and tags on update', function () {
     $taskList = TaskListModel::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->putJson("/api/task-lists/{$taskList->id}", [
+        'name'        => $taskList->name,
         'status'      => 'completed',
         'description' => '# Done',
         'tag_ids'     => [$tag->id],
@@ -80,7 +81,11 @@ it('clears the description when null is sent', function () {
         'description' => '# Original',
     ]);
 
-    $this->putJson("/api/task-lists/{$taskList->id}", ['description' => null])
+    $this->putJson("/api/task-lists/{$taskList->id}", [
+        'name'        => $taskList->name,
+        'status'      => $taskList->status->value,
+        'description' => null,
+    ])
         ->assertOk()
         ->assertJsonPath('data.description', null);
 });
@@ -88,6 +93,9 @@ it('clears the description when null is sent', function () {
 it('rejects an unknown status', function () {
     $taskList = TaskListModel::factory()->create(['project_id' => $this->project->id]);
 
-    $this->putJson("/api/task-lists/{$taskList->id}", ['status' => 'archived'])
+    $this->putJson("/api/task-lists/{$taskList->id}", [
+        'name'   => $taskList->name,
+        'status' => 'archived',
+    ])
         ->assertStatus(422);
 });

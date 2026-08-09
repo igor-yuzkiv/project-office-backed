@@ -13,24 +13,21 @@ class UpdateTaskListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => ['sometimes', 'required', 'string', 'max:255'],
-            'status'      => ['sometimes', 'string', Rule::enum(TaskListStatus::class)],
-            'description' => ['sometimes', 'nullable', 'string'],
-            'tag_ids'     => ['sometimes', 'array'],
+            'name'        => ['required', 'string', 'max:255'],
+            'status'      => ['required', 'string', Rule::enum(TaskListStatus::class)],
+            'description' => ['nullable', 'string'],
+            'tag_ids'     => ['nullable', 'array'],
             'tag_ids.*'   => ['string', 'exists:tags,id'],
         ];
     }
 
     public function toCommand(TaskListModel $taskList): UpdateTaskListCommand
     {
-        $status = $this->validated('status');
-
         return new UpdateTaskListCommand(
             taskList: $taskList,
             name: $this->validated('name'),
-            status: $status !== null ? TaskListStatus::from($status) : null,
+            status: TaskListStatus::from($this->validated('status')),
             description: $this->validated('description'),
-            descriptionProvided: array_key_exists('description', $this->validated()),
             tagIds: $this->validated('tag_ids'),
         );
     }

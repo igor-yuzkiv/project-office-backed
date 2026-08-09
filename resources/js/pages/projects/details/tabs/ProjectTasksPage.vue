@@ -62,6 +62,15 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
     selectedTask.value = task
     rowMenu.value?.toggle(event)
 }
+
+function openTaskCreateDialog() {
+    if (!project.value) {
+        console.warn('Cannot create a task: the project is not loaded.')
+        return
+    }
+
+    taskCreateDialog.open(project.value)
+}
 </script>
 
 <template>
@@ -81,13 +90,7 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
                     />
                     <FilterButton v-bind="search.filterSidebar.buttonProps.value" />
                     <SortButton :label="`Sort: ${search.sort.activeSortLabel.value}`" @click="search.sort.open()" />
-                    <Button
-                        severity="info"
-                        text
-                        label="New Task"
-                        :disabled="!project"
-                        @click="project && taskCreateDialog.open(project)"
-                    >
+                    <Button severity="info" text label="New Task" :disabled="!project" @click="openTaskCreateDialog">
                         <template #icon>
                             <Icon icon="material-symbols:add" class="text-lg" />
                         </template>
@@ -135,7 +138,7 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
             v-model:form-data="taskCreateDialog.formData.value"
             :validation-errors="taskCreateDialog.validationErrors.value"
             :is-pending="taskCreateDialog.isPending.value"
-            @submit="taskCreateDialog.submit()"
+            @submit="taskCreateDialog.submit"
         />
     </div>
 </template>

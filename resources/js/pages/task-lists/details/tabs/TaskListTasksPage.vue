@@ -69,6 +69,15 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
     rowMenu.value?.toggle(event)
 }
 
+function openTaskCreateDialog() {
+    if (!taskList.value?.project) {
+        console.warn('Cannot create a task: the task list has no project.')
+        return
+    }
+
+    taskCreateDialog.open(taskList.value.project, taskList.value)
+}
+
 const addTasksDialog = useAddTasksToTaskListDialog(
     () => taskListId.value,
     () => taskList.value?.project_id
@@ -101,7 +110,7 @@ const addTasksDialog = useAddTasksToTaskListDialog(
                     text
                     label="New Task"
                     :disabled="!taskList?.project"
-                    @click="taskList?.project && taskCreateDialog.open(taskList.project, taskList)"
+                    @click="openTaskCreateDialog"
                 >
                     <template #icon>
                         <Icon icon="material-symbols:add" class="text-lg" />
@@ -150,7 +159,7 @@ const addTasksDialog = useAddTasksToTaskListDialog(
             v-model:form-data="taskCreateDialog.formData.value"
             :validation-errors="taskCreateDialog.validationErrors.value"
             :is-pending="taskCreateDialog.isPending.value"
-            @submit="taskCreateDialog.submit()"
+            @submit="taskCreateDialog.submit"
         />
 
         <AddTasksToTaskListDialog
@@ -164,7 +173,7 @@ const addTasksDialog = useAddTasksToTaskListDialog(
             :is-saving="addTasksDialog.isSaving.value"
             :can-save="addTasksDialog.canSave.value"
             @page-change="addTasksDialog.onPageChange"
-            @submit="addTasksDialog.submit()"
+            @submit="addTasksDialog.submit"
         />
     </div>
 </template>

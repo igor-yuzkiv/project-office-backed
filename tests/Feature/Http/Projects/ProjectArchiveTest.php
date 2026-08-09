@@ -15,7 +15,10 @@ beforeEach(function () {
 it('sets archived_at and archived_by when status changes to archived', function () {
     $project = ProjectModel::factory()->create(['status' => ProjectStatus::ACTIVE]);
 
-    $this->putJson("/api/projects/{$project->id}", ['status' => 'archived'])
+    $this->putJson("/api/projects/{$project->id}", [
+        'name'   => $project->name,
+        'status' => 'archived',
+    ])
         ->assertOk();
 
     $project->refresh();
@@ -32,7 +35,10 @@ it('clears archived_at and archived_by when status changes from archived to anot
         'archived_by' => $this->user->id,
     ]);
 
-    $this->putJson("/api/projects/{$project->id}", ['status' => 'active'])
+    $this->putJson("/api/projects/{$project->id}", [
+        'name'   => $project->name,
+        'status' => 'active',
+    ])
         ->assertOk();
 
     $project->refresh();
@@ -45,7 +51,10 @@ it('clears archived_at and archived_by when status changes from archived to anot
 it('does not change archived columns when status remains non-archived', function () {
     $project = ProjectModel::factory()->create(['status' => ProjectStatus::ACTIVE]);
 
-    $this->putJson("/api/projects/{$project->id}", ['name' => 'Updated Name'])
+    $this->putJson("/api/projects/{$project->id}", [
+        'name'   => 'Updated Name',
+        'status' => 'active',
+    ])
         ->assertOk();
 
     $project->refresh();

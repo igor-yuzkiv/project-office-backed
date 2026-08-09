@@ -14,8 +14,8 @@ export interface ICreateTaskListInput {
 }
 
 export interface IUpdateTaskListInput {
-    name?: string
-    status?: TaskListStatusValue
+    name: string
+    status: TaskListStatusValue
     description?: string | null
     tag_ids?: string[]
 }

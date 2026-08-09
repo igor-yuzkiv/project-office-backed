@@ -66,6 +66,15 @@ const taskListCreateDialog = useTaskListCreateDialog({
     },
 })
 
+function openTaskListCreateDialog() {
+    if (!task.value?.project) {
+        console.warn('Cannot create a task list: the task has no project.')
+        return
+    }
+
+    taskListCreateDialog.open(task.value.project)
+}
+
 function handleError(error: unknown) {
     if (error instanceof ApiError && error.isValidationError) {
         validationErrors.value = error.validationErrors ?? {}
@@ -184,7 +193,7 @@ useBreadcrumbs(() => [
                             severity="success"
                             title="New task list"
                             :disabled="!task?.project"
-                            @click="task?.project && taskListCreateDialog.open(task.project)"
+                            @click="openTaskListCreateDialog"
                         />
                     </div>
                 </InputContainer>
@@ -263,7 +272,7 @@ useBreadcrumbs(() => [
             :is-pending="taskListCreateDialog.isPending.value"
             @update:visible="taskListCreateDialog.visible.value = $event"
             @update:form-data="taskListCreateDialog.formData.value = $event"
-            @submit="taskListCreateDialog.submit()"
+            @submit="taskListCreateDialog.submit"
         />
     </div>
 </template>

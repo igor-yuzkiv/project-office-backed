@@ -92,7 +92,7 @@ const taskListCreateDialog = useTaskListCreateDialog({
             :is-pending="taskListCreateDialog.isPending.value"
             @update:visible="taskListCreateDialog.visible.value = $event"
             @update:form-data="taskListCreateDialog.formData.value = $event"
-            @submit="taskListCreateDialog.submit()"
+            @submit="taskListCreateDialog.submit"
         />
 
         <template #footer>

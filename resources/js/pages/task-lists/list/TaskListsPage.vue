@@ -164,7 +164,7 @@ useHeaderActions([
             :is-pending="createDialog.isPending.value"
             @update:visible="createDialog.visible.value = $event"
             @update:form-data="createDialog.formData.value = $event"
-            @submit="createDialog.submit()"
+            @submit="createDialog.submit"
         />
     </div>
 </template>

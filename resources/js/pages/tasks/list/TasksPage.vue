@@ -146,7 +146,7 @@ useHeaderActions([{ key: 'add-task', title: 'New Task', action: () => taskCreate
             v-model:form-data="taskCreateDialog.formData.value"
             :validation-errors="taskCreateDialog.validationErrors.value"
             :is-pending="taskCreateDialog.isPending.value"
-            @submit="taskCreateDialog.submit()"
+            @submit="taskCreateDialog.submit"
         />
     </div>
 </template>

@@ -26,7 +26,6 @@ it('updates name, status and description', function () {
         name: 'Sprint 4',
         status: TaskListStatus::Completed,
         description: '# Rewritten',
-        descriptionProvided: true,
     ));
 
     expect($updated->name)->toBe('Sprint 4')
@@ -34,22 +33,12 @@ it('updates name, status and description', function () {
         ->and($updated->description)->toBe('# Rewritten');
 });
 
-it('leaves fields that were not provided untouched', function () {
+it('clears the description when it is null', function () {
     $updated = $this->handler->handle(new UpdateTaskListCommand(
         taskList: $this->taskList,
-        status: TaskListStatus::InProgress,
-    ));
-
-    expect($updated->status)->toBe(TaskListStatus::InProgress)
-        ->and($updated->name)->toBe('Backlog')
-        ->and($updated->description)->toBe('Original');
-});
-
-it('clears the description when one is explicitly provided as null', function () {
-    $updated = $this->handler->handle(new UpdateTaskListCommand(
-        taskList: $this->taskList,
+        name: 'Backlog',
+        status: TaskListStatus::Open,
         description: null,
-        descriptionProvided: true,
     ));
 
     expect($updated->description)->toBeNull();
@@ -61,6 +50,7 @@ it('never rewrites the key', function () {
     $updated = $this->handler->handle(new UpdateTaskListCommand(
         taskList: $this->taskList,
         name: 'Renamed',
+        status: TaskListStatus::Open,
     ));
 
     expect($updated->key)->toBe($key);
@@ -71,9 +61,18 @@ it('replaces the tag set only when tag ids are given', function () {
     $second = TagModel::factory()->create();
     $this->taskList->tags()->sync([$first->id]);
 
-    $this->handler->handle(new UpdateTaskListCommand(taskList: $this->taskList, name: 'Renamed'));
+    $this->handler->handle(new UpdateTaskListCommand(
+        taskList: $this->taskList,
+        name: 'Renamed',
+        status: TaskListStatus::Open,
+    ));
     expect($this->taskList->fresh()->tags->pluck('id')->all())->toBe([$first->id]);
 
-    $this->handler->handle(new UpdateTaskListCommand(taskList: $this->taskList, tagIds: [$second->id]));
+    $this->handler->handle(new UpdateTaskListCommand(
+        taskList: $this->taskList,
+        name: 'Renamed',
+        status: TaskListStatus::Open,
+        tagIds: [$second->id],
+    ));
     expect($this->taskList->fresh()->tags->pluck('id')->all())->toBe([$second->id]);
 });

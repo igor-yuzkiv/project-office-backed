@@ -75,7 +75,7 @@ watch(
             :validation-errors="createDialog.validationErrors.value"
             :is-pending="createDialog.isPending.value"
             :parent-document="createDialog.parentDocument.value"
-            @submit="createDialog.submit()"
+            @submit="createDialog.submit"
         />
     </div>
 </template>
