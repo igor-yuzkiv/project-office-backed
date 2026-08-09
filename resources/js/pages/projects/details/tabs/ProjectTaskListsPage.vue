@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
@@ -13,11 +14,12 @@ import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
-import { UpsertTaskListDialog, useTaskListUpsertDialog } from '@/widgets/task-list/upsert-dialog'
+import { taskListTableColumnsExcluding } from '@/entities/task-list/config'
+import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { Icon } from '@iconify/vue'
-import TaskListTasksExpansion from '../partials/TaskListTasksExpansion.vue'
 
+const router = useRouter()
 const projectId = useRouteParams<string>('id')
 
 const { project } = useProjectQuery(projectId)
@@ -25,7 +27,9 @@ const { project } = useProjectQuery(projectId)
 const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
-const expandedRows = ref<ITaskList[]>([])
+
+// The project is already the page context, so its column carries nothing here.
+const tableColumnsDef = taskListTableColumnsExcluding('project')
 
 const searchParams = computed<TaskListSearchParams>(() => {
     const projectFilter: FilterPayloadItem = {
@@ -40,12 +44,13 @@ const searchParams = computed<TaskListSearchParams>(() => {
         filters: [projectFilter],
         page: page.value,
         per_page: PAGE_SIZE,
+        include: ['tags'],
     }
 })
 
 const { taskLists, paginationMeta, isPending } = useTaskListsSearchQuery(searchParams)
 
-const upsertDialog = useTaskListUpsertDialog()
+const createDialog = useTaskListCreateDialog()
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 const taskCreateDialog = useTaskCreateDialog()
 
@@ -54,7 +59,7 @@ const selectedTaskList = ref<ITaskList>()
 
 const rowMenuItems: MenuItem[] = [
     {
-        label: 'Create Task',
+        label: 'New Task',
         icon: 'pi pi-plus',
         command: () => {
             if (project.value && selectedTaskList.value) {
@@ -67,7 +72,7 @@ const rowMenuItems: MenuItem[] = [
         icon: 'pi pi-pencil',
         command: () => {
             if (project.value && selectedTaskList.value) {
-                upsertDialog.open(project.value, selectedTaskList.value)
+                router.push({ name: 'task-list-edit', params: { id: selectedTaskList.value.id } })
             }
         },
     },
@@ -87,6 +92,19 @@ function openRowMenu(event: MouseEvent, taskList: ITaskList) {
     rowMenu.value?.toggle(event)
 }
 
+function openCreateDialog() {
+    if (!project.value) {
+        console.warn('Cannot create a task list: the project is not loaded.')
+        return
+    }
+
+    createDialog.open(project.value)
+}
+
+function taskListDetailsRoute(taskList: ITaskList) {
+    return { name: 'task-list-details', params: { id: taskList.id } }
+}
+
 function onSearchSubmit() {
     searchQuery.value = searchInput.value
     page.value = 1
@@ -102,13 +120,7 @@ function onPageChange(newPage: number) {
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search task lists..." @submit="onSearchSubmit" />
-                <Button
-                    severity="info"
-                    text
-                    label="New Task List"
-                    :disabled="!project"
-                    @click="project && upsertDialog.open(project)"
-                >
+                <Button severity="info" text label="New Task List" :disabled="!project" @click="openCreateDialog">
                     <template #icon>
                         <Icon icon="material-symbols:add" class="text-lg" />
                     </template>
@@ -116,12 +128,12 @@ function onPageChange(newPage: number) {
             </div>
             <div class="flex h-full w-full flex-col overflow-hidden">
                 <TaskListsTableView
-                    v-model:expanded-rows="expandedRows"
                     :task-lists="taskLists"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    expandable
+                    :columns="tableColumnsDef"
+                    :to="taskListDetailsRoute"
                     @page-change="onPageChange"
                 >
                     <template #actions="{ row }">
@@ -131,25 +143,21 @@ function onPageChange(newPage: number) {
                             @click.stop="openRowMenu($event, row)"
                         />
                     </template>
-
-                    <template #expansion="{ row }">
-                        <TaskListTasksExpansion :task-list-id="row.id" />
-                    </template>
                 </TaskListsTableView>
             </div>
         </div>
 
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
-        <UpsertTaskListDialog
-            :visible="upsertDialog.visible.value"
-            :mode="upsertDialog.mode.value"
-            :form-data="upsertDialog.formData.value"
-            :validation-errors="upsertDialog.validationErrors.value"
-            :is-pending="upsertDialog.isPending.value"
-            @update:visible="upsertDialog.visible.value = $event"
-            @update:form-data="upsertDialog.formData.value = $event"
-            @submit="upsertDialog.submit()"
+        <TaskListCreateDialog
+            :visible="createDialog.visible.value"
+            :form-data="createDialog.formData.value"
+            :validation-errors="createDialog.validationErrors.value"
+            :is-pending="createDialog.isPending.value"
+            project-locked
+            @update:visible="createDialog.visible.value = $event"
+            @update:form-data="createDialog.formData.value = $event"
+            @submit="createDialog.submit"
         />
 
         <TaskCreateDialog
@@ -157,7 +165,7 @@ function onPageChange(newPage: number) {
             v-model:form-data="taskCreateDialog.formData.value"
             :validation-errors="taskCreateDialog.validationErrors.value"
             :is-pending="taskCreateDialog.isPending.value"
-            @submit="taskCreateDialog.submit()"
+            @submit="taskCreateDialog.submit"
         />
     </div>
 </template>

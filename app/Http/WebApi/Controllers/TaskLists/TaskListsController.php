@@ -2,11 +2,9 @@
 
 namespace App\Http\WebApi\Controllers\TaskLists;
 
-use App\Domains\TaskList\Actions\CreateTaskList\CreateTaskListCommand;
 use App\Domains\TaskList\Actions\CreateTaskList\CreateTaskListHandler;
 use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListCommand;
 use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListHandler;
-use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListCommand;
 use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListHandler;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Http\Shared\Resources\TaskLists\TaskListResource;
@@ -28,7 +26,7 @@ class TaskListsController extends ResourceController
 
     protected function getAllowedIncludes(): array
     {
-        return ['tasks', 'project', 'createdBy', 'updatedBy'];
+        return ['tasks', 'project', 'tags', 'createdBy', 'updatedBy'];
     }
 
     public function index(): AnonymousResourceCollection
@@ -38,8 +36,7 @@ class TaskListsController extends ResourceController
 
         $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes());
 
-        $taskLists = TaskListModel::withCount('tasks')
-            ->with($includes)
+        $taskLists = TaskListModel::with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -57,7 +54,7 @@ class TaskListsController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->query(function (Builder $q) use ($request, $includes): Builder {
                 /** @var Builder<TaskListModel> $q */
-                return $q->withCount('tasks')->with($includes)->filter((array) $request->input('filters', []));
+                return $q->with($includes)->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
@@ -66,20 +63,15 @@ class TaskListsController extends ResourceController
 
     public function show(TaskListModel $taskList): TaskListResource
     {
-        $taskList->load($this->resolveIncludes(required: ['createdBy', 'updatedBy'], requested: $this->parseRequestedIncludes()));
+        $taskList->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'tags'], requested: $this->parseRequestedIncludes()));
 
         return new TaskListResource($taskList);
     }
 
     public function store(StoreTaskListRequest $request): JsonResponse
     {
-        $command = new CreateTaskListCommand(
-            projectId: $request->validated('project_id'),
-            name: $request->validated('name'),
-        );
-
-        $taskList = $this->createHandler->handle($command);
-        $taskList->load(['createdBy', 'updatedBy']);
+        $taskList = $this->createHandler->handle($request->toCommand());
+        $taskList->load(['createdBy', 'updatedBy', 'tags']);
 
         return (new TaskListResource($taskList))
             ->response()
@@ -88,13 +80,8 @@ class TaskListsController extends ResourceController
 
     public function update(UpdateTaskListRequest $request, TaskListModel $taskList): TaskListResource
     {
-        $command = new UpdateTaskListCommand(
-            taskList: $taskList,
-            name: $request->validated('name'),
-        );
-
-        $taskList = $this->updateHandler->handle($command);
-        $taskList->load(['createdBy', 'updatedBy']);
+        $taskList = $this->updateHandler->handle($request->toCommand($taskList));
+        $taskList->load(['createdBy', 'updatedBy', 'tags']);
 
         return new TaskListResource($taskList);
     }

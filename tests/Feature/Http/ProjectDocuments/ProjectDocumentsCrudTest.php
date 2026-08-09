@@ -258,6 +258,7 @@ it('updates the title, content and tags of a project document', function () {
     $response = $this->putJson('/api/project-documents/'.$document->id, [
         'title'   => 'New Title',
         'content' => 'Updated body.',
+        'status'  => $document->status->value,
         'tag_ids' => [$tag->id],
     ]);
 
@@ -278,6 +279,7 @@ it('updates the status of a project document', function () {
     ]);
 
     $response = $this->putJson('/api/project-documents/'.$document->id, [
+        'title'  => $document->title,
         'status' => ProjectDocumentStatus::Active->value,
     ]);
 
@@ -291,6 +293,7 @@ it('rejects an invalid status value on update', function () {
     $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->putJson('/api/project-documents/'.$document->id, [
+        'title'  => $document->title,
         'status' => 'not-a-real-status',
     ]);
 
@@ -304,6 +307,8 @@ it('clears the content when explicitly updated with null', function () {
     ]);
 
     $response = $this->putJson('/api/project-documents/'.$document->id, [
+        'title'   => $document->title,
+        'status'  => $document->status->value,
         'content' => null,
     ]);
 
@@ -311,17 +316,6 @@ it('clears the content when explicitly updated with null', function () {
 
     $document->refresh();
     expect($document->content)->toBeNull();
-});
-
-it('leaves the title untouched when only content is updated', function () {
-    $document = ProjectDocumentModel::factory()->create([
-        'project_id' => $this->project->id,
-        'title'      => 'Untouched Title',
-    ]);
-
-    $this->putJson('/api/project-documents/'.$document->id, ['content' => 'New body.'])
-        ->assertOk()
-        ->assertJsonPath('data.title', 'Untouched Title');
 });
 
 it('deletes a single project document', function () {

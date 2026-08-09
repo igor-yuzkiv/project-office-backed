@@ -16,6 +16,7 @@ use App\Infrastructure\Models\Contracts\Commentable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\LookupFilter;
+use App\Libs\EloquentFilters\Filters\NullableFilter;
 use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TextFilter;
 use Database\Factories\TaskModelFactory;
@@ -142,6 +143,7 @@ class TaskModel extends Model implements Commentable
         return [
             new FilterDefinition(TextFilter::class, ['name', 'description', 'key', 'status', 'priority']),
             new FilterDefinition(LookupFilter::class, ['project_id', 'task_list_id']),
+            new FilterDefinition(NullableFilter::class, ['task_list_id']),
             new FilterDefinition(TagFilter::class, []),
         ];
     }

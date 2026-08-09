@@ -80,7 +80,14 @@ useBreadcrumbs(() => [
                             </RouterLink>
                         </DisplayField>
 
-                        <DisplayField v-if="task.task_list" label="Task List" :value="task.task_list.name" inline />
+                        <DisplayField v-if="task.task_list" label="Task List" inline>
+                            <RouterLink
+                                :to="{ name: 'task-list-details', params: { id: task.task_list.id } }"
+                                class="text-sm app-link"
+                            >
+                                {{ task.task_list.name }}
+                            </RouterLink>
+                        </DisplayField>
                     </div>
 
                     <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">

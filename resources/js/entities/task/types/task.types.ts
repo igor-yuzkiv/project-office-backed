@@ -1,6 +1,6 @@
 import type { IEntity } from '@/shared/types'
 import type { ProjectOverviewDto } from '@/entities/project/types'
-import type { ITaskList } from '@/entities/task-list/types'
+import type { ITaskListOverview } from '@/entities/task-list/types'
 import type { TaskPriorityDto } from './task-priority.types'
 import type { TaskStatusValue } from './task-status.types'
 import type { UserOverviewDto } from '@/entities/user/types'
@@ -26,7 +26,7 @@ export interface ITask extends IEntity {
     updated_by?: UserOverviewDto
     tags?: ITag[]
     project?: ProjectOverviewDto
-    task_list?: ITaskList
+    task_list?: ITaskListOverview
     project_documents?: ProjectDocumentOverviewDto[]
 
     comments_count?: number

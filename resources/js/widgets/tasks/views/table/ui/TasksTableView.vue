@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
 import type { TaskOverviewDto } from '@/entities/task/types'
+import { taskTableColumnDefs } from '@/entities/task/config'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
@@ -22,25 +23,11 @@ const props = defineProps<{
 const selection = defineModel<TaskOverviewDto[]>('selection', { default: () => [] })
 
 defineEmits<{
-    rowClick: [task: TaskOverviewDto]
-    pageChange: [page: number]
+    (e: 'rowClick', task: TaskOverviewDto): void
+    (e: 'pageChange', page: number): void
 }>()
 
-const defaultColumns = computed<EntityTableColumnDef[]>(() => {
-    if (props.columns) {
-        return props.columns
-    }
-
-    return [
-        { field: 'key', header: 'Key', style: 'min-width: 10rem' },
-        { field: 'status', header: 'Status', style: 'min-width: 9rem' },
-        { field: 'name', header: 'Task Name', style: 'min-width: 30rem' },
-        { field: 'project', header: 'Project', style: 'min-width: 15rem' },
-        { field: 'priority', header: 'Priority', style: 'min-width: 7rem' },
-        { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
-        { field: 'updated_by', header: 'Updated By', style: 'min-width: 12rem' },
-    ]
-})
+const columns = computed<EntityTableColumnDef[]>(() => props.columns ?? taskTableColumnDefs)
 </script>
 
 <template>
@@ -48,7 +35,7 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
         v-model:selection="selection"
         :selection-mode="props.selectionMode"
         :rows="tasks"
-        :columns="props.columns ?? defaultColumns"
+        :columns="columns"
         :is-pending="isPending"
         :pagination-meta="paginationMeta"
         :page="page"
@@ -90,6 +77,18 @@ const defaultColumns = computed<EntityTableColumnDef[]>(() => {
 
         <template #column:due_date="{ row }">
             <DisplayDate :date="row.due_date ?? undefined" />
+        </template>
+
+        <template #[`column:task_list.name`]="{ row }">
+            <RouterLink
+                v-if="row.task_list"
+                :to="{ name: 'task-list-details', params: { id: row.task_list.id } }"
+                class="app-link block truncate"
+                :title="row.task_list.name"
+                @click.stop
+            >
+                {{ row.task_list.name }}
+            </RouterLink>
         </template>
 
         <template #column:tags="{ row }">

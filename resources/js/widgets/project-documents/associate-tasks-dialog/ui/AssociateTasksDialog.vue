@@ -140,7 +140,7 @@ watch(currentTasks, () => {
         <template #header>
             <div class="gap-2 flex items-center">
                 <i class="pi pi-file text-primary" />
-                <span class="text-base font-semibold">Associate Tasks</span>
+                <span class="text-base font-semibold">Add Tasks</span>
             </div>
         </template>
 

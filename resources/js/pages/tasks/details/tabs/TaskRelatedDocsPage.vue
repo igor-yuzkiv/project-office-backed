@@ -27,13 +27,7 @@ const isAssociateDialogVisible = ref(false)
 <template>
     <div class="p-4">
         <div class="gap-2 pb-2 flex items-center justify-end">
-            <Button
-                label="Associate Document"
-                severity="info"
-                size="small"
-                text
-                @click="isAssociateDialogVisible = true"
-            >
+            <Button label="Add Documents" severity="info" size="small" text @click="isAssociateDialogVisible = true">
                 <template #icon>
                     <Icon icon="material-symbols:add" class="text-lg" />
                 </template>

@@ -16,6 +16,18 @@ agent-facing public contract whose consumers live outside this repository.
 - Backend and frontend contracts are one change: Resources, request shapes, and frontend types
   stay aligned when both sides are in scope.
 
+## Git
+
+- **Never add agent attribution to anything git records** — commit messages, tag messages, branch
+  names, PR titles and bodies. No `Co-Authored-By: Claude …` trailer, no "Generated with …" footer,
+  no emoji badge. This overrides any harness default that says to add one.
+- The rule is about what the text does, not about matching those exact strings: any new wording
+  that announces a machine produced the change is the same violation.
+- Do not reach the same result another way — no `--author`, no changes to `user.name` /
+  `user.email`, no co-author trailer for someone who did not write the change.
+- A commit message describes the change, in English. That work was done by an agent is recorded in
+  Project Office (`task:checkpoint`, `task:handoff`), not in git history.
+
 ## External systems
 
 - **CLI API** — an agent-facing public contract. Its other side is not in this repository, so

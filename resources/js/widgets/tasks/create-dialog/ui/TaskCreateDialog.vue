@@ -6,7 +6,10 @@ import type { LaravelValidationErrors } from '@/shared/types'
 import type { TaskCreateFormData } from '../composables/use.task-create-dialog'
 import { ProjectLookupField } from '@/widgets/projects/lookup-field'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
+import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { InputContainer } from '@/shared/components/input'
+import { IconButton } from '@/shared/components/button'
+import type { ITaskList } from '@/entities/task-list/types'
 
 const visible = defineModel<boolean>('visible', { default: false })
 const formData = defineModel<TaskCreateFormData>('formData', { required: true })
@@ -17,7 +20,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-    submit: []
+    (e: 'submit'): void
 }>()
 
 function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
@@ -29,6 +32,12 @@ function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
 
     formData.value = nextValue
 }
+
+// A list created here belongs to the task's project and is selected right away, so the user
+// never has to leave the form to make one.
+const taskListCreateDialog = useTaskListCreateDialog({
+    onCreated: (taskList: ITaskList) => handleFieldChanged('taskList', taskList),
+})
 </script>
 
 <template>
@@ -56,15 +65,35 @@ function handleFieldChanged(key: keyof TaskCreateFormData, value: unknown) {
             </InputContainer>
 
             <InputContainer v-if="formData.project" label="Task List" :error="validationErrors.task_list_id">
-                <TaskListLookupField
-                    :model-value="formData.taskList"
-                    :project-id="formData.project.id"
-                    :object="true"
-                    :invalid="!!validationErrors.task_list_id"
-                    @update:model-value="handleFieldChanged('taskList', $event)"
-                />
+                <div class="gap-2 flex items-center">
+                    <TaskListLookupField
+                        :model-value="formData.taskList"
+                        :project-id="formData.project.id"
+                        :object="true"
+                        :invalid="!!validationErrors.task_list_id"
+                        class="min-w-0 flex-1"
+                        @update:model-value="handleFieldChanged('taskList', $event)"
+                    />
+                    <IconButton
+                        icon="material-symbols:add"
+                        severity="success"
+                        title="New task list"
+                        @click="taskListCreateDialog.open(formData.project)"
+                    />
+                </div>
             </InputContainer>
         </form>
+
+        <TaskListCreateDialog
+            :visible="taskListCreateDialog.visible.value"
+            project-locked
+            :form-data="taskListCreateDialog.formData.value"
+            :validation-errors="taskListCreateDialog.validationErrors.value"
+            :is-pending="taskListCreateDialog.isPending.value"
+            @update:visible="taskListCreateDialog.visible.value = $event"
+            @update:form-data="taskListCreateDialog.formData.value = $event"
+            @submit="taskListCreateDialog.submit"
+        />
 
         <template #footer>
             <Button label="Cancel" severity="secondary" text :disabled="isPending" @click="visible = false" />

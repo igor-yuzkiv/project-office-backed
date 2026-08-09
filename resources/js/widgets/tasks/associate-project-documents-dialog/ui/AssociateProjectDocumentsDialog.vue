@@ -139,7 +139,7 @@ watch(currentDocuments, () => {
         <template #header>
             <div class="gap-2 flex items-center">
                 <i class="pi pi-file text-primary" />
-                <span class="text-base font-semibold">Associate Documents</span>
+                <span class="text-base font-semibold">Add Documents</span>
             </div>
         </template>
 

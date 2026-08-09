@@ -44,7 +44,7 @@ watch(
         <div class="flex h-full w-full flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-end">
                 <Button
-                    label="Create Sub-Document"
+                    label="New Sub-Document"
                     size="small"
                     severity="info"
                     text
@@ -75,7 +75,7 @@ watch(
             :validation-errors="createDialog.validationErrors.value"
             :is-pending="createDialog.isPending.value"
             :parent-document="createDialog.parentDocument.value"
-            @submit="createDialog.submit()"
+            @submit="createDialog.submit"
         />
     </div>
 </template>

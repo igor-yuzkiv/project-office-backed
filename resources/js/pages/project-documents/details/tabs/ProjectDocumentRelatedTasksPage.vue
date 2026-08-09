@@ -35,13 +35,7 @@ const isAssociateDialogVisible = ref(false)
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="flex h-full w-full flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-end">
-                <Button
-                    label="Associate Task"
-                    severity="info"
-                    text
-                    size="small"
-                    @click="isAssociateDialogVisible = true"
-                >
+                <Button label="Add Tasks" severity="info" text size="small" @click="isAssociateDialogVisible = true">
                     <template #icon>
                         <Icon icon="material-symbols:add" class="text-lg" />
                     </template>

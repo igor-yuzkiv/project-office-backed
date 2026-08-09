@@ -1,7 +1,5 @@
-import type { MaybeRefOrGetter } from 'vue'
-import type { TaskListSearchParams } from '../types'
-
-export const TaskListQueryKey = {
-    all: ['task-lists'] as const,
-    search: (params: MaybeRefOrGetter<TaskListSearchParams>) => [...TaskListQueryKey.all, 'search', params] as const,
-}
+export * from './task-list-query-keys.config'
+export * from './task-list-status.config'
+export * from './task-list-table.config'
+export * from './task-list-attachment.config'
+export * from './task-list-filters.config'

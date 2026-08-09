@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import { LookupField } from '@/shared/components/input'
-import type { ITaskList } from '@/entities/task-list/types'
+import type { ITaskListOverview } from '@/entities/task-list/types'
 import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
 import type { FilterPayloadItem } from '@/shared/filters'
 
@@ -14,7 +14,7 @@ const props = withDefaults(
     { object: false }
 )
 
-const modelValue = defineModel<ITaskList | string | null>({ required: true })
+const modelValue = defineModel<ITaskListOverview | string | null>({ required: true })
 
 const searchTerm = ref('')
 const debouncedSearchTerm = refDebounced(searchTerm, 300)
@@ -36,7 +36,7 @@ const { taskLists, isPending } = useTaskListsSearchQuery(
 )
 
 function onUpdate(value: unknown) {
-    modelValue.value = value as ITaskList | string | null
+    modelValue.value = value as ITaskListOverview | string | null
 }
 </script>
 

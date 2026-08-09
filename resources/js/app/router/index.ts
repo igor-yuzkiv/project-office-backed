@@ -124,6 +124,47 @@ const router = createRouter({
             meta: { requiresAuth: true, layout: 'default', title: 'Edit Task' },
         },
         {
+            path: '/task-lists',
+            name: 'task-lists',
+            component: () => import('@/pages/task-lists/list/TaskListsPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Task Lists' },
+        },
+        {
+            path: '/task-lists/:id/edit',
+            name: 'task-list-edit',
+            component: () => import('@/pages/task-lists/edit/TaskListEditPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit Task List' },
+        },
+        {
+            path: '/task-lists/:id',
+            name: 'task-list-details',
+            component: () => import('@/pages/task-lists/details/TaskListDetailsPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Task List' },
+            redirect: (to) => ({ name: 'task-list-details.overview', params: to.params }),
+            children: [
+                {
+                    path: 'overview',
+                    name: 'task-list-details.overview',
+                    component: () => import('@/pages/task-lists/details/tabs/TaskListOverviewPage.vue'),
+                },
+                {
+                    path: 'tasks',
+                    name: 'task-list-details.tasks',
+                    component: () => import('@/pages/task-lists/details/tabs/TaskListTasksPage.vue'),
+                },
+                {
+                    path: 'comments',
+                    name: 'task-list-details.comments',
+                    component: () => import('@/pages/task-lists/details/tabs/TaskListCommentsPage.vue'),
+                },
+                {
+                    path: 'attachments',
+                    name: 'task-list-details.attachments',
+                    component: () => import('@/pages/task-lists/details/tabs/TaskListAttachmentsPage.vue'),
+                },
+            ],
+        },
+        {
             path: '/project-documents/:id',
             name: 'project-document-details',
             component: () => import('@/pages/project-documents/details/ProjectDocumentDetailsPage.vue'),

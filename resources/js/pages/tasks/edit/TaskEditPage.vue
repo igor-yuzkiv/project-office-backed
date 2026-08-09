@@ -11,7 +11,7 @@ import { uploadTaskAttachmentRequest } from '@/entities/task/api/task-attachment
 import { useTaskQuery } from '@/entities/task/queries'
 import { useUpdateTaskMutation } from '@/entities/task/mutations'
 import type { IUpdateTaskInput, TaskStatusValue } from '@/entities/task/types'
-import type { ITaskList } from '@/entities/task-list/types'
+import type { ITaskListOverview } from '@/entities/task-list/types'
 import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
@@ -19,6 +19,8 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TaskListLookupField } from '@/widgets/task-list/lookup-field'
+import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
+import type { ITaskList } from '@/entities/task-list/types'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
 import { IconButton } from '@/shared/components/button'
@@ -26,7 +28,7 @@ import { IconButton } from '@/shared/components/button'
 interface TaskEditFormData {
     name: string
     description: string
-    taskList: ITaskList | null
+    taskList: ITaskListOverview | null
     status: TaskStatusValue
     priority: number | null
     start_date: Date | null
@@ -55,6 +57,23 @@ const formData = ref<TaskEditFormData>({
 const isFormInitialized = ref(false)
 const validationErrors = ref<LaravelValidationErrors>({})
 const showManageTagsDialog = ref(false)
+
+// A list created here belongs to the task's project and is selected right away, so the user
+// never has to leave the form to make one.
+const taskListCreateDialog = useTaskListCreateDialog({
+    onCreated: (taskList: ITaskList) => {
+        formData.value.taskList = taskList
+    },
+})
+
+function openTaskListCreateDialog() {
+    if (!task.value?.project) {
+        console.warn('Cannot create a task list: the task has no project.')
+        return
+    }
+
+    taskListCreateDialog.open(task.value.project)
+}
 
 function handleError(error: unknown) {
     if (error instanceof ApiError && error.isValidationError) {
@@ -161,12 +180,22 @@ useBreadcrumbs(() => [
                 </InputContainer>
 
                 <InputContainer label="Task List" :error="validationErrors.task_list_id">
-                    <TaskListLookupField
-                        v-model="formData.taskList"
-                        :project-id="task?.project_id"
-                        :object="true"
-                        :invalid="!!validationErrors.task_list_id"
-                    />
+                    <div class="gap-2 flex items-center">
+                        <TaskListLookupField
+                            v-model="formData.taskList"
+                            :project-id="task?.project_id"
+                            :object="true"
+                            :invalid="!!validationErrors.task_list_id"
+                            class="min-w-0 flex-1"
+                        />
+                        <IconButton
+                            icon="material-symbols:add"
+                            severity="success"
+                            title="New task list"
+                            :disabled="!task?.project"
+                            @click="openTaskListCreateDialog"
+                        />
+                    </div>
                 </InputContainer>
 
                 <InputContainer label="Status" :error="validationErrors.status">
@@ -234,5 +263,16 @@ useBreadcrumbs(() => [
         </div>
 
         <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
+
+        <TaskListCreateDialog
+            :visible="taskListCreateDialog.visible.value"
+            project-locked
+            :form-data="taskListCreateDialog.formData.value"
+            :validation-errors="taskListCreateDialog.validationErrors.value"
+            :is-pending="taskListCreateDialog.isPending.value"
+            @update:visible="taskListCreateDialog.visible.value = $event"
+            @update:form-data="taskListCreateDialog.formData.value = $event"
+            @submit="taskListCreateDialog.submit"
+        />
     </div>
 </template>

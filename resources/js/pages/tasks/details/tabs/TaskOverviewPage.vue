@@ -21,7 +21,7 @@ const generalFields: DisplayFieldConfig<ITask>[] = [
     { name: 'status', label: 'Status' },
     { name: 'priority', label: 'Priority' },
     { name: 'project', label: 'Project' },
-    { name: 'task_list', label: 'Task List', value: (t) => t.task_list?.name ?? null },
+    { name: 'task_list', label: 'Task List' },
     { name: 'tags', label: 'Tags' },
 ]
 
@@ -55,6 +55,15 @@ const systemFields: DisplayFieldConfig<ITask>[] = [
                         class="app-link"
                     >
                         {{ item.project.prefix }} - {{ item.project.name }}
+                    </RouterLink>
+                </template>
+                <template #[`field:task_list:value`]="{ item }">
+                    <RouterLink
+                        v-if="item.task_list"
+                        :to="{ name: 'task-list-details', params: { id: item.task_list.id } }"
+                        class="app-link"
+                    >
+                        {{ item.task_list.name }}
                     </RouterLink>
                 </template>
                 <template #[`field:tags:value`]="{ item }">

@@ -13,10 +13,10 @@ class UpdateProjectDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'     => ['sometimes', 'required', 'string', 'max:255'],
-            'content'   => ['sometimes', 'nullable', 'string'],
-            'status'    => ['sometimes', Rule::enum(ProjectDocumentStatus::class)],
-            'tag_ids'   => ['sometimes', 'array'],
+            'title'     => ['required', 'string', 'max:255'],
+            'content'   => ['nullable', 'string'],
+            'status'    => ['required', Rule::enum(ProjectDocumentStatus::class)],
+            'tag_ids'   => ['nullable', 'array'],
             'tag_ids.*' => ['string', 'exists:tags,id'],
         ];
     }
@@ -25,9 +25,9 @@ class UpdateProjectDocumentRequest extends FormRequest
     {
         return new UpdateProjectDocumentCommand(
             document: $projectDocument,
-            title: $this->has('title') ? $this->validated('title') : $projectDocument->title,
-            content: $this->has('content') ? $this->validated('content') : $projectDocument->content,
-            status: $this->has('status') ? ProjectDocumentStatus::from($this->validated('status')) : $projectDocument->status,
+            title: $this->validated('title'),
+            content: $this->validated('content'),
+            status: ProjectDocumentStatus::from($this->validated('status')),
             tagIds: $this->validated('tag_ids'),
         );
     }

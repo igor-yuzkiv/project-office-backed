@@ -18,8 +18,8 @@ export interface ICreateProjectInput {
 
 // TODO: rename to DTO
 export interface IUpdateProjectInput {
-    name?: string
-    status?: ProjectStatusValue
+    name: string
+    status: ProjectStatusValue
     description?: string | null
     start_date?: string | null
     end_date?: string | null
