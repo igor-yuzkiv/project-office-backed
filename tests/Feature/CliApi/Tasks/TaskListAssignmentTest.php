@@ -20,8 +20,8 @@ beforeEach(function () {
 
 it('creates a task in the list addressed by key', function () {
     $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks", [
-        'name'      => 'Write the migration',
-        'task_list' => 'MTM-TL-7',
+        'name'         => 'Write the migration',
+        'task_list_id' => 'MTM-TL-7',
     ]);
 
     $response->assertCreated()
@@ -32,8 +32,8 @@ it('creates a task in the list addressed by key', function () {
 
 it('creates a task in the list addressed by ulid', function () {
     $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks", [
-        'name'      => 'Write the migration',
-        'task_list' => $this->taskList->id,
+        'name'         => 'Write the migration',
+        'task_list_id' => $this->taskList->id,
     ]);
 
     $response->assertCreated()
@@ -54,7 +54,7 @@ it('moves a task into a list on update', function () {
     $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
-        'task_list' => 'MTM-TL-7',
+        'task_list_id' => 'MTM-TL-7',
     ]);
 
     $response->assertOk()
@@ -72,14 +72,14 @@ it('rejects a task list from another project', function () {
     ]);
 
     $this->postJson("/api/cli/projects/{$this->project->id}/tasks", [
-        'name'      => 'Sneaky task',
-        'task_list' => 'OTH-TL-1',
-    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list']);
+        'name'         => 'Sneaky task',
+        'task_list_id' => 'OTH-TL-1',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list_id']);
 
     $this->postJson("/api/cli/projects/{$this->project->id}/tasks", [
-        'name'      => 'Sneaky task',
-        'task_list' => $foreign->id,
-    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list']);
+        'name'         => 'Sneaky task',
+        'task_list_id' => $foreign->id,
+    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list_id']);
 });
 
 it('rejects a task list from another project on update', function () {
@@ -92,8 +92,8 @@ it('rejects a task list from another project on update', function () {
     $task = TaskModel::factory()->create(['project_id' => $this->project->id]);
 
     $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
-        'task_list' => 'OTH-TL-1',
-    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list']);
+        'task_list_id' => 'OTH-TL-1',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list_id']);
 });
 
 it('keeps the current list when the field is absent from an update', function () {
@@ -111,7 +111,7 @@ it('keeps the current list when the field is absent from an update', function ()
 
 it('rejects an unknown task list key', function () {
     $this->postJson("/api/cli/projects/{$this->project->id}/tasks", [
-        'name'      => 'Sneaky task',
-        'task_list' => 'MTM-TL-999',
-    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list']);
+        'name'         => 'Sneaky task',
+        'task_list_id' => 'MTM-TL-999',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['task_list_id']);
 });

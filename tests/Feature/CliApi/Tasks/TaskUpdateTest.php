@@ -47,7 +47,9 @@ it('updates the name', function () {
     expect($task->fresh()->name)->toBe('Renamed task');
 });
 
-it('ignores task_list_id, priority, and dates', function () {
+// task_list_id is no longer on this list: an update may move a task between lists.
+// That behaviour lives in tests/Feature/CliApi/Tasks/TaskListAssignmentTest.php.
+it('ignores priority and dates', function () {
     $task = TaskModel::factory()->create([
         'project_id' => $this->project->id,
         'name'       => 'Original name',
@@ -55,18 +57,16 @@ it('ignores task_list_id, priority, and dates', function () {
     $original = $task->fresh();
 
     $response = $this->putJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}", [
-        'task_list_id' => '01k00000000000000000000000',
-        'priority'     => 100,
-        'start_date'   => '2026-01-01',
-        'due_date'     => '2026-01-02',
-        'status'       => TaskStatus::Closed->value,
+        'priority'   => 100,
+        'start_date' => '2026-01-01',
+        'due_date'   => '2026-01-02',
+        'status'     => TaskStatus::Closed->value,
     ]);
 
     $response->assertOk()
         ->assertJsonPath('data.status', TaskStatus::Closed->value);
 
     $fresh = $task->fresh();
-    expect($fresh->task_list_id)->toBe($original->task_list_id);
     expect($fresh->priority)->toBe($original->priority);
     expect($fresh->start_date?->toIso8601String())->toBe($original->start_date?->toIso8601String());
     expect($fresh->due_date?->toIso8601String())->toBe($original->due_date?->toIso8601String());

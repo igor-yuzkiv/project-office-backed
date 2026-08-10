@@ -17,11 +17,11 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_list'   => ['sometimes', 'string'],
-            'name'        => ['sometimes', 'string', 'max:255'],
-            'status'      => ['sometimes', 'string', Rule::enum(TaskStatus::class)],
-            'description' => ['sometimes', 'nullable', 'string'],
-            'tags'        => ['sometimes', 'nullable', 'string'],
+            'task_list_id' => ['sometimes', 'string'],
+            'name'         => ['sometimes', 'string', 'max:255'],
+            'status'       => ['sometimes', 'string', Rule::enum(TaskStatus::class)],
+            'description'  => ['sometimes', 'nullable', 'string'],
+            'tags'         => ['sometimes', 'nullable', 'string'],
         ];
     }
 
