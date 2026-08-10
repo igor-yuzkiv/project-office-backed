@@ -11,9 +11,7 @@ use App\Domains\User\Models\UserModel;
 use App\Http\CliApi\Requests\Comment\StoreCommentsRequest;
 use App\Http\Shared\Resources\Comment\CommentResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -38,7 +36,7 @@ class TaskListCommentsController
         return CommentResource::collection($comments);
     }
 
-    public function store(ProjectModel $project, TaskListModel $taskList, StoreCommentsRequest $request): JsonResource
+    public function store(ProjectModel $project, TaskListModel $taskList, StoreCommentsRequest $request): JsonResponse
     {
         Gate::authorize('create', CommentModel::class);
 
@@ -60,15 +58,8 @@ class TaskListCommentsController
                 });
         });
 
-        // Return type is fixed to JsonResource, so the 201 status is applied via
-        // an AnonymousResourceCollection override instead of ->response()->setStatusCode(),
-        // which would return a JsonResponse and violate the contract.
-        return new class($comments, CommentResource::class) extends AnonymousResourceCollection
-        {
-            public function withResponse(Request $request, JsonResponse $response): void
-            {
-                $response->setStatusCode(201);
-            }
-        };
+        return CommentResource::collection($comments)
+            ->response()
+            ->setStatusCode(201);
     }
 }
