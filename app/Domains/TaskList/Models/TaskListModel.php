@@ -63,16 +63,25 @@ class TaskListModel extends Model implements Commentable
     }
 
     /**
-     * Allows route-model binding by ULID id or by the human-readable key (e.g. PROJ-TL-1).
+     * Matches a task list by ULID id or by the human-readable key (e.g. PROJ-TL-1).
+     * Agents address task lists by key, so both forms resolve wherever one is accepted.
      *
+     * @param  Builder<TaskListModel>  $query
+     */
+    public function scopeKeyOrId(Builder $query, string $value): void
+    {
+        $query->where(function (Builder $q) use ($value): void {
+            $q->where($this->getKeyName(), $value)->orWhere('key', $value);
+        });
+    }
+
+    /**
      * @param  Builder<TaskListModel>  $query
      * @return Builder<TaskListModel>
      */
     public function resolveRouteBindingQuery($query, $value, $field = null)
     {
-        return $query->where(function (Builder $q) use ($value): void {
-            $q->where($this->getKeyName(), $value)->orWhere('key', $value);
-        });
+        return $query->keyOrId((string) $value);
     }
 
     public function toSearchableArray(): array

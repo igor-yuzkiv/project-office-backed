@@ -6,16 +6,18 @@ use App\Domains\Task\Actions\UpdateTask\UpdateTaskCommand;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Http\CliApi\Requests\Concerns\HasTagDtos;
+use App\Http\CliApi\Requests\Concerns\ResolvesTaskList;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateTaskRequest extends FormRequest
 {
-    use HasTagDtos;
+    use HasTagDtos, ResolvesTaskList;
 
     public function rules(): array
     {
         return [
+            'task_list'   => ['sometimes', 'string'],
             'name'        => ['sometimes', 'string', 'max:255'],
             'status'      => ['sometimes', 'string', Rule::enum(TaskStatus::class)],
             'description' => ['sometimes', 'nullable', 'string'],
@@ -27,7 +29,7 @@ class UpdateTaskRequest extends FormRequest
     {
         return new UpdateTaskCommand(
             task: $task,
-            taskListId: $task->task_list_id,
+            taskListId: $this->resolvedTaskListId() ?? $task->task_list_id,
             name: $this->has('name') ? $this->validated('name') : $task->name,
             description: $this->has('description') ? $this->validated('description') : $task->description,
             priority: $task->priority,

@@ -2,6 +2,9 @@
 
 use App\Http\CliApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\CliApi\Controllers\Projects\ProjectsController;
+use App\Http\CliApi\Controllers\TaskLists\TaskListCommentsController;
+use App\Http\CliApi\Controllers\TaskLists\TaskListsController;
+use App\Http\CliApi\Controllers\TaskLists\TaskListTasksController;
 use App\Http\CliApi\Controllers\Tasks\TaskAgenticWorkflowController;
 use App\Http\CliApi\Controllers\Tasks\TaskCommentsController;
 use App\Http\CliApi\Controllers\Tasks\TasksController;
@@ -54,6 +57,34 @@ Route::middleware('auth:sanctum')
                         Route::get('/', [TaskCommentsController::class, 'index'])->name('index');
                         Route::post('/', [TaskCommentsController::class, 'store'])->name('store');
                         Route::put('{comment}', [TaskCommentsController::class, 'update'])->name('update');
+                    });
+            });
+
+        /**
+         * Task Lists
+         */
+        Route::prefix('task-lists')
+            ->name('task-lists.')
+            ->scopeBindings()
+            ->group(function () {
+                Route::get('list', [TaskListsController::class, 'index'])->name('index');
+                Route::post('/', [TaskListsController::class, 'store'])->name('store');
+                Route::get('{taskList}', [TaskListsController::class, 'show'])->name('show');
+                Route::put('{taskList}', [TaskListsController::class, 'update'])->name('update');
+
+                /**
+                 * Task List Tasks
+                 */
+                Route::get('{taskList}/tasks', [TaskListTasksController::class, 'index'])->name('tasks.index');
+
+                /**
+                 * Task List Comments
+                 */
+                Route::prefix('{taskList}/comments')
+                    ->name('comments.')
+                    ->group(function () {
+                        Route::get('/', [TaskListCommentsController::class, 'index'])->name('index');
+                        Route::post('/', [TaskListCommentsController::class, 'store'])->name('store');
                     });
             });
 
