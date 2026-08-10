@@ -54,7 +54,7 @@ class TasksController extends ResourceController
             : null;
 
         $task = $this->createHandler->handle($request->toCommand($project, $tagIds));
-        $task->load(['createdBy', 'updatedBy']);
+        $task->load(['createdBy', 'updatedBy', 'taskList']);
 
         return (new TaskResource($task))
             ->response()
@@ -79,7 +79,7 @@ class TasksController extends ResourceController
         }
 
         $task = $this->updateHandler->handle($request->toCommand($task, $tagIds));
-        $task->load(['createdBy', 'updatedBy']);
+        $task->load(['createdBy', 'updatedBy', 'taskList']);
 
         return new TaskResource($task);
     }
