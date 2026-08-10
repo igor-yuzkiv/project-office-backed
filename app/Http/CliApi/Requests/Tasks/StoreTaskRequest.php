@@ -18,13 +18,13 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_list'   => ['sometimes', 'string'],
-            'name'        => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'priority'    => ['nullable', 'integer', Rule::enum(TaskPriority::class)],
-            'start_date'  => ['sometimes', 'nullable', 'date'],
-            'due_date'    => ['sometimes', 'nullable', 'date', 'after_or_equal:start_date'],
-            'tags'        => ['sometimes', 'nullable', 'string'],
+            'task_list_id' => ['sometimes', 'string'],
+            'name'         => ['required', 'string', 'max:255'],
+            'description'  => ['nullable', 'string'],
+            'priority'     => ['nullable', 'integer', Rule::enum(TaskPriority::class)],
+            'start_date'   => ['sometimes', 'nullable', 'date'],
+            'due_date'     => ['sometimes', 'nullable', 'date', 'after_or_equal:start_date'],
+            'tags'         => ['sometimes', 'nullable', 'string'],
         ];
     }
 
