@@ -26,7 +26,7 @@ through the `project-office` CLI.
 When taking or resuming a task for implementation, start with:
 
 ```bash
-project-office task:start --task MTM-1
+project-office task:start --task PREFIX-1
 ```
 
 This is the pickup command: it claims the task for implementation and returns the full task
@@ -45,7 +45,7 @@ not obvious from the task description. Record it before deleting temporary plan 
 code.
 
 ```bash
-project-office task:checkpoint --task MTM-1 --subject "Implementation plan" --comment @/tmp/plan.md
+project-office task:checkpoint --task PREFIX-1 --subject "Implementation plan" --comment @/tmp/plan.md
 ```
 
 Keep it short and structured when you write one:
@@ -98,7 +98,7 @@ Use `task:comment-add` only for a small temporary note not worth a checkpoint.
 Once implemented and verified:
 
 ```bash
-project-office task:handoff --task MTM-1 --resolution "..."
+project-office task:handoff --task PREFIX-1 --resolution "..."
 ```
 
 ```text
@@ -120,6 +120,22 @@ workflow commands, change a task's status only when the user explicitly asks.
 Leave the task in its current workflow state, add a checkpoint with subject `Blocked` describing
 the blocker and the decision or information required, and raise it with the user. Do not invent a
 status for blocked work.
+
+## Task lists
+
+A **task list** is a plan document inside the project: a named set of tasks whose description holds
+the plan for a scope of work, addressed by a key of the form `PREFIX-TL-<number>`. A task carries
+its list in `task_list_key`; the plan itself is not copied into the task.
+
+* `project-office task-list:view --task-list PREFIX-TL-1` — read the plan and every task in it with
+  its status, when the work depends on the wider scope.
+* Put a task into a list with `--task-list` on `task:create` / `task:update`. A task cannot be taken
+  out of a list, and a list cannot be deleted, through the CLI.
+* Comment on the **list** for a decision or artifact that affects the whole scope; keep progress and
+  verification of one task in that task's own checkpoints.
+
+Whether this repository plans through task lists, and who may move a list's status, is a
+project-specific convention — see below.
 
 ## Task content
 
