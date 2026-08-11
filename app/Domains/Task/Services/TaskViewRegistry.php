@@ -22,15 +22,14 @@ class TaskViewRegistry
                     TaskStatus::Open,
                     TaskStatus::ReadyForDevelopment,
                     TaskStatus::InProgress,
-                    TaskStatus::Completed,
                 ]),
             ]),
             new TaskView('all_in_progress', 'All In Progress', [
                 self::statusFilter([
-                    TaskStatus::ReadyToTest,
                     TaskStatus::ReadyForDevelopment,
                     TaskStatus::InProgress,
                     TaskStatus::ReadyToTest,
+                    TaskStatus::Completed,
                 ]),
             ]),
             new TaskView('all_closed', 'All Closed', [
