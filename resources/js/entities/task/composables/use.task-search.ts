@@ -1,6 +1,6 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { PAGE_SIZE } from '@/app/config'
-import { useTaskViewsQuery, useTaskViewSwitcher } from '@/entities/task-view'
+import { DEFAULT_TASK_VIEW_KEY, useTaskViewsQuery, useTaskViewSwitcher } from '@/entities/task-view'
 import { usePersistedListState } from '@/shared/composables'
 import { useFilterSidebar, type FilterPayloadItem } from '@/shared/filters'
 import { useSortDialog } from '@/shared/sort'
@@ -23,6 +23,7 @@ interface UseTaskSearchOptions {
      * every id gets its own entry keyed by path.
      */
     persistKey?: string
+    defaultTaskViewKey?: string
 }
 
 export function useTaskSearch(options: UseTaskSearchOptions = {}) {
@@ -34,7 +35,7 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
     const filterSidebar = useFilterSidebar(filtersDefMap)
 
     const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
-    const viewSwitcher = useTaskViewSwitcher(taskViews)
+    const viewSwitcher = useTaskViewSwitcher(taskViews, options?.defaultTaskViewKey ?? DEFAULT_TASK_VIEW_KEY)
 
     const sort = useSortDialog(taskSortFieldDefs, 'updated_at', 'desc')
 

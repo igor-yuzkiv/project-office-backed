@@ -39,6 +39,7 @@ const search = useTaskSearch({
     include: ['taskList'],
     // Keyed by tab rather than by path, otherwise every task list gets its own stored state.
     persistKey: 'task-list-details.tasks',
+    defaultTaskViewKey: 'all',
 })
 
 // The page is one task list, so its own column would repeat the header.
