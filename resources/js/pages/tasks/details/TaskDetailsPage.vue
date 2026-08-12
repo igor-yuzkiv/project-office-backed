@@ -7,8 +7,8 @@ import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useTaskQuery } from '@/entities/task/queries'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
+import { Icon } from '@iconify/vue'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
-import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
@@ -78,41 +78,35 @@ useBreadcrumbs(() => [
 <template>
     <div v-if="task" class="gap-4 p-2 flex flex-1 overflow-hidden">
         <Tabs :value="activeTab" class="flex flex-1 flex-col overflow-hidden" @update:value="onTabChange">
-            <div class="p-3 flex shrink-0 items-start justify-between truncate">
-                <div class="gap-1 flex flex-col truncate">
-                    <div class="gap-x-3 flex items-center">
-                        <DisplayField v-if="task.project" inline>
-                            <ProjectIcon :prefix="task.project.prefix" size="small" :status="task.project.status" />
-                            <RouterLink
-                                :to="{ name: 'project-details', params: { id: task.project_id } }"
-                                class="text-sm app-link"
-                            >
-                                {{ task.project.name }}
-                            </RouterLink>
-                        </DisplayField>
+            <div class="gap-1 p-3 flex shrink-0 flex-col truncate">
+                <div class="gap-x-3 flex items-center">
+                    <DisplayField v-if="task.project" inline>
+                        <ProjectIcon :prefix="task.project.prefix" size="small" :status="task.project.status" />
+                        <RouterLink
+                            :to="{ name: 'project-details', params: { id: task.project_id } }"
+                            class="text-sm app-link"
+                        >
+                            {{ task.project.name }}
+                        </RouterLink>
+                    </DisplayField>
 
-                        <DisplayField v-if="task.task_list" label="Task List" inline>
-                            <RouterLink
-                                :to="{ name: 'task-list-details', params: { id: task.task_list.id } }"
-                                class="text-sm app-link"
-                            >
-                                {{ task.task_list.name }}
-                            </RouterLink>
-                        </DisplayField>
-                    </div>
-
-                    <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
-                        <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
-                        <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
-                    </div>
-
-                    <TagList :tags="task.tags ?? []" />
+                    <DisplayField v-if="task.task_list" inline>
+                        <Icon icon="heroicons:chevron-right" class="text-surface-400" />
+                        <RouterLink
+                            :to="{ name: 'task-list-details', params: { id: task.task_list.id } }"
+                            class="text-sm app-link"
+                        >
+                            {{ task.task_list.name }}
+                        </RouterLink>
+                    </DisplayField>
                 </div>
 
-                <div class="gap-2 flex items-center">
-                    <TaskStatusTag :status="task.status" class="w-fit" show-icon />
-                    <TaskPriorityTag :priority="task.priority" class="w-fit" />
+                <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
+                    <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
+                    <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
                 </div>
+
+                <TagList :tags="task.tags ?? []" />
             </div>
 
             <TabList>
