@@ -3,7 +3,15 @@ import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
 
-export type TaskListStatusValue = 'open' | 'in_progress' | 'completed'
+// Mirrors TaskStatusValue: a list moves through the same states as the tasks in it.
+export type TaskListStatusValue =
+    | 'backlog'
+    | 'open'
+    | 'ready_for_development'
+    | 'in_progress'
+    | 'ready_to_test'
+    | 'completed'
+    | 'closed'
 
 export type TaskListStatusMetadata = {
     label: string

@@ -39,6 +39,20 @@ it('updates the name, status and description by key', function () {
         ->and($fresh->status)->toBe(TaskListStatus::Completed);
 });
 
+it('accepts every task status, because a list moves through the same states as its tasks', function (TaskListStatus $status) {
+    $this->putJson("/api/cli/projects/{$this->project->id}/task-lists/MTM-TL-7", [
+        'status' => $status->value,
+    ])->assertOk()->assertJsonPath('data.status', $status->value);
+
+    expect($this->taskList->fresh()->status)->toBe($status);
+})->with(TaskListStatus::cases());
+
+it('rejects a status outside the enum', function () {
+    $this->putJson("/api/cli/projects/{$this->project->id}/task-lists/MTM-TL-7", [
+        'status' => 'archived',
+    ])->assertUnprocessable()->assertJsonValidationErrors('status');
+});
+
 it('keeps the fields that are absent from the payload', function () {
     $response = $this->putJson("/api/cli/projects/{$this->project->id}/task-lists/MTM-TL-7", [
         'status' => TaskListStatus::Completed->value,
