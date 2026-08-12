@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Panel from 'primevue/panel'
 import Skeleton from 'primevue/skeleton'
 import { Icon } from '@iconify/vue'
 import { useTaskListTasksQuery } from '@/entities/task-list/queries'
@@ -28,21 +27,18 @@ const isWholeListLoaded = computed(() => {
 </script>
 
 <template>
-    <Panel>
-        <template #header>
-            <div class="gap-1 flex flex-col">
-                <span class="text-surface-400 text-sm">Task List</span>
-                <RouterLink
-                    :to="{ name: 'task-list-details', params: { id: taskList.id } }"
-                    class="font-semibold app-link"
-                >
-                    {{ taskList.name }}
-                </RouterLink>
-                <span v-if="isWholeListLoaded && tasks.length" class="text-surface-400 text-sm">
-                    {{ completedCount }} of {{ tasks.length }} completed
-                </span>
-            </div>
-        </template>
+    <section class="gap-2 flex flex-col">
+        <div class="gap-1 flex flex-col">
+            <h2 class="font-semibold text-surface-900 dark:text-surface-0">Task List</h2>
+
+            <RouterLink :to="{ name: 'task-list-details', params: { id: taskList.id } }" class="text-sm app-link">
+                {{ taskList.name }}
+            </RouterLink>
+
+            <span v-if="isWholeListLoaded && tasks.length" class="text-surface-400 text-sm">
+                {{ completedCount }} of {{ tasks.length }} completed
+            </span>
+        </div>
 
         <div v-if="isPending" class="gap-2 flex flex-col">
             <Skeleton v-for="n in 4" :key="n" height="1.75rem" />
@@ -61,14 +57,12 @@ const isWholeListLoaded = computed(() => {
             />
         </div>
 
-        <template #footer>
-            <RouterLink
-                :to="{ name: 'task-list-details', params: { id: taskList.id } }"
-                class="gap-1 text-sm app-link flex items-center"
-            >
-                View full task list
-                <Icon icon="heroicons:arrow-top-right-on-square" />
-            </RouterLink>
-        </template>
-    </Panel>
+        <RouterLink
+            :to="{ name: 'task-list-details', params: { id: taskList.id } }"
+            class="gap-1 text-sm app-link flex items-center"
+        >
+            View full task list
+            <Icon icon="heroicons:arrow-top-right-on-square" />
+        </RouterLink>
+    </section>
 </template>
