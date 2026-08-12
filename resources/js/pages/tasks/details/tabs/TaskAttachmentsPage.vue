@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouteParams } from '@vueuse/router'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import { PAGE_SIZE } from '@/app/config'
@@ -16,9 +16,7 @@ import { IconButton } from '@/shared/components/button'
 import { AttachmentsTableView } from '@/widgets/attachments/views/table'
 import { AttachmentDropZone, UploadAttachmentButton } from '@/widgets/attachments/attachment-uploader'
 
-const route = useRoute()
-
-const taskId = computed(() => route.params.id as string)
+const taskId = useRouteParams<string>('id')
 
 const page = ref(1)
 
