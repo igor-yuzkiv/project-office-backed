@@ -27,8 +27,9 @@ const isWholeListLoaded = computed(() => {
 </script>
 
 <template>
-    <section class="gap-2 flex flex-col">
-        <div class="gap-1 flex flex-col">
+    <!-- Takes the height the sidebar has left over; only the rows inside it scroll. -->
+    <section class="gap-2 min-h-0 flex flex-1 flex-col">
+        <div class="gap-1 flex shrink-0 flex-col">
             <h2 class="font-semibold text-surface-900 dark:text-surface-0">Task List</h2>
 
             <RouterLink :to="{ name: 'task-list-details', params: { id: taskList.id } }" class="text-sm app-link">
@@ -48,7 +49,7 @@ const isWholeListLoaded = computed(() => {
 
         <p v-else-if="!tasks.length" class="text-surface-400 text-sm">This list has no tasks yet.</p>
 
-        <div v-else class="max-h-96 -mx-2 flex flex-col overflow-y-auto">
+        <div v-else class="-mx-2 min-h-0 flex flex-1 flex-col overflow-y-auto">
             <TaskListTaskRow
                 v-for="task in tasks"
                 :key="task.id"
@@ -59,7 +60,7 @@ const isWholeListLoaded = computed(() => {
 
         <RouterLink
             :to="{ name: 'task-list-details', params: { id: taskList.id } }"
-            class="gap-1 text-sm app-link flex items-center"
+            class="gap-1 text-sm app-link flex shrink-0 items-center"
         >
             View full task list
             <Icon icon="heroicons:arrow-top-right-on-square" />
