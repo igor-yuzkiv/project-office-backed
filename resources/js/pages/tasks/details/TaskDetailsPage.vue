@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useRouteParams } from '@vueuse/router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
@@ -18,13 +19,17 @@ const route = useRoute()
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
 const toast = useToast()
-const taskId = route.params.id as string
+// Navigating between tasks of one list changes only the route parameter, so the router reuses this
+// component — everything derived from the id has to be reactive or the page keeps the old task.
+const taskId = useRouteParams<string>('id')
 
 const { task, isError } = useTaskQuery(taskId)
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 
 function handleDeleteTask() {
-    deleteTask(taskId, `Are you sure you want to delete "${task.value?.name}"?`, () => router.push({ name: 'tasks' }))
+    deleteTask(taskId.value, `Are you sure you want to delete "${task.value?.name}"?`, () =>
+        router.push({ name: 'tasks' })
+    )
 }
 
 const activeTab = computed(
@@ -47,11 +52,16 @@ watch(
 )
 
 function onTabChange(value: string | number) {
-    router.push({ name: `task-details.${value}`, params: { id: taskId } })
+    router.push({ name: `task-details.${value}`, params: { id: taskId.value } })
 }
 
-useHeaderActions([
-    { key: 'edit-task', title: 'Edit Task', to: { name: 'task-edit', params: { id: taskId } }, is_primary: true },
+useHeaderActions(() => [
+    {
+        key: 'edit-task',
+        title: 'Edit Task',
+        to: { name: 'task-edit', params: { id: taskId.value } },
+        is_primary: true,
+    },
     { key: 'delete-task', title: 'Delete', action: handleDeleteTask },
 ])
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRouteParams } from '@vueuse/router'
 import Panel from 'primevue/panel'
 import { useTaskQuery } from '@/entities/task/queries'
 import { DisplayFields } from '@/shared/components/display'
@@ -10,8 +10,7 @@ import { TagList } from '@/widgets/tags/metadata'
 import { formatDate, formatDateTime } from '@/shared/utils/date.util'
 import type { ITask } from '@/entities/task/types'
 
-const route = useRoute()
-const taskId = route.params.id as string
+const taskId = useRouteParams<string>('id')
 
 const { task } = useTaskQuery(taskId)
 

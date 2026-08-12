@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouteParams } from '@vueuse/router'
 import Button from 'primevue/button'
 import { Icon } from '@iconify/vue'
 import { useTaskOwnersQuery } from '@/entities/task-owner/queries'
 import { ManageTaskOwnersDialog } from '@/widgets/task-owners/manage-dialog'
 import { TaskOwnersTable } from '@/widgets/task-owners/owners-table'
 
-const route = useRoute()
-const taskId = route.params.id as string
+const taskId = useRouteParams<string>('id')
 
 const { owners, isPending: isOwnersLoading } = useTaskOwnersQuery(taskId)
 

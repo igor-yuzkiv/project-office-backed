@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRouteParams } from '@vueuse/router'
 import { useTaskQuery } from '@/entities/task/queries'
 import { MarkdownPreview } from '@/shared/components/md-editor'
 
-const route = useRoute()
-const taskId = route.params.id as string
+const taskId = useRouteParams<string>('id')
 
 const { task } = useTaskQuery(taskId)
 </script>
