@@ -6,6 +6,8 @@ export const TaskListQueryKey = {
     all: ['task-lists'] as const,
     detail: (id: MaybeRefOrGetter<string>) => [...TaskListQueryKey.all, 'detail', id] as const,
     search: (params: MaybeRefOrGetter<TaskListSearchParams>) => [...TaskListQueryKey.all, 'search', params] as const,
+    tasks: (taskListId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
+        [...TaskListQueryKey.all, 'tasks', taskListId, pagination] as const,
 }
 
 export const TaskListCommentQueryKey = {
