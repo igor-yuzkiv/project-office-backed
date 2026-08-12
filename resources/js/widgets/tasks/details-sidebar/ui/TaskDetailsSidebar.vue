@@ -6,7 +6,7 @@ defineProps<{ task: ITask }>()
 </script>
 
 <template>
-    <aside class="gap-4 w-80 flex shrink-0 flex-col overflow-y-auto">
+    <aside class="gap-4 w-1/4 flex shrink-0 flex-col overflow-y-auto">
         <TaskInfoPanel :task="task" />
     </aside>
 </template>
