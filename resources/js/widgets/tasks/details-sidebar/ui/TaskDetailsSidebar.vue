@@ -7,7 +7,7 @@ defineProps<{ task: ITask }>()
 </script>
 
 <template>
-    <aside class="gap-4 w-80 flex shrink-0 flex-col overflow-y-auto">
+    <aside class="gap-4 flex w-1/4 shrink-0 flex-col overflow-y-auto">
         <TaskListPanel v-if="task.task_list" :task-list="task.task_list" :current-task-id="task.id" />
 
         <TaskInfoPanel :task="task" />
