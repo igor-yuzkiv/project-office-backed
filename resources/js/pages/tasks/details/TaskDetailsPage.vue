@@ -14,6 +14,7 @@ import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TagList } from '@/widgets/tags/metadata'
+import { TaskDetailsSidebar } from '@/widgets/tasks/details-sidebar'
 
 const route = useRoute()
 const router = useRouter()
@@ -75,7 +76,7 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div v-if="task" class="p-2 flex flex-1 overflow-hidden">
+    <div v-if="task" class="gap-4 p-2 flex flex-1 overflow-hidden">
         <Tabs :value="activeTab" class="flex flex-1 flex-col overflow-hidden" @update:value="onTabChange">
             <div class="p-3 flex shrink-0 items-start justify-between truncate">
                 <div class="gap-1 flex flex-col truncate">
@@ -131,5 +132,9 @@ useBreadcrumbs(() => [
                 </router-view>
             </div>
         </Tabs>
+
+        <!-- Below lg the column would leave the tab content too narrow to read, so it is dropped
+             entirely rather than stacked: everything in it is reachable elsewhere on the page. -->
+        <TaskDetailsSidebar :task="task" class="lg:flex hidden" />
     </div>
 </template>
