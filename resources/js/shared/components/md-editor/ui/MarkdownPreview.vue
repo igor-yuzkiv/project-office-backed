@@ -37,7 +37,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div ref="rootRef">
+    <div ref="rootRef" class="relative">
         <MdPreview
             :editor-id="editorId"
             :model-value="modelValue"
@@ -48,12 +48,22 @@ onMounted(() => {
             @on-get-catalog="(list) => (catalogHeadings = list)"
         />
         <!-- code-theme="github" -->
-        <MdCatalog
+        <!--
+            The catalog rides along the right edge of the description itself, not of the window:
+            anchored to this block so it cannot reach whatever else the page puts beside it, and
+            sticky inside that band so it stays in view while the description scrolls. The band
+            ignores pointer events so it does not swallow clicks on the text underneath it.
+        -->
+        <div
             v-if="showCatalog && catalogScrollElement && hasCatalogHeadings"
-            class="fixed top-1/2 right-8 z-10 max-h-[70vh] w-56 -translate-y-1/2 overflow-y-auto rounded-lg border border-surface-200 bg-white p-4 shadow-lg dark:border-surface-700 dark:bg-surface-900"
-            :editor-id="editorId"
-            :theme="previewTheme"
-            :scroll-element="catalogScrollElement"
-        />
+            class="inset-y-0 right-0 w-56 pointer-events-none absolute"
+        >
+            <MdCatalog
+                class="top-4 rounded-lg border-surface-200 bg-white p-4 shadow-lg dark:border-surface-700 dark:bg-surface-900 pointer-events-auto sticky max-h-[70vh] overflow-y-auto border opacity-60 transition-opacity hover:opacity-100"
+                :editor-id="editorId"
+                :theme="previewTheme"
+                :scroll-element="catalogScrollElement"
+            />
+        </div>
     </div>
 </template>
