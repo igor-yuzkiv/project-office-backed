@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { DisplayField } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
-import { TagList } from '@/widgets/tags/metadata'
-import { formatDate } from '@/shared/utils/date.util'
 import type { ITask } from '@/entities/task/types'
 
 defineProps<{ task: ITask }>()
@@ -21,12 +19,6 @@ defineProps<{ task: ITask }>()
             <TaskPriorityTag :priority="task.priority" class="w-fit" />
         </DisplayField>
 
-        <DisplayField label="Due Date" :value="formatDate(task.due_date)" />
-
         <DisplayField label="Sequence" :value="String(task.sequence_number)" />
-
-        <DisplayField label="Tags">
-            <TagList :tags="task.tags ?? []" />
-        </DisplayField>
     </section>
 </template>
