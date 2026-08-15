@@ -14,7 +14,7 @@ test.describe('login', () => {
         await page.getByRole('button', { name: 'Sign In' }).click()
 
         await expect(page).toHaveURL(/#\/$/)
-        await expect(page.getByText('not implemented yet')).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Activity' })).toBeVisible()
     })
 
     test('shows an error for invalid credentials', async ({ page }) => {

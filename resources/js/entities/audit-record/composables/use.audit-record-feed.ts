@@ -60,12 +60,21 @@ export function useAuditRecordFeed() {
     })
 
     function loadMore() {
-        // isFetching, not isPending: keepPreviousData reports success while the next page is in
-        // flight, so isPending is false for every page but the first. A second click would then
-        // skip a page outright, and loadMore only counts upward — the gap never heals.
-        if (hasMore.value && !isFetching.value) {
-            page.value += 1
+        const meta = paginationMeta.value
+
+        if (!hasMore.value || isFetching.value || meta === undefined) {
+            return
         }
+
+        // The page we asked for last must have arrived. Neither isPending nor isFetching covers
+        // this: two clicks in the same tick both read the flags of the settled previous page —
+        // reactivity has not run yet — and page would jump 1 → 3, dropping a page for good,
+        // because loadMore only ever counts upward.
+        if (page.value !== meta.current_page) {
+            return
+        }
+
+        page.value += 1
     }
 
     return { records, hasMore, loadMore, isPending, isFetching, isError, refetch }

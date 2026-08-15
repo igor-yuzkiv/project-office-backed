@@ -3,9 +3,9 @@ import type { TaskStatusMetadata, TaskStatusMetadataMap, TaskStatusValue } from 
 export const TaskStatusMap: TaskStatusMetadataMap = {
     backlog: { label: 'Backlog', value: 'backlog', color: '#94a3b8' },
     open: { label: 'Open', value: 'open', color: '#3b82f6' },
-    ready_for_development: { label: 'Ready For Development', value: 'ready_for_development', color: '#8b5cf6' },
-    in_progress: { label: 'In Progress', value: 'in_progress', color: '#f59e0b' },
-    ready_to_test: { label: 'Ready To Test', value: 'ready_to_test', color: '#06b6d4' },
+    ready_for_development: { label: 'Ready for development', value: 'ready_for_development', color: '#8b5cf6' },
+    in_progress: { label: 'In progress', value: 'in_progress', color: '#f59e0b' },
+    ready_to_test: { label: 'Ready to test', value: 'ready_to_test', color: '#06b6d4' },
     completed: { label: 'Completed', value: 'completed', color: '#22c55e' },
     closed: { label: 'Closed', value: 'closed', color: '#6b7280' },
 }

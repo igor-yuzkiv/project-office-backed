@@ -1,5 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ActivityStream } from '@/widgets/activity-stream'
+</script>
 
 <template>
-    <div class="p-2 flex-1 flex-col overflow-auto">not implemented yet</div>
+    <div class="p-4 flex-1 overflow-auto">
+        <div class="max-w-3xl mx-auto">
+            <ActivityStream />
+        </div>
+    </div>
 </template>
