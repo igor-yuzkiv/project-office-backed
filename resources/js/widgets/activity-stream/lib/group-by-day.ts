@@ -1,4 +1,5 @@
-import { format, isToday, isYesterday } from 'date-fns'
+import { isToday, isYesterday } from 'date-fns'
+import { formatDate } from '@/shared/utils/date.util'
 import type { AuditRecordDto } from '@/entities/audit-record'
 
 export type ActivityDayGroup = {
@@ -16,7 +17,8 @@ export function groupRecordsByDay(records: AuditRecordDto[]): ActivityDayGroup[]
 
     for (const record of records) {
         const date = new Date(record.created_at)
-        const key = format(date, 'yyyy-MM-dd')
+        // An unparseable timestamp gets its own heading rather than throwing during render.
+        const key = formatDate(date, 'yyyy-MM-dd') ?? 'unknown'
 
         if (groups.at(-1)?.key !== key) {
             groups.push({ key, label: dayLabel(date), records: [] })
@@ -29,6 +31,10 @@ export function groupRecordsByDay(records: AuditRecordDto[]): ActivityDayGroup[]
 }
 
 function dayLabel(date: Date): string {
+    if (Number.isNaN(date.getTime())) {
+        return 'Unknown date'
+    }
+
     if (isToday(date)) {
         return 'Today'
     }
@@ -37,5 +43,5 @@ function dayLabel(date: Date): string {
         return 'Yesterday'
     }
 
-    return format(date, 'MMMM d, yyyy')
+    return formatDate(date, 'MMMM d, yyyy') ?? 'Unknown date'
 }

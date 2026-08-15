@@ -40,9 +40,6 @@ export const ACTIVITY_TYPE_REGISTRY: Record<string, ActivityTypeDef> = {
     'attachment.uploaded': { icon: 'heroicons:paper-clip', accent: 'create', linkable: true },
 }
 
-/** Kept beside the registry so the list can be checked against the agreed table of texts by eye. */
-export const KNOWN_ACTIVITY_TYPES = Object.keys(ACTIVITY_TYPE_REGISTRY)
-
 export const UNKNOWN_ACTIVITY_TYPE: ActivityTypeDef = {
     icon: 'heroicons:question-mark-circle',
     accent: 'none',

@@ -2,10 +2,10 @@
 import { computed, useId } from 'vue'
 import { Icon } from '@iconify/vue'
 import { RouterLink } from 'vue-router'
-import { format } from 'date-fns'
+import { formatDate } from '@/shared/utils/date.util'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import type { AuditRecordDto } from '@/entities/audit-record'
-import { ACTIVITY_ACCENT_CLASSES, resolveActivityType, resolveSubjectRouteName } from '../config'
+import { ACTIVITY_ACCENT_CLASSES, UNKNOWN_ACTIVITY_TYPE, resolveActivityType, resolveSubjectRouteName } from '../config'
 
 const props = defineProps<{ record: AuditRecordDto; expanded: boolean }>()
 
@@ -14,10 +14,12 @@ defineEmits<{ (e: 'toggle'): void }>()
 const detailsId = useId()
 
 const typeDef = computed(() => resolveActivityType(props.record.type))
-const isUnknownType = computed(() => resolveActivityType(props.record.type).accent === 'none')
+const isUnknownType = computed(() => typeDef.value === UNKNOWN_ACTIVITY_TYPE)
 
-const time = computed(() => format(new Date(props.record.created_at), 'HH:mm'))
-const exactTime = computed(() => format(new Date(props.record.created_at), 'MMM d, HH:mm'))
+// The shared helper swallows an unparseable timestamp instead of throwing mid-render: one bad
+// row must not take the whole feed down with it.
+const time = computed(() => formatDate(props.record.created_at, 'HH:mm') ?? '')
+const exactTime = computed(() => formatDate(props.record.created_at, 'MMM d, HH:mm') ?? 'Unknown time')
 
 /** Anonymous records are common: the author may be gone, or the event may come from the console. */
 const actorName = computed(() => props.record.actor?.name ?? 'Someone')
@@ -34,6 +36,7 @@ const subjectRoute = computed(() => {
     return name === null ? null : { name, params: { id: subject.id } }
 })
 
+/** Four different reasons a row leads nowhere, and each of them is a different sentence. */
 const noLinkReason = computed(() => {
     if (subjectRoute.value !== null) {
         return null
@@ -43,7 +46,15 @@ const noLinkReason = computed(() => {
         return 'This type has no renderer yet — shown as stored, without a link.'
     }
 
-    return 'This entity no longer exists — nothing to open.'
+    if (props.record.subject === null) {
+        return 'This event is not about a single entity — nothing to open.'
+    }
+
+    if (!typeDef.value.linkable) {
+        return 'This entity no longer exists — nothing to open.'
+    }
+
+    return 'This kind of entity has no page yet — nothing to open.'
 })
 
 /** Excerpts of user-written text read better quoted; generated one-liners do not. */
@@ -69,7 +80,14 @@ const isQuotedDescription = computed(() =>
                 <Icon :icon="typeDef.icon" class="size-4" />
             </span>
 
-            <UserAvatar :initials="record.actor?.initials ?? '?'" :avatar-url="record.actor?.avatar_url" size="small" />
+            <!-- The author is already named in the title; the initials would only be read twice. -->
+            <span aria-hidden="true" class="contents">
+                <UserAvatar
+                    :initials="record.actor?.initials ?? '?'"
+                    :avatar-url="record.actor?.avatar_url"
+                    size="small"
+                />
+            </span>
 
             <span class="text-surface-800 dark:text-surface-100 min-w-0 text-sm truncate">
                 {{ record.title }}

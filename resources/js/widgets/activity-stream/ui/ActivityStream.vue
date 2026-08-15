@@ -8,14 +8,20 @@ import ActivityStreamItem from './ActivityStreamItem.vue'
 
 const { records, hasMore, loadMore, isPending, isFetching, isError, refetch } = useAuditRecordFeed()
 
-/** One row open at a time: the feed stays scannable and the page does not jump around. */
-const expandedId = ref<string | null>(null)
+/** Rows open independently, so two events can be compared side by side. */
+const expandedIds = ref(new Set<string>())
 
 const dayGroups = computed(() => groupRecordsByDay(records.value))
 const isEmpty = computed(() => !isPending.value && !isError.value && records.value.length === 0)
 
 function toggle(id: string) {
-    expandedId.value = expandedId.value === id ? null : id
+    const next = new Set(expandedIds.value)
+
+    if (!next.delete(id)) {
+        next.add(id)
+    }
+
+    expandedIds.value = next
 }
 </script>
 
@@ -53,7 +59,7 @@ function toggle(id: string) {
                     v-for="record in group.records"
                     :key="record.id"
                     :record="record"
-                    :expanded="expandedId === record.id"
+                    :expanded="expandedIds.has(record.id)"
                     @toggle="toggle(record.id)"
                 />
             </template>
