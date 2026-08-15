@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
+use App\Http\WebApi\Controllers\AuditRecords\AuditRecordsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
@@ -37,6 +38,11 @@ Route::group([
     Route::post('/login', 'login')->name('login');
     Route::post('/logout', 'logout')->name('logout')->middleware('auth:sanctum');
 });
+
+/**
+ * Audit Trail
+ */
+Route::get('audit-records', [AuditRecordsController::class, 'index'])->middleware(['auth:sanctum'])->name('audit-records.index');
 
 /**
  * Projects
