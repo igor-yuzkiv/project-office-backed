@@ -16,6 +16,11 @@ class CreateProjectDocumentCommand
         public readonly ?string $parentId = null,
         public readonly ?string $content = null,
         public readonly ?array $tagIds = null,
+        /**
+         * The markdown import creates documents in bulk from the console, where there is no
+         * actor and no user action to report; it passes false.
+         */
+        public readonly bool $recordAudit = true,
     ) {}
 
     /**

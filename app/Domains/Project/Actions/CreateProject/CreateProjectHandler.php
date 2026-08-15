@@ -2,7 +2,9 @@
 
 namespace App\Domains\Project\Actions\CreateProject;
 
+use App\Domains\Project\AuditRecords\ProjectCreatedAuditRecord;
 use App\Domains\Project\Models\ProjectModel;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 
 class CreateProjectHandler
 {
@@ -20,6 +22,8 @@ class CreateProjectHandler
         if ($command->tagIds !== null) {
             $project->tags()->sync($command->tagIds);
         }
+
+        AuditTrail::capture(new ProjectCreatedAuditRecord($project));
 
         return $project;
     }

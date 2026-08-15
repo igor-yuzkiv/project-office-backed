@@ -3,6 +3,8 @@
 namespace App\Domains\TaskList\Actions\AddTasksToTaskList;
 
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\AuditRecords\TasksAddedToTaskListAuditRecord;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 use Illuminate\Database\Eloquent\Collection;
 
 class AddTasksToTaskListHandler
@@ -30,7 +32,17 @@ class AddTasksToTaskListHandler
         $tasks = TaskModel::whereIn('id', $command->taskIds)
             ->where('task_list_id', $command->taskList->id)
             ->with(['createdBy', 'updatedBy', 'tags'])
+            // Ordered by key: the audit description lists these keys verbatim, and a feed line
+            // must not depend on whatever order the database happens to return.
+            ->orderBy('key')
             ->get();
+
+        if ($tasks->isNotEmpty()) {
+            AuditTrail::capture(new TasksAddedToTaskListAuditRecord(
+                $command->taskList,
+                $tasks->pluck('key')->all(),
+            ));
+        }
 
         return $tasks;
     }

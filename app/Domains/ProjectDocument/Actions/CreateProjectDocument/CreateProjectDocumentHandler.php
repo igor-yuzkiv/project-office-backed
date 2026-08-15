@@ -2,8 +2,10 @@
 
 namespace App\Domains\ProjectDocument\Actions\CreateProjectDocument;
 
+use App\Domains\ProjectDocument\AuditRecords\ProjectDocumentCreatedAuditRecord;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\ProjectDocumentKeyResolver;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 
 class CreateProjectDocumentHandler
 {
@@ -18,6 +20,10 @@ class CreateProjectDocumentHandler
         $document = ProjectDocumentModel::create($command->toModelAttributes($documentKey));
 
         $this->syncTags($document, $command);
+
+        if ($command->recordAudit) {
+            AuditTrail::capture(new ProjectDocumentCreatedAuditRecord($document, (string) $command->project->name));
+        }
 
         return $document->refresh();
     }

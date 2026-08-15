@@ -2,13 +2,19 @@
 
 namespace App\Domains\ProjectDocument\Actions\UpdateProjectDocument;
 
+use App\Domains\ProjectDocument\AuditRecords\ProjectDocumentUpdatedAuditRecord;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 
 class UpdateProjectDocumentHandler
 {
     public function handle(UpdateProjectDocumentCommand $command): ProjectDocumentModel
     {
         $command->document->update($command->toModelAttributes());
+
+        if ($command->document->wasChanged()) {
+            AuditTrail::capture(new ProjectDocumentUpdatedAuditRecord($command->document));
+        }
 
         $this->syncTags($command);
 
