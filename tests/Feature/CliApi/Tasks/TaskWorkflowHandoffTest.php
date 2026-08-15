@@ -6,12 +6,14 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->project = ProjectModel::factory()->create();
 });
 
@@ -52,4 +54,21 @@ it('does not change the status if comment creation fails', function () {
 
     expect($task->fresh()->status)->toBe(TaskStatus::InProgress);
     expect(CommentModel::query()->where('commentable_id', $task->id)->count())->toBe(0);
+});
+
+it('records exactly one task.handoff event and nothing else', function () {
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::InProgress->value]);
+
+    $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/handoff", [
+        'resolution' => 'Implemented and covered with tests.',
+    ])->assertOk();
+
+    // The full list of types, not three separate absence checks: this catches a stray
+    // comment.created and a stray task.status_changed in one assertion.
+    expect(AuditRecordModel::query()->orderBy('id')->pluck('type')->all())->toBe(['task.handoff']);
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->title)->toBe("{$this->user->name} handed off {$task->key} for testing")
+        ->and($record->description)->toBe('Implemented and covered with tests.');
 });

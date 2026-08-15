@@ -3,12 +3,14 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->project = ProjectModel::factory()->create();
     $this->document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
 });
@@ -52,4 +54,16 @@ it('creates a comment on the document', function () {
         ->assertJsonPath('data.content', 'A note on this document');
 
     expect($this->document->comments()->count())->toBe(1);
+});
+
+it('records a comment.created event pointing at the document', function () {
+    $this->postJson("/api/project-documents/{$this->document->id}/comments", ['content' => 'Needs a diagram.'])
+        ->assertCreated();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('comment.created')
+        ->and($record->title)->toBe("{$this->user->name} commented on «{$this->document->title}»")
+        ->and($record->subject_type)->toBe(ProjectDocumentModel::class)
+        ->and($record->subject_id)->toBe($this->document->id);
 });

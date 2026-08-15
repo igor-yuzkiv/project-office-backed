@@ -4,12 +4,14 @@ use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->project = ProjectModel::factory()->create(['prefix' => 'MTM']);
     $this->taskList = TaskListModel::factory()->create([
         'project_id'      => $this->project->id,
@@ -102,4 +104,21 @@ it('rejects an unauthenticated request', function () {
 
     $this->getJson("/api/cli/projects/{$this->project->id}/task-lists/MTM-TL-7/comments")
         ->assertUnauthorized();
+});
+
+it('records one audit event per comment in a batch request', function () {
+    $this->postJson("/api/cli/projects/{$this->project->id}/task-lists/MTM-TL-7/comments", [
+        'comments' => [
+            ['content' => 'First comment'],
+            ['content' => 'Second comment'],
+        ],
+    ])->assertCreated();
+
+    $records = AuditRecordModel::query()->orderBy('id')->get();
+
+    expect($records)->toHaveCount(2)
+        ->and($records->pluck('type')->all())->toBe(['comment.created', 'comment.created'])
+        ->and($records->pluck('description')->all())->toBe(['First comment', 'Second comment'])
+        ->and($records->first()->title)->toBe("{$this->user->name} commented on «{$this->taskList->name}»")
+        ->and($records->pluck('subject_id')->unique()->all())->toBe([$this->taskList->id]);
 });

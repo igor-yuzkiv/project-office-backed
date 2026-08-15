@@ -4,6 +4,7 @@ use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -89,4 +90,16 @@ it('edits and deletes a task list comment through the universal routes', functio
     $this->deleteJson("/api/comments/{$created}")->assertOk();
 
     expect($this->taskList->comments()->count())->toBe(0);
+});
+
+it('records a comment.created event pointing at the task list', function () {
+    $this->postJson("/api/task-lists/{$this->taskList->id}/comments", ['content' => 'Scope agreed.'])
+        ->assertCreated();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('comment.created')
+        ->and($record->title)->toBe("{$this->user->name} commented on «{$this->taskList->name}»")
+        ->and($record->subject_type)->toBe(TaskListModel::class)
+        ->and($record->subject_id)->toBe($this->taskList->id);
 });
