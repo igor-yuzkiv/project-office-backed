@@ -11,4 +11,9 @@ enum TaskStatus: string
     case ReadyToTest = 'ready_to_test';
     case Completed = 'completed';
     case Closed = 'closed';
+
+    public function label(): string
+    {
+        return ucfirst(str_replace('_', ' ', $this->value));
+    }
 }

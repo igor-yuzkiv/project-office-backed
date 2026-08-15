@@ -6,6 +6,7 @@ use App\Domains\Task\Enums\TaskPriority;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -82,4 +83,67 @@ it('requires name and status', function () {
     $this->putJson("/api/tasks/{$this->task->id}", $payload)
         ->assertStatus(422)
         ->assertJsonValidationErrors(['name', 'status']);
+});
+
+it('records task.updated with the changed fields when the status stays the same', function () {
+    $this->putJson("/api/tasks/{$this->task->id}", taskUpdatePayload([
+        'status'   => TaskStatus::Open->value,
+        'priority' => TaskPriority::High->value,
+    ]))->assertOk();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('task.updated')
+        ->and($record->subject_type)->toBe(TaskModel::class)
+        ->and($record->subject_id)->toBe($this->task->id)
+        ->and($record->title)->toEndWith("updated {$this->task->key}")
+        ->and($record->description)->toBe('Changed name, description, start date and due date');
+});
+
+it('names the single changed field when only one moves', function () {
+    $this->putJson("/api/tasks/{$this->task->id}", taskUpdatePayload([
+        'description' => 'Original body.',
+        'status'      => TaskStatus::Open->value,
+        'priority'    => TaskPriority::High->value,
+        'start_date'  => '2026-01-01',
+        'due_date'    => '2026-01-31',
+    ]))->assertOk();
+
+    expect(AuditRecordModel::query()->sole()->description)->toBe('Changed name');
+});
+
+it('records only task.status_changed when nothing but the status moves', function () {
+    $this->putJson("/api/tasks/{$this->task->id}", taskUpdatePayload([
+        'name'        => 'Original',
+        'description' => 'Original body.',
+        'priority'    => TaskPriority::High->value,
+        'start_date'  => '2026-01-01',
+        'due_date'    => '2026-01-31',
+    ]))->assertOk();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('task.status_changed')
+        ->and($record->title)->toEndWith("moved {$this->task->key} to In progress")
+        ->and($record->description)->toBe('Open → In progress');
+});
+
+it('records both events when the status and other fields change together', function () {
+    $this->putJson("/api/tasks/{$this->task->id}", taskUpdatePayload())->assertOk();
+
+    expect(AuditRecordModel::query()->orderBy('id')->pluck('type')->all())
+        ->toBe(['task.status_changed', 'task.updated']);
+});
+
+it('records nothing when the update changes no field', function () {
+    $this->putJson("/api/tasks/{$this->task->id}", taskUpdatePayload([
+        'name'        => 'Original',
+        'description' => 'Original body.',
+        'status'      => TaskStatus::Open->value,
+        'priority'    => TaskPriority::High->value,
+        'start_date'  => '2026-01-01',
+        'due_date'    => '2026-01-31',
+    ]))->assertOk();
+
+    expect(AuditRecordModel::query()->count())->toBe(0);
 });

@@ -3,9 +3,11 @@
 namespace App\Domains\Task\Actions\CreateTask;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Task\AuditRecords\TaskCreatedAuditRecord;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\Services\TaskKeyResolver;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 
 class CreateTaskHandler
 {
@@ -35,6 +37,8 @@ class CreateTaskHandler
         if ($command->tagIds !== null) {
             $task->tags()->sync($command->tagIds);
         }
+
+        AuditTrail::capture(new TaskCreatedAuditRecord($task));
 
         return $task;
     }
