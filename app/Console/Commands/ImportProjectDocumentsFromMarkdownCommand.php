@@ -112,6 +112,7 @@ class ImportProjectDocumentsFromMarkdownCommand extends Command
                 title: $title,
                 parentId: $parentId,
                 content: $content,
+                recordAudit: false,
             )));
 
             $this->line("Created: {$document->key} — {$title}");

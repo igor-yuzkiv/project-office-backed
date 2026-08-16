@@ -2,6 +2,7 @@
 
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -85,4 +86,13 @@ it('requires authentication', function () {
     $response = $this->postJson('/api/user/avatar', ['avatar' => $file]);
 
     $response->assertUnauthorized();
+});
+
+it('records no audit event when the avatar changes', function () {
+    $this->actingAs($this->user);
+
+    $this->postJson('/api/user/avatar', ['avatar' => UploadedFile::fake()->image('avatar.jpg')])
+        ->assertOk();
+
+    expect(AuditRecordModel::query()->count())->toBe(0);
 });

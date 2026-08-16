@@ -2,6 +2,7 @@
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -69,4 +70,14 @@ it('fails gracefully for a non-existent project', function () {
         'project' => (string) Str::ulid(),
         'path'    => $this->root,
     ])->assertFailed();
+});
+
+it('records no audit events for imported documents', function () {
+    $this->artisan('project-documents:import', [
+        'project' => $this->project->id,
+        'path'    => $this->root,
+    ])->assertSuccessful();
+
+    expect(ProjectDocumentModel::query()->count())->toBeGreaterThan(1)
+        ->and(AuditRecordModel::query()->count())->toBe(0);
 });

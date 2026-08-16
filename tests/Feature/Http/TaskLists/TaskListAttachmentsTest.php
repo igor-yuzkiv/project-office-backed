@@ -3,6 +3,7 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,8 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     Storage::fake('attachments');
 
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->taskList = TaskListModel::factory()->create([
         'project_id' => ProjectModel::factory()->create()->id,
     ]);
@@ -78,4 +80,18 @@ it('downloads and deletes a task list attachment through the universal routes', 
     $this->deleteJson("/api/attachments/{$attachmentId}")->assertOk();
 
     expect($this->taskList->attachments()->count())->toBe(0);
+});
+
+it('records an attachment.uploaded event pointing at the task list', function () {
+    $this->post("/api/task-lists/{$this->taskList->id}/attachments", [
+        'file' => UploadedFile::fake()->createWithContent('notes.md', '# Notes'),
+    ])->assertCreated();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('attachment.uploaded')
+        ->and($record->title)->toBe("{$this->user->name} uploaded «notes.md»")
+        ->and($record->description)->toBe("«{$this->taskList->name}»")
+        ->and($record->subject_type)->toBe(TaskListModel::class)
+        ->and($record->subject_id)->toBe($this->taskList->id);
 });

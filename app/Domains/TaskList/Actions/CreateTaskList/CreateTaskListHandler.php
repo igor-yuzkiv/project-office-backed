@@ -3,8 +3,10 @@
 namespace App\Domains\TaskList\Actions\CreateTaskList;
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\TaskList\AuditRecords\TaskListCreatedAuditRecord;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\TaskList\Services\TaskListKeyResolver;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 
 class CreateTaskListHandler
 {
@@ -30,6 +32,8 @@ class CreateTaskListHandler
         if ($command->tagIds !== null) {
             $taskList->tags()->sync($command->tagIds);
         }
+
+        AuditTrail::capture(new TaskListCreatedAuditRecord($taskList));
 
         return $taskList;
     }

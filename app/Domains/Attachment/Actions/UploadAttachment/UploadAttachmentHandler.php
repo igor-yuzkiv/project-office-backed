@@ -2,9 +2,12 @@
 
 namespace App\Domains\Attachment\Actions\UploadAttachment;
 
+use App\Domains\Attachment\AuditRecords\AttachmentUploadedAuditRecord;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Attachment\ValueObjects\AttachmentStorageKey;
+use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Facades\AuditTrail;
 
 class UploadAttachmentHandler
 {
@@ -36,6 +39,12 @@ class UploadAttachmentHandler
         }
 
         $attachment->save();
+
+        // An avatar is attached to the user themselves, and a feed full of avatar changes is
+        // noise; a file with no carrier has nowhere to link to.
+        if ($command->attachable !== null && !$command->attachable instanceof UserModel) {
+            AuditTrail::capture(new AttachmentUploadedAuditRecord($attachment, $command->attachable));
+        }
 
         return $attachment;
     }

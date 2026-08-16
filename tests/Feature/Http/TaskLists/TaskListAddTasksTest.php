@@ -2,14 +2,18 @@
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\Actions\AddTasksToTaskList\AddTasksToTaskListCommand;
+use App\Domains\TaskList\Actions\AddTasksToTaskList\AddTasksToTaskListHandler;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->project = ProjectModel::factory()->create();
     $this->taskList = TaskListModel::factory()->create(['project_id' => $this->project->id]);
 });
@@ -122,4 +126,39 @@ it('requires authentication', function () {
         ->assertUnauthorized();
 
     expect($task->fresh()->task_list_id)->toBeNull();
+});
+
+it('records one task_list.tasks_added event with the keys in a stable order', function () {
+    $tasks = TaskModel::factory()->count(3)->create([
+        'project_id'   => $this->project->id,
+        'task_list_id' => null,
+    ]);
+
+    $this->postJson("/api/task-lists/{$this->taskList->id}/tasks", [
+        'task_ids' => $tasks->pluck('id')->all(),
+    ])->assertOk();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('task_list.tasks_added')
+        ->and($record->title)->toBe("{$this->user->name} added 3 tasks to «{$this->taskList->name}»")
+        ->and($record->description)->toBe($tasks->pluck('key')->sort()->implode(', '))
+        ->and($record->subject_type)->toBe(TaskListModel::class)
+        ->and($record->subject_id)->toBe($this->taskList->id);
+});
+
+it('records nothing when the handler claims no task at all', function () {
+    // Straight to the handler: the request layer rejects a foreign task with 422, so an HTTP
+    // call never reaches the empty-selection guard this test is about.
+    $foreign = TaskModel::factory()->create([
+        'project_id'   => ProjectModel::factory()->create()->id,
+        'task_list_id' => null,
+    ]);
+
+    app(AddTasksToTaskListHandler::class)->handle(
+        new AddTasksToTaskListCommand($this->taskList, [$foreign->id])
+    );
+
+    expect(AuditRecordModel::query()->count())->toBe(0)
+        ->and($foreign->fresh()->task_list_id)->toBeNull();
 });

@@ -7,6 +7,7 @@ use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Attachment\Services\S3AttachmentStorageService;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Comment\Policies\CommentPolicy;
+use App\Libs\AuditTrail\AuditRecorder;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
@@ -24,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
                 default => throw new RuntimeException('Unsupported attachments storage provider.'),
             };
         });
+
+        $this->app->singleton(AuditRecorder::class);
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,8 @@ use Illuminate\Support\Str;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->project = ProjectModel::factory()->create();
 });
 
@@ -392,4 +394,38 @@ it('returns not found when deleting a non-existent document', function () {
     $response = $this->deleteJson('/api/project-documents/'.((string) Str::ulid()));
 
     $response->assertNotFound();
+});
+
+it('records a project_document.created event naming the project', function () {
+    $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title' => 'Architecture',
+    ])->assertCreated();
+
+    $document = ProjectDocumentModel::query()->sole();
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('project_document.created')
+        ->and($record->title)->toBe("{$this->user->name} created «Architecture»")
+        ->and($record->description)->toBe($this->project->name)
+        ->and($record->subject_type)->toBe(ProjectDocumentModel::class)
+        ->and($record->subject_id)->toBe($document->id);
+});
+
+it('records a project_document.updated event', function () {
+    $document = ProjectDocumentModel::factory()->create([
+        'project_id' => $this->project->id,
+        'title'      => 'Architecture',
+    ]);
+
+    $this->putJson("/api/project-documents/{$document->id}", [
+        'title'   => 'Architecture',
+        'content' => 'Rewritten.',
+        'status'  => $document->status->value,
+    ])->assertOk();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('project_document.updated')
+        ->and($record->title)->toBe("{$this->user->name} updated «Architecture»")
+        ->and($record->description)->toBeNull();
 });

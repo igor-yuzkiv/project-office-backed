@@ -5,12 +5,15 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->actingAs(UserModel::factory()->create());
+    $this->user = UserModel::factory()->create();
+    $this->actingAs($this->user);
     $this->project = ProjectModel::factory()->create();
 });
 
@@ -53,4 +56,35 @@ it('requires subject and comment', function () {
     $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/checkpoint", []);
 
     $response->assertUnprocessable()->assertJsonValidationErrors(['subject', 'comment']);
+});
+
+it('records exactly one task.checkpoint event built from the command fields', function () {
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::InProgress->value]);
+
+    $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/checkpoint", [
+        'subject' => 'Investigated the bug',
+        'comment' => 'Root cause found in the parser.',
+    ])->assertCreated();
+
+    $record = AuditRecordModel::query()->sole();
+
+    expect($record->type)->toBe('task.checkpoint')
+        ->and($record->title)->toBe("{$this->user->name} recorded a checkpoint on {$task->key}")
+        ->and($record->description)->toBe('Investigated the bug — Root cause found in the parser.');
+});
+
+it('cuts a long excerpt on a character boundary', function () {
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::InProgress->value]);
+    $comment = str_repeat('я', 600);
+
+    $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/checkpoint", [
+        'subject' => 'Long one',
+        'comment' => $comment,
+    ])->assertCreated();
+
+    $excerpt = Str::after(AuditRecordModel::query()->sole()->description, ' — ');
+
+    expect(mb_check_encoding($excerpt, 'UTF-8'))->toBeTrue()
+        ->and(mb_strlen($excerpt))->toBe(501)
+        ->and($excerpt)->toEndWith('…');
 });
