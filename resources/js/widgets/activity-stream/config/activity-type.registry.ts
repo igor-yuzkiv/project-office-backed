@@ -28,6 +28,7 @@ export const ACTIVITY_TYPE_REGISTRY: Record<string, ActivityTypeDef> = {
     'comment.created': { icon: 'heroicons:chat-bubble-left-right', accent: 'talk', linkable: true },
 
     'task_list.created': { icon: 'heroicons:queue-list', accent: 'create', linkable: true },
+    'task_list.updated': { icon: 'heroicons:pencil-square', accent: 'update', linkable: true },
     'task_list.tasks_added': { icon: 'heroicons:plus-circle', accent: 'create', linkable: true },
 
     'project.created': { icon: 'heroicons:folder-plus', accent: 'create', linkable: true },
