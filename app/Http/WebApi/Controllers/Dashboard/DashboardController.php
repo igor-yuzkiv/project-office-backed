@@ -16,7 +16,7 @@ class DashboardController extends ResourceController
 {
     private const RECENT_TASKS_LIMIT = 8;
 
-    private const RECENT_TASK_LISTS_LIMIT = 4;
+    private const RECENT_TASK_LISTS_LIMIT = 6;
 
     public function __construct(
         private readonly CountTasksPerTaskViewQuery $countTasksPerTaskView,

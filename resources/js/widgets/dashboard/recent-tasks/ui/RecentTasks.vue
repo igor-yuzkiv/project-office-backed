@@ -6,6 +6,7 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { TaskStatusTag } from '@/widgets/tasks/metadata'
 import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'
+import type { ProjectOverviewDto } from '@/entities/project/types'
 
 const props = defineProps<{
     tasks: TaskOverviewDto[]
@@ -28,6 +29,10 @@ const state = computed<DataPanelState>(() => {
 
 function taskRoute(task: TaskOverviewDto) {
     return { name: 'task-details', params: { id: task.id } }
+}
+
+function projectRoute(project: ProjectOverviewDto) {
+    return { name: 'project-details', params: { id: project.id } }
 }
 
 function openTask(task: TaskOverviewDto) {
@@ -73,13 +78,20 @@ function openTask(task: TaskOverviewDto) {
                         </RouterLink>
                     </td>
                     <td class="text-surface-600 dark:text-surface-300 px-4 py-2.5 truncate" :title="task.project?.name">
-                        {{ task.project?.name ?? '—' }}
+                        <RouterLink
+                            v-if="task.project"
+                            :to="projectRoute(task.project)"
+                            class="app-link block truncate"
+                            @click.stop
+                        >
+                            {{ task.project?.name ?? '—' }}
+                        </RouterLink>
                     </td>
                     <td class="text-surface-800 dark:text-surface-100 px-4 py-2.5 truncate" :title="task.name">
                         {{ task.name }}
                     </td>
                     <td class="px-4 py-2.5">
-                        <TaskStatusTag :status="task.status" variant="light" class="w-fit" />
+                        <TaskStatusTag :status="task.status" class="w-full" />
                     </td>
                     <td class="text-surface-400 px-4 py-2.5 text-xs whitespace-nowrap">
                         {{ formatRelativeTime(task.updated_at) }}

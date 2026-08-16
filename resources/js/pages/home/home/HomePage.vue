@@ -23,11 +23,6 @@ const { summary, recentTasks, recentTaskLists, isPending, isError, refetch } = u
                 />
             </div>
 
-            <!--
-                Activity takes its height from the left column: taken out of the flow, the panel adds
-                nothing to the grid row, so a long feed scrolls inside itself instead of stretching
-                the page.
-            -->
             <div class="xl:relative">
                 <ActivityStream class="xl:absolute xl:inset-0" />
             </div>

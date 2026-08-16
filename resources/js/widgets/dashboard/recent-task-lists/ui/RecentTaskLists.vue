@@ -87,7 +87,7 @@ function openTaskList(taskList: DashboardTaskListDto) {
                         {{ taskList.tasks_count }}
                     </td>
                     <td class="px-4 py-2.5">
-                        <TaskListStatusTag :status="taskList.status" variant="light" class="w-fit" />
+                        <TaskListStatusTag :status="taskList.status" class="w-full" />
                     </td>
                     <td class="text-surface-400 px-4 py-2.5 text-xs whitespace-nowrap">
                         {{ formatRelativeTime(taskList.updated_at) }}
