@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { RouterLink, useRouter } from 'vue-router'
 import type { TaskOverviewDto } from '@/entities/task/types'
-import { PanelCard, type PanelCardState } from '@/shared/components/panel'
+import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { TaskStatusTag } from '@/widgets/tasks/metadata'
 import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'
 
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 
-const state = computed<PanelCardState>(() => {
+const state = computed<DataPanelState>(() => {
     if (props.isPending) return 'pending'
     if (props.isError) return 'error'
 
@@ -36,7 +36,7 @@ function openTask(task: TaskOverviewDto) {
 </script>
 
 <template>
-    <PanelCard
+    <DataPanel
         title="Recent Tasks"
         :state="state"
         empty-message="No recent tasks"
@@ -90,5 +90,5 @@ function openTask(task: TaskOverviewDto) {
                 </tr>
             </tbody>
         </table>
-    </PanelCard>
+    </DataPanel>
 </template>

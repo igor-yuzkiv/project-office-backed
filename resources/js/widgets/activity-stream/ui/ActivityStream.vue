@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import Button from 'primevue/button'
-import { useAuditRecordFeed } from '@/entities/audit-record'
-import { PanelCard, type PanelCardState } from '@/shared/components/panel'
+import { useAuditRecordFeed } from '@/features/audit-trail'
+import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { groupRecordsByDay } from '../lib'
 import ActivityStreamItem from './ActivityStreamItem.vue'
 
@@ -14,7 +14,7 @@ const expandedIds = ref(new Set<string>())
 const dayGroups = computed(() => groupRecordsByDay(records.value))
 
 /** Once rows are on screen, a failed request is a failed next page and not a failed panel. */
-const state = computed<PanelCardState>(() => {
+const state = computed<DataPanelState>(() => {
     if (records.value.length > 0) return 'ready'
     if (isPending.value) return 'pending'
     if (isError.value) return 'error'
@@ -34,7 +34,7 @@ function toggle(id: string) {
 </script>
 
 <template>
-    <PanelCard
+    <DataPanel
         title="Activity"
         subtitle="Latest events across your projects"
         :state="state"
@@ -62,7 +62,7 @@ function toggle(id: string) {
         </div>
 
         <!--
-            The next-page strip lives in the ready state rather than in PanelCard's footer slot, whose
+            The next-page strip lives in the ready state rather than in DataPanel's footer slot, whose
             border shows in every state. An error here is a failed next page, not the end of the feed,
             so it offers its own retry.
         -->
@@ -83,5 +83,5 @@ function toggle(id: string) {
         >
             {{ isFetching ? 'Loading…' : 'Load more' }}
         </button>
-    </PanelCard>
+    </DataPanel>
 </template>

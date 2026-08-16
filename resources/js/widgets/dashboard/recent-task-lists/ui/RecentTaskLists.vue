@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { RouterLink, useRouter } from 'vue-router'
-import type { DashboardTaskListDto } from '@/entities/dashboard'
-import { PanelCard, type PanelCardState } from '@/shared/components/panel'
+import type { DashboardTaskListDto } from '@/features/dashboard'
+import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { TaskListStatusTag } from '@/widgets/task-list/metadata'
 import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'
 
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 
-const state = computed<PanelCardState>(() => {
+const state = computed<DataPanelState>(() => {
     if (props.isPending) return 'pending'
     if (props.isError) return 'error'
 
@@ -36,7 +36,7 @@ function openTaskList(taskList: DashboardTaskListDto) {
 </script>
 
 <template>
-    <PanelCard
+    <DataPanel
         title="Recent Task Lists"
         :state="state"
         empty-message="No recent task lists"
@@ -98,5 +98,5 @@ function openTaskList(taskList: DashboardTaskListDto) {
                 </tr>
             </tbody>
         </table>
-    </PanelCard>
+    </DataPanel>
 </template>

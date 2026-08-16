@@ -23,6 +23,20 @@ readonly class FilterPayload
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'filter_key' => $this->filterKey,
+            'field_name' => $this->fieldName,
+            'value'      => $this->value,
+            'matchMode'  => $this->matchMode,
+            'params'     => $this->params,
+        ];
+    }
+
     public function matchModeEnum(?MatchMode $default = null): ?MatchMode
     {
         if ($this->matchMode === null) {

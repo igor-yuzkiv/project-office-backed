@@ -1,9 +1,9 @@
 <?php
 
-use App\Domains\Dashboard\Services\TaskViewCountsService;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
 use App\Domains\Task\Services\TaskViewRegistry;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
@@ -108,7 +108,7 @@ it('counts filtered tasks without paginating them', function () {
     dashboardTask(['status' => TaskStatus::Closed->value]);
     dashboardTask(['status' => TaskStatus::Backlog->value]);
 
-    $counts = collect(app(TaskViewCountsService::class)->get())->keyBy('key');
+    $counts = collect(app(CountTasksPerTaskViewQuery::class)->handle())->keyBy('key');
 
     expect($counts['all']['count'])->toBe(2)
         ->and($counts['all_closed']['count'])->toBe(1)

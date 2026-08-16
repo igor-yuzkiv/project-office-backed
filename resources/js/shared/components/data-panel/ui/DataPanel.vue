@@ -2,13 +2,13 @@
 import Button from 'primevue/button'
 import Skeleton from 'primevue/skeleton'
 
-export type PanelCardState = 'pending' | 'error' | 'empty' | 'ready'
+export type DataPanelState = 'pending' | 'error' | 'empty' | 'ready'
 
 withDefaults(
     defineProps<{
         title: string
         subtitle?: string
-        state: PanelCardState
+        state: DataPanelState
         emptyMessage?: string
         errorMessage?: string
         skeletonRows?: number

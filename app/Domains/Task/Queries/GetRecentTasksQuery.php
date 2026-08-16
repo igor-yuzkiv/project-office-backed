@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Domains\Dashboard\Services;
+namespace App\Domains\Task\Queries;
 
 use App\Domains\Task\Models\TaskModel;
 use Illuminate\Database\Eloquent\Collection;
 
-class RecentTasksService
+class GetRecentTasksQuery
 {
-    private const LIMIT = 8;
-
     /**
      * @return Collection<int, TaskModel>
      */
-    public function get(): Collection
+    public function handle(int $limit): Collection
     {
         return TaskModel::query()
             ->with('project')
             ->orderByDesc('updated_at')
-            ->limit(self::LIMIT)
+            ->limit($limit)
             ->get();
     }
 }
