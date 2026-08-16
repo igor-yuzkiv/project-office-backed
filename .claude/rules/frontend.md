@@ -15,20 +15,30 @@ resources/js/
 |- app/       bootstrap, plugins, router, shell, global stores, and application styles
 |- pages/     route-level composition
 |- widgets/   substantial feature UI assembled for a specific use case
+|- features/  self-contained slices of functionality with no entity behind them
 |- entities/  domain API, types, queries, mutations, composables, and configuration
 `- shared/    entity-agnostic UI and utilities
 ```
 
 - Pages compose widgets and entities and should remain thin.
 - Widgets own feature-specific UI, supporting components, and local composables.
+- Features own self-contained slices of functionality that no entity stands behind — `dashboard`
+  and `audit-trail`, which are read models rather than entities. A slice holds what an entity slice
+  holds: api, types, query keys, queries, composables.
+- Features may import entities and shared code; pages and widgets may import features. Entities
+  must never import features — that rule is what keeps the layer from decaying.
+- Slices of the same layer do not import one another.
 - Entities own server-facing API functions, TypeScript types, query keys, queries, mutations, and
   entity-level composables.
-- Shared code must be genuinely entity-agnostic.
+- Shared code must be genuinely entity-agnostic, which is not the same as being a primitive.
+  Opinionated components that establish a project contract live here too — `EntityTableView`
+  renders its own empty state and paginator, `DataPanel` decides that an error means a `Try again`
+  button. What keeps them in Shared is that they name no entity and reach no server.
 - Expose module APIs through `index.ts`; prefer public imports over reaching into another module's
   internals.
 
-Dependencies should generally flow from app and pages toward widgets, entities, and shared code.
-Do not move feature knowledge downward into Shared merely to avoid a local import.
+Dependencies should generally flow from app and pages toward widgets, features, entities, and
+shared code. Do not move feature knowledge downward into Shared merely to avoid a local import.
 
 ## Server state and contracts
 

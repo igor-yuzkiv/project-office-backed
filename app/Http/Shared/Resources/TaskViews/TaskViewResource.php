@@ -16,13 +16,7 @@ class TaskViewResource extends JsonResource
             'key'     => $this->key,
             'label'   => $this->label,
             'filters' => array_map(
-                static fn (FilterPayload $filter): array => [
-                    'filter_key' => $filter->filterKey,
-                    'field_name' => $filter->fieldName,
-                    'value'      => $filter->value,
-                    'matchMode'  => $filter->matchMode,
-                    'params'     => $filter->params,
-                ],
+                static fn (FilterPayload $filter): array => $filter->toArray(),
                 $this->filters,
             ),
         ];

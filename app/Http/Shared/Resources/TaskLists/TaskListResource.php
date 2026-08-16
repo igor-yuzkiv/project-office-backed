@@ -24,11 +24,12 @@ class TaskListResource extends JsonResource
             'status'          => $this->status->value,
             'description'     => $this->description,
 
-            'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
-            'tasks'      => $this->whenLoaded('tasks', fn () => TaskOverviewResource::collection($this->tasks)),
-            'project'    => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
-            'created_by' => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
-            'updated_by' => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
+            'tags'        => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
+            'tasks'       => $this->whenLoaded('tasks', fn () => TaskOverviewResource::collection($this->tasks)),
+            'tasks_count' => $this->whenCounted('tasks', fn () => $this->tasks_count),
+            'project'     => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
+            'created_by'  => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
+            'updated_by'  => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

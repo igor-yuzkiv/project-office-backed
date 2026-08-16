@@ -1,4 +1,5 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { PAGE_SIZE } from '@/app/config'
 import { DEFAULT_TASK_VIEW_KEY, useTaskViewsQuery, useTaskViewSwitcher } from '@/entities/task-view'
 import { usePersistedListState } from '@/shared/composables'
@@ -27,6 +28,9 @@ interface UseTaskSearchOptions {
 }
 
 export function useTaskSearch(options: UseTaskSearchOptions = {}) {
+    const route = useRoute()
+    const router = useRouter()
+
     const filtersDefMap = createDefaultTaskFiltersDefMap()
     for (const field of options.hiddenFilterFields ?? []) {
         delete filtersDefMap[field]
@@ -57,6 +61,27 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
     const searchQuery = ref('')
     const page = ref(1)
 
+    // A view asked for in the URL can only be checked against the registry once it has loaded, so
+    // the search waits for that check as well: applying an unknown key and correcting it afterwards
+    // would send a second search. Registered after usePersistedListState, so the restored filters
+    // are already in place and can be cleared, and before the query, so both settle in one flush.
+    const isUrlViewApplied = ref(false)
+
+    watch(
+        isTaskViewsPending,
+        (isPending) => {
+            if (isPending) return
+
+            const requestedViewKey = route.query.view
+            if (typeof requestedViewKey === 'string' && taskViews.value.some((view) => view.key === requestedViewKey)) {
+                applyView(requestedViewKey)
+            }
+
+            isUrlViewApplied.value = true
+        },
+        { immediate: true }
+    )
+
     const searchParams = computed<TaskSearchParams>(() => {
         const scopeFilter = toValue(options.scopeFilter)
 
@@ -78,7 +103,7 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
     // Gate the search until the task views are settled, otherwise it fires once with no view
     // filters and again once the default view (All Open) loads.
     const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams, {
-        enabled: computed(() => !isTaskViewsPending.value),
+        enabled: computed(() => !isTaskViewsPending.value && isUrlViewApplied.value),
     })
 
     function submitSearch() {
@@ -86,10 +111,22 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
         page.value = 1
     }
 
-    function selectView(key: string) {
+    /**
+     * Arriving with ?view= is the same act as picking that view in the switcher, so it clears the
+     * sidebar the same way. Otherwise a filter restored from the previous session narrows the list
+     * silently, and a dashboard banner reading "All Closed 54" lands on far fewer rows.
+     */
+    function applyView(key: string) {
         viewSwitcher.select(key)
         filterSidebar.clear()
         page.value = 1
+    }
+
+    function selectView(key: string) {
+        applyView(key)
+        // replace, not push: otherwise the back button walks through the view switches instead of
+        // leaving the page.
+        void router.replace({ query: { ...route.query, view: key } })
     }
 
     function applySort() {

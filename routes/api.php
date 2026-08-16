@@ -4,6 +4,7 @@ use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
 use App\Http\WebApi\Controllers\AuditRecords\AuditRecordsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
+use App\Http\WebApi\Controllers\Dashboard\DashboardController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
@@ -43,6 +44,11 @@ Route::group([
  * Audit Trail
  */
 Route::get('audit-records', [AuditRecordsController::class, 'index'])->middleware(['auth:sanctum'])->name('audit-records.index');
+
+/**
+ * Dashboard
+ */
+Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth:sanctum'])->name('dashboard.index');
 
 /**
  * Projects
