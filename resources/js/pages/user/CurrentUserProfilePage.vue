@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import Panel from 'primevue/panel'
 import InputText from 'primevue/inputtext'
+import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { InputContainer } from '@/shared/components/input'
@@ -65,6 +66,17 @@ function handleAvatarSelected(file: File) {
             </div>
         </Panel>
 
+        <Panel :toggleable="true">
+            <template #header>
+                <div class="flex flex-1 items-center justify-between">
+                    <span>API Tokens</span>
+                    <Button label="Create" size="small" @click="isCreateTokenDialogVisible = true" />
+                </div>
+            </template>
+
+            <ApiTokensTable :tokens="apiTokens" :is-pending="isApiTokensPending" />
+        </Panel>
+
         <Panel header="Notifications" :toggleable="true">
             <p class="text-sm text-surface-500 mb-4">Choose which events you want to be notified about by email.</p>
             <div class="flex flex-col">
@@ -104,17 +116,6 @@ function handleAvatarSelected(file: File) {
                     <ToggleSwitch />
                 </div>
             </div>
-        </Panel>
-
-        <Panel :toggleable="true">
-            <template #header>
-                <div class="flex flex-1 items-center justify-between">
-                    <span>API Tokens</span>
-                    <Button label="Create" size="small" @click="isCreateTokenDialogVisible = true" />
-                </div>
-            </template>
-
-            <ApiTokensTable :tokens="apiTokens" :is-pending="isApiTokensPending" />
         </Panel>
 
         <CreateApiTokenDialog v-model:visible="isCreateTokenDialogVisible" />
