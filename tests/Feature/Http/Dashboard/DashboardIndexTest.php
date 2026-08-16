@@ -128,10 +128,11 @@ it('returns at most eight recent tasks, newest first, each with its project', fu
         ->and($response->json('data.recent_tasks.0.project.id'))->toBe($tasks->last()->project_id);
 });
 
-it('returns at most four recent task lists, newest first, each with its task count', function () {
+it('returns at most six recent task lists, newest first, each with its task count and project', function () {
     $project = ProjectModel::factory()->create();
 
-    $lists = collect(range(1, 6))->map(function (int $minutes) use ($project) {
+    // More lists than the limit, otherwise the cap is never exercised.
+    $lists = collect(range(1, 8))->map(function (int $minutes) use ($project) {
         $list = TaskListModel::factory()->create(['project_id' => $project->id]);
         $list->forceFill(['updated_at' => now()->addMinutes($minutes)])->saveQuietly();
 
@@ -145,9 +146,10 @@ it('returns at most four recent task lists, newest first, each with its task cou
 
     $response = $this->getJson('/api/dashboard')->assertOk();
 
-    expect($response->json('data.recent_task_lists'))->toHaveCount(4)
+    expect($response->json('data.recent_task_lists'))->toHaveCount(6)
         ->and($response->json('data.recent_task_lists.0.id'))->toBe($lists->last()->id)
-        ->and($response->json('data.recent_task_lists.0.tasks_count'))->toBe(2);
+        ->and($response->json('data.recent_task_lists.0.tasks_count'))->toBe(2)
+        ->and($response->json('data.recent_task_lists.0.project.id'))->toBe($project->id);
 });
 
 it('keeps the query count flat as the data grows', function () {
