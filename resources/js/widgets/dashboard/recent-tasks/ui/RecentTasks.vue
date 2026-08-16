@@ -1,0 +1,94 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { Icon } from '@iconify/vue'
+import { RouterLink, useRouter } from 'vue-router'
+import type { TaskOverviewDto } from '@/entities/task/types'
+import { PanelCard, type PanelCardState } from '@/shared/components/panel'
+import { TaskStatusTag } from '@/widgets/tasks/metadata'
+import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'
+
+const props = defineProps<{
+    tasks: TaskOverviewDto[]
+    isPending: boolean
+    isError: boolean
+}>()
+
+const emit = defineEmits<{
+    (e: 'retry'): void
+}>()
+
+const router = useRouter()
+
+const state = computed<PanelCardState>(() => {
+    if (props.isPending) return 'pending'
+    if (props.isError) return 'error'
+
+    return props.tasks.length === 0 ? 'empty' : 'ready'
+})
+
+function taskRoute(task: TaskOverviewDto) {
+    return { name: 'task-details', params: { id: task.id } }
+}
+
+function openTask(task: TaskOverviewDto) {
+    router.push(taskRoute(task))
+}
+</script>
+
+<template>
+    <PanelCard
+        title="Recent Tasks"
+        :state="state"
+        empty-message="No recent tasks"
+        error-message="Could not load recent tasks."
+        :skeleton-rows="8"
+        @retry="emit('retry')"
+    >
+        <template #action>
+            <PanelViewAllLink label="View all tasks" :to="{ name: 'tasks' }" />
+        </template>
+
+        <table class="text-sm w-full table-fixed">
+            <thead>
+                <tr class="bg-surface-50 dark:bg-surface-800 text-surface-400 text-xs text-left">
+                    <th class="px-4 py-2 font-medium w-28">Task ID</th>
+                    <th class="px-4 py-2 font-medium w-40">Project</th>
+                    <th class="px-4 py-2 font-medium">Title</th>
+                    <th class="px-4 py-2 font-medium w-36">Status</th>
+                    <th class="px-4 py-2 font-medium w-28">Updated</th>
+                    <th class="px-4 py-2 w-10"><span class="sr-only">Open</span></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr
+                    v-for="task in tasks"
+                    :key="task.id"
+                    class="border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/60 cursor-pointer border-t"
+                    @click="openTask(task)"
+                >
+                    <td class="px-4 py-2.5">
+                        <RouterLink :to="taskRoute(task)" class="app-link block truncate" @click.stop>
+                            {{ task.key }}
+                        </RouterLink>
+                    </td>
+                    <td class="text-surface-600 dark:text-surface-300 px-4 py-2.5 truncate" :title="task.project?.name">
+                        {{ task.project?.name ?? '—' }}
+                    </td>
+                    <td class="text-surface-800 dark:text-surface-100 px-4 py-2.5 truncate" :title="task.name">
+                        {{ task.name }}
+                    </td>
+                    <td class="px-4 py-2.5">
+                        <TaskStatusTag :status="task.status" variant="light" class="w-fit" />
+                    </td>
+                    <td class="text-surface-400 px-4 py-2.5 text-xs whitespace-nowrap">
+                        {{ formatRelativeTime(task.updated_at) }}
+                    </td>
+                    <td class="px-4 py-2.5">
+                        <Icon icon="heroicons:chevron-right" class="text-surface-400 size-3.5" aria-hidden="true" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </PanelCard>
+</template>
