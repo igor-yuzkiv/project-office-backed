@@ -6,6 +6,8 @@ import type { DashboardTaskListDto } from '@/features/dashboard'
 import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { TaskListStatusTag } from '@/widgets/task-list/metadata'
 import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'
+import { CopyToClipboard } from '@/shared/components/display'
+import type { ProjectOverviewDto } from '@/entities/project/types'
 
 const props = defineProps<{
     taskLists: DashboardTaskListDto[]
@@ -30,6 +32,10 @@ function taskListRoute(taskList: DashboardTaskListDto) {
     return { name: 'task-list-details', params: { id: taskList.id } }
 }
 
+function projectRoute(project: ProjectOverviewDto) {
+    return { name: 'project-details', params: { id: project.id } }
+}
+
 function openTaskList(taskList: DashboardTaskListDto) {
     router.push(taskListRoute(taskList))
 }
@@ -51,9 +57,11 @@ function openTaskList(taskList: DashboardTaskListDto) {
         <table class="text-sm w-full table-fixed">
             <thead>
                 <tr class="bg-surface-50 dark:bg-surface-800 text-surface-400 text-xs text-left">
+                    <th class="px-4 py-2 font-medium w-34"></th>
+                    <th class="px-4 py-2 font-medium w-40">Project</th>
                     <th class="px-4 py-2 font-medium">Task List</th>
-                    <th class="px-4 py-2 font-medium w-24">Tasks</th>
                     <th class="px-4 py-2 font-medium w-36">Status</th>
+                    <th class="px-4 py-2 font-medium w-24">Tasks</th>
                     <th class="px-4 py-2 font-medium w-28">Updated</th>
                     <th class="px-4 py-2 w-10"><span class="sr-only">Open</span></th>
                 </tr>
@@ -66,6 +74,19 @@ function openTaskList(taskList: DashboardTaskListDto) {
                     class="border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/60 cursor-pointer border-t"
                     @click="openTaskList(taskList)"
                 >
+                    <td class="px-4 py-2.5">
+                        <CopyToClipboard class="text-surface-400" :text="taskList.key" />
+                    </td>
+                    <td class="text-surface-600 dark:text-surface-300 px-4 py-2.5 tabular-nums">
+                        <RouterLink
+                            v-if="taskList.project"
+                            :to="projectRoute(taskList.project)"
+                            class="app-link block truncate"
+                            @click.stop
+                        >
+                            {{ taskList.project?.name ?? '—' }}
+                        </RouterLink>
+                    </td>
                     <td class="px-4 py-2.5">
                         <RouterLink
                             :to="taskListRoute(taskList)"
@@ -83,11 +104,11 @@ function openTaskList(taskList: DashboardTaskListDto) {
                             {{ taskList.description }}
                         </span>
                     </td>
-                    <td class="text-surface-600 dark:text-surface-300 px-4 py-2.5 tabular-nums">
-                        {{ taskList.tasks_count }}
-                    </td>
                     <td class="px-4 py-2.5">
                         <TaskListStatusTag :status="taskList.status" class="w-full" />
+                    </td>
+                    <td class="text-surface-600 dark:text-surface-300 px-4 py-2.5 tabular-nums">
+                        {{ taskList.tasks_count }}
                     </td>
                     <td class="text-surface-400 px-4 py-2.5 text-xs whitespace-nowrap">
                         {{ formatRelativeTime(taskList.updated_at) }}

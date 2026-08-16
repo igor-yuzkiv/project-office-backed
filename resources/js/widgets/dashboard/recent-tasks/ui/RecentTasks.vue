@@ -7,6 +7,7 @@ import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { TaskStatusTag } from '@/widgets/tasks/metadata'
 import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'
 import type { ProjectOverviewDto } from '@/entities/project/types'
+import { CopyToClipboard } from '@/shared/components/display'
 
 const props = defineProps<{
     tasks: TaskOverviewDto[]
@@ -56,8 +57,8 @@ function openTask(task: TaskOverviewDto) {
         <table class="text-sm w-full table-fixed">
             <thead>
                 <tr class="bg-surface-50 dark:bg-surface-800 text-surface-400 text-xs text-left">
-                    <th class="px-4 py-2 font-medium w-28">Task ID</th>
-                    <th class="px-4 py-2 font-medium w-40">Project</th>
+                    <th class="px-4 py-2 font-medium w-32">Task ID</th>
+                    <th class="px-4 py-2 font-medium w-42">Project</th>
                     <th class="px-4 py-2 font-medium">Title</th>
                     <th class="px-4 py-2 font-medium w-36">Status</th>
                     <th class="px-4 py-2 font-medium w-28">Updated</th>
@@ -73,9 +74,7 @@ function openTask(task: TaskOverviewDto) {
                     @click="openTask(task)"
                 >
                     <td class="px-4 py-2.5">
-                        <RouterLink :to="taskRoute(task)" class="app-link block truncate" @click.stop>
-                            {{ task.key }}
-                        </RouterLink>
+                        <CopyToClipboard class="text-surface-400" :text="task.key" />
                     </td>
                     <td class="text-surface-600 dark:text-surface-300 px-4 py-2.5 truncate" :title="task.project?.name">
                         <RouterLink
@@ -88,7 +87,9 @@ function openTask(task: TaskOverviewDto) {
                         </RouterLink>
                     </td>
                     <td class="text-surface-800 dark:text-surface-100 px-4 py-2.5 truncate" :title="task.name">
-                        {{ task.name }}
+                        <RouterLink :to="taskRoute(task)" class="app-link block truncate" @click.stop>
+                            {{ task.name }}
+                        </RouterLink>
                     </td>
                     <td class="px-4 py-2.5">
                         <TaskStatusTag :status="task.status" class="w-full" />
