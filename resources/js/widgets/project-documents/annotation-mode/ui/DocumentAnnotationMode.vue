@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import type { IAnnotation } from '@/entities/annotation'
 import { useProjectDocumentAnnotationsQuery } from '@/entities/project-document'
 import { useAuthStore } from '@/app/stores/use.auth.store'
+import { MdCatalog } from 'md-editor-v3'
 import { MarkdownPreview } from '@/shared/components/md-editor'
 import { useToast } from '@/shared/composables/use.toast'
 import type { DomBlock } from '@/shared/utils/markdown-anchor.dom.util'
@@ -24,6 +25,8 @@ const authStore = useAuthStore()
 const toast = useToast()
 
 const previewRef = ref<InstanceType<typeof MarkdownPreview>>()
+/** Template-facing alias: the outline needs the preview's own id and scroll target. */
+const preview = computed(() => previewRef.value)
 
 // shallowRef: these hold live DOM nodes, and a deep ref would wrap them in reactive proxies.
 const hoveredBlock = shallowRef<DomBlock | null>(null)
@@ -212,28 +215,38 @@ onScopeDispose(() => {
     <div class="min-h-0 flex flex-1 overflow-hidden">
         <div class="min-h-0 flex flex-1 flex-col">
             <div class="gap-3 p-6 annotation-canvas min-h-0 flex flex-1 flex-col items-center overflow-y-auto">
-                <div class="gap-3 max-w-5xl flex w-full flex-col">
-                    <div
-                        v-if="isReanchoring"
-                        class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
-                    >
-                        <span class="text-sm text-surface-700 dark:text-surface-200">
-                            Select the block this annotation belongs to.
-                        </span>
-                        <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
-                    </div>
+                <div class="gap-6 max-w-7xl flex w-full items-start">
+                    <!-- Beside the sheet, not over it: the sheet is the thing being annotated. -->
+                    <MdCatalog
+                        v-if="preview?.hasCatalogHeadings"
+                        class="top-0 rounded-lg p-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 w-56 text-sm shadow-sm xl:block sticky hidden max-h-[70vh] shrink-0 overflow-y-auto border"
+                        :editor-id="preview.editorId"
+                        :scroll-element="preview.catalogScrollElement"
+                        :theme="preview.previewTheme"
+                    />
 
-                    <p v-else class="text-xs text-surface-500">Click a block of the document to comment on it.</p>
+                    <div class="gap-3 min-w-0 flex flex-1 flex-col">
+                        <div
+                            v-if="isReanchoring"
+                            class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
+                        >
+                            <span class="text-sm text-surface-700 dark:text-surface-200">
+                                Select the block this annotation belongs to.
+                            </span>
+                            <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
+                        </div>
 
-                    <div
-                        class="p-10 pr-64 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 annotation-sheet shadow-sm relative border"
-                        :class="{ 'annotation-picking': isReanchoring }"
-                        @mouseover="handleMouseOver"
-                        @mouseleave="handleMouseLeave"
-                        @click="handleClick"
-                    >
-                        <!-- The outline rides in the right margin of the sheet, as it does in the read-only view. -->
-                        <MarkdownPreview ref="previewRef" :model-value="content" show-catalog @html-changed="refresh" />
+                        <p v-else class="text-xs text-surface-500">Click a block of the document to comment on it.</p>
+
+                        <div
+                            class="p-10 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 annotation-sheet shadow-sm relative border"
+                            :class="{ 'annotation-picking': isReanchoring }"
+                            @mouseover="handleMouseOver"
+                            @mouseleave="handleMouseLeave"
+                            @click="handleClick"
+                        >
+                            <MarkdownPreview ref="previewRef" :model-value="content" @html-changed="refresh" />
+                        </div>
                     </div>
                 </div>
             </div>
