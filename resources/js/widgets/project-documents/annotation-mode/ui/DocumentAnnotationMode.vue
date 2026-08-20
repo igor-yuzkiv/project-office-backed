@@ -226,13 +226,14 @@ onScopeDispose(() => {
                     <p v-else class="text-xs text-surface-500">Click a block of the document to comment on it.</p>
 
                     <div
-                        class="p-10 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 annotation-sheet shadow-sm relative border"
+                        class="p-10 pr-64 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 annotation-sheet shadow-sm relative border"
                         :class="{ 'annotation-picking': isReanchoring }"
                         @mouseover="handleMouseOver"
                         @mouseleave="handleMouseLeave"
                         @click="handleClick"
                     >
-                        <MarkdownPreview ref="previewRef" :model-value="content" @html-changed="refresh" />
+                        <!-- The outline rides in the right margin of the sheet, as it does in the read-only view. -->
+                        <MarkdownPreview ref="previewRef" :model-value="content" show-catalog @html-changed="refresh" />
                     </div>
                 </div>
             </div>
