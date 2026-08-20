@@ -30,6 +30,7 @@ class DeleteProjectDocumentHandler
                 }
 
                 $node->comments()->delete();
+                $node->annotations()->delete();
                 $node->tags()->detach();
                 $node->delete();
             }
