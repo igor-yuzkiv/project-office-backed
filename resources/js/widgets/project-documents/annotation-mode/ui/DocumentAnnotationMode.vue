@@ -54,9 +54,15 @@ const hoverButtonStyle = computed(() => {
     const block = hoveredBlock.value.element.getBoundingClientRect()
     const container = containerRef.value.getBoundingClientRect()
 
-    // Inside the block's top-right corner: outside it, the pointer would cross a gap that
+    // Inline, not a utility class: PrimeVue's own .p-button sets position: relative and wins,
+    // which turns the offsets below into 9000px of phantom page instead of a placed button.
+    // Inside the block's top-right corner, too: outside it, the pointer would cross a gap that
     // belongs to no block, and the button would be gone before the click landed.
-    return { top: `${block.top - container.top}px`, right: `${container.right - block.right}px` }
+    return {
+        position: 'absolute',
+        top: `${block.top - container.top}px`,
+        right: `${container.right - block.right}px`,
+    }
 })
 
 let highlighted: HTMLElement | null = null
@@ -311,6 +317,14 @@ onScopeDispose(() => {
     border-left: 3px solid var(--p-primary-color);
     background-color: color-mix(in srgb, var(--p-primary-color) 8%, transparent);
     padding-left: 0.5rem;
+}
+
+/* md-editor-v3 sets word-break: break-all on the preview, which snaps words mid-syllable.
+   Long unbreakable tokens (urls, paths) still wrap, ordinary prose no longer does. */
+.annotation-sheet .md-editor-preview,
+.annotation-sheet .md-editor-preview :is(h1, h2, h3, h4, h5, h6) {
+    word-break: normal;
+    overflow-wrap: anywhere;
 }
 
 /* md-editor-v3 gives the sticky code-block header z-index: 10000, which lands it above dialogs.
