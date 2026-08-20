@@ -31,11 +31,11 @@ test.describe('document annotations', () => {
         await openAnnotationMode(page)
 
         const paragraph = page.locator('.md-editor-preview p', { hasText: paragraphText })
-        await paragraph.hover()
+        await paragraph.click()
+        await expect(paragraph).toHaveClass(/annotation-selected/)
 
-        await page.getByRole('button', { name: 'Add comment' }).click()
-        await page.getByPlaceholder('Add a comment').fill(annotationText)
-        await page.getByRole('button', { name: 'Save' }).click()
+        await page.getByPlaceholder('Write a comment').fill(annotationText)
+        await page.getByRole('button', { name: 'Save', exact: true }).click()
 
         const card = page.locator('aside article', { hasText: annotationText })
         await expect(card).toBeVisible()

@@ -35,29 +35,14 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <!-- The layout hands the page a fixed-height, overflow-hidden slot, so the scroll lives here. -->
-    <div class="p-6 annotation-canvas flex-1 overflow-y-auto">
-        <Skeleton v-if="isPending" height="20rem" />
-        <p v-else-if="isError" class="text-sm text-red-500">Failed to load document.</p>
+    <div class="min-h-0 flex flex-1 overflow-hidden">
+        <Skeleton v-if="isPending" class="m-6" height="20rem" />
+        <p v-else-if="isError" class="p-6 text-sm text-red-500">Failed to load document.</p>
         <DocumentAnnotationMode
             v-else-if="projectDocument?.content"
             :document-id="documentId"
             :content="projectDocument.content"
         />
-        <p v-else-if="projectDocument" class="text-sm text-surface-400 italic">No content yet.</p>
+        <p v-else-if="projectDocument" class="p-6 text-sm text-surface-400 italic">No content yet.</p>
     </div>
 </template>
-
-<style scoped>
-/* The document reads as a sheet, so the surface behind it is a drafting canvas rather than a page. */
-.annotation-canvas {
-    background-color: var(--p-surface-100);
-    background-image: radial-gradient(circle, var(--p-surface-300) 1px, transparent 1px);
-    background-size: 18px 18px;
-}
-
-:global(.dark) .annotation-canvas {
-    background-color: var(--p-surface-950);
-    background-image: radial-gradient(circle, var(--p-surface-800) 1px, transparent 1px);
-}
-</style>
