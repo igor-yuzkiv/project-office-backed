@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
+import { onKeyStroke } from '@vueuse/core'
 import Button from 'primevue/button'
 import Popover from 'primevue/popover'
 import Textarea from 'primevue/textarea'
@@ -7,15 +8,21 @@ import type { IAnnotation } from '@/entities/annotation'
 import { useProjectDocumentAnnotationsQuery } from '@/entities/project-document'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { MarkdownPreview } from '@/shared/components/md-editor'
+import { useToast } from '@/shared/composables/use.toast'
 import type { DomBlock } from '@/shared/utils/markdown-anchor.dom.util'
 import { buildAnchor, buildTextSnapshot } from '@/shared/utils/markdown-anchor.util'
-import { useAnnotationAnchors } from '../composables/use.annotation-anchors'
+import AnnotationSidebar from './AnnotationSidebar.vue'
+import { useAnnotationAnchors, type AnnotationAnchor } from '../composables/use.annotation-anchors'
 import { useAnnotationBlocks } from '../composables/use.annotation-blocks'
 import { useAnnotationEditor } from '../composables/use.annotation-editor'
+
+const HIGHLIGHT_CLASS = 'annotation-highlighted'
+const HIGHLIGHT_DURATION = 2500
 
 const props = defineProps<{ documentId: string; content: string }>()
 
 const authStore = useAuthStore()
+const toast = useToast()
 
 const previewRef = ref<InstanceType<typeof MarkdownPreview>>()
 const containerRef = ref<HTMLElement>()
@@ -25,13 +32,16 @@ const hoveredBlock = ref<DomBlock | null>(null)
 const activeBlock = ref<DomBlock | null>(null)
 const draft = ref('')
 const editingId = ref<string | null>(null)
+const activeId = ref<string | null>(null)
+const reanchoring = ref<IAnnotation | null>(null)
 
-const { annotations, isPending, isError } = useProjectDocumentAnnotationsQuery(() => props.documentId)
+const { annotations, isPending, isError, refetch } = useProjectDocumentAnnotationsQuery(() => props.documentId)
 const { blocks, refresh, findBlockAt } = useAnnotationBlocks(() => previewRef.value?.getPreviewRoot() ?? null)
-const { anchors, annotationsOf } = useAnnotationAnchors(annotations, blocks)
+const { orderedAnchors, annotationsOf } = useAnnotationAnchors(annotations, blocks)
 const { create, update, remove, isSaving, isUpdating } = useAnnotationEditor(() => props.documentId)
 
 const isBusy = computed(() => isSaving.value || isUpdating.value)
+const isReanchoring = computed(() => reanchoring.value !== null)
 const activeAnnotations = computed<IAnnotation[]>(() =>
     activeBlock.value ? annotationsOf(activeBlock.value.element) : []
 )
@@ -47,8 +57,20 @@ const hoverButtonStyle = computed(() => {
     return { top: `${block.top - container.top}px`, right: `${container.right - block.right}px` }
 })
 
-function isOwn(annotation: IAnnotation): boolean {
-    return annotation.author.id === authStore.user?.id
+let highlighted: HTMLElement | null = null
+let highlightTimer: ReturnType<typeof setTimeout> | undefined
+
+function clearHighlight() {
+    clearTimeout(highlightTimer)
+    highlighted?.classList.remove(HIGHLIGHT_CLASS)
+    highlighted = null
+}
+
+function highlight(element: HTMLElement) {
+    clearHighlight()
+    element.classList.add(HIGHLIGHT_CLASS)
+    highlighted = element
+    highlightTimer = setTimeout(clearHighlight, HIGHLIGHT_DURATION)
 }
 
 function handleMouseOver(event: MouseEvent) {
@@ -111,35 +133,134 @@ async function save() {
     popover.value?.hide()
 }
 
+function selectAnchor(anchor: AnnotationAnchor) {
+    activeId.value = anchor.annotation.id
+
+    if (!anchor.element) {
+        toast.info('This annotation has lost its block. Use Re-anchor to attach it again.')
+
+        return
+    }
+
+    anchor.element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    highlight(anchor.element)
+}
+
+async function editFromSidebar(annotation: IAnnotation) {
+    const anchor = orderedAnchors.value.find((item) => item.annotation.id === annotation.id)
+    const block = anchor?.element ? blocks.value.find((item) => item.element === anchor.element) : null
+
+    if (!block) {
+        toast.info('This annotation has lost its block. Use Re-anchor to attach it again.')
+
+        return
+    }
+
+    activeBlock.value = block
+    startEditing(annotation)
+
+    // The popover is positioned against the block in page coordinates, so the block has to be
+    // on screen first — and instantly, because a smooth scroll would still be running.
+    block.element.scrollIntoView({ block: 'center' })
+    await nextTick()
+
+    popover.value?.show(new Event('click'), block.element)
+}
+
+function startReanchoring(annotation: IAnnotation) {
+    reanchoring.value = annotation
+    popover.value?.hide()
+}
+
+function cancelReanchoring() {
+    reanchoring.value = null
+}
+
+async function handleContainerClick(event: MouseEvent) {
+    const annotation = reanchoring.value
+
+    if (!annotation) return
+
+    // A block may contain a link, and picking it must not navigate away mid-request.
+    event.preventDefault()
+
+    if (isUpdating.value) return
+
+    const block = findBlockAt(event.target)
+
+    if (!block) return
+
+    const saved = await update(annotation.id, {
+        content: annotation.content,
+        text_snapshot: buildTextSnapshot(block.descriptor.text),
+        anchor: buildAnchor(block.descriptor),
+    })
+
+    if (saved) {
+        reanchoring.value = null
+        highlight(block.element)
+    }
+}
+
+onKeyStroke('Escape', () => {
+    if (isReanchoring.value) cancelReanchoring()
+})
+
 watch(() => props.content, refresh)
+
+onScopeDispose(clearHighlight)
 </script>
 
 <template>
     <div class="gap-4 flex items-start">
-        <div ref="containerRef" class="relative flex-1" @mouseover="handleMouseOver" @mouseleave="handleMouseLeave">
-            <MarkdownPreview ref="previewRef" :model-value="content" @html-changed="refresh" />
+        <div class="gap-3 flex flex-1 flex-col">
+            <div
+                v-if="isReanchoring"
+                class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
+            >
+                <span class="text-sm text-surface-700 dark:text-surface-200">
+                    Select the block this annotation belongs to.
+                </span>
+                <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
+            </div>
 
-            <Button
-                v-if="hoveredBlock"
-                class="absolute z-10"
-                data-annotation-trigger
-                icon="pi pi-comment"
-                label="Add comment"
-                severity="secondary"
-                size="small"
-                :style="hoverButtonStyle"
-                @click="openEditor"
-            />
+            <div
+                ref="containerRef"
+                class="relative"
+                :class="{ 'annotation-picking': isReanchoring }"
+                @mouseover="handleMouseOver"
+                @mouseleave="handleMouseLeave"
+                @click="handleContainerClick"
+            >
+                <MarkdownPreview ref="previewRef" :model-value="content" @html-changed="refresh" />
+
+                <Button
+                    v-if="hoveredBlock && !isReanchoring"
+                    class="absolute z-10"
+                    data-annotation-trigger
+                    icon="pi pi-comment"
+                    label="Add comment"
+                    severity="secondary"
+                    size="small"
+                    :style="hoverButtonStyle"
+                    @click="openEditor"
+                />
+            </div>
         </div>
 
-        <aside
-            class="w-72 gap-2 rounded-lg border-surface-200 p-4 dark:border-surface-700 flex shrink-0 flex-col border"
-        >
-            <h2 class="text-sm font-medium text-surface-900 dark:text-surface-0">Annotations</h2>
-            <p v-if="isPending" class="text-sm text-surface-400 italic">Loading annotations…</p>
-            <p v-else-if="isError" class="text-sm text-red-500">Failed to load annotations.</p>
-            <p v-else class="text-sm text-surface-500">{{ anchors.length }} on this document</p>
-        </aside>
+        <AnnotationSidebar
+            :anchors="orderedAnchors"
+            :is-pending="isPending"
+            :is-error="isError"
+            :active-id="activeId"
+            :reanchoring-id="reanchoring?.id ?? null"
+            :current-user-id="authStore.user?.id ?? null"
+            @select="selectAnchor"
+            @edit="editFromSidebar"
+            @delete="remove($event.id)"
+            @reanchor="startReanchoring"
+            @retry="refetch()"
+        />
     </div>
 
     <Popover ref="popover">
@@ -150,7 +271,7 @@ watch(() => props.content, refresh)
                     <p class="text-sm text-surface-900 dark:text-surface-0 whitespace-pre-line">
                         {{ annotation.content }}
                     </p>
-                    <div v-if="isOwn(annotation)" class="gap-2 flex">
+                    <div v-if="annotation.author.id === authStore.user?.id" class="gap-2 flex">
                         <Button label="Edit" severity="secondary" size="small" text @click="startEditing(annotation)" />
                         <Button label="Delete" severity="danger" size="small" text @click="remove(annotation.id)" />
                     </div>
@@ -173,5 +294,16 @@ watch(() => props.content, refresh)
     border-left: 3px solid var(--p-primary-color);
     background-color: color-mix(in srgb, var(--p-primary-color) 8%, transparent);
     padding-left: 0.5rem;
+}
+
+.md-editor-preview .annotation-highlighted {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+    transition: outline-color 0.3s ease;
+}
+
+.annotation-picking .md-editor-preview :is(p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, table):hover {
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--p-primary-color) 14%, transparent);
 }
 </style>

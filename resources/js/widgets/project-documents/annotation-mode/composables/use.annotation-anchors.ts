@@ -5,10 +5,16 @@ import type { AnchorMatchKind } from '@/shared/utils/markdown-anchor.util'
 
 const ANCHORED_CLASS = 'annotation-anchored'
 
+function byCreation(left: AnnotationAnchor, right: AnnotationAnchor): number {
+    return left.annotation.created_at.localeCompare(right.annotation.created_at)
+}
+
 export interface AnnotationAnchor {
     annotation: IAnnotation
     element: HTMLElement | null
     kind: AnchorMatchKind | null
+    /** Position of the resolved block in the document; null for an orphaned annotation. */
+    index: number | null
 }
 
 export function useAnnotationAnchors(
@@ -19,7 +25,23 @@ export function useAnnotationAnchors(
         toValue(annotations).map((annotation) => {
             const match = findBlockElement(annotation.anchor, annotation.text_snapshot, toValue(blocks))
 
-            return { annotation, element: match?.element ?? null, kind: match?.kind ?? null }
+            return {
+                annotation,
+                element: match?.element ?? null,
+                kind: match?.kind ?? null,
+                index: match?.descriptor.index ?? null,
+            }
+        })
+    )
+
+    /** Document order, then creation order within one block; orphaned annotations come last. */
+    const orderedAnchors = computed<AnnotationAnchor[]>(() =>
+        [...anchors.value].sort((left, right) => {
+            if (left.index === null && right.index === null) return byCreation(left, right)
+            if (left.index === null) return 1
+            if (right.index === null) return -1
+
+            return left.index === right.index ? byCreation(left, right) : left.index - right.index
         })
     )
 
@@ -49,5 +71,5 @@ export function useAnnotationAnchors(
 
     onScopeDispose(undecorate)
 
-    return { anchors, orphaned, annotationsOf }
+    return { anchors, orderedAnchors, orphaned, annotationsOf }
 }
