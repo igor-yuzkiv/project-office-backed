@@ -243,7 +243,7 @@ onScopeDispose(() => {
 
             <div
                 ref="containerRef"
-                class="p-10 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 shadow-sm relative border"
+                class="p-10 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 annotation-sheet shadow-sm relative border"
                 :class="{ 'annotation-picking': isReanchoring }"
                 @mouseover="handleMouseOver"
                 @mouseleave="handleMouseLeave"
@@ -311,6 +311,12 @@ onScopeDispose(() => {
     border-left: 3px solid var(--p-primary-color);
     background-color: color-mix(in srgb, var(--p-primary-color) 8%, transparent);
     padding-left: 0.5rem;
+}
+
+/* md-editor-v3 gives the sticky code-block header z-index: 10000, which lands it above dialogs.
+   Its own selector is three classes deep, so the override needs the sheet class to outrank it. */
+.annotation-sheet .md-editor-preview .md-editor-code .md-editor-code-head {
+    z-index: 1;
 }
 
 .md-editor-preview .annotation-hovered {

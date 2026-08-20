@@ -17,9 +17,11 @@ async function signIn(page: Page) {
     await expect(page).toHaveURL(/#\/$/)
 }
 
+// The document page folds its header actions into a SplitButton, so the entry point is a menu item.
 async function openAnnotationMode(page: Page) {
     await page.goto(`/#/project-documents/${documentKey}/content`)
-    await page.getByRole('link', { name: 'Annotation mode' }).click()
+    await page.locator('[aria-haspopup="true"]').last().click()
+    await page.getByRole('menuitem', { name: 'Annotation mode' }).click()
     await expect(page).toHaveURL(/\/annotations$/)
 }
 
@@ -46,7 +48,7 @@ test.describe('document annotations', () => {
         await expect(paragraph).toBeInViewport()
 
         await card.getByRole('button', { name: 'Delete' }).click()
-        await page.getByRole('button', { name: 'Delete' }).last().click()
+        await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).click()
 
         await expect(card).toHaveCount(0)
     })
