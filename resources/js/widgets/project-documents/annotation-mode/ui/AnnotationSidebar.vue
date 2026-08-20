@@ -58,7 +58,7 @@ function isOwn(annotation: IAnnotation): boolean {
 
 <template>
     <aside
-        class="top-4 gap-4 pl-4 border-surface-200 dark:border-surface-700 w-80 sticky flex max-h-[calc(100vh-8rem)] shrink-0 flex-col overflow-y-auto border-l"
+        class="top-0 gap-4 rounded-xl p-4 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 w-80 shadow-sm sticky flex max-h-[calc(100vh-8rem)] shrink-0 flex-col overflow-y-auto border"
     >
         <h2 class="font-semibold text-surface-900 dark:text-surface-0">Annotations</h2>
 
