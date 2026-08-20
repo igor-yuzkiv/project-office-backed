@@ -1,9 +1,11 @@
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, shallowRef } from 'vue'
 import { collectDomBlocks, type DomBlock } from '@/shared/utils/markdown-anchor.dom.util'
 import { ANNOTATABLE_BLOCK_SELECTOR } from '@/shared/utils/markdown-anchor.util'
 
 export function useAnnotationBlocks(getPreviewRoot: () => HTMLElement | null) {
-    const blocks = ref<DomBlock[]>([])
+    // shallowRef, not ref: a deep ref would hand back reactive proxies of the elements, and
+    // every identity comparison against a live DOM node would fail.
+    const blocks = shallowRef<DomBlock[]>([])
 
     async function refresh() {
         // md-editor-v3 announces new html from a pre-flush watcher, before the DOM is patched.

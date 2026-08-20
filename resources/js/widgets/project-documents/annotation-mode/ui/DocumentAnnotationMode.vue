@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
+import { computed, nextTick, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
 import Button from 'primevue/button'
 import Popover from 'primevue/popover'
@@ -28,8 +28,9 @@ const previewRef = ref<InstanceType<typeof MarkdownPreview>>()
 const containerRef = ref<HTMLElement>()
 const popover = ref<InstanceType<typeof Popover>>()
 
-const hoveredBlock = ref<DomBlock | null>(null)
-const activeBlock = ref<DomBlock | null>(null)
+// shallowRef for the same reason as in useAnnotationBlocks: these hold live DOM nodes.
+const hoveredBlock = shallowRef<DomBlock | null>(null)
+const activeBlock = shallowRef<DomBlock | null>(null)
 const draft = ref('')
 const editingId = ref<string | null>(null)
 const activeId = ref<string | null>(null)
@@ -212,8 +213,8 @@ onScopeDispose(clearHighlight)
 </script>
 
 <template>
-    <div class="gap-4 flex items-start">
-        <div class="gap-3 flex flex-1 flex-col">
+    <div class="gap-6 flex items-start justify-center">
+        <div class="gap-3 max-w-3xl flex w-full flex-col">
             <div
                 v-if="isReanchoring"
                 class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
@@ -226,7 +227,7 @@ onScopeDispose(clearHighlight)
 
             <div
                 ref="containerRef"
-                class="relative"
+                class="p-10 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 shadow-sm relative border"
                 :class="{ 'annotation-picking': isReanchoring }"
                 @mouseover="handleMouseOver"
                 @mouseleave="handleMouseLeave"
