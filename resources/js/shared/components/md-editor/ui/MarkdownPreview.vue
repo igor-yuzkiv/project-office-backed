@@ -10,7 +10,7 @@ withDefaults(defineProps<{ modelValue: string; showCatalog?: boolean }>(), {
 })
 
 const emit = defineEmits<{
-    (e: 'htmlChanged', html: string): void
+    (e: 'htmlChanged'): void
 }>()
 
 const themeStore = useAppThemeStore()
@@ -20,7 +20,7 @@ const rootRef = ref<HTMLElement>()
 const catalogScrollElement = ref<HTMLElement>()
 const catalogHeadings = ref<HeadList[]>([])
 
-const previewTheme = computed(() => (themeStore.isDark ? 'dark' : 'light'))
+const previewTheme = computed<'dark' | 'light'>(() => (themeStore.isDark ? 'dark' : 'light'))
 const hasCatalogHeadings = computed(() => catalogHeadings.value.length > 0)
 
 onMounted(() => {
@@ -45,8 +45,16 @@ function getPreviewRoot(): HTMLElement | null {
     return rootRef.value?.querySelector('.md-editor-preview') ?? null
 }
 
-// The catalog can also be rendered by the consumer, next to the preview instead of over it.
-defineExpose({ getPreviewRoot, editorId, previewTheme, catalogScrollElement, hasCatalogHeadings })
+// One handle instead of four internals: the consumer can render MarkdownCatalog next to the
+// preview instead of over it, without knowing how the library is wired.
+const catalog = computed(() => ({
+    editorId,
+    theme: previewTheme.value,
+    scrollElement: catalogScrollElement.value,
+    hasHeadings: hasCatalogHeadings.value,
+}))
+
+defineExpose({ getPreviewRoot, catalog })
 </script>
 
 <template>
@@ -59,7 +67,7 @@ defineExpose({ getPreviewRoot, editorId, previewTheme, catalogScrollElement, has
             :code-foldable="false"
             preview-theme="github"
             @on-get-catalog="(list) => (catalogHeadings = list)"
-            @on-html-changed="(html) => emit('htmlChanged', html)"
+            @on-html-changed="() => emit('htmlChanged')"
         />
         <!-- code-theme="github" -->
         <!--

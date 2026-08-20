@@ -68,7 +68,7 @@ function isOwn(annotation: IAnnotation): boolean {
                 class="gap-2 rounded-lg p-3 bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-700 flex cursor-pointer flex-col border transition-colors"
                 :class="{
                     'border-primary-500': anchor.annotation.id === editingId,
-                    'opacity-60': anchor.element === null,
+                    'opacity-60': anchor.block === null,
                     'ring-primary-500 ring-2': anchor.annotation.id === reanchoringId,
                 }"
                 @click="emit('select', anchor.annotation)"
@@ -114,7 +114,7 @@ function isOwn(annotation: IAnnotation): boolean {
                     @click.stop="toggleExpanded(anchor.annotation.id)"
                 />
 
-                <p v-if="anchor.element === null" class="text-xs text-amber-600">Block not found</p>
+                <p v-if="anchor.block === null" class="text-xs text-amber-600">Block not found</p>
                 <p v-else-if="anchor.kind === 'position'" class="text-xs text-surface-400">Block content changed</p>
 
                 <!-- Re-anchoring rewrites the annotation, so it follows the same rule as Edit and Delete. -->

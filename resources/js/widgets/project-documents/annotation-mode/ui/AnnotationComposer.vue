@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import Textarea from 'primevue/textarea'
 
 const props = defineProps<{
-    blockLabel: string
     isEditing: boolean
     isSaving: boolean
 }>()
@@ -33,9 +32,8 @@ function handleKeydown(event: KeyboardEvent) {
     if (canSave.value) emit('save')
 }
 
-watch(() => props.blockLabel, focus, { immediate: true })
-
-defineExpose({ focus })
+// The parent remounts this bar per selected block, so mounting is when focus belongs.
+onMounted(focus)
 </script>
 
 <template>

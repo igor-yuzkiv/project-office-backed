@@ -70,14 +70,21 @@ export function textSimilarity(a: string, b: string): number {
 
     if (!leftPairs.length || !rightPairs.length) return 0
 
-    const remaining = [...rightPairs]
+    // Counted rather than spliced out of a copy: this runs for every annotation that
+    // reaches the similarity check, which is exactly when a document was just edited.
+    const remaining = new Map<string, number>()
+
+    for (const pair of rightPairs) {
+        remaining.set(pair, (remaining.get(pair) ?? 0) + 1)
+    }
+
     let shared = 0
 
     for (const pair of leftPairs) {
-        const position = remaining.indexOf(pair)
+        const left = remaining.get(pair)
 
-        if (position !== -1) {
-            remaining.splice(position, 1)
+        if (left) {
+            remaining.set(pair, left - 1)
             shared++
         }
     }

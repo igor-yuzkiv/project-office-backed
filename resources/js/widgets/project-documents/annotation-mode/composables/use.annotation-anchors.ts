@@ -1,75 +1,63 @@
 import { computed, onScopeDispose, type MaybeRefOrGetter, toValue, watch } from 'vue'
 import type { IAnnotation } from '@/entities/annotation'
-import { findBlockElement, type DomBlock } from '@/shared/utils/markdown-anchor.dom.util'
+import { findBlock, type DomBlock, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 import type { AnchorMatchKind } from '@/shared/utils/markdown-anchor.util'
+import { ANNOTATION_CLASS, syncClass } from './annotation-decoration'
 
-const ANCHORED_CLASS = 'annotation-anchored'
+export interface AnnotationAnchor {
+    annotation: IAnnotation
+    /** The block the anchor resolved to; null when the annotation is orphaned. */
+    block: DomBlock | null
+    kind: AnchorMatchKind | null
+}
 
 function byCreation(left: AnnotationAnchor, right: AnnotationAnchor): number {
     return left.annotation.created_at.localeCompare(right.annotation.created_at)
 }
 
-export interface AnnotationAnchor {
-    annotation: IAnnotation
-    element: HTMLElement | null
-    kind: AnchorMatchKind | null
-    /** Position of the resolved block in the document; null for an orphaned annotation. */
-    index: number | null
+function position(anchor: AnnotationAnchor): number | null {
+    return anchor.block?.descriptor.index ?? null
 }
 
 export function useAnnotationAnchors(
     annotations: MaybeRefOrGetter<IAnnotation[]>,
-    blocks: MaybeRefOrGetter<DomBlock[]>
+    blocks: MaybeRefOrGetter<DomBlocks>
 ) {
-    const anchors = computed<AnnotationAnchor[]>(() =>
-        toValue(annotations).map((annotation) => {
-            const match = findBlockElement(annotation.anchor, annotation.text_snapshot, toValue(blocks))
-
-            return {
-                annotation,
-                element: match?.element ?? null,
-                kind: match?.kind ?? null,
-                index: match?.descriptor.index ?? null,
-            }
-        })
-    )
-
     /** Document order, then creation order within one block; orphaned annotations come last. */
-    const orderedAnchors = computed<AnnotationAnchor[]>(() =>
-        [...anchors.value].sort((left, right) => {
-            if (left.index === null && right.index === null) return byCreation(left, right)
-            if (left.index === null) return 1
-            if (right.index === null) return -1
+    const orderedAnchors = computed<AnnotationAnchor[]>(() => {
+        const resolved = toValue(annotations).map<AnnotationAnchor>((annotation) => {
+            const match = findBlock(annotation.anchor, annotation.text_snapshot, toValue(blocks))
 
-            return left.index === right.index ? byCreation(left, right) : left.index - right.index
+            return { annotation, block: match?.block ?? null, kind: match?.kind ?? null }
         })
-    )
 
-    const orphaned = computed(() => anchors.value.filter((anchor) => anchor.element === null))
+        return resolved.sort((left, right) => {
+            const leftIndex = position(left)
+            const rightIndex = position(right)
 
-    function annotationsOf(element: HTMLElement): IAnnotation[] {
-        return anchors.value.filter((anchor) => anchor.element === element).map((anchor) => anchor.annotation)
-    }
+            if (leftIndex === null && rightIndex === null) return byCreation(left, right)
+            if (leftIndex === null) return 1
+            if (rightIndex === null) return -1
 
-    // The markdown comes from v-html, so scoped styles cannot reach it — the class is put on by hand.
+            return leftIndex === rightIndex ? byCreation(left, right) : leftIndex - rightIndex
+        })
+    })
+
     let decorated: HTMLElement[] = []
 
-    function undecorate() {
-        decorated.forEach((element) => element.classList.remove(ANCHORED_CLASS))
-        decorated = []
-    }
-
     watch(
-        anchors,
+        orderedAnchors,
         (current) => {
-            undecorate()
-            decorated = [...new Set(current.map((anchor) => anchor.element).filter((el) => el !== null))]
-            decorated.forEach((element) => element.classList.add(ANCHORED_CLASS))
+            const elements = [...new Set(current.map((anchor) => anchor.block?.element).filter((el) => el != null))]
+
+            decorated = syncClass(ANNOTATION_CLASS.anchored, decorated, elements)
         },
         { immediate: true }
     )
 
-    onScopeDispose(undecorate)
+    onScopeDispose(() => {
+        decorated = syncClass(ANNOTATION_CLASS.anchored, decorated, [])
+    })
 
-    return { anchors, orderedAnchors, orphaned, annotationsOf }
+    return { orderedAnchors }
 }
