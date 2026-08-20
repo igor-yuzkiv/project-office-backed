@@ -3,7 +3,6 @@ import { computed, ref } from 'vue'
 import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
 import Skeleton from 'primevue/skeleton'
-import Tag from 'primevue/tag'
 import type { IAnnotation } from '@/entities/annotation'
 import { formatDateTime } from '@/shared/utils/date.util'
 import type { AnnotationAnchor } from '../composables/use.annotation-anchors'
@@ -25,23 +24,11 @@ const emit = defineEmits<{
     (e: 'retry'): void
 }>()
 
-const BLOCK_LABELS: Record<string, string> = {
-    p: 'Paragraph',
-    li: 'List item',
-    pre: 'Code',
-    blockquote: 'Quote',
-    table: 'Table',
-}
-
 const SNIPPET_LENGTH = 180
 
 const expanded = ref<string[]>([])
 
 const isEmpty = computed(() => !props.isPending && !props.isError && props.anchors.length === 0)
-function blockLabel(tag: string): string {
-    return BLOCK_LABELS[tag] ?? (/^h[1-6]$/.test(tag) ? 'Heading' : tag)
-}
-
 function isExpanded(id: string): boolean {
     return expanded.value.includes(id)
 }
@@ -87,8 +74,20 @@ function isOwn(annotation: IAnnotation): boolean {
                 @click="emit('select', anchor.annotation)"
             >
                 <div class="gap-2 flex items-center justify-between">
-                    <Tag :value="blockLabel(anchor.annotation.anchor.tag)" severity="secondary" />
-                    <span class="text-xs text-surface-400">{{ formatDateTime(anchor.annotation.created_at) }}</span>
+                    <div class="gap-2 min-w-0 flex items-center">
+                        <Avatar
+                            :image="anchor.annotation.author.avatar_url ?? undefined"
+                            :label="anchor.annotation.author.initials"
+                            shape="circle"
+                            size="normal"
+                        />
+                        <span class="text-sm text-surface-700 dark:text-surface-200 truncate">
+                            {{ anchor.annotation.author.name }}
+                        </span>
+                    </div>
+                    <span class="text-xs text-surface-400 shrink-0">
+                        {{ formatDateTime(anchor.annotation.created_at) }}
+                    </span>
                 </div>
 
                 <p v-if="anchor.annotation.text_snapshot" class="text-xs text-surface-500 line-clamp-2 italic">
@@ -115,16 +114,6 @@ function isOwn(annotation: IAnnotation): boolean {
 
                 <p v-if="anchor.element === null" class="text-xs text-amber-600">Block not found</p>
                 <p v-else-if="anchor.kind === 'position'" class="text-xs text-surface-400">Block content changed</p>
-
-                <div class="gap-2 flex items-center">
-                    <Avatar
-                        :image="anchor.annotation.author.avatar_url ?? undefined"
-                        :label="anchor.annotation.author.initials"
-                        shape="circle"
-                        size="normal"
-                    />
-                    <span class="text-xs text-surface-500">{{ anchor.annotation.author.name }}</span>
-                </div>
 
                 <!-- Re-anchoring rewrites the annotation, so it follows the same rule as Edit and Delete. -->
                 <div v-if="isOwn(anchor.annotation)" class="gap-2 flex flex-wrap">

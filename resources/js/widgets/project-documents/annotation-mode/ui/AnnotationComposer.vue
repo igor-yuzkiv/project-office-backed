@@ -39,36 +39,40 @@ defineExpose({ focus })
 </script>
 
 <template>
-    <div
-        class="p-4 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 shadow-lg shrink-0 border-t"
-    >
-        <div class="gap-2 max-w-5xl mx-auto flex w-full flex-col">
-            <div class="gap-2 text-xs text-surface-500 flex items-center justify-between">
-                <span>{{ isEditing ? 'Editing an annotation' : `Commenting on: ${blockLabel}` }}</span>
-                <span class="text-surface-400">Enter to save · Shift+Enter for a new line · Esc to close</span>
-            </div>
+    <div class="p-4 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 shrink-0 border-t">
+        <!-- The actions live inside the field, so the bar stays one object rather than a form. -->
+        <div class="max-w-5xl relative mx-auto w-full">
+            <Textarea
+                ref="textareaRef"
+                v-model="draft"
+                auto-resize
+                class="pr-24 w-full"
+                :placeholder="isEditing ? 'Edit the comment' : 'Write a comment'"
+                rows="4"
+                @keydown="handleKeydown"
+            />
 
-            <div class="gap-2 flex items-end">
-                <Textarea
-                    ref="textareaRef"
-                    v-model="draft"
-                    auto-resize
-                    class="flex-1"
-                    placeholder="Write a comment"
-                    rows="2"
-                    @keydown="handleKeydown"
+            <div class="right-3 bottom-3 gap-1 absolute flex items-center">
+                <Button
+                    v-tooltip.top="'Cancel'"
+                    aria-label="Cancel"
+                    icon="pi pi-times"
+                    rounded
+                    severity="secondary"
+                    size="small"
+                    text
+                    @click="emit('cancel')"
                 />
-
-                <div class="gap-2 flex flex-col">
-                    <Button
-                        :label="isEditing ? 'Save changes' : 'Save'"
-                        size="small"
-                        :disabled="!canSave"
-                        :loading="isSaving"
-                        @click="emit('save')"
-                    />
-                    <Button label="Cancel" severity="secondary" size="small" text @click="emit('cancel')" />
-                </div>
+                <Button
+                    v-tooltip.top="isEditing ? 'Save changes' : 'Save'"
+                    :aria-label="isEditing ? 'Save changes' : 'Save'"
+                    :icon="isEditing ? 'pi pi-check' : 'pi pi-send'"
+                    rounded
+                    size="small"
+                    :disabled="!canSave"
+                    :loading="isSaving"
+                    @click="emit('save')"
+                />
             </div>
         </div>
     </div>
