@@ -17,6 +17,7 @@ import { useAnnotationBlocks } from '../composables/use.annotation-blocks'
 import { useAnnotationEditor } from '../composables/use.annotation-editor'
 
 const HIGHLIGHT_CLASS = 'annotation-highlighted'
+const HOVERED_CLASS = 'annotation-hovered'
 const HIGHLIGHT_DURATION = 2500
 
 const props = defineProps<{ documentId: string; content: string }>()
@@ -74,15 +75,23 @@ function highlight(element: HTMLElement) {
     highlightTimer = setTimeout(clearHighlight, HIGHLIGHT_DURATION)
 }
 
+function setHovered(block: DomBlock | null) {
+    if (hoveredBlock.value?.element === block?.element) return
+
+    hoveredBlock.value?.element.classList.remove(HOVERED_CLASS)
+    block?.element.classList.add(HOVERED_CLASS)
+    hoveredBlock.value = block
+}
+
 function handleMouseOver(event: MouseEvent) {
     // The button sits on top of the block it belongs to, so pointing at it must not clear the block.
     if (event.target instanceof HTMLElement && event.target.closest('[data-annotation-trigger]')) return
 
-    hoveredBlock.value = findBlockAt(event.target)
+    setHovered(findBlockAt(event.target))
 }
 
 function handleMouseLeave() {
-    hoveredBlock.value = null
+    setHovered(null)
 }
 
 function openEditor(event: MouseEvent) {
@@ -209,12 +218,15 @@ onKeyStroke('Escape', () => {
 
 watch(() => props.content, refresh)
 
-onScopeDispose(clearHighlight)
+onScopeDispose(() => {
+    clearHighlight()
+    setHovered(null)
+})
 </script>
 
 <template>
     <div class="gap-6 flex items-start justify-center">
-        <div class="gap-3 max-w-3xl flex w-full flex-col">
+        <div class="gap-3 max-w-5xl flex w-full flex-col">
             <div
                 v-if="isReanchoring"
                 class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
@@ -224,6 +236,10 @@ onScopeDispose(clearHighlight)
                 </span>
                 <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
             </div>
+
+            <p v-if="!isReanchoring" class="text-xs text-surface-500">
+                Hover any block of the document to comment on it.
+            </p>
 
             <div
                 ref="containerRef"
@@ -295,6 +311,12 @@ onScopeDispose(clearHighlight)
     border-left: 3px solid var(--p-primary-color);
     background-color: color-mix(in srgb, var(--p-primary-color) 8%, transparent);
     padding-left: 0.5rem;
+}
+
+.md-editor-preview .annotation-hovered {
+    background-color: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--p-primary-color) 10%, transparent);
 }
 
 .md-editor-preview .annotation-highlighted {
