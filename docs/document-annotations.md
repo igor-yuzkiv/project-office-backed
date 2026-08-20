@@ -1,6 +1,6 @@
 # Document annotations
 
-Block-level comments on a project document. Annotations live in their own view —
+Block-level comments on a project document. Annotations live in their own view,
 `/#/project-documents/{id}/annotations`, reachable from the document page through the
 `Annotation mode` header action. The document is rendered as a sheet on a canvas: clicking a
 block selects it, and a chat-style composer docks below the document to write a comment
@@ -26,7 +26,7 @@ rather than an event in the life of the project.
 
 There is **no authorization** on annotations: any authenticated user may edit or delete
 any of them. The SPA hides `Edit`, `Delete` and `Re-anchor` on other people's cards by
-comparing `author.id`, but that is presentation only — the API enforces nothing.
+comparing `author.id`, but that is presentation only. The API enforces nothing.
 
 ## WebApi
 
@@ -47,8 +47,8 @@ whole object: `content` is required even when only the anchor changes.
 
 The rendered preview is the only thing an annotation can point at, and it gives us one
 usable coordinate: `data-line`, which `md-editor-v3` puts on rendered blocks. That alone is
-not enough — nested blocks share one value, and fenced code blocks have none — so an anchor
-combines five fields:
+not enough: nested blocks share one value, and fenced code blocks have none. An anchor
+therefore combines six fields:
 
 | Field | Meaning |
 |---|---|
@@ -66,8 +66,8 @@ recomputes it: iterating UTF-8 bytes would give a different value for non-ASCII 
 Alongside the anchor an annotation stores `text_snapshot` — the same normalized text,
 truncated to 300 characters.
 
-The backend never interprets any of this. It validates the shape, stores it, and hands it
-back.
+The backend never interprets any of this. It accepts exactly the six keys above, rejects
+any other, stores the result and hands it back.
 
 **Code blocks have `line: null`** because `md-editor-v3` renders fenced code through a
 highlighter that returns finished `<pre>` markup, and markdown-it drops the token's
