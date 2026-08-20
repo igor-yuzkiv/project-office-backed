@@ -54,7 +54,7 @@ language:
   chat: Ukrainian          # conversation with the user
   code: English            # identifiers and comments
   git: English             # commit messages, branch names, PR title and body
-  repo_docs: Ukrainian     # README, ADR, docs/ — anything committed
+  repo_docs: English       # README, ADR, docs/ — anything committed goes to git in English
   tasks: Ukrainian         # task descriptions, specs and board comments; paths, identifiers and commands stay as-is
   client:                  # not applicable: artifacts.client_update is none
   local_notes: Ukrainian   # anything not committed
