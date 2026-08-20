@@ -46,7 +46,7 @@ defineExpose({ focus })
                 ref="textareaRef"
                 v-model="draft"
                 auto-resize
-                class="pr-24 w-full"
+                class="pr-24 max-h-48 w-full overflow-y-auto"
                 :placeholder="isEditing ? 'Edit the comment' : 'Write a comment'"
                 rows="4"
                 @keydown="handleKeydown"
@@ -69,6 +69,7 @@ defineExpose({ focus })
                     :icon="isEditing ? 'pi pi-check' : 'pi pi-send'"
                     rounded
                     size="small"
+                    text
                     :disabled="!canSave"
                     :loading="isSaving"
                     @click="emit('save')"
