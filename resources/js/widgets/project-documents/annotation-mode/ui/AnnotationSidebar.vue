@@ -75,9 +75,11 @@ function isOwn(annotation: IAnnotation): boolean {
             >
                 <div class="gap-2 flex items-center justify-between">
                     <div class="gap-2 min-w-0 flex items-center">
+                        <!-- Avatar draws the label instead of the image when both are given. -->
                         <Avatar
                             :image="anchor.annotation.author.avatar_url ?? undefined"
-                            :label="anchor.annotation.author.initials"
+                            :label="anchor.annotation.author.avatar_url ? undefined : anchor.annotation.author.initials"
+                            :pt="{ root: { class: '!bg-indigo-500 !text-white !text-xs !font-semibold' } }"
                             shape="circle"
                             size="normal"
                         />
