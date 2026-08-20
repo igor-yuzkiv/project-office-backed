@@ -9,6 +9,10 @@ withDefaults(defineProps<{ modelValue: string; showCatalog?: boolean }>(), {
     showCatalog: false,
 })
 
+const emit = defineEmits<{
+    (e: 'htmlChanged', html: string): void
+}>()
+
 const themeStore = useAppThemeStore()
 const editorId = useId()
 
@@ -34,6 +38,14 @@ onMounted(() => {
     }
     catalogScrollElement.value ??= document.documentElement
 })
+
+// The rendered markdown lives in md-editor-v3's own container; consumers that decorate blocks
+// need that element, not this wrapper.
+function getPreviewRoot(): HTMLElement | null {
+    return rootRef.value?.querySelector('.md-editor-preview') ?? null
+}
+
+defineExpose({ getPreviewRoot })
 </script>
 
 <template>
@@ -46,6 +58,7 @@ onMounted(() => {
             :code-foldable="false"
             preview-theme="github"
             @on-get-catalog="(list) => (catalogHeadings = list)"
+            @on-html-changed="(html) => emit('htmlChanged', html)"
         />
         <!-- code-theme="github" -->
         <!--

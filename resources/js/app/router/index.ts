@@ -206,6 +206,12 @@ const router = createRouter({
             meta: { requiresAuth: true, layout: 'default', title: 'Edit Document' },
         },
         {
+            path: '/project-documents/:id/annotations',
+            name: 'project-document-annotations',
+            component: () => import('@/pages/project-documents/annotations/ProjectDocumentAnnotationsPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Annotation Mode' },
+        },
+        {
             path: '/profile',
             name: 'profile',
             component: () => import('@/pages/user/CurrentUserProfilePage.vue'),
