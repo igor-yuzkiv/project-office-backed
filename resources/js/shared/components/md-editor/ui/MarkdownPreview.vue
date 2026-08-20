@@ -45,7 +45,8 @@ function getPreviewRoot(): HTMLElement | null {
     return rootRef.value?.querySelector('.md-editor-preview') ?? null
 }
 
-defineExpose({ getPreviewRoot })
+// The catalog can also be rendered by the consumer, next to the preview instead of over it.
+defineExpose({ getPreviewRoot, editorId, previewTheme, catalogScrollElement, hasCatalogHeadings })
 </script>
 
 <template>
