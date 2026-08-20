@@ -86,6 +86,14 @@ it('creates an annotation and returns the anchor exactly as it was sent', functi
     expect($this->document->annotations()->count())->toBe(1);
 });
 
+it('stores an anchor without a line, as a fenced code block produces', function () {
+    $anchor = annotationAnchor(['line' => null, 'tag' => 'pre']);
+
+    $this->postJson("/api/project-documents/{$this->document->id}/annotations", annotationPayload(['anchor' => $anchor]))
+        ->assertCreated()
+        ->assertJsonPath('data.anchor', $anchor);
+});
+
 it('rejects an annotation that fails validation', function (array $payload) {
     $this->postJson("/api/project-documents/{$this->document->id}/annotations", $payload)
         ->assertStatus(422);
@@ -94,6 +102,7 @@ it('rejects an annotation that fails validation', function (array $payload) {
     'without anchor'       => fn () => array_diff_key(annotationPayload(), ['anchor' => null]),
     'unsupported version'  => fn () => annotationPayload(['anchor' => annotationAnchor(['version' => 2])]),
     'content beyond limit' => fn () => annotationPayload(['content' => str_repeat('x', 5001)]),
+    'unknown anchor key'   => fn () => annotationPayload(['anchor' => annotationAnchor(['scrolled' => true])]),
 ]);
 
 it('updates the content of an own annotation', function () {
@@ -125,6 +134,20 @@ it('rejects an update without content, because the whole object is written', fun
 
     $this->patchJson("/api/annotations/{$annotation->id}", array_diff_key(annotationPayload(), ['content' => null]))
         ->assertStatus(422);
+});
+
+// Annotations carry no policy at all — a recorded decision, and the least expected thing here.
+it('lets any authenticated user update and delete an annotation of another user', function () {
+    $annotation = AnnotationModel::factory()->for($this->document, 'annotatable')
+        ->for(UserModel::factory(), 'author')->create();
+
+    $this->patchJson("/api/annotations/{$annotation->id}", annotationPayload(['content' => 'Edited by someone else']))
+        ->assertOk()
+        ->assertJsonPath('data.content', 'Edited by someone else');
+
+    $this->deleteJson("/api/annotations/{$annotation->id}")->assertOk();
+
+    expect(AnnotationModel::query()->count())->toBe(0);
 });
 
 it('deletes an own annotation', function () {

@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
+import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
 import Button from 'primevue/button'
 import type { IAnnotation } from '@/entities/annotation'
 import { useProjectDocumentAnnotationsQuery } from '@/entities/project-document'
 import { useAuthStore } from '@/app/stores/use.auth.store'
-import { MdCatalog } from 'md-editor-v3'
-import { MarkdownPreview } from '@/shared/components/md-editor'
+import { MarkdownCatalog, MarkdownPreview } from '@/shared/components/md-editor'
 import { useToast } from '@/shared/composables/use.toast'
 import type { DomBlock } from '@/shared/utils/markdown-anchor.dom.util'
 import { buildAnchor, buildTextSnapshot } from '@/shared/utils/markdown-anchor.util'
 import AnnotationComposer from './AnnotationComposer.vue'
 import AnnotationSidebar from './AnnotationSidebar.vue'
+import { ANNOTATION_CLASS, moveClass } from '../composables/annotation-decoration'
 import { useAnnotationAnchors } from '../composables/use.annotation-anchors'
 import { useAnnotationBlocks } from '../composables/use.annotation-blocks'
 import { useAnnotationEditor } from '../composables/use.annotation-editor'
-
-const HOVERED_CLASS = 'annotation-hovered'
-const SELECTED_CLASS = 'annotation-selected'
 
 const props = defineProps<{ documentId: string; content: string }>()
 
@@ -25,8 +22,6 @@ const authStore = useAuthStore()
 const toast = useToast()
 
 const previewRef = ref<InstanceType<typeof MarkdownPreview>>()
-/** Template-facing alias: the outline needs the preview's own id and scroll target. */
-const preview = computed(() => previewRef.value)
 
 // shallowRef: these hold live DOM nodes, and a deep ref would wrap them in reactive proxies.
 const hoveredBlock = shallowRef<DomBlock | null>(null)
@@ -43,39 +38,21 @@ const { create, update, remove, isSaving, isUpdating } = useAnnotationEditor(() 
 
 const isBusy = computed(() => isSaving.value || isUpdating.value)
 const isReanchoring = computed(() => reanchoring.value !== null)
-const isComposing = computed(() => editing.value !== null || selectedBlock.value !== null)
-
-const BLOCK_LABELS: Record<string, string> = {
-    p: 'Paragraph',
-    li: 'List item',
-    pre: 'Code',
-    blockquote: 'Quote',
-    table: 'Table',
-}
-
-const composerLabel = computed(() => {
-    const tag = selectedBlock.value?.descriptor.tag ?? editing.value?.anchor.tag ?? ''
-
-    return BLOCK_LABELS[tag] ?? (/^h[1-6]$/.test(tag) ? 'Heading' : tag)
-})
-
-function decorate(block: DomBlock | null, className: string, previous: DomBlock | null) {
-    previous?.element.classList.remove(className)
-    block?.element.classList.add(className)
-}
+const isComposing = computed(() => selectedBlock.value !== null)
 
 function setHovered(block: DomBlock | null) {
-    if (hoveredBlock.value?.element === block?.element) return
-
-    decorate(block, HOVERED_CLASS, hoveredBlock.value)
+    moveClass(ANNOTATION_CLASS.hovered, hoveredBlock.value?.element ?? null, block?.element ?? null)
     hoveredBlock.value = block
 }
 
 function setSelected(block: DomBlock | null) {
-    if (selectedBlock.value?.element === block?.element) return
-
-    decorate(block, SELECTED_CLASS, selectedBlock.value)
+    moveClass(ANNOTATION_CLASS.selected, selectedBlock.value?.element ?? null, block?.element ?? null)
     selectedBlock.value = block
+}
+
+function clearDraft() {
+    draft.value = ''
+    editing.value = null
 }
 
 function handleMouseOver(event: MouseEvent) {
@@ -86,20 +63,14 @@ function handleMouseLeave() {
     setHovered(null)
 }
 
-function clearDraft() {
-    draft.value = ''
-    editing.value = null
-}
-
 async function handleClick(event: MouseEvent) {
+    const block = findBlockAt(event.target)
     const annotation = reanchoring.value
 
     if (!annotation) {
-        const block = findBlockAt(event.target)
-
         if (block) {
-            setSelected(block)
             clearDraft()
+            setSelected(block)
         }
 
         return
@@ -108,11 +79,7 @@ async function handleClick(event: MouseEvent) {
     // A block may contain a link, and picking it must not navigate away mid-request.
     event.preventDefault()
 
-    if (isUpdating.value) return
-
-    const block = findBlockAt(event.target)
-
-    if (!block) return
+    if (!block || isUpdating.value) return
 
     const saved = await update(annotation.id, {
         content: annotation.content,
@@ -161,23 +128,20 @@ function cancel() {
     setSelected(null)
 }
 
-function scrollTo(element: HTMLElement) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-}
+/** Returns the block an annotation currently sits on, after scrolling it into view. */
+function selectAnnotation(annotation: IAnnotation): DomBlock | null {
+    const block = orderedAnchors.value.find((item) => item.annotation.id === annotation.id)?.block ?? null
 
-function selectAnnotation(annotation: IAnnotation) {
-    const anchor = orderedAnchors.value.find((item) => item.annotation.id === annotation.id)
-    const block = anchor?.element ? blocks.value.find((item) => item.element === anchor.element) : null
+    clearDraft()
+    setSelected(block)
 
     if (!block) {
         toast.info('This annotation has lost its block. Use Re-anchor to attach it again.')
-        setSelected(null)
 
         return null
     }
 
-    setSelected(block)
-    scrollTo(block.element)
+    block.element.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
     return block
 }
@@ -192,18 +156,15 @@ function editAnnotation(annotation: IAnnotation) {
 function startReanchoring(annotation: IAnnotation) {
     reanchoring.value = annotation
     clearDraft()
+    // The composer must go: while picking a target, Enter would write a new annotation instead.
+    setSelected(null)
 }
 
 function cancelReanchoring() {
     reanchoring.value = null
 }
 
-onKeyStroke('Escape', () => {
-    if (isReanchoring.value) cancelReanchoring()
-    else cancel()
-})
-
-watch(() => props.content, refresh)
+onKeyStroke('Escape', () => (isReanchoring.value ? cancelReanchoring() : cancel()))
 
 onScopeDispose(() => {
     setHovered(null)
@@ -217,12 +178,10 @@ onScopeDispose(() => {
             <div class="gap-3 p-6 annotation-canvas min-h-0 flex flex-1 flex-col items-center overflow-y-auto">
                 <div class="gap-6 max-w-7xl flex w-full items-start">
                     <!-- Beside the sheet, not over it: the sheet is the thing being annotated. -->
-                    <MdCatalog
-                        v-if="preview?.hasCatalogHeadings"
+                    <MarkdownCatalog
+                        v-if="previewRef"
                         class="top-0 rounded-lg p-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 w-56 text-sm shadow-sm xl:block sticky hidden max-h-[70vh] shrink-0 overflow-y-auto border"
-                        :editor-id="preview.editorId"
-                        :scroll-element="preview.catalogScrollElement"
-                        :theme="preview.previewTheme"
+                        :catalog="previewRef.catalog"
                     />
 
                     <div class="gap-3 min-w-0 flex flex-1 flex-col">
@@ -254,8 +213,8 @@ onScopeDispose(() => {
             <!-- Docked like a chat composer: it appears once a block is picked, and never covers the text. -->
             <AnnotationComposer
                 v-if="isComposing"
+                :key="selectedBlock?.descriptor.index"
                 v-model:draft="draft"
-                :block-label="composerLabel"
                 :is-editing="editing !== null"
                 :is-saving="isBusy"
                 @save="save"
@@ -328,10 +287,5 @@ onScopeDispose(() => {
     box-shadow: 0 0 0 4px color-mix(in srgb, #f59e0b 18%, transparent);
     outline: 2px solid #f59e0b;
     outline-offset: 2px;
-}
-
-.annotation-picking .md-editor-preview :is(p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, table):hover {
-    cursor: pointer;
-    background-color: color-mix(in srgb, var(--p-primary-color) 14%, transparent);
 }
 </style>

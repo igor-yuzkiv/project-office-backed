@@ -1,5 +1,1 @@
 export { default as DocumentAnnotationMode } from './ui/DocumentAnnotationMode.vue'
-export { default as AnnotationSidebar } from './ui/AnnotationSidebar.vue'
-export { useAnnotationAnchors, type AnnotationAnchor } from './composables/use.annotation-anchors'
-export { useAnnotationBlocks } from './composables/use.annotation-blocks'
-export { useAnnotationEditor } from './composables/use.annotation-editor'

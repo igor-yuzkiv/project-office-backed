@@ -41,6 +41,17 @@ describe('hashBlockText', () => {
         expect(hashBlockText('First block.')).not.toBe(hashBlockText('Second block.'))
     })
 
+    // Golden vectors: these values are written to the database and must survive any refactor
+    // of the hash or of the normalization it runs first.
+    it.each([
+        ['The first paragraph of the annotated document.', 'b33bd1f7'],
+        ['Привіт світ', '792f6b4b'],
+        ['🎉 party', '45dbaf0e'],
+        ['', '811c9dc5'],
+    ])('hashes %j to %s', (text, expected) => {
+        expect(hashBlockText(text)).toBe(expected)
+    })
+
     it('always returns eight lowercase hex characters', () => {
         const samples = ['', 'a', 'Привіт світ', 'x'.repeat(5000), '🎉']
 
