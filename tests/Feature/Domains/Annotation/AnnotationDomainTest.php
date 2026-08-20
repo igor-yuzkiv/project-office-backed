@@ -112,20 +112,3 @@ it('removes the annotations of a deleted document', function () {
 
     expect(AnnotationModel::query()->count())->toBe(0);
 });
-
-it('allows only the author to update and delete an annotation', function () {
-    $author = UserModel::factory()->create();
-    $other = UserModel::factory()->create();
-
-    $annotation = AnnotationModel::factory()
-        ->for(documentFixture(), 'annotatable')
-        ->for($author, 'author')
-        ->create();
-
-    expect($author->can('update', $annotation))->toBeTrue()
-        ->and($author->can('delete', $annotation))->toBeTrue()
-        ->and($other->can('update', $annotation))->toBeFalse()
-        ->and($other->can('delete', $annotation))->toBeFalse()
-        ->and($other->can('view', $annotation))->toBeTrue()
-        ->and($other->can('create', AnnotationModel::class))->toBeTrue();
-});

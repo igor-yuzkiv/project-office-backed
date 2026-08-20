@@ -3,8 +3,6 @@
 namespace App\Infrastructure\Providers;
 
 use App\Console\Commands\IgorTestCommand;
-use App\Domains\Annotation\Models\AnnotationModel;
-use App\Domains\Annotation\Policies\AnnotationPolicy;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Attachment\Services\S3AttachmentStorageService;
 use App\Domains\Comment\Models\CommentModel;
@@ -41,6 +39,5 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         Gate::policy(CommentModel::class, CommentPolicy::class);
-        Gate::policy(AnnotationModel::class, AnnotationPolicy::class);
     }
 }
