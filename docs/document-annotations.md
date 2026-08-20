@@ -2,8 +2,11 @@
 
 Block-level comments on a project document. Annotations live in their own view —
 `/#/project-documents/{id}/annotations`, reachable from the document page through the
-`Annotation mode` header action — where hovering a block offers a comment button and a
-sidebar lists every annotation in document order.
+`Annotation mode` header action. The document is rendered as a sheet on a canvas: clicking a
+block selects it, and a chat-style composer docks below the document to write a comment
+against that selection. The sidebar on the right lists every annotation in document order;
+`Edit` scrolls to the annotated block, selects it, and loads the comment back into the
+composer.
 
 An annotation belongs to a block of the *rendered* document, not to a character range of
 the markdown source. Editing the document therefore does not move annotations by itself:
