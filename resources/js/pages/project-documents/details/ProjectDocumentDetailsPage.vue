@@ -66,6 +66,15 @@ useHeaderActions(() => [
         to: { name: 'project-document-edit', params: { id: documentId.value } },
         is_primary: true,
     },
+    ...(projectDocument.value?.content
+        ? [
+              {
+                  key: 'annotate-project-document',
+                  title: 'Annotation mode',
+                  to: { name: 'project-document-annotations', params: { id: documentId.value } },
+              },
+          ]
+        : []),
     { key: 'move-project-document', title: 'Move', action: moveDialog.open },
     { key: 'delete-project-document', title: 'Delete', action: handleDeleteProjectDocument },
 ])
