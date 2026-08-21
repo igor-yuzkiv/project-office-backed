@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, useTemplateRef, type ComponentPublicInstance } from 'vue'
+import { useFocus } from '@vueuse/core'
 import Button from 'primevue/button'
 import Textarea from 'primevue/textarea'
 
@@ -15,14 +16,15 @@ const emit = defineEmits<{
 
 const draft = defineModel<string>('draft', { required: true })
 
-// PrimeVue's Textarea renders the <textarea> as its own root, and $el is how a component
-// instance hands that element out.
+// useFocus resolves a component instance to its own element, so PrimeVue's Textarea
+// can be handed over as it is.
 const input = useTemplateRef<ComponentPublicInstance>('input')
+const { focused } = useFocus(input)
 
 const canSave = computed(() => draft.value.trim().length > 0 && !props.isSaving)
 
 function focus() {
-    nextTick(() => (input.value?.$el as HTMLTextAreaElement | undefined)?.focus())
+    nextTick(() => (focused.value = true))
 }
 
 /** Enter sends, Shift+Enter breaks the line — the shape everyone already knows from chat. */
