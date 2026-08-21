@@ -55,7 +55,7 @@ const banners = computed<SummaryBanner[]>(() => {
     -->
     <div
         v-if="isError"
-        class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 gap-3 p-8 flex flex-col items-center rounded-xl border"
+        class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 gap-3 p-8 rounded-xl flex flex-col items-center border"
     >
         <p class="text-surface-500 text-sm">Could not load the dashboard summary.</p>
         <Button label="Try again" size="small" severity="secondary" @click="emit('retry')" />

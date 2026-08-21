@@ -20,7 +20,12 @@ useBreadcrumbs(() => [
         : []),
     {
         label: projectDocument.value?.title ?? 'Document',
-        to: { name: 'project-document-details', params: { id: documentId.value } },
+        to: projectDocument.value
+            ? {
+                  name: 'project-documentation.document',
+                  params: { projectId: projectDocument.value.project_id, documentId: documentId.value },
+              }
+            : undefined,
     },
     { label: 'Annotation Mode' },
 ])

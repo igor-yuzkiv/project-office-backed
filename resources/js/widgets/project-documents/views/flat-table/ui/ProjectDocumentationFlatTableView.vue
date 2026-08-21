@@ -22,6 +22,14 @@ defineEmits<{
     (e: 'pageChange', page: number): void
 }>()
 
+// This view takes both document shapes, and only one of them knows its project.
+// Rows that do link straight into the workspace; the rest go through the resolver.
+function documentRoute(row: ProjectDocumentOverviewDto | ProjectDocumentTreeNodeDto) {
+    return typeof row.project_id === 'string'
+        ? { name: 'project-documentation.document', params: { projectId: row.project_id, documentId: row.id } }
+        : { name: 'project-document-resolver', params: { id: row.id } }
+}
+
 const columns: EntityTableColumnDef[] = [
     { field: 'key', header: 'Key', style: 'width: 10rem' },
     { field: 'title', header: 'Title' },
@@ -46,7 +54,7 @@ const columns: EntityTableColumnDef[] = [
         </template>
 
         <template #column:title="{ row }">
-            <RouterLink :to="{ name: 'project-document-details', params: { id: row.id } }" class="app-link">
+            <RouterLink :to="documentRoute(row)" class="app-link">
                 {{ row.title }}
             </RouterLink>
         </template>

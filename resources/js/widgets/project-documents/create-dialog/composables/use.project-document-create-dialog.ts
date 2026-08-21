@@ -74,7 +74,10 @@ export function useProjectDocumentCreateDialog(options?: ProjectDocumentCreateDi
                         return
                     }
 
-                    router.push({ name: 'project-document-details', params: { id: response.data.id } })
+                    router.push({
+                        name: 'project-documentation.document',
+                        params: { projectId: response.data.project_id, documentId: response.data.id },
+                    })
                 },
                 onError: handleError,
             }

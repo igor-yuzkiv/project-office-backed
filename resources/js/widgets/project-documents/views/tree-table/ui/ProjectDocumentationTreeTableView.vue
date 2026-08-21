@@ -90,7 +90,7 @@ function onSelectNode(row: ProjectDocumentTreeNodeDto) {
 
             <RouterLink
                 v-else
-                :to="{ name: 'project-document-details', params: { id: row.id } }"
+                :to="{ name: 'project-document-resolver', params: { id: row.id } }"
                 class="app-link gap-2 flex items-center"
             >
                 <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />

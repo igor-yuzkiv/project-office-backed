@@ -59,13 +59,6 @@ const router = createRouter({
                     name: 'project-details.attachments',
                     component: () => import('@/pages/projects/details/tabs/ProjectAttachmentsPage.vue'),
                 },
-                {
-                    // The workspace owns `/projects/:id/documentation`; this tab keeps a
-                    // distinct path until it is removed with the old document surface.
-                    path: 'documentation-tab',
-                    name: 'project-details.documentation',
-                    component: () => import('@/pages/projects/details/tabs/ProjectDocumentationPage.vue'),
-                },
             ],
         },
         {
@@ -184,45 +177,18 @@ const router = createRouter({
             ],
         },
         {
+            // Not a page: it resolves a document to its project and hands it to the
+            // workspace. Saved links and the activity stream know only the document.
             path: '/project-documents/:id',
-            name: 'project-document-details',
-            component: () => import('@/pages/project-documents/details/ProjectDocumentDetailsPage.vue'),
+            name: 'project-document-resolver',
+            component: () => import('@/pages/project-documents/resolver/ProjectDocumentResolverPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Document' },
-            redirect: (to) => ({ name: 'project-document-details.details', params: to.params }),
-            children: [
-                {
-                    path: 'details',
-                    name: 'project-document-details.details',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentOverviewPage.vue'),
-                },
-                {
-                    path: 'content',
-                    name: 'project-document-details.content',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentContentPage.vue'),
-                },
-                {
-                    path: 'related-tasks',
-                    name: 'project-document-details.related-tasks',
-                    component: () =>
-                        import('@/pages/project-documents/details/tabs/ProjectDocumentRelatedTasksPage.vue'),
-                },
-                {
-                    path: 'comments',
-                    name: 'project-document-details.comments',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentCommentsPage.vue'),
-                },
-                {
-                    path: 'children',
-                    name: 'project-document-details.children',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentChildrenPage.vue'),
-                },
-            ],
         },
         {
-            path: '/project-documents/:id/edit',
-            name: 'project-document-edit',
-            component: () => import('@/pages/project-documents/edit/ProjectDocumentEditPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Edit Document' },
+            // The five-tab surface is gone, but its URLs are in people's bookmarks.
+            // Only the tabs that existed are listed, so `/annotations` still matches itself.
+            path: '/project-documents/:id/:removedTab(details|content|children|tasks|comments|edit)',
+            redirect: (to) => ({ name: 'project-document-resolver', params: { id: to.params.id } }),
         },
         {
             path: '/project-documents/:id/annotations',

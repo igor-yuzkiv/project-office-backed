@@ -5,6 +5,8 @@ import { useProjectQuery } from '@/entities/project/queries'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
+import { Icon } from '@iconify/vue'
+import Button from 'primevue/button'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
@@ -73,6 +75,19 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                 </div>
 
                 <div class="gap-x-2 flex items-center">
+                    <Button
+                        label="Documentation"
+                        size="small"
+                        severity="secondary"
+                        outlined
+                        :as="'router-link'"
+                        :to="{ name: 'project-documentation', params: { projectId } }"
+                    >
+                        <template #icon>
+                            <Icon icon="heroicons:book-open" class="mr-1 text-base" />
+                        </template>
+                    </Button>
+
                     <ProjectStatusTag :status="project.status" class="w-fit" show-icon />
                 </div>
             </div>
@@ -82,7 +97,6 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                 <Tab value="task-lists" class="px-4 py-2">Task Lists</Tab>
                 <Tab value="tasks" class="px-4 py-2">Tasks</Tab>
                 <Tab value="issues" class="px-4 py-2">Issues</Tab>
-                <Tab value="documentation" class="px-4 py-2">Documentation</Tab>
                 <Tab value="attachments" class="px-4 py-2">Attachments</Tab>
             </TabList>
 

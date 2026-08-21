@@ -65,7 +65,7 @@ const SUBJECT_ROUTE_NAMES: Record<KnownAuditRecordSubjectType, string> = {
     task: 'task-details',
     task_list: 'task-list-details',
     project: 'project-details',
-    project_document: 'project-document-details',
+    project_document: 'project-document-resolver',
 }
 
 /**

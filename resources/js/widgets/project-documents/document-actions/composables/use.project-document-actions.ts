@@ -22,8 +22,6 @@ export function useProjectDocumentActions(
     const moveDialog = useProjectDocumentMove(documentId, { onMoved: () => options.onMoved?.() })
     const { mutateWithConfirm: deleteDocument } = useDeleteProjectDocumentMutation()
 
-    const editRoute = computed(() => ({ name: 'project-document-edit', params: { id: documentId() } }))
-
     // Annotating needs something to annotate.
     const annotationRoute = computed(() =>
         toValue(document)?.content ? { name: 'project-document-annotations', params: { id: documentId() } } : null
@@ -37,5 +35,5 @@ export function useProjectDocumentActions(
         deleteDocument(current.id, current.title, () => options.onDeleted?.(current))
     }
 
-    return { editRoute, annotationRoute, moveDialog, remove }
+    return { annotationRoute, moveDialog, remove }
 }
