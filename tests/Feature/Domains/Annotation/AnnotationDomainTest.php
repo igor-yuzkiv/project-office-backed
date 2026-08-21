@@ -6,6 +6,7 @@ use App\Domains\Annotation\Actions\DeleteAnnotation\DeleteAnnotationCommand;
 use App\Domains\Annotation\Actions\DeleteAnnotation\DeleteAnnotationHandler;
 use App\Domains\Annotation\Actions\UpdateAnnotation\UpdateAnnotationCommand;
 use App\Domains\Annotation\Actions\UpdateAnnotation\UpdateAnnotationHandler;
+use App\Domains\Annotation\DTO\BlockAnchorDTO;
 use App\Domains\Annotation\Models\AnnotationModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentCommand;
@@ -43,7 +44,7 @@ it('attaches a created annotation to the document and stores its anchor', functi
         annotatable: $document,
         author: $author,
         content: 'Needs a clearer example here.',
-        anchor: anchorFixture(),
+        anchor: BlockAnchorDTO::fromArray(anchorFixture()),
         textSnapshot: 'The first sentence of the block.',
     ));
 
@@ -61,7 +62,7 @@ it('does not record an audit trail entry when an annotation is created', functio
         annotatable: $document,
         author: $author,
         content: 'Review note.',
-        anchor: anchorFixture(),
+        anchor: BlockAnchorDTO::fromArray(anchorFixture()),
     ));
 
     expect(DB::table('audit_records')->count())->toBe(0);
@@ -79,7 +80,7 @@ it('updates content, anchor and text snapshot together', function () {
     app(UpdateAnnotationHandler::class)->handle(new UpdateAnnotationCommand(
         annotation: $annotation,
         content: 'Re-anchored to the moved paragraph.',
-        anchor: anchorFixture(['line' => 30, 'index' => 11, 'text_hash' => '00ff11aa']),
+        anchor: BlockAnchorDTO::fromArray(anchorFixture(['line' => 30, 'index' => 11, 'text_hash' => '00ff11aa'])),
         textSnapshot: 'The paragraph after the move.',
     ));
 

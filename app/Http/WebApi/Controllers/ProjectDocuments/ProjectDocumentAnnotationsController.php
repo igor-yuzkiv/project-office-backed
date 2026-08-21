@@ -4,6 +4,7 @@ namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
 use App\Domains\Annotation\Actions\CreateAnnotation\CreateAnnotationCommand;
 use App\Domains\Annotation\Actions\CreateAnnotation\CreateAnnotationHandler;
+use App\Domains\Annotation\DTO\BlockAnchorDTO;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\User\Models\UserModel;
 use App\Http\Shared\Resources\Annotations\AnnotationResource;
@@ -36,7 +37,7 @@ class ProjectDocumentAnnotationsController
             annotatable: $projectDocument,
             author: $user,
             content: $request->validated('content'),
-            anchor: $request->validated('anchor'),
+            anchor: BlockAnchorDTO::fromArray($request->validated('anchor')),
             textSnapshot: $request->validated('text_snapshot'),
         ));
 

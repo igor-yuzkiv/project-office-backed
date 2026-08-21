@@ -10,7 +10,7 @@ const { projectDocument } = useProjectDocumentQuery(documentId)
 
 <template>
     <div class="p-4 md:container md:mx-auto">
-        <MarkdownPreview v-if="projectDocument?.content" :model-value="projectDocument.content" show-catalog />
+        <MarkdownPreview v-if="projectDocument?.content" :model-value="projectDocument.content" />
         <p v-else class="text-sm text-surface-400 italic">No content yet.</p>
     </div>
 </template>

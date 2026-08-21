@@ -1,21 +1,13 @@
 <script setup lang="ts">
 import { useRouteParams } from '@vueuse/router'
-import { useRouter } from 'vue-router'
 import Skeleton from 'primevue/skeleton'
-import { useBreadcrumbs, useHeaderActions } from '@/app/shell'
+import { useBreadcrumbs } from '@/app/shell'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { DocumentAnnotationMode } from '@/widgets/project-documents/annotation-mode'
 
 const documentId = useRouteParams<string>('id')
-const router = useRouter()
 
 const { projectDocument, isPending, isError } = useProjectDocumentQuery(documentId)
-
-function backToDocument() {
-    router.push({ name: 'project-document-details.content', params: { id: documentId.value } })
-}
-
-useHeaderActions([{ key: 'back-to-document', title: 'Back to document', action: backToDocument }])
 
 useBreadcrumbs(() => [
     ...(projectDocument.value?.project

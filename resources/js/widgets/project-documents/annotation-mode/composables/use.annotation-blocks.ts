@@ -1,5 +1,5 @@
 import { nextTick, onMounted, shallowRef } from 'vue'
-import { useMutationObserver } from '@vueuse/core'
+import { useMutationObserver, useRafFn } from '@vueuse/core'
 import {
     collectDomBlocks,
     EMPTY_DOM_BLOCKS,
@@ -12,8 +12,6 @@ export function useAnnotationBlocks(getPreviewRoot: () => HTMLElement | null) {
     // shallowRef, not ref: a deep ref would hand back reactive proxies of the elements, and
     // every identity comparison against a live DOM node would fail.
     const blocks = shallowRef<DomBlocks>(EMPTY_DOM_BLOCKS)
-
-    let frame = 0
 
     function collect() {
         const root = getPreviewRoot()
@@ -35,15 +33,9 @@ export function useAnnotationBlocks(getPreviewRoot: () => HTMLElement | null) {
     /**
      * The preview keeps replacing its own nodes after the html event — syntax highlighting and
      * formulas land later — and each pass would otherwise cost a full re-collect of its own.
+     * Resuming while a frame is already pending is a no-op, which is the coalescing we want.
      */
-    function scheduleCollect() {
-        if (frame) return
-
-        frame = requestAnimationFrame(() => {
-            frame = 0
-            collect()
-        })
-    }
+    const { resume: scheduleCollect } = useRafFn(collect, { immediate: false, once: true })
 
     async function refresh() {
         // md-editor-v3 announces new html from a pre-flush watcher, before the DOM is patched.
