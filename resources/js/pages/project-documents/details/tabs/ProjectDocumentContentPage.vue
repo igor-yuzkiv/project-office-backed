@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouteParams } from '@vueuse/router'
 import { useProjectDocumentQuery } from '@/entities/project-document'
-import { MarkdownPreview } from '@/shared/components/md-editor'
+import { DocumentContentTab } from '@/widgets/project-documents/document-body'
 
 const documentId = useRouteParams<string>('id')
 
@@ -10,7 +10,6 @@ const { projectDocument } = useProjectDocumentQuery(documentId)
 
 <template>
     <div class="p-4 md:container md:mx-auto">
-        <MarkdownPreview v-if="projectDocument?.content" :model-value="projectDocument.content" />
-        <p v-else class="text-sm text-surface-400 italic">No content yet.</p>
+        <DocumentContentTab :content="projectDocument?.content ?? null" />
     </div>
 </template>

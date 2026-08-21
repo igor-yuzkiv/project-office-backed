@@ -5,9 +5,11 @@ import { useRouteParams } from '@vueuse/router'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
+import { useProjectDocumentActions } from '@/widgets/project-documents/document-actions'
+import { ProjectDocumentMoveDialog } from '@/widgets/project-documents/move-dialog'
 import { DocumentDetailsPanel } from '@/widgets/project-documents/document-details'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
-import { useBreadcrumbs } from '@/app/shell'
+import { useBreadcrumbs, useHeaderActions } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 
 const router = useRouter()
@@ -28,6 +30,12 @@ const { projectDocument } = useProjectDocumentQuery(
 
 const isDetailsPanelOpen = ref(true)
 
+// The document the workspace has open, as opposed to one that failed to load or
+// belongs elsewhere: those are not this project's document and get no actions.
+const openedDocument = computed(() =>
+    projectDocument.value?.project_id === projectId.value ? projectDocument.value : undefined
+)
+
 // Owned here rather than in the tree panel: the panel is remounted whenever the
 // workspace layout changes, and a remount must not throw away loaded levels.
 const tree = useDocumentationTree(projectId, {
@@ -37,17 +45,31 @@ const tree = useDocumentationTree(projectId, {
     },
 })
 
+const { editRoute, annotationRoute, moveDialog, remove } = useProjectDocumentActions(openedDocument, {
+    onMoved: () => tree.reload(),
+    onDeleted: (document) => {
+        tree.forgetLevel(document.id)
+        openDocumentationRoot()
+        tree.reload()
+    },
+})
+
+useHeaderActions(() =>
+    openedDocument.value
+        ? [
+              { key: 'edit-project-document', title: 'Edit', to: editRoute.value, is_primary: true },
+              ...(annotationRoute.value
+                  ? [{ key: 'annotate-project-document', title: 'Annotation mode', to: annotationRoute.value }]
+                  : []),
+              { key: 'move-project-document', title: 'Move', action: moveDialog.open },
+              { key: 'delete-project-document', title: 'Delete', action: remove },
+          ]
+        : []
+)
+
 // The document's path ends with the document itself; everything before it is the
 // branch the tree has to open to reveal it.
-const ancestorIds = computed(() => {
-    const document = projectDocument.value
-
-    if (!document || document.project_id !== projectId.value) {
-        return []
-    }
-
-    return (document.path ?? []).slice(0, -1).map((node) => node.id)
-})
+const ancestorIds = computed(() => (openedDocument.value?.path ?? []).slice(0, -1).map((node) => node.id))
 
 function openDocument(id: string) {
     router.push({ name: 'project-documentation.document', params: { projectId: projectId.value, documentId: id } })
@@ -116,6 +138,15 @@ watch(
                 <DocumentDetailsPanel v-model:open="isDetailsPanelOpen" />
             </div>
         </div>
+
+        <ProjectDocumentMoveDialog
+            v-if="openedDocument"
+            v-model:visible="moveDialog.visible.value"
+            :project-id="openedDocument.project_id"
+            :current-document-id="openedDocument.id"
+            :validation-errors="moveDialog.validationErrors.value"
+            @select="moveDialog.handleSelect"
+        />
 
         <ProjectDocumentCreateDialog
             v-model:visible="tree.createDialog.visible.value"

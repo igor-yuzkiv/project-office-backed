@@ -120,6 +120,12 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         }
     }
 
+    // Lets the owner drop a deleted document's branch when the delete happened
+    // somewhere other than the tree's own context menu.
+    function forgetLevel(documentId: string) {
+        tree.forgetLevel(documentId)
+    }
+
     function loadMore(levelKey: string) {
         return tree.loadMoreLevel(levelKey)
     }
@@ -150,6 +156,7 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         toggleNode,
         expandAncestors,
         loadMore,
+        forgetLevel,
         createRootDocument,
         createChildDocument,
         deleteNodeDocument,

@@ -5,11 +5,12 @@ import { useRouteParams } from '@vueuse/router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
-import { useProjectDocumentQuery, useDeleteProjectDocumentMutation } from '@/entities/project-document'
+import { useProjectDocumentQuery } from '@/entities/project-document'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
-import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/project-documents/move-dialog'
+import { ProjectDocumentMoveDialog } from '@/widgets/project-documents/move-dialog'
+import { useProjectDocumentActions } from '@/widgets/project-documents/document-actions'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
@@ -22,17 +23,11 @@ const toast = useToast()
 const documentId = useRouteParams<string>('id')
 
 const { projectDocument, isError } = useProjectDocumentQuery(documentId, { with_path: true })
-const { mutateWithConfirm: deleteProjectDocument } = useDeleteProjectDocumentMutation()
-const moveDialog = useProjectDocumentMove(() => documentId.value)
 
-function handleDeleteProjectDocument() {
-    if (!projectDocument.value) return
-
-    const projectId = projectDocument.value.project_id
-    deleteProjectDocument(projectDocument.value.id, projectDocument.value.title, () =>
-        router.push({ name: 'project-details.documentation', params: { id: projectId } })
-    )
-}
+const { editRoute, annotationRoute, moveDialog, remove } = useProjectDocumentActions(projectDocument, {
+    onDeleted: (document) =>
+        router.push({ name: 'project-details.documentation', params: { id: document.project_id } }),
+})
 
 const activeTab = computed(
     () =>
@@ -57,25 +52,18 @@ function onTabChange(value: string | number) {
     router.push({ name: `project-document-details.${value}`, params: { id: documentId.value } })
 }
 
-useHeaderActions(() => [
-    {
-        key: 'edit-project-document',
-        title: 'Edit',
-        to: { name: 'project-document-edit', params: { id: documentId.value } },
-        is_primary: true,
-    },
-    ...(projectDocument.value?.content
+useHeaderActions(() =>
+    projectDocument.value
         ? [
-              {
-                  key: 'annotate-project-document',
-                  title: 'Annotation mode',
-                  to: { name: 'project-document-annotations', params: { id: documentId.value } },
-              },
+              { key: 'edit-project-document', title: 'Edit', to: editRoute.value, is_primary: true },
+              ...(annotationRoute.value
+                  ? [{ key: 'annotate-project-document', title: 'Annotation mode', to: annotationRoute.value }]
+                  : []),
+              { key: 'move-project-document', title: 'Move', action: moveDialog.open },
+              { key: 'delete-project-document', title: 'Delete', action: remove },
           ]
-        : []),
-    { key: 'move-project-document', title: 'Move', action: moveDialog.open },
-    { key: 'delete-project-document', title: 'Delete', action: handleDeleteProjectDocument },
-])
+        : []
+)
 
 useBreadcrumbs(() => [
     ...(projectDocument.value?.project
