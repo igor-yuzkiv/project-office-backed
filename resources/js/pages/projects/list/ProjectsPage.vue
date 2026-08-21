@@ -10,7 +10,7 @@ import { PAGE_SIZE } from '@/app/config'
 import type { ProjectOverviewDto, ProjectSearchParams } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectCreateDialog, useProjectCreateDialog } from '@/widgets/projects/create-dialog'
-import { ProjectsTableView } from '@/widgets/projects/views/table'
+import { ProjectsGridView } from '@/widgets/projects/views/grid'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { usePersistedListState } from '@/shared/composables'
@@ -95,6 +95,8 @@ const searchParams = computed<ProjectSearchParams>(() => ({
 
 const { projects, paginationMeta, isPending } = useProjectsSearchQuery(searchParams)
 
+const isFiltered = computed(() => Boolean(searchQuery.value) || filterSidebar.resolvedFilters.value.length > 0)
+
 function onSortApply() {
     sort.apply()
     sort.close()
@@ -103,10 +105,6 @@ function onSortApply() {
 function onSearchSubmit() {
     searchQuery.value = searchInput.value
     page.value = 1
-}
-
-function projectTasksRoute(project: ProjectOverviewDto) {
-    return { name: 'project-details.tasks', params: { id: project.id } }
 }
 
 function openRowMenu(event: MouseEvent, project: ProjectOverviewDto) {
@@ -137,22 +135,22 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
             </div>
 
             <div class="flex h-full w-full flex-col overflow-hidden">
-                <ProjectsTableView
+                <ProjectsGridView
                     :projects="projects"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    :to="projectTasksRoute"
+                    :is-filtered="isFiltered"
                     @page-change="onPageChange"
                 >
-                    <template #actions="{ row }">
+                    <template #actions="{ project }">
                         <IconButton
                             severity="secondary"
                             icon="pepicons-pop:dots-y"
-                            @click.stop="openRowMenu($event, row)"
+                            @click.stop="openRowMenu($event, project)"
                         />
                     </template>
-                </ProjectsTableView>
+                </ProjectsGridView>
             </div>
         </div>
 
