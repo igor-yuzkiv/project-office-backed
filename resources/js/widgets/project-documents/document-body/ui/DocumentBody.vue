@@ -22,10 +22,6 @@ const props = defineProps<{
 const draftTitle = defineModel<string>('draftTitle', { default: '' })
 const draftContent = defineModel<string>('draftContent', { default: '' })
 
-const emit = defineEmits<{
-    (e: 'open-document', documentId: string): void
-}>()
-
 const activeTab = defineModel<string>('tab', { default: 'document' })
 
 const documentId = computed(() => props.document.id)
@@ -37,8 +33,6 @@ const { paginationMeta: taskPaginationMeta } = useProjectDocumentTasksQuery(docu
     per_page: PAGE_SIZE,
 })
 
-const ancestors = computed(() => (props.document.path ?? []).slice(0, -1))
-
 watch(
     () => props.isEditing,
     (editing) => {
@@ -49,15 +43,6 @@ watch(
 
 <template>
     <div class="flex h-full flex-col overflow-hidden">
-        <div v-if="ancestors.length" class="gap-1 px-4 pt-3 text-xs text-surface-500 flex items-center truncate">
-            <template v-for="(node, index) in ancestors" :key="node.id">
-                <span v-if="index > 0" class="text-surface-400">/</span>
-                <button type="button" class="app-link truncate" @click="emit('open-document', node.id)">
-                    {{ node.title }}
-                </button>
-            </template>
-        </div>
-
         <div class="gap-x-2 px-4 pt-2 min-w-0 text-xl font-semibold flex items-center">
             <CopyToClipboard class="text-surface-400 text-sm" :text="document.key" hide-copy-icon />
             <EditableDocumentTitle v-if="isEditing" v-model="draftTitle" class="min-w-0 flex-1" />

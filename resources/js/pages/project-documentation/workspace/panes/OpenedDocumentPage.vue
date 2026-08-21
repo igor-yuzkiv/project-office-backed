@@ -36,10 +36,6 @@ const openedDocument = computed(() => (belongsElsewhere.value ? undefined : proj
 function openDocumentationRoot() {
     router.push({ name: 'project-documentation', params: { projectId: projectId.value } })
 }
-
-function openDocument(id: string) {
-    router.push({ name: 'project-documentation.document', params: { projectId: projectId.value, documentId: id } })
-}
 </script>
 
 <template>
@@ -75,6 +71,5 @@ function openDocument(id: string) {
         :document="openedDocument"
         :is-editing="isEditing"
         :handle-image-upload="handleImageUpload"
-        @open-document="openDocument"
     />
 </template>
