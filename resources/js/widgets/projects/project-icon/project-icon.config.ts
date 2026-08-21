@@ -7,3 +7,12 @@ export const PROJECT_ICON_SIZE_MAP: Record<ComponentSize, { root: string; label:
     large: { root: '!h-11 !w-11', label: '!text-sm' },
     xlarge: { root: '!h-13 !w-13', label: '!text-base' },
 }
+
+// An emoji is a picture, not a caption: it needs most of the plate to be readable.
+export const PROJECT_ICON_EMOJI_LABEL_SIZE_MAP: Record<ComponentSize, string> = {
+    xsmall: '!text-xs',
+    small: '!text-sm',
+    medium: '!text-lg',
+    large: '!text-2xl',
+    xlarge: '!text-3xl',
+}

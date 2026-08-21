@@ -7,6 +7,7 @@ import Skeleton from 'primevue/skeleton'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { PaginationMeta } from '@/shared/types'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
+import { UserAvatar } from '@/widgets/user/user-avatar'
 import { ProjectStatusTag } from '@/widgets/projects/status-tag'
 import { DisplayDate } from '@/shared/components/display'
 
@@ -62,26 +63,46 @@ function onPageChange(event: { page: number }) {
                         :prefix="project.prefix"
                         :icon-emoji="project.icon_emoji"
                         :status="project.status"
-                        size="medium"
+                        size="large"
                         class="shrink-0"
                     />
 
-                    <div class="min-w-0 flex-1">
-                        <h3 class="text-surface-900 dark:text-surface-0 font-semibold truncate" :title="project.name">
-                            {{ project.name }}
-                        </h3>
+                    <div class="gap-1 min-w-0 flex flex-1 flex-col">
+                        <div class="gap-2 flex items-center justify-between">
+                            <h3
+                                class="text-surface-900 dark:text-surface-0 min-w-0 font-semibold truncate"
+                                :title="project.name"
+                            >
+                                {{ project.name }}
+                            </h3>
+                            <ProjectStatusTag :status="project.status" class="shrink-0" />
+                        </div>
+
                         <span class="text-surface-400 text-xs">{{ project.prefix }}</span>
                     </div>
-
-                    <slot name="actions" :project="project" />
                 </div>
 
-                <div class="gap-2 flex items-center justify-between">
-                    <ProjectStatusTag :status="project.status" />
-                    <span class="text-surface-400 text-xs"> Updated <DisplayDate :date="project.updated_at" /> </span>
+                <div v-if="project.updated_by" class="gap-2 flex items-center">
+                    <UserAvatar
+                        :initials="project.updated_by.initials"
+                        :avatar-url="project.updated_by.avatar_url"
+                        size="small"
+                        class="shrink-0"
+                    />
+                    <div class="min-w-0 flex flex-col">
+                        <span class="text-surface-700 dark:text-surface-200 text-xs truncate">
+                            {{ project.updated_by.name }}
+                        </span>
+                        <span class="text-surface-400 text-xs">
+                            Updated <DisplayDate :date="project.updated_at" />
+                        </span>
+                    </div>
                 </div>
+                <span v-else class="text-surface-400 text-xs">
+                    Updated <DisplayDate :date="project.updated_at" />
+                </span>
 
-                <div class="border-surface-200 dark:border-surface-700 gap-2 pt-3 mt-auto flex border-t">
+                <div class="border-surface-200 dark:border-surface-700 gap-2 pt-3 mt-auto flex items-center border-t">
                     <Button
                         label="Details"
                         size="small"
@@ -100,6 +121,8 @@ function onPageChange(event: { page: number }) {
                         :as="'router-link'"
                         :to="{ name: 'project-documentation', params: { projectId: project.id } }"
                     />
+
+                    <slot name="actions" :project="project" />
                 </div>
             </article>
         </div>
