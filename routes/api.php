@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\WebApi\Controllers\Annotation\AnnotationController;
 use App\Http\WebApi\Controllers\Attachments\AttachmentsController;
 use App\Http\WebApi\Controllers\AuditRecords\AuditRecordsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
 use App\Http\WebApi\Controllers\Dashboard\DashboardController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAnnotationsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
@@ -142,6 +144,19 @@ Route::group([
     'as'         => 'project-documents.comments.',
     'middleware' => ['auth:sanctum'],
     'controller' => ProjectDocumentCommentsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+});
+
+/**
+ * Project Document Annotations
+ */
+Route::group([
+    'prefix'     => 'project-documents/{project_document}/annotations',
+    'as'         => 'project-documents.annotations.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectDocumentAnnotationsController::class,
 ], function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
@@ -299,4 +314,17 @@ Route::group([
 ], function () {
     Route::patch('{comment}', 'update')->name('update');
     Route::delete('{comment}', 'destroy')->name('destroy');
+});
+
+/**
+ * Annotations
+ */
+Route::group([
+    'prefix'     => 'annotations',
+    'as'         => 'annotations.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => AnnotationController::class,
+], function () {
+    Route::patch('{annotation}', 'update')->name('update');
+    Route::delete('{annotation}', 'destroy')->name('destroy');
 });

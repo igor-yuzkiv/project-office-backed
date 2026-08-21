@@ -2,6 +2,7 @@
 
 namespace App\Domains\ProjectDocument\Models;
 
+use App\Domains\Annotation\Models\AnnotationModel;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
@@ -11,6 +12,7 @@ use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasArchivableColumns;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
+use App\Infrastructure\Models\Contracts\Annotatable;
 use App\Infrastructure\Models\Contracts\Archivable;
 use App\Infrastructure\Models\Contracts\Commentable;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
@@ -55,11 +57,12 @@ use Laravel\Scout\Searchable;
  * @property-read Collection<int, TaskModel> $tasks
  * @property-read Collection<int, TagModel> $tags
  * @property-read Collection<int, CommentModel> $comments
+ * @property-read Collection<int, AnnotationModel> $annotations
  * @property-read Collection<int, AttachmentModel> $attachments
  * @property-read UserModel|null $archivedBy
  */
 #[Fillable(['id', 'project_id', 'parent_id', 'key', 'sequence_number', 'title', 'content', 'status', 'created_by', 'updated_by'])]
-class ProjectDocumentModel extends Model implements Archivable, Commentable
+class ProjectDocumentModel extends Model implements Annotatable, Archivable, Commentable
 {
     /** @use HasFactory<ProjectDocumentModelFactory> */
     use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
@@ -181,6 +184,11 @@ class ProjectDocumentModel extends Model implements Archivable, Commentable
     public function comments(): MorphMany
     {
         return $this->morphMany(CommentModel::class, 'commentable');
+    }
+
+    public function annotations(): MorphMany
+    {
+        return $this->morphMany(AnnotationModel::class, 'annotatable');
     }
 
     public function attachments(): MorphMany
