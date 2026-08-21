@@ -70,6 +70,15 @@ useBreadcrumbs(() => [
 
 watch(projectId, () => tree.load(), { immediate: true })
 
+// Opening a document by URL has to reveal it, so its branch is expanded from the root down.
+watch(
+    ancestorIds,
+    (ids) => {
+        if (ids.length) tree.expandAncestors(ids)
+    },
+    { immediate: true }
+)
+
 watch(
     project,
     (value) => {
@@ -87,10 +96,17 @@ watch(
         >
             <SplitterPanel :size="22" :min-size="12">
                 <DocumentationTreePanel
-                    :tree="tree"
+                    :rows="tree.rows.value"
+                    :is-pending="tree.isPending.value"
+                    :is-error="tree.isError.value"
                     :selected-document-id="selectedDocumentId"
-                    :ancestor-ids="ancestorIds"
                     @select="openDocument"
+                    @toggle-node="tree.toggleNode"
+                    @load-more="tree.loadMore"
+                    @create-root="tree.createRootDocument"
+                    @create-child="tree.createChildDocument"
+                    @delete="tree.deleteNodeDocument"
+                    @retry="tree.load"
                 />
             </SplitterPanel>
 

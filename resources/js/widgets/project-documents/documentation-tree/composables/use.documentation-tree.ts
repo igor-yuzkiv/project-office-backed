@@ -53,8 +53,6 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         return collected
     })
 
-    const isEmpty = computed(() => rows.value.length === 0)
-
     function collectRows(levelKey: string, depth: number, collected: DocumentationTreeRow[]) {
         for (const document of tree.levelRows(levelKey)) {
             const isExpanded = tree.isLevelExpanded(document.id)
@@ -114,8 +112,8 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         await tree.expandNode(document.id)
     }
 
-    // Opening a document by URL has to reveal it: its ancestors are expanded from
-    // the root down, each level loading before the next one can be found in it.
+    // Ancestors are expanded from the root down: each level has to load before the
+    // next one can be found in it.
     async function expandAncestors(ancestorIds: string[]) {
         for (const ancestorId of ancestorIds) {
             await tree.expandNode(ancestorId)
@@ -146,7 +144,6 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         rows,
         isPending,
         isError,
-        isEmpty,
         createDialog,
         load,
         reload,
