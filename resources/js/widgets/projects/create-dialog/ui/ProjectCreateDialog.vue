@@ -23,18 +23,17 @@ const emit = defineEmits<{
 <template>
     <Dialog v-model:visible="visible" header="New Project" modal :closable="!isPending" :style="{ width: '28rem' }">
         <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
-            <InputContainer label="Icon" :error="validationErrors.icon_emoji">
-                <EmojiPickerField v-model="formData.icon_emoji" />
-            </InputContainer>
-
             <InputContainer label="Project Name" :error="validationErrors.name" required>
-                <InputText
-                    v-model="formData.name"
-                    placeholder="e.g. Atlas Platform"
-                    :invalid="!!validationErrors.name"
-                    class="w-full"
-                    autofocus
-                />
+                <div class="gap-2 flex items-center">
+                    <EmojiPickerField v-model="formData.icon_emoji" class="shrink-0" />
+                    <InputText
+                        v-model="formData.name"
+                        placeholder="e.g. Atlas Platform"
+                        :invalid="!!validationErrors.name"
+                        class="flex-1"
+                        autofocus
+                    />
+                </div>
             </InputContainer>
         </form>
 

@@ -71,13 +71,12 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
                 severity="secondary"
                 text
                 rounded
-                size="small"
                 title="New document"
                 aria-label="New document"
                 @click="emit('create-root')"
             >
                 <template #icon>
-                    <Icon icon="material-symbols:add" class="text-base" />
+                    <Icon icon="material-symbols:add" class="text-xl" />
                 </template>
             </Button>
         </header>

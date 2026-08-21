@@ -3,9 +3,10 @@ import { computed, watch } from 'vue'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
+import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
 import { useProjectDocumentTasksQuery } from '@/entities/project-document'
 import type { IProjectDocument } from '@/entities/project-document/types'
-import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { CopyToClipboard } from '@/shared/components/display'
 import { PAGE_SIZE } from '@/app/config'
 import { MarkdownEditor } from '@/shared/components/md-editor'
@@ -18,6 +19,8 @@ const props = defineProps<{
     document: IProjectDocument
     isEditing?: boolean
     isDirty?: boolean
+    isSaving?: boolean
+    canAnnotate?: boolean
     handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
 }>()
 
@@ -26,6 +29,12 @@ const draftContent = defineModel<string>('draftContent', { default: '' })
 
 const emit = defineEmits<{
     (e: 'open-document', documentId: string): void
+    (e: 'edit'): void
+    (e: 'annotate'): void
+    (e: 'move'): void
+    (e: 'delete'): void
+    (e: 'save'): void
+    (e: 'cancel'): void
 }>()
 
 const activeTab = defineModel<string>('tab', { default: 'document' })
@@ -67,11 +76,49 @@ watch(
                 <h1 v-else class="text-surface-900 dark:text-surface-0 truncate">{{ document.title }}</h1>
             </div>
 
-            <div class="gap-2 flex shrink-0 items-center">
-                <span v-if="isEditing && isDirty" class="text-xs text-amber-600 dark:text-amber-400">
+            <div class="gap-1 flex shrink-0 items-center">
+                <span v-if="isEditing && isDirty" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
                     Unsaved changes
                 </span>
-                <ProjectDocumentStatusTag :status="document.status" class="w-fit" />
+
+                <template v-if="isEditing">
+                    <Button
+                        :label="isSaving ? 'Saving…' : 'Save'"
+                        size="small"
+                        text
+                        :disabled="isSaving"
+                        @click="emit('save')"
+                    >
+                        <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
+                    </Button>
+                    <Button label="Cancel" size="small" text severity="secondary" @click="emit('cancel')">
+                        <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
+                    </Button>
+                </template>
+
+                <template v-else>
+                    <Button label="Edit" size="small" text severity="secondary" @click="emit('edit')">
+                        <template #icon><Icon icon="heroicons:pencil-square" class="mr-1 text-base" /></template>
+                    </Button>
+                    <Button
+                        v-if="canAnnotate"
+                        label="Annotate"
+                        size="small"
+                        text
+                        severity="secondary"
+                        @click="emit('annotate')"
+                    >
+                        <template #icon
+                            ><Icon icon="heroicons:chat-bubble-left-right" class="mr-1 text-base"
+                        /></template>
+                    </Button>
+                    <Button label="Move" size="small" text severity="secondary" @click="emit('move')">
+                        <template #icon><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base" /></template>
+                    </Button>
+                    <Button label="Delete" size="small" text severity="danger" @click="emit('delete')">
+                        <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
+                    </Button>
+                </template>
             </div>
         </div>
 

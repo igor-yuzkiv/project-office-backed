@@ -145,10 +145,6 @@ useBreadcrumbs(() => [
     <div v-if="project" class="p-2 flex flex-1 flex-col overflow-hidden">
         <div class="p-3 gap-3 flex flex-col">
             <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
-                <InputContainer label="Icon" :error="validationErrors.icon_emoji">
-                    <EmojiPickerField v-model="formData.icon_emoji" />
-                </InputContainer>
-
                 <InputContainer label="Name" :error="validationErrors.name" required>
                     <InputText
                         v-model="formData.name"
@@ -188,17 +184,23 @@ useBreadcrumbs(() => [
                 </div>
             </div>
 
-            <InputContainer label="Tags" :error="validationErrors.tag_ids">
-                <div class="gap-2 p-1 flex items-center">
-                    <IconButton
-                        size="medium"
-                        severity="success"
-                        icon="mdi:tag-edit"
-                        @click="showManageTagsDialog = true"
-                    />
-                    <TagList :tags="formData.tags" />
-                </div>
-            </InputContainer>
+            <div class="gap-4 flex items-end">
+                <InputContainer label="Icon" :error="validationErrors.icon_emoji">
+                    <EmojiPickerField v-model="formData.icon_emoji" />
+                </InputContainer>
+
+                <InputContainer label="Tags" :error="validationErrors.tag_ids" class="flex-1">
+                    <div class="gap-2 p-1 flex items-center">
+                        <IconButton
+                            size="medium"
+                            severity="success"
+                            icon="mdi:tag-edit"
+                            @click="showManageTagsDialog = true"
+                        />
+                        <TagList :tags="formData.tags" />
+                    </div>
+                </InputContainer>
+            </div>
         </div>
 
         <div class="flex-1 overflow-auto">

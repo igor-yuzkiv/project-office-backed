@@ -11,7 +11,7 @@ import { useProjectDocumentEditing } from '@/widgets/project-documents/document-
 import { ProjectDocumentMoveDialog } from '@/widgets/project-documents/move-dialog'
 import { DocumentDetailsPanel } from '@/widgets/project-documents/document-details'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
-import { useBreadcrumbs, useHeaderActions } from '@/app/shell'
+import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 
 const router = useRouter()
@@ -63,31 +63,6 @@ const { annotationRoute, moveDialog, remove } = useProjectDocumentActions(opened
     },
 })
 
-useHeaderActions(() => {
-    if (!openedDocument.value) return []
-
-    if (editing.isEditing.value) {
-        return [
-            {
-                key: 'save-project-document',
-                title: editing.isSaving.value ? 'Saving…' : 'Save',
-                action: editing.save,
-                is_primary: true,
-            },
-            { key: 'cancel-project-document-edit', title: 'Cancel', action: discardEditing },
-        ]
-    }
-
-    return [
-        { key: 'edit-project-document', title: 'Edit', action: editing.start, is_primary: true },
-        ...(annotationRoute.value
-            ? [{ key: 'annotate-project-document', title: 'Annotation mode', to: annotationRoute.value }]
-            : []),
-        { key: 'move-project-document', title: 'Move', action: moveDialog.open },
-        { key: 'delete-project-document', title: 'Delete', action: remove },
-    ]
-})
-
 async function discardEditing() {
     if (await editing.confirmDiscard()) editing.cancel()
 }
@@ -118,6 +93,10 @@ function openRelatedTasksTab() {
         params: { projectId: projectId.value, documentId: documentId.value },
         query: { tab: 'tasks' },
     })
+}
+
+function openAnnotationMode() {
+    if (annotationRoute.value) router.push(annotationRoute.value)
 }
 
 function openDocumentationRoot() {
@@ -154,7 +133,7 @@ watch(
         <div
             class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
         >
-            <div class="border-surface-200 dark:border-surface-700 w-92 shrink-0 overflow-hidden border-r">
+            <div class="border-surface-200 dark:border-surface-700 w-100 shrink-0 overflow-hidden border-r">
                 <DocumentationTreePanel
                     :rows="tree.rows.value"
                     :is-pending="tree.isPending.value"
@@ -178,15 +157,23 @@ watch(
                         v-model:draft-content="editing.draft.value.content"
                         :is-editing="editing.isEditing.value"
                         :is-dirty="editing.isDirty.value"
+                        :is-saving="editing.isSaving.value"
+                        :can-annotate="Boolean(annotationRoute)"
                         :handle-image-upload="editing.handleContentImageUpload"
                         @create-document="tree.createRootDocument"
+                        @edit="editing.start"
+                        @annotate="openAnnotationMode"
+                        @move="moveDialog.open"
+                        @delete="remove"
+                        @save="editing.save"
+                        @cancel="discardEditing"
                     />
                 </RouterView>
             </section>
 
             <div
                 class="border-surface-200 dark:border-surface-700 shrink-0 overflow-hidden border-l"
-                :class="isDetailsPanelOpen ? 'w-80' : 'w-11'"
+                :class="isDetailsPanelOpen ? 'w-96' : 'w-12'"
             >
                 <DocumentDetailsPanel
                     v-model:open="isDetailsPanelOpen"
