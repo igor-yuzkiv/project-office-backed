@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, useTemplateRef, type ComponentPublicInstance } from 'vue'
 import Button from 'primevue/button'
 import Textarea from 'primevue/textarea'
 
@@ -15,12 +15,14 @@ const emit = defineEmits<{
 
 const draft = defineModel<string>('draft', { required: true })
 
-const textareaRef = ref<{ $el?: HTMLTextAreaElement }>()
+// PrimeVue's Textarea renders the <textarea> as its own root, and $el is how a component
+// instance hands that element out.
+const input = useTemplateRef<ComponentPublicInstance>('input')
 
 const canSave = computed(() => draft.value.trim().length > 0 && !props.isSaving)
 
 function focus() {
-    nextTick(() => textareaRef.value?.$el?.focus())
+    nextTick(() => (input.value?.$el as HTMLTextAreaElement | undefined)?.focus())
 }
 
 /** Enter sends, Shift+Enter breaks the line — the shape everyone already knows from chat. */
@@ -41,7 +43,7 @@ onMounted(focus)
         <!-- The actions live inside the field, so the bar stays one object rather than a form. -->
         <div class="max-w-5xl relative mx-auto w-full">
             <Textarea
-                ref="textareaRef"
+                ref="input"
                 v-model="draft"
                 auto-resize
                 class="pr-24 max-h-48 w-full overflow-y-auto"
