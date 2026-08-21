@@ -87,7 +87,7 @@ watch(
         <div
             class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
         >
-            <div class="border-surface-200 dark:border-surface-700 w-72 shrink-0 overflow-hidden border-r">
+            <div class="border-surface-200 dark:border-surface-700 w-92 shrink-0 overflow-hidden border-r">
                 <DocumentationTreePanel
                     :rows="tree.rows.value"
                     :is-pending="tree.isPending.value"
