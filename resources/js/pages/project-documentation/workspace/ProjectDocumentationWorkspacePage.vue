@@ -2,13 +2,12 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
-import { Icon } from '@iconify/vue'
-import Button from 'primevue/button'
 import Splitter from 'primevue/splitter'
 import SplitterPanel from 'primevue/splitterpanel'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
+import { DocumentDetailsPanel } from '@/widgets/project-documents/document-details'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
@@ -88,7 +87,6 @@ watch(
 <template>
     <div class="gap-2 p-2 flex flex-1 overflow-hidden">
         <Splitter
-            :key="isDetailsPanelOpen ? 'three-panels' : 'two-panels'"
             class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex-1 overflow-hidden border"
         >
             <SplitterPanel :size="22" :min-size="12">
@@ -107,7 +105,7 @@ watch(
                 />
             </SplitterPanel>
 
-            <SplitterPanel :size="isDetailsPanelOpen ? 56 : 78" :min-size="30">
+            <SplitterPanel :size="56" :min-size="30">
                 <section class="flex h-full flex-col overflow-auto">
                     <RouterView v-slot="{ Component }">
                         <component :is="Component" @create-document="tree.createRootDocument" />
@@ -115,31 +113,11 @@ watch(
                 </section>
             </SplitterPanel>
 
-            <SplitterPanel v-if="isDetailsPanelOpen" :size="22" :min-size="14">
-                <section class="flex h-full flex-col overflow-hidden">
-                    <header
-                        class="border-surface-200 dark:border-surface-700 gap-2 px-3 py-2 flex items-center justify-between border-b"
-                    >
-                        <h2
-                            class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase"
-                        >
-                            Document details
-                        </h2>
-                        <Button
-                            severity="secondary"
-                            text
-                            rounded
-                            size="small"
-                            title="Hide details"
-                            aria-label="Hide details"
-                            @click="isDetailsPanelOpen = false"
-                        >
-                            <template #icon>
-                                <Icon icon="heroicons:chevron-double-right" class="text-base" />
-                            </template>
-                        </Button>
-                    </header>
-                </section>
+            <!-- Always mounted: PrimeVue writes each panel's flex-basis inline on mount, so a
+                 panel that comes and goes forces the whole splitter to remount. Collapsing
+                 overrides that basis instead, and the tree keeps its place. -->
+            <SplitterPanel :size="22" :min-size="14" :class="{ '!basis-11 !grow-0': !isDetailsPanelOpen }">
+                <DocumentDetailsPanel v-model:open="isDetailsPanelOpen" />
             </SplitterPanel>
         </Splitter>
 
@@ -151,21 +129,5 @@ watch(
             :parent-document="tree.createDialog.parentDocument.value"
             @submit="tree.createDialog.submit"
         />
-
-        <div v-if="!isDetailsPanelOpen" class="pt-2 flex shrink-0 items-start">
-            <Button
-                severity="secondary"
-                text
-                rounded
-                size="small"
-                title="Show details"
-                aria-label="Show details"
-                @click="isDetailsPanelOpen = true"
-            >
-                <template #icon>
-                    <Icon icon="heroicons:chevron-double-left" class="text-base" />
-                </template>
-            </Button>
-        </div>
     </div>
 </template>
