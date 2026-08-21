@@ -10,7 +10,7 @@ class UpdateAnnotationHandler
     {
         $command->annotation->update([
             'content'       => $command->content,
-            'anchor'        => $command->anchor,
+            'anchor'        => $command->anchor->toArray(),
             'text_snapshot' => $command->textSnapshot,
         ]);
 

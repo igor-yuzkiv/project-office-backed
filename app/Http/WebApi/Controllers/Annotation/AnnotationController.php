@@ -6,6 +6,7 @@ use App\Domains\Annotation\Actions\DeleteAnnotation\DeleteAnnotationCommand;
 use App\Domains\Annotation\Actions\DeleteAnnotation\DeleteAnnotationHandler;
 use App\Domains\Annotation\Actions\UpdateAnnotation\UpdateAnnotationCommand;
 use App\Domains\Annotation\Actions\UpdateAnnotation\UpdateAnnotationHandler;
+use App\Domains\Annotation\DTO\BlockAnchorDTO;
 use App\Domains\Annotation\Models\AnnotationModel;
 use App\Http\Shared\Resources\Annotations\AnnotationResource;
 use App\Http\WebApi\Requests\Annotation\UpdateAnnotationRequest;
@@ -23,7 +24,7 @@ class AnnotationController
         $annotation = $this->updateHandler->handle(new UpdateAnnotationCommand(
             annotation: $annotation,
             content: $request->validated('content'),
-            anchor: $request->validated('anchor'),
+            anchor: BlockAnchorDTO::fromArray($request->validated('anchor')),
             textSnapshot: $request->validated('text_snapshot'),
         ));
 

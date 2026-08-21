@@ -12,7 +12,7 @@ class CreateAnnotationHandler
         $annotation = $command->annotatable->annotations()->create([
             'author_id'     => $command->author->id,
             'content'       => $command->content,
-            'anchor'        => $command->anchor,
+            'anchor'        => $command->anchor->toArray(),
             'text_snapshot' => $command->textSnapshot,
         ]);
 
