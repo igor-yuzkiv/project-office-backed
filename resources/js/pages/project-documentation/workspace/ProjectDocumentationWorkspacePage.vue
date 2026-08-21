@@ -152,14 +152,19 @@ watch(
             </div>
 
             <section class="min-w-0 flex flex-1 flex-col overflow-hidden">
+                <!-- Reading right to left: Add, Edit, Delete, Move, Annotate. Add stands
+                     apart from the rest — it needs no open document. -->
                 <div
-                    v-if="openedDocument"
                     class="border-surface-200 dark:border-surface-700 gap-1 px-3 py-1.5 flex shrink-0 items-center justify-end border-b"
+                    style="min-height: 2.75rem"
                 >
-                    <template v-if="editing.isEditing.value">
+                    <template v-if="openedDocument && editing.isEditing.value">
                         <span v-if="editing.isDirty.value" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
                             Unsaved changes
                         </span>
+                        <Button label="Cancel" size="small" text severity="secondary" @click="discardEditing">
+                            <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
+                        </Button>
                         <Button
                             :label="editing.isSaving.value ? 'Saving…' : 'Save'"
                             size="small"
@@ -169,15 +174,9 @@ watch(
                         >
                             <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
                         </Button>
-                        <Button label="Cancel" size="small" text severity="secondary" @click="discardEditing">
-                            <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
-                        </Button>
                     </template>
 
-                    <template v-else>
-                        <Button label="Edit" size="small" text severity="secondary" @click="editing.start">
-                            <template #icon><Icon icon="heroicons:pencil-square" class="mr-1 text-base" /></template>
-                        </Button>
+                    <template v-else-if="openedDocument">
                         <Button
                             v-if="annotationRoute"
                             label="Annotate"
@@ -198,7 +197,21 @@ watch(
                         <Button label="Delete" size="small" text severity="danger" @click="remove">
                             <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
                         </Button>
+                        <Button label="Edit" size="small" text severity="secondary" @click="editing.start">
+                            <template #icon><Icon icon="heroicons:pencil-square" class="mr-1 text-base" /></template>
+                        </Button>
                     </template>
+
+                    <Button
+                        v-if="!editing.isEditing.value"
+                        label="Add"
+                        size="small"
+                        text
+                        severity="secondary"
+                        @click="tree.createRootDocument"
+                    >
+                        <template #icon><Icon icon="material-symbols:add" class="mr-1 text-base" /></template>
+                    </Button>
                 </div>
 
                 <RouterView v-slot="{ Component }">
