@@ -5,7 +5,11 @@ import { useRouteParams } from '@vueuse/router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
-import { useProjectDocumentQuery, useDeleteProjectDocumentMutation } from '@/entities/project-document'
+import {
+    useProjectDocumentQuery,
+    useDeleteProjectDocumentMutation,
+    projectDocumentDeleteConfirmMessage,
+} from '@/entities/project-document'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -31,7 +35,7 @@ function handleDeleteProjectDocument() {
     const projectId = projectDocument.value.project_id
     deleteProjectDocument(
         projectDocument.value.id,
-        `Are you sure you want to delete "${projectDocument.value.title}"? This will also delete all nested documents, comments, attachments, tags, and task links.`,
+        projectDocumentDeleteConfirmMessage(projectDocument.value.title),
         () => router.push({ name: 'project-details.documentation', params: { id: projectId } })
     )
 }

@@ -60,11 +60,19 @@ const router = createRouter({
                     component: () => import('@/pages/projects/details/tabs/ProjectAttachmentsPage.vue'),
                 },
                 {
-                    path: 'documentation',
+                    // The workspace owns `/projects/:id/documentation`; this tab keeps a
+                    // distinct path until it is removed with the old document surface.
+                    path: 'documentation-tab',
                     name: 'project-details.documentation',
                     component: () => import('@/pages/projects/details/tabs/ProjectDocumentationPage.vue'),
                 },
             ],
+        },
+        {
+            path: '/projects/:projectId/documentation/:documentId?',
+            name: 'project-documentation',
+            component: () => import('@/pages/project-documentation/workspace/ProjectDocumentationWorkspacePage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
         },
         {
             path: '/tasks',

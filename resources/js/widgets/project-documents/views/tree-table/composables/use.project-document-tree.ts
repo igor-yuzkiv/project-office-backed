@@ -12,6 +12,8 @@ type DocumentTreeNode = EntityTreeNode<ProjectDocumentTreeNodeDto>
 
 const ROOT_KEY = '__root__'
 
+export { ROOT_KEY as PROJECT_DOCUMENT_TREE_ROOT_KEY }
+
 interface LevelState {
     rows: ProjectDocumentTreeNodeDto[]
     paginationMeta?: PaginationMeta
@@ -19,6 +21,8 @@ interface LevelState {
     isLoading: boolean
     isExpanded: boolean
 }
+
+type LevelFetchMode = 'replace' | 'append'
 
 function createLevelState(isExpanded: boolean): LevelState {
     return { rows: [], page: 1, isLoading: false, isExpanded }
@@ -73,7 +77,7 @@ export function useProjectDocumentTree(
         }
     }
 
-    async function fetchLevel(key: string, parentId: string | null, page: number) {
+    async function fetchLevel(key: string, parentId: string | null, page: number, mode: LevelFetchMode = 'replace') {
         const level = getLevel(key)
         level.isLoading = true
 
@@ -97,7 +101,7 @@ export function useProjectDocumentTree(
                     }),
             })
 
-            level.rows = response.data
+            level.rows = mode === 'append' ? [...level.rows, ...response.data] : response.data
             level.paginationMeta = response.meta
             level.page = page
         } finally {
@@ -122,6 +126,67 @@ export function useProjectDocumentTree(
         getLevel(nodeId).isExpanded = false
     }
 
+    // A level's parent is the node it hangs from; the root level hangs from
+    // `rootParentId`, which is null for a project's own root documents.
+    function levelParentId(key: string): string | null {
+        return key === ROOT_KEY ? (toValue(rootParentId) ?? null) : key
+    }
+
+    // The readers below go through `levels.get` rather than `getLevel`: they are
+    // meant to be called from computed properties, and `getLevel` writes to the
+    // reactive Map when a level is missing.
+    function levelMeta(key: string): PaginationMeta | undefined {
+        return levels.get(key)?.paginationMeta
+    }
+
+    function levelRows(key: string): ProjectDocumentTreeNodeDto[] {
+        return levels.get(key)?.rows ?? []
+    }
+
+    function levelRemainingCount(key: string): number {
+        const level = levels.get(key)
+
+        return level?.paginationMeta ? Math.max(level.paginationMeta.total - level.rows.length, 0) : 0
+    }
+
+    function isLevelLoading(key: string): boolean {
+        return levels.get(key)?.isLoading ?? false
+    }
+
+    function isLevelExpanded(key: string): boolean {
+        return levels.get(key)?.isExpanded ?? false
+    }
+
+    // Appends the next page to what is already shown, unlike `loadRoot`, which
+    // swaps the page for the paginated TreeTable view.
+    async function loadMoreLevel(key: string) {
+        const level = getLevel(key)
+
+        if (level.isLoading || levelRemainingCount(key) === 0) {
+            return
+        }
+
+        await fetchLevel(key, levelParentId(key), level.page + 1, 'append')
+    }
+
+    // Re-reads every page a level has accumulated, so a level stays as long as
+    // the user made it after a document was created, deleted or moved.
+    async function reloadLevel(key: string) {
+        const lastPage = getLevel(key).page
+
+        await fetchLevel(key, levelParentId(key), 1)
+
+        for (let page = 2; page <= lastPage; page++) {
+            await fetchLevel(key, levelParentId(key), page, 'append')
+        }
+    }
+
+    async function reloadLoadedLevels() {
+        const loadedKeys = [...levels.keys()].filter((key) => getLevel(key).rows.length > 0)
+
+        await Promise.all(loadedKeys.map(reloadLevel))
+    }
+
     async function expandAllOnPage() {
         const root = getLevel(ROOT_KEY)
         await Promise.all(root.rows.filter((row) => row.has_children).map((row) => expandNode(row.id)))
@@ -137,5 +202,13 @@ export function useProjectDocumentTree(
         expandNode,
         collapseNode,
         expandAllOnPage,
+        levelMeta,
+        levelRows,
+        levelRemainingCount,
+        isLevelLoading,
+        isLevelExpanded,
+        loadMoreLevel,
+        reloadLevel,
+        reloadLoadedLevels,
     }
 }

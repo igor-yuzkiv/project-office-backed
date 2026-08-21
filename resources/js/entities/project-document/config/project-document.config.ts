@@ -22,3 +22,9 @@ export const PROJECT_DOCUMENT_MAX_DEPTH = 2
 export function canProjectDocumentHaveChildren(depth: number): boolean {
     return depth < PROJECT_DOCUMENT_MAX_DEPTH
 }
+
+// Deleting a document takes everything hanging off it with it — every surface that
+// offers the action says so in the same words.
+export function projectDocumentDeleteConfirmMessage(title: string): string {
+    return `Are you sure you want to delete "${title}"? This will also delete all nested documents, comments, attachments, tags, and task links.`
+}

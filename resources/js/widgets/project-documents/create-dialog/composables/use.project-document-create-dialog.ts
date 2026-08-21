@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCreateProjectDocumentMutation } from '@/entities/project-document'
-import type { ProjectDocumentPathNodeDto } from '@/entities/project-document/types'
+import type { IProjectDocument, ProjectDocumentPathNodeDto } from '@/entities/project-document/types'
 import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
@@ -16,7 +16,13 @@ export function getDefaultFormData(): ProjectDocumentCreateFormData {
     }
 }
 
-export function useProjectDocumentCreateDialog() {
+export interface ProjectDocumentCreateDialogOptions {
+    // Where the caller wants to go once the document exists. Callers that keep the
+    // user on their own screen pass this instead of the default jump to the document.
+    onCreated?: (document: IProjectDocument) => void
+}
+
+export function useProjectDocumentCreateDialog(options?: ProjectDocumentCreateDialogOptions) {
     const router = useRouter()
     const toast = useToast()
 
@@ -62,6 +68,12 @@ export function useProjectDocumentCreateDialog() {
             {
                 onSuccess: (response) => {
                     close()
+
+                    if (options?.onCreated) {
+                        options.onCreated(response.data)
+                        return
+                    }
+
                     router.push({ name: 'project-document-details', params: { id: response.data.id } })
                 },
                 onError: handleError,
