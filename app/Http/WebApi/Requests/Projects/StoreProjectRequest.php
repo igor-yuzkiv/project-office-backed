@@ -15,6 +15,7 @@ class StoreProjectRequest extends FormRequest
         return [
             'name'        => ['required', 'string', 'max:255', 'min:3'],
             'prefix'      => ['sometimes', 'string', 'max:5'],
+            'icon_emoji'  => ['sometimes', 'nullable', 'string', 'max:32'],
             'status'      => ['sometimes', Rule::enum(ProjectStatus::class)],
             'description' => ['sometimes', 'nullable', 'string'],
             'start_date'  => ['sometimes', 'nullable', 'date'],
@@ -33,6 +34,7 @@ class StoreProjectRequest extends FormRequest
         return new CreateProjectCommand(
             name: $this->validated('name'),
             prefix: $this->validated('prefix'),
+            iconEmoji: $this->validated('icon_emoji'),
             status: $statusValue ? ProjectStatus::from($statusValue) : ProjectStatus::DRAFT,
             description: $this->validated('description'),
             startDate: $startDate ? Carbon::parse($startDate) : null,

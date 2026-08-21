@@ -77,3 +77,78 @@ it('records a project.deleted event that keeps pointing at the deleted project',
         ->and($record->subject_type)->toBe(ProjectModel::class)
         ->and($record->subject_id)->toBe($project->id);
 });
+
+it('creates a project with an emoji and without one', function () {
+    $this->postJson('/api/projects', [
+        'name'       => 'With icon',
+        'prefix'     => 'WIC',
+        'icon_emoji' => '🚀',
+    ])->assertCreated()->assertJsonPath('data.icon_emoji', '🚀');
+
+    $this->postJson('/api/projects', [
+        'name'   => 'Without icon',
+        'prefix' => 'WOI',
+    ])->assertCreated()->assertJsonPath('data.icon_emoji', null);
+});
+
+it('sets and resets the project emoji on update', function () {
+    $project = ProjectModel::factory()->create(['icon_emoji' => null]);
+
+    $payload = [
+        'name'   => $project->name,
+        'status' => $project->status->value,
+    ];
+
+    $this->putJson("/api/projects/{$project->id}", [...$payload, 'icon_emoji' => '📚'])
+        ->assertOk()
+        ->assertJsonPath('data.icon_emoji', '📚');
+
+    $this->putJson("/api/projects/{$project->id}", [...$payload, 'icon_emoji' => null])
+        ->assertOk()
+        ->assertJsonPath('data.icon_emoji', null);
+
+    expect($project->fresh()->icon_emoji)->toBeNull();
+});
+
+it('keeps composed emoji sequences intact', function ($emoji) {
+    $response = $this->postJson('/api/projects', [
+        'name'       => 'Composed',
+        'prefix'     => 'CMP',
+        'icon_emoji' => $emoji,
+    ])->assertCreated();
+
+    expect($response->json('data.icon_emoji'))->toBe($emoji)
+        ->and(ProjectModel::query()->sole()->icon_emoji)->toBe($emoji);
+})->with([
+    'flag'       => '🇺🇦',
+    'zwj family' => '👨‍👩‍👧‍👦',
+    'skin tone'  => '👍🏽',
+]);
+
+it('rejects an emoji longer than 32 characters', function () {
+    $this->postJson('/api/projects', [
+        'name'       => 'Too long',
+        'prefix'     => 'TOL',
+        'icon_emoji' => str_repeat('🙂', 33),
+    ])->assertJsonValidationErrors('icon_emoji');
+
+    $project = ProjectModel::factory()->create();
+
+    $this->putJson("/api/projects/{$project->id}", [
+        'name'       => $project->name,
+        'status'     => $project->status->value,
+        'icon_emoji' => str_repeat('a', 33),
+    ])->assertJsonValidationErrors('icon_emoji');
+});
+
+it('returns icon_emoji from the project list and detail endpoints', function () {
+    $project = ProjectModel::factory()->create(['icon_emoji' => '🐛']);
+
+    $this->getJson('/api/projects')
+        ->assertOk()
+        ->assertJsonPath('data.0.icon_emoji', '🐛');
+
+    $this->getJson("/api/projects/{$project->id}")
+        ->assertOk()
+        ->assertJsonPath('data.icon_emoji', '🐛');
+});

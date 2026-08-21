@@ -19,6 +19,7 @@ class ProjectOverviewResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->name,
             'prefix'     => $this->prefix,
+            'icon_emoji' => $this->icon_emoji,
             'status'     => $this->status->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
