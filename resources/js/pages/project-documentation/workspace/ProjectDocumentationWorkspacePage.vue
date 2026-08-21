@@ -154,10 +154,7 @@ watch(
             <section class="min-w-0 flex flex-1 flex-col overflow-hidden">
                 <!-- Reading right to left: Add, Edit, Delete, Move, Annotate. Add stands
                      apart from the rest — it needs no open document. -->
-                <div
-                    class="border-surface-200 dark:border-surface-700 gap-1 px-3 py-1.5 flex shrink-0 items-center justify-end border-b"
-                    style="min-height: 2.75rem"
-                >
+                <div class="gap-1 px-3 py-1.5 flex shrink-0 items-center justify-end" style="min-height: 2.75rem">
                     <template v-if="openedDocument && editing.isEditing.value">
                         <span v-if="editing.isDirty.value" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
                             Unsaved changes

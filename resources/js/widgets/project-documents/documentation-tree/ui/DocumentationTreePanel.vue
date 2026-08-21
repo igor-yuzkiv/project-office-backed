@@ -61,10 +61,7 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
 <template>
     <section class="flex h-full flex-col overflow-hidden">
         <!-- Same height as the document toolbar across the way, so the two rows line up. -->
-        <header
-            class="border-surface-200 dark:border-surface-700 px-3 py-1.5 flex items-center border-b"
-            style="min-height: 2.75rem"
-        >
+        <header class="px-3 py-1.5 flex items-center" style="min-height: 2.75rem">
             <h2 class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase">
                 Documents
             </h2>

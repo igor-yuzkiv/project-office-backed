@@ -55,10 +55,7 @@ const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 
 
 <template>
     <section class="flex h-full flex-col overflow-hidden">
-        <header
-            class="border-surface-200 dark:border-surface-700 gap-2 py-2 flex items-center border-b"
-            :class="isOpen ? 'px-3 justify-between' : 'px-0 justify-center'"
-        >
+        <header class="gap-2 py-2 flex items-center" :class="isOpen ? 'px-3 justify-between' : 'px-0 justify-center'">
             <h2
                 v-if="isOpen"
                 class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase"
