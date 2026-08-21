@@ -1,20 +1,29 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useEventListener } from '@vueuse/core'
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
+import { computed, useTemplateRef, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import SplitButton from 'primevue/splitbutton'
+import type { MenuItem } from 'primevue/menuitem'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 import { useProjectDocumentActions } from '@/widgets/project-documents/document-actions'
-import { useProjectDocumentEditing } from '@/widgets/project-documents/document-editing'
 import { ProjectDocumentMoveDialog } from '@/widgets/project-documents/move-dialog'
-import { DocumentDetailsPanel } from '@/widgets/project-documents/document-details'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+
+// What the edit page exposes for the toolbar to drive. Vue unwraps exposed refs, so
+// these arrive as plain values, not refs.
+interface EditPane {
+    save: () => void
+    cancel: () => void
+    abandon: () => void
+    isDirty: boolean
+    isSaving: boolean
+}
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -24,76 +33,69 @@ const documentId = useRouteParams<string>('documentId', '')
 
 const { project } = useProjectQuery(projectId)
 
-// Shares the cache entry the opened document's pane fills, and is read here only to
-// know which branch of the tree to reveal.
+// Shares the cache entry the pages fill; read here only for the toolbar and to know
+// which branch of the tree to reveal.
 const { projectDocument } = useProjectDocumentQuery(
     documentId,
     { with_path: true },
     { enabled: () => Boolean(documentId.value) }
 )
 
-const isDetailsPanelOpen = ref(true)
+const pane = useTemplateRef<EditPane>('pane')
 
-// The document the workspace has open, as opposed to one that failed to load or
-// belongs elsewhere: those are not this project's document and get no actions.
 const openedDocument = computed(() =>
     projectDocument.value?.project_id === projectId.value ? projectDocument.value : undefined
 )
 
-// Owned here rather than in the tree panel: the panel is remounted whenever the
-// workspace layout changes, and a remount must not throw away loaded levels.
+const isEditing = computed(() => router.currentRoute.value.name === 'project-documentation.document.edit')
+
 const tree = useDocumentationTree(projectId, {
     onCreated: (document) => openDocument(document.id),
     onDeleted: (deletedId) => {
         if (deletedId !== documentId.value) return
 
         // Its draft has nowhere to go back to, so leaving must not ask about it.
-        editing.cancel()
+        pane.value?.abandon?.()
         openDocumentationRoot()
     },
 })
 
-const editing = useProjectDocumentEditing(openedDocument, { onSaved: () => tree.reload() })
-
 const { annotationRoute, moveDialog, remove } = useProjectDocumentActions(openedDocument, {
     onMoved: () => tree.reload(),
     onDeleted: (document) => {
-        editing.cancel()
         tree.forgetLevel(document.id)
         openDocumentationRoot()
         tree.reload()
     },
 })
 
-async function discardEditing() {
-    if (await editing.confirmDiscard()) editing.cancel()
-}
+const documentMenuItems = computed<MenuItem[]>(() => [
+    { label: 'Move', icon: 'pi pi-arrows-h', command: () => moveDialog.open() },
+    { label: 'Delete', icon: 'pi pi-trash', command: () => remove() },
+])
 
-// Both guards are needed: moving between documents reuses this component, so it is
-// an update rather than a leave.
-onBeforeRouteUpdate(() => editing.confirmDiscard())
-onBeforeRouteLeave(() => editing.confirmDiscard())
-
-useEventListener(window, 'beforeunload', (event: BeforeUnloadEvent) => {
-    if (!editing.isDirty.value) return
-
-    event.preventDefault()
-    event.returnValue = ''
-})
-
-// The document's path ends with the document itself; everything before it is the
-// branch the tree has to open to reveal it.
 const ancestorIds = computed(() => (openedDocument.value?.path ?? []).slice(0, -1).map((node) => node.id))
 
+// The collapsed details panel is a preference, not a property of the document being
+// read, so it rides along; the body tab does not, because another document opens on
+// its own first tab.
+const panelQuery = computed(() =>
+    router.currentRoute.value.query.details ? { details: router.currentRoute.value.query.details } : {}
+)
+
 function openDocument(id: string) {
-    router.push({ name: 'project-documentation.document', params: { projectId: projectId.value, documentId: id } })
+    router.push({
+        name: 'project-documentation.document',
+        params: { projectId: projectId.value, documentId: id },
+        query: panelQuery.value,
+    })
 }
 
-function openRelatedTasksTab() {
-    router.replace({
-        name: 'project-documentation.document',
+function openEditor() {
+    router.push({
+        name: 'project-documentation.document.edit',
         params: { projectId: projectId.value, documentId: documentId.value },
-        query: { tab: 'tasks' },
+        query: router.currentRoute.value.query,
     })
 }
 
@@ -151,91 +153,84 @@ watch(
                 />
             </div>
 
-            <section class="min-w-0 flex flex-1 flex-col overflow-hidden">
-                <!-- Reading right to left: Add, Edit, Delete, Move, Annotate. Add stands
-                     apart from the rest — it needs no open document. -->
-                <div class="gap-1 px-3 py-1.5 flex shrink-0 items-center justify-end" style="min-height: 2.75rem">
-                    <template v-if="openedDocument && editing.isEditing.value">
-                        <span v-if="editing.isDirty.value" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
-                            Unsaved changes
+            <div class="min-w-0 flex flex-1 flex-col overflow-hidden">
+                <div class="gap-2 px-3 py-1.5 flex shrink-0 items-center" style="min-height: 2.75rem">
+                    <!-- The saved name, kept visible while the editable heading below shows
+                         the draft: it is what the draft is being compared against. -->
+                    <div v-if="openedDocument" class="gap-2 min-w-0 flex items-baseline">
+                        <span class="text-surface-400 text-xs shrink-0">{{ openedDocument.key }}</span>
+                        <span class="text-surface-600 dark:text-surface-300 text-sm truncate">
+                            {{ openedDocument.title }}
                         </span>
-                        <Button label="Cancel" size="small" text severity="secondary" @click="discardEditing">
-                            <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
-                        </Button>
-                        <Button
-                            :label="editing.isSaving.value ? 'Saving…' : 'Save'"
-                            size="small"
-                            text
-                            :disabled="editing.isSaving.value"
-                            @click="editing.save"
-                        >
-                            <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
-                        </Button>
-                    </template>
+                    </div>
 
-                    <template v-else-if="openedDocument">
+                    <div class="gap-1 ml-auto flex shrink-0 items-center">
+                        <template v-if="isEditing">
+                            <span v-if="pane?.isDirty" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
+                                Unsaved changes
+                            </span>
+                            <Button label="Cancel" size="small" text severity="secondary" @click="pane?.cancel()">
+                                <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
+                            </Button>
+                            <Button
+                                :label="pane?.isSaving ? 'Saving…' : 'Save'"
+                                size="small"
+                                text
+                                :disabled="pane?.isSaving"
+                                @click="pane?.save()"
+                            >
+                                <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
+                            </Button>
+                        </template>
+
+                        <template v-else-if="openedDocument">
+                            <Button
+                                v-if="annotationRoute"
+                                label="Annotate"
+                                size="small"
+                                text
+                                severity="secondary"
+                                @click="openAnnotationMode"
+                            >
+                                <template #icon>
+                                    <Icon icon="heroicons:chat-bubble-left-right" class="mr-1 text-base" />
+                                </template>
+                            </Button>
+
+                            <SplitButton
+                                label="Edit"
+                                size="small"
+                                text
+                                severity="secondary"
+                                :model="documentMenuItems"
+                                @click="openEditor"
+                            />
+                        </template>
+
                         <Button
-                            v-if="annotationRoute"
-                            label="Annotate"
+                            v-if="!isEditing"
+                            label="Add"
                             size="small"
                             text
                             severity="secondary"
-                            @click="openAnnotationMode"
+                            @click="tree.createRootDocument"
                         >
-                            <template #icon>
-                                <Icon icon="heroicons:chat-bubble-left-right" class="mr-1 text-base" />
-                            </template>
+                            <template #icon><Icon icon="material-symbols:add" class="mr-1 text-base" /></template>
                         </Button>
-                        <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open">
-                            <template #icon
-                                ><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base"
-                            /></template>
-                        </Button>
-                        <Button label="Delete" size="small" text severity="danger" @click="remove">
-                            <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
-                        </Button>
-                        <Button label="Edit" size="small" text severity="secondary" @click="editing.start">
-                            <template #icon><Icon icon="heroicons:pencil-square" class="mr-1 text-base" /></template>
-                        </Button>
-                    </template>
-
-                    <Button
-                        v-if="!editing.isEditing.value"
-                        label="Add"
-                        size="small"
-                        text
-                        severity="secondary"
-                        @click="tree.createRootDocument"
-                    >
-                        <template #icon><Icon icon="material-symbols:add" class="mr-1 text-base" /></template>
-                    </Button>
+                    </div>
                 </div>
 
                 <RouterView v-slot="{ Component }">
+                    <!-- Keyed by document: a jump straight from one document's editor to
+                         another must not carry the first one's draft into the second. -->
                     <component
                         :is="Component"
-                        v-model:draft-title="editing.draft.value.title"
-                        v-model:draft-content="editing.draft.value.content"
-                        :is-editing="editing.isEditing.value"
-                        :handle-image-upload="editing.handleContentImageUpload"
+                        :key="documentId"
+                        ref="pane"
                         @create-document="tree.createRootDocument"
+                        @saved="tree.reload()"
                     />
                 </RouterView>
-            </section>
-
-            <div
-                class="border-surface-200 dark:border-surface-700 shrink-0 overflow-hidden border-l"
-                :class="isDetailsPanelOpen ? 'w-96' : 'w-12'"
-            >
-                <DocumentDetailsPanel
-                    v-model:open="isDetailsPanelOpen"
-                    v-model:draft-status="editing.draft.value.status"
-                    v-model:draft-tags="editing.draft.value.tags"
-                    :is-editing="editing.isEditing.value"
-                    :document="openedDocument"
-                    @open-document="openDocument"
-                    @view-all-tasks="openRelatedTasksTab"
-                />
             </div>
         </div>
 

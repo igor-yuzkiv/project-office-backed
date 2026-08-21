@@ -20,6 +20,7 @@ const RELATED_TASKS_PREVIEW_COUNT = 3
 
 const props = defineProps<{
     document?: IProjectDocument
+    // Editing swaps two controls; everything else on the panel reads the same.
     isEditing?: boolean
 }>()
 
@@ -107,13 +108,16 @@ const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 
 
                         <span class="text-surface-500 text-xs">Parent</span>
                         <button
-                            v-if="parent"
+                            v-if="parent && !isEditing"
                             type="button"
                             class="app-link truncate text-left"
                             @click="emit('open-document', parent.id)"
                         >
                             {{ parent.title }}
                         </button>
+                        <span v-else-if="parent" class="text-surface-700 dark:text-surface-200 truncate">
+                            {{ parent.title }}
+                        </span>
                         <span v-else class="text-surface-400 text-xs">Root document</span>
                     </div>
                 </section>
@@ -201,7 +205,7 @@ const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 
                         </RouterLink>
 
                         <Button
-                            v-if="hiddenTaskCount > 0"
+                            v-if="hiddenTaskCount > 0 && !isEditing"
                             :label="`View all (${paginationMeta?.total})`"
                             size="small"
                             severity="secondary"

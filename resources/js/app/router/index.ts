@@ -74,7 +74,12 @@ const router = createRouter({
                 {
                     path: ':documentId',
                     name: 'project-documentation.document',
-                    component: () => import('@/pages/project-documentation/workspace/panes/OpenedDocumentPage.vue'),
+                    component: () => import('@/pages/project-documentation/workspace/panes/ViewDocumentPage.vue'),
+                },
+                {
+                    path: ':documentId/edit',
+                    name: 'project-documentation.document.edit',
+                    component: () => import('@/pages/project-documentation/workspace/panes/EditDocumentPage.vue'),
                 },
             ],
         },

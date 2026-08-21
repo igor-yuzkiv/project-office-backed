@@ -1,4 +1,4 @@
-import { computed, ref, watch, type MaybeRefOrGetter, toValue } from 'vue'
+import { computed, ref, type MaybeRefOrGetter, toValue } from 'vue'
 import {
     ProjectDocumentAttachmentRoles,
     uploadProjectDocumentAttachmentRequest,
@@ -52,6 +52,8 @@ export function useProjectDocumentEditing(
     const toast = useToast()
     const confirm = useConfirmDialog()
 
+    // Not a mode any more — the route is. It marks the window between start() and a
+    // finished save, which is what isDirty and cancel() are asking about.
     const isEditing = ref(false)
     const draft = ref<ProjectDocumentDraft>({ title: '', content: '', status: 'draft', tags: [] })
     const validationErrors = ref<LaravelValidationErrors>({})
@@ -161,18 +163,10 @@ export function useProjectDocumentEditing(
         callback(results.map((result) => result.data.url))
     }
 
-    // Opening another document leaves editing behind; the guard asks before this runs.
-    watch(
-        () => toValue(document)?.id,
-        () => cancel()
-    )
-
     return {
-        isEditing,
         isDirty,
         isSaving,
         draft,
-        validationErrors,
         start,
         cancel,
         save,
