@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import Skeleton from 'primevue/skeleton'
-import type { IProjectDocument } from '@/entities/project-document/types'
+import Select from 'primevue/select'
+import type { IProjectDocument, ProjectDocumentStatusValue } from '@/entities/project-document/types'
+import type { ITag } from '@/entities/tag/types'
 import { useProjectDocumentTasksQuery } from '@/entities/project-document'
+import { projectDocumentStatusOptions } from '@/entities/project-document/config'
+import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
+import { IconButton } from '@/shared/components/button'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { TaskStatusTag } from '@/widgets/tasks/metadata'
 import { TagList } from '@/widgets/tags/metadata'
@@ -15,7 +20,11 @@ const RELATED_TASKS_PREVIEW_COUNT = 3
 
 const props = defineProps<{
     document?: IProjectDocument
+    isEditing?: boolean
 }>()
+
+const draftStatus = defineModel<ProjectDocumentStatusValue | undefined>('draftStatus')
+const draftTags = defineModel<ITag[]>('draftTags', { default: () => [] })
 
 const isOpen = defineModel<boolean>('open', { required: true })
 
@@ -38,6 +47,8 @@ const parent = computed(() => {
 
     return path.length > 1 ? path[path.length - 2] : undefined
 })
+
+const isTagsDialogVisible = ref(false)
 
 const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 0) - tasks.value.length, 0))
 </script>
@@ -85,7 +96,17 @@ const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 
                         <CopyToClipboard :text="document.key" class="text-surface-700 dark:text-surface-200" />
 
                         <span class="text-surface-500 text-xs">Status</span>
-                        <ProjectDocumentStatusTag :status="document.status" variant="light" class="w-fit" />
+                        <Select
+                            v-if="isEditing"
+                            v-model="draftStatus"
+                            :options="projectDocumentStatusOptions()"
+                            option-label="label"
+                            option-value="value"
+                            size="small"
+                            variant="filled"
+                            class="hover:!border-surface-300 w-full !border-transparent !bg-transparent"
+                        />
+                        <ProjectDocumentStatusTag v-else :status="document.status" variant="light" class="w-fit" />
 
                         <span class="text-surface-500 text-xs">Parent</span>
                         <button
@@ -102,7 +123,18 @@ const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 
 
                 <section class="gap-2 flex flex-col">
                     <h3 class="text-surface-400 text-xs font-semibold tracking-wide uppercase">Tags</h3>
-                    <TagList v-if="document.tags?.length" :tags="document.tags" />
+
+                    <div v-if="isEditing" class="gap-2 flex items-center">
+                        <IconButton
+                            size="small"
+                            severity="success"
+                            icon="mdi:tag-edit"
+                            @click="isTagsDialogVisible = true"
+                        />
+                        <TagList :tags="draftTags" />
+                    </div>
+
+                    <TagList v-else-if="document.tags?.length" :tags="document.tags" />
                     <p v-else class="text-surface-400 text-xs">No tags yet.</p>
                 </section>
 
@@ -184,5 +216,7 @@ const hiddenTaskCount = computed(() => Math.max((paginationMeta.value?.total ?? 
                 </section>
             </template>
         </div>
+
+        <ManageRecordTagsDialog v-model:visible="isTagsDialogVisible" v-model="draftTags" />
     </section>
 </template>

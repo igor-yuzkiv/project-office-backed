@@ -17,6 +17,15 @@ const documentId = useRouteParams<string>('documentId')
 // it from there, and moving to another document drops the query along with it.
 const activeTab = useRouteQuery<string>('tab', 'document')
 
+defineProps<{
+    isEditing?: boolean
+    isDirty?: boolean
+    handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
+}>()
+
+const draftTitle = defineModel<string>('draftTitle', { default: '' })
+const draftContent = defineModel<string>('draftContent', { default: '' })
+
 const { projectDocument, isError, isFetching, refetch } = useProjectDocumentQuery(documentId, { with_path: true })
 
 // Failing to load and belonging to another project are different problems, and
@@ -62,7 +71,12 @@ function openDocument(id: string) {
     <DocumentBody
         v-else-if="openedDocument"
         v-model:tab="activeTab"
+        v-model:draft-title="draftTitle"
+        v-model:draft-content="draftContent"
         :document="openedDocument"
+        :is-editing="isEditing"
+        :is-dirty="isDirty"
+        :handle-image-upload="handleImageUpload"
         @open-document="openDocument"
     />
 </template>

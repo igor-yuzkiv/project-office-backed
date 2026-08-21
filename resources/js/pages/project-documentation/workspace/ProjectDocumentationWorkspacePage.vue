@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useEventListener } from '@vueuse/core'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 import { useProjectDocumentActions } from '@/widgets/project-documents/document-actions'
+import { useProjectDocumentEditing } from '@/widgets/project-documents/document-editing'
 import { ProjectDocumentMoveDialog } from '@/widgets/project-documents/move-dialog'
 import { DocumentDetailsPanel } from '@/widgets/project-documents/document-details'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
@@ -41,31 +43,66 @@ const openedDocument = computed(() =>
 const tree = useDocumentationTree(projectId, {
     onCreated: (document) => openDocument(document.id),
     onDeleted: (deletedId) => {
-        if (deletedId === documentId.value) openDocumentationRoot()
+        if (deletedId !== documentId.value) return
+
+        // Its draft has nowhere to go back to, so leaving must not ask about it.
+        editing.cancel()
+        openDocumentationRoot()
     },
 })
 
-const { editRoute, annotationRoute, moveDialog, remove } = useProjectDocumentActions(openedDocument, {
+const editing = useProjectDocumentEditing(openedDocument, { onSaved: () => tree.reload() })
+
+const { annotationRoute, moveDialog, remove } = useProjectDocumentActions(openedDocument, {
     onMoved: () => tree.reload(),
     onDeleted: (document) => {
+        editing.cancel()
         tree.forgetLevel(document.id)
         openDocumentationRoot()
         tree.reload()
     },
 })
 
-useHeaderActions(() =>
-    openedDocument.value
-        ? [
-              { key: 'edit-project-document', title: 'Edit', to: editRoute.value, is_primary: true },
-              ...(annotationRoute.value
-                  ? [{ key: 'annotate-project-document', title: 'Annotation mode', to: annotationRoute.value }]
-                  : []),
-              { key: 'move-project-document', title: 'Move', action: moveDialog.open },
-              { key: 'delete-project-document', title: 'Delete', action: remove },
-          ]
-        : []
-)
+useHeaderActions(() => {
+    if (!openedDocument.value) return []
+
+    if (editing.isEditing.value) {
+        return [
+            {
+                key: 'save-project-document',
+                title: editing.isSaving.value ? 'Saving…' : 'Save',
+                action: editing.save,
+                is_primary: true,
+            },
+            { key: 'cancel-project-document-edit', title: 'Cancel', action: discardEditing },
+        ]
+    }
+
+    return [
+        { key: 'edit-project-document', title: 'Edit', action: editing.start, is_primary: true },
+        ...(annotationRoute.value
+            ? [{ key: 'annotate-project-document', title: 'Annotation mode', to: annotationRoute.value }]
+            : []),
+        { key: 'move-project-document', title: 'Move', action: moveDialog.open },
+        { key: 'delete-project-document', title: 'Delete', action: remove },
+    ]
+})
+
+async function discardEditing() {
+    if (await editing.confirmDiscard()) editing.cancel()
+}
+
+// Both guards are needed: moving between documents reuses this component, so it is
+// an update rather than a leave.
+onBeforeRouteUpdate(() => editing.confirmDiscard())
+onBeforeRouteLeave(() => editing.confirmDiscard())
+
+useEventListener(window, 'beforeunload', (event: BeforeUnloadEvent) => {
+    if (!editing.isDirty.value) return
+
+    event.preventDefault()
+    event.returnValue = ''
+})
 
 // The document's path ends with the document itself; everything before it is the
 // branch the tree has to open to reveal it.
@@ -135,7 +172,15 @@ watch(
 
             <section class="min-w-0 flex flex-1 flex-col overflow-auto">
                 <RouterView v-slot="{ Component }">
-                    <component :is="Component" @create-document="tree.createRootDocument" />
+                    <component
+                        :is="Component"
+                        v-model:draft-title="editing.draft.value.title"
+                        v-model:draft-content="editing.draft.value.content"
+                        :is-editing="editing.isEditing.value"
+                        :is-dirty="editing.isDirty.value"
+                        :handle-image-upload="editing.handleContentImageUpload"
+                        @create-document="tree.createRootDocument"
+                    />
                 </RouterView>
             </section>
 
@@ -145,6 +190,9 @@ watch(
             >
                 <DocumentDetailsPanel
                     v-model:open="isDetailsPanelOpen"
+                    v-model:draft-status="editing.draft.value.status"
+                    v-model:draft-tags="editing.draft.value.tags"
+                    :is-editing="editing.isEditing.value"
                     :document="openedDocument"
                     @open-document="openDocument"
                     @view-all-tasks="openRelatedTasksTab"
