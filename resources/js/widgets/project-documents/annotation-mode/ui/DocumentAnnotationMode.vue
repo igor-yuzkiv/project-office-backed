@@ -180,7 +180,7 @@ onScopeDispose(() => {
                     <!-- Beside the sheet, not over it: the sheet is the thing being annotated. -->
                     <MarkdownCatalog
                         v-if="previewRef"
-                        class="top-0 rounded-lg p-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 w-56 text-sm shadow-sm xl:block sticky hidden max-h-[70vh] shrink-0 overflow-y-auto border"
+                        class="top-0 rounded-lg p-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 w-64 text-sm shadow-sm md:block sticky hidden max-h-[70vh] shrink-0 overflow-y-auto border"
                         :catalog="previewRef.catalog"
                     />
 
