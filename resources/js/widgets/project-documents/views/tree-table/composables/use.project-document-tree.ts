@@ -135,10 +135,6 @@ export function useProjectDocumentTree(
     // The readers below go through `levels.get` rather than `getLevel`: they are
     // meant to be called from computed properties, and `getLevel` writes to the
     // reactive Map when a level is missing.
-    function levelMeta(key: string): PaginationMeta | undefined {
-        return levels.get(key)?.paginationMeta
-    }
-
     function levelRows(key: string): ProjectDocumentTreeNodeDto[] {
         return levels.get(key)?.rows ?? []
     }
@@ -155,6 +151,23 @@ export function useProjectDocumentTree(
 
     function isLevelExpanded(key: string): boolean {
         return levels.get(key)?.isExpanded ?? false
+    }
+
+    // A deleted document takes its whole branch of level state with it — otherwise
+    // a later reload would ask the server for the children of something gone.
+    function forgetLevel(key: string) {
+        const level = levels.get(key)
+
+        if (!level) {
+            return
+        }
+
+        level.rows.forEach((row) => forgetLevel(row.id))
+        levels.delete(key)
+    }
+
+    function clearLevels() {
+        levels.clear()
     }
 
     // Appends the next page to what is already shown, unlike `loadRoot`, which
@@ -202,7 +215,6 @@ export function useProjectDocumentTree(
         expandNode,
         collapseNode,
         expandAllOnPage,
-        levelMeta,
         levelRows,
         levelRemainingCount,
         isLevelLoading,
@@ -210,5 +222,7 @@ export function useProjectDocumentTree(
         loadMoreLevel,
         reloadLevel,
         reloadLoadedLevels,
+        forgetLevel,
+        clearLevels,
     }
 }

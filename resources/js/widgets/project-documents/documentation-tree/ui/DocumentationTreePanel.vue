@@ -1,30 +1,24 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import Skeleton from 'primevue/skeleton'
 import type { MenuItem } from 'primevue/menuitem'
-import type { IProjectDocument, ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
-import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
-import { useDocumentationTree } from '../composables/use.documentation-tree'
+import type { ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
+import type { useDocumentationTree } from '../composables/use.documentation-tree'
 
+// The tree state is owned by the page: this panel is remounted whenever the
+// workspace layout changes, and a remount must not throw away loaded levels.
 const props = defineProps<{
-    projectId: string
+    tree: ReturnType<typeof useDocumentationTree>
     selectedDocumentId?: string | null
     ancestorIds?: string[]
 }>()
 
 const emit = defineEmits<{
     (e: 'select', documentId: string): void
-    (e: 'created', document: IProjectDocument): void
-    (e: 'deleted', documentId: string): void
 }>()
-
-const tree = useDocumentationTree(() => props.projectId, {
-    onCreated: (document) => emit('created', document),
-    onDeleted: (documentId) => emit('deleted', documentId),
-})
 
 const nodeMenu = useTemplateRef<InstanceType<typeof Menu>>('nodeMenu')
 const menuDocument = ref<ProjectDocumentTreeNodeDto | null>(null)
@@ -39,12 +33,12 @@ const menuItems = computed<MenuItem[]>(() => {
             label: 'New document inside',
             icon: 'pi pi-plus',
             disabled: !document.can_have_children,
-            command: () => tree.createChildDocument(document),
+            command: () => props.tree.createChildDocument(document),
         },
         {
             label: 'Delete',
             icon: 'pi pi-trash',
-            command: () => tree.deleteNodeDocument(document),
+            command: () => props.tree.deleteNodeDocument(document),
         },
     ]
 })
@@ -57,14 +51,10 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
 watch(
     () => props.ancestorIds,
     (ancestorIds) => {
-        if (ancestorIds?.length) tree.expandAncestors(ancestorIds)
+        if (ancestorIds?.length) props.tree.expandAncestors(ancestorIds)
     },
     { immediate: true }
 )
-
-onMounted(() => {
-    tree.load()
-})
 </script>
 
 <template>
@@ -179,14 +169,5 @@ onMounted(() => {
         </div>
 
         <Menu ref="nodeMenu" :model="menuItems" popup />
-
-        <ProjectDocumentCreateDialog
-            v-model:visible="tree.createDialog.visible.value"
-            v-model:form-data="tree.createDialog.formData.value"
-            :validation-errors="tree.createDialog.validationErrors.value"
-            :is-pending="tree.createDialog.isPending.value"
-            :parent-document="tree.createDialog.parentDocument.value"
-            @submit="tree.createDialog.submit"
-        />
     </section>
 </template>

@@ -9,8 +9,8 @@ import Splitter from 'primevue/splitter'
 import SplitterPanel from 'primevue/splitterpanel'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
-import type { IProjectDocument } from '@/entities/project-document/types'
-import { DocumentationTreePanel } from '@/widgets/project-documents/documentation-tree'
+import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
+import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 
@@ -28,6 +28,15 @@ const {
 } = useProjectDocumentQuery(documentId, { with_path: true }, { enabled: () => Boolean(documentId.value) })
 
 const isDetailsPanelOpen = ref(true)
+
+// Owned here rather than in the tree panel: collapsing the details panel remounts
+// the splitter's subtree, and the loaded tree has to survive that.
+const tree = useDocumentationTree(projectId, {
+    onCreated: (document) => openDocument(document.id),
+    onDeleted: (deletedId) => {
+        if (deletedId === documentId.value) openDocumentationRoot()
+    },
+})
 
 // A document that failed to load, or that belongs to another project, is not this
 // project's document — the tree stays usable either way.
@@ -53,19 +62,13 @@ function openDocumentationRoot() {
     router.push({ name: 'project-documentation', params: { projectId: projectId.value } })
 }
 
-function onDocumentCreated(document: IProjectDocument) {
-    openDocument(document.id)
-}
-
-function onDocumentDeleted(deletedId: string) {
-    if (deletedId === documentId.value) openDocumentationRoot()
-}
-
 useBreadcrumbs(() => [
     { label: 'Projects', to: { name: 'projects' } },
     { label: project.value?.name ?? 'Project', to: { name: 'project-details', params: { id: projectId.value } } },
     { label: 'Documentation' },
 ])
+
+watch(projectId, () => tree.load(), { immediate: true })
 
 watch(
     project,
@@ -84,12 +87,10 @@ watch(
         >
             <SplitterPanel :size="22" :min-size="12">
                 <DocumentationTreePanel
-                    :project-id="projectId"
+                    :tree="tree"
                     :selected-document-id="selectedDocumentId"
                     :ancestor-ids="ancestorIds"
                     @select="openDocument"
-                    @created="onDocumentCreated"
-                    @deleted="onDocumentDeleted"
                 />
             </SplitterPanel>
 
@@ -159,6 +160,15 @@ watch(
                 </section>
             </SplitterPanel>
         </Splitter>
+
+        <ProjectDocumentCreateDialog
+            v-model:visible="tree.createDialog.visible.value"
+            v-model:form-data="tree.createDialog.formData.value"
+            :validation-errors="tree.createDialog.validationErrors.value"
+            :is-pending="tree.createDialog.isPending.value"
+            :parent-document="tree.createDialog.parentDocument.value"
+            @submit="tree.createDialog.submit"
+        />
 
         <div v-if="!isDetailsPanelOpen" class="pt-2 flex shrink-0 items-start">
             <Button

@@ -32,7 +32,7 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
     const tree = useProjectDocumentTree(projectId)
     const { mutateWithConfirm: deleteDocument } = useDeleteProjectDocumentMutation()
 
-    const isPending = ref(false)
+    const isPending = ref(true)
     const isError = ref(false)
 
     const createDialog = useProjectDocumentCreateDialog({
@@ -41,8 +41,8 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
                 await tree.expandNode(document.parent_id)
             }
 
-            await reload()
             callbacks.onCreated?.(document)
+            await reload()
         },
     })
 
@@ -79,9 +79,12 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         }
     }
 
+    // Starts the tree over: a different project shares this component, and its
+    // previously loaded levels say nothing about the new one.
     async function load() {
         isPending.value = true
         isError.value = false
+        tree.clearLevels()
 
         try {
             await tree.loadRoot()
@@ -133,8 +136,9 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
 
     function deleteNodeDocument(document: ProjectDocumentTreeNodeDto) {
         return deleteDocument(document.id, document.title, async () => {
-            await reload()
+            tree.forgetLevel(document.id)
             callbacks.onDeleted?.(document.id)
+            await reload()
         })
     }
 
