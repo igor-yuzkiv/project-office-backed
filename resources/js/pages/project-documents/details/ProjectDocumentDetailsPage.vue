@@ -5,11 +5,7 @@ import { useRouteParams } from '@vueuse/router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
-import {
-    useProjectDocumentQuery,
-    useDeleteProjectDocumentMutation,
-    projectDocumentDeleteConfirmMessage,
-} from '@/entities/project-document'
+import { useProjectDocumentQuery, useDeleteProjectDocumentMutation } from '@/entities/project-document'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -33,10 +29,8 @@ function handleDeleteProjectDocument() {
     if (!projectDocument.value) return
 
     const projectId = projectDocument.value.project_id
-    deleteProjectDocument(
-        projectDocument.value.id,
-        projectDocumentDeleteConfirmMessage(projectDocument.value.title),
-        () => router.push({ name: 'project-details.documentation', params: { id: projectId } })
+    deleteProjectDocument(projectDocument.value.id, projectDocument.value.title, () =>
+        router.push({ name: 'project-details.documentation', params: { id: projectId } })
     )
 }
 

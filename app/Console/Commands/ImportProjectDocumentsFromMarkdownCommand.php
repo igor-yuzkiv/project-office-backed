@@ -60,7 +60,7 @@ class ImportProjectDocumentsFromMarkdownCommand extends Command
         ?string $parentId,
         int $depth
     ): void {
-        if ($depth > ProjectDocumentModel::MAX_DEPTH) {
+        if ($depth > ProjectDocumentModel::maxDepth()) {
             $this->warn("Skipping (nesting too deep): {$dirPath}");
             $this->skipped++;
 

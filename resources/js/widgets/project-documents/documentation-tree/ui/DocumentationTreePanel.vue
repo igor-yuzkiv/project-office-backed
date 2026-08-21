@@ -38,7 +38,7 @@ const menuItems = computed<MenuItem[]>(() => {
         {
             label: 'New document inside',
             icon: 'pi pi-plus',
-            disabled: !tree.canCreateChildDocument(document),
+            disabled: !document.can_have_children,
             command: () => tree.createChildDocument(document),
         },
         {

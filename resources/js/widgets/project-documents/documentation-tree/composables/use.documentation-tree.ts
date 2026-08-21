@@ -1,9 +1,5 @@
 import { computed, ref, type MaybeRefOrGetter, toValue } from 'vue'
-import {
-    canProjectDocumentHaveChildren,
-    projectDocumentDeleteConfirmMessage,
-    useDeleteProjectDocumentMutation,
-} from '@/entities/project-document'
+import { useDeleteProjectDocumentMutation } from '@/entities/project-document'
 import type { IProjectDocument, ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
 import { useProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 import { PROJECT_DOCUMENT_TREE_ROOT_KEY, useProjectDocumentTree } from '@/widgets/project-documents/views/tree-table'
@@ -135,12 +131,8 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         createDialog.open(toValue(projectId), { id: document.id, key: document.key, title: document.title })
     }
 
-    function canCreateChildDocument(document: ProjectDocumentTreeNodeDto): boolean {
-        return canProjectDocumentHaveChildren(document.depth)
-    }
-
     function deleteNodeDocument(document: ProjectDocumentTreeNodeDto) {
-        return deleteDocument(document.id, projectDocumentDeleteConfirmMessage(document.title), async () => {
+        return deleteDocument(document.id, document.title, async () => {
             await reload()
             callbacks.onDeleted?.(document.id)
         })
@@ -159,7 +151,6 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         loadMore,
         createRootDocument,
         createChildDocument,
-        canCreateChildDocument,
         deleteNodeDocument,
     }
 }

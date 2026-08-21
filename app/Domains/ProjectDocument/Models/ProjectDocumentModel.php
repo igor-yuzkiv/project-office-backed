@@ -67,9 +67,6 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
     /** @use HasFactory<ProjectDocumentModelFactory> */
     use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
-    /** Maximum allowed nesting depth (0, 1, 2 — a document at MAX_DEPTH cannot have children). */
-    public const int MAX_DEPTH = 2;
-
     protected $table = 'project_documents';
 
     public $incrementing = false;
@@ -81,6 +78,17 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
             'depth'       => 'integer',
             'archived_at' => 'datetime',
         ];
+    }
+
+    /** The deepest a document may sit; zero-based, so the value is one less than the number of levels. */
+    public static function maxDepth(): int
+    {
+        return (int) config('domains.project-document.max_depth');
+    }
+
+    public function canHaveChildren(): bool
+    {
+        return $this->depth < self::maxDepth();
     }
 
     protected static function booted(): void
@@ -119,8 +127,8 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
             throw new DomainException('A document cannot be moved under its own descendant.');
         }
 
-        if ($parent->depth >= self::MAX_DEPTH) {
-            throw new DomainException('Maximum document nesting depth ('.(self::MAX_DEPTH + 1).' levels) exceeded.');
+        if ($parent->depth >= self::maxDepth()) {
+            throw new DomainException('Maximum document nesting depth ('.(self::maxDepth() + 1).' levels) exceeded.');
         }
 
         $this->path = $parent->path.'.'.$this->id;

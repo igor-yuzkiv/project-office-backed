@@ -33,6 +33,7 @@ it('creates a project document with default draft status and top-level hierarchy
         ->assertJsonPath('data.parent_id', null)
         ->assertJsonPath('data.status', ProjectDocumentStatus::Draft->value)
         ->assertJsonPath('data.depth', 0)
+        ->assertJsonPath('data.can_have_children', true)
         ->assertJsonPath('data.project.id', $this->project->id);
 
     $document = ProjectDocumentModel::findOrFail($response->json('data.id'));

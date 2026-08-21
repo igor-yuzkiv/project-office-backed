@@ -14,13 +14,14 @@ class ProjectDocumentTreeNodeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'           => $this->id,
-            'parent_id'    => $this->parent_id,
-            'key'          => $this->key,
-            'title'        => $this->title,
-            'status'       => $this->status->value,
-            'depth'        => $this->depth,
-            'has_children' => $this->children_count > 0,
+            'id'                => $this->id,
+            'parent_id'         => $this->parent_id,
+            'key'               => $this->key,
+            'title'             => $this->title,
+            'status'            => $this->status->value,
+            'depth'             => $this->depth,
+            'has_children'      => $this->children_count > 0,
+            'can_have_children' => $this->canHaveChildren(),
 
             'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'updated_by' => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),

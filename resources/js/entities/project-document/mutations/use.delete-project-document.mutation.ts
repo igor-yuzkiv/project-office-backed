@@ -14,10 +14,10 @@ export function useDeleteProjectDocumentMutation() {
         },
     })
 
-    async function mutateWithConfirm(id: string, message?: string, onSuccess?: () => void) {
+    async function mutateWithConfirm(id: string, title: string, onSuccess?: () => void) {
         const confirmed = await confirm.requireAsync({
-            header: 'Delete',
-            message: message ?? 'Are you sure you want to delete this item?',
+            header: 'Delete Document',
+            message: `Are you sure you want to delete "${title}"? This will also delete all nested documents, comments, attachments, tags, and task links.`,
             acceptLabel: 'Delete',
             rejectLabel: 'Cancel',
         })

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useRouteParams } from '@vueuse/router'
-import { canProjectDocumentHaveChildren, useProjectDocumentQuery } from '@/entities/project-document'
+import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentationTreeTableView, useProjectDocumentTree } from '@/widgets/project-documents/views/tree-table'
 import Button from 'primevue/button'
 import { Icon } from '@iconify/vue'
@@ -14,7 +14,7 @@ const { projectDocument } = useProjectDocumentQuery(documentId)
 const tree = useProjectDocumentTree(() => projectDocument.value?.project_id ?? '', undefined, documentId)
 
 const createDialog = useProjectDocumentCreateDialog()
-const canCreateSubDocument = computed(() => canProjectDocumentHaveChildren(projectDocument.value?.depth ?? Infinity))
+const canCreateSubDocument = computed(() => projectDocument.value?.can_have_children ?? false)
 
 function openCreateSubDocumentDialog() {
     if (!projectDocument.value) return

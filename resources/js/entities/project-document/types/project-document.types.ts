@@ -20,6 +20,7 @@ export interface IProjectDocument extends IEntity {
     content: string | null
     status: ProjectDocumentStatusValue
     depth: number
+    can_have_children: boolean
     created_at: string
     updated_at: string
 
@@ -59,6 +60,7 @@ export interface ProjectDocumentTreeNodeDto extends Record<string, unknown> {
     status: ProjectDocumentStatusValue
     depth: number
     has_children: boolean
+    can_have_children: boolean
     updated_at: string
 
     tags?: ITag[]

@@ -41,7 +41,7 @@ it('rejects creating a document beyond the maximum nesting depth', function () {
     $child = ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $root->id]);
     $grandchild = ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $child->id]);
 
-    expect($grandchild->depth)->toBe(ProjectDocumentModel::MAX_DEPTH);
+    expect($grandchild->depth)->toBe(ProjectDocumentModel::maxDepth());
 
     ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $grandchild->id]);
 })->throws(DomainException::class);
@@ -99,4 +99,35 @@ it('links a document to tasks of the same project', function () {
     $document->tasks()->attach($task);
 
     expect($document->tasks()->pluck('tasks.id'))->toEqual(collect([$task->id]));
+});
+
+it('takes the nesting limit from configuration', function () {
+    config(['domains.project-document.max_depth' => 3]);
+
+    $project = ProjectModel::factory()->create();
+
+    $document = ProjectDocumentModel::factory()->for($project, 'project')->create();
+
+    foreach (range(1, 3) as $depth) {
+        $document = ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $document->id]);
+        expect($document->depth)->toBe($depth);
+    }
+
+    expect($document->canHaveChildren())->toBeFalse();
+
+    expect(fn () => ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $document->id]))
+        ->toThrow(DomainException::class, 'Maximum document nesting depth (4 levels) exceeded.');
+});
+
+it('rejects a fourth level with a message that counts levels, not depth', function () {
+    $project = ProjectModel::factory()->create();
+
+    $document = ProjectDocumentModel::factory()->for($project, 'project')->create();
+
+    foreach (range(1, 2) as $ignored) {
+        $document = ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $document->id]);
+    }
+
+    expect(fn () => ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $document->id]))
+        ->toThrow(DomainException::class, 'Maximum document nesting depth (3 levels) exceeded.');
 });
