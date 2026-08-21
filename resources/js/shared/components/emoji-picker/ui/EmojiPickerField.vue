@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
 import { Icon } from '@iconify/vue'
-import Button from 'primevue/button'
 import Popover from 'primevue/popover'
 import EmojiPicker from './EmojiPicker.vue'
 
@@ -10,7 +9,7 @@ withDefaults(
         placeholder?: string
         clearLabel?: string
     }>(),
-    { placeholder: 'Pick an emoji', clearLabel: 'Remove' }
+    { placeholder: 'Pick an emoji', clearLabel: 'Remove icon' }
 )
 
 const emoji = defineModel<string | null>({ required: true })
@@ -28,15 +27,14 @@ function select(value: string) {
 
 function clear() {
     emoji.value = null
-    popover.value?.hide()
 }
 </script>
 
 <template>
-    <div class="gap-2 flex items-center">
+    <div class="group w-11 relative shrink-0">
         <button
             type="button"
-            class="border-surface-300 dark:border-surface-600 hover:border-surface-400 h-11 w-11 rounded-lg text-2xl flex shrink-0 items-center justify-center border transition-colors"
+            class="border-surface-300 dark:border-surface-600 hover:border-surface-400 h-11 w-11 rounded-lg text-2xl flex items-center justify-center border transition-colors"
             :aria-label="placeholder"
             @click="toggle"
         >
@@ -44,13 +42,21 @@ function clear() {
             <Icon v-else icon="heroicons:face-smile" class="text-surface-400 text-xl" />
         </button>
 
-        <Button v-if="emoji" :label="clearLabel" size="small" severity="secondary" text @click="clear" />
+        <!-- Clearing is a correction, not a field of its own: it appears over the icon
+             it removes, and only when there is one to remove. -->
+        <button
+            v-if="emoji"
+            type="button"
+            class="bg-surface-700 text-surface-0 hover:bg-surface-900 dark:bg-surface-600 dark:hover:bg-surface-400 h-4 w-4 -top-1 -right-1 absolute flex items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+            :title="clearLabel"
+            :aria-label="clearLabel"
+            @click.stop="clear"
+        >
+            <Icon icon="heroicons:x-mark" class="text-[10px]" />
+        </button>
     </div>
 
     <Popover ref="popover">
-        <div class="gap-2 flex flex-col">
-            <EmojiPicker @select="select" />
-            <Button v-if="emoji" :label="clearLabel" size="small" severity="secondary" text @click="clear" />
-        </div>
+        <EmojiPicker @select="select" />
     </Popover>
 </template>
