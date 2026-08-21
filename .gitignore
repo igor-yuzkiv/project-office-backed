@@ -36,3 +36,7 @@ Thumbs.db
 /playwright/.cache/
 /playwright-report/
 .claude/settings.local.json
+
+# cate
+.cate/
+.claude/skills/cate-cli/
