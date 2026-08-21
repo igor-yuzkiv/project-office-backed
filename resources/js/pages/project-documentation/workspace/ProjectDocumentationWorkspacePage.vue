@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
-import Skeleton from 'primevue/skeleton'
 import Splitter from 'primevue/splitter'
 import SplitterPanel from 'primevue/splitterpanel'
 import { useProjectQuery } from '@/entities/project/queries'
@@ -21,16 +20,19 @@ const projectId = useRouteParams<string>('projectId')
 const documentId = useRouteParams<string>('documentId', '')
 
 const { project } = useProjectQuery(projectId)
-const {
-    projectDocument,
-    isError: isDocumentError,
-    isFetching: isDocumentFetching,
-} = useProjectDocumentQuery(documentId, { with_path: true }, { enabled: () => Boolean(documentId.value) })
+
+// Shares the cache entry the opened document's pane fills, and is read here only to
+// know which branch of the tree to reveal.
+const { projectDocument } = useProjectDocumentQuery(
+    documentId,
+    { with_path: true },
+    { enabled: () => Boolean(documentId.value) }
+)
 
 const isDetailsPanelOpen = ref(true)
 
-// Owned here rather than in the tree panel: collapsing the details panel remounts
-// the splitter's subtree, and the loaded tree has to survive that.
+// Owned here rather than in the tree panel: the panel is remounted whenever the
+// workspace layout changes, and a remount must not throw away loaded levels.
 const tree = useDocumentationTree(projectId, {
     onCreated: (document) => openDocument(document.id),
     onDeleted: (deletedId) => {
@@ -38,24 +40,20 @@ const tree = useDocumentationTree(projectId, {
     },
 })
 
-// A document that failed to load, or that belongs to another project, is not this
-// project's document — the tree stays usable either way.
-const isDocumentMissing = computed(() => {
-    if (!documentId.value) return false
-
-    return isDocumentError.value || (!!projectDocument.value && projectDocument.value.project_id !== projectId.value)
-})
-
-const openedDocument = computed(() => (isDocumentMissing.value ? undefined : projectDocument.value))
-
-const selectedDocumentId = computed(() => (isDocumentMissing.value ? null : documentId.value || null))
-
 // The document's path ends with the document itself; everything before it is the
 // branch the tree has to open to reveal it.
-const ancestorIds = computed(() => (openedDocument.value?.path ?? []).slice(0, -1).map((node) => node.id))
+const ancestorIds = computed(() => {
+    const document = projectDocument.value
+
+    if (!document || document.project_id !== projectId.value) {
+        return []
+    }
+
+    return (document.path ?? []).slice(0, -1).map((node) => node.id)
+})
 
 function openDocument(id: string) {
-    router.push({ name: 'project-documentation', params: { projectId: projectId.value, documentId: id } })
+    router.push({ name: 'project-documentation.document', params: { projectId: projectId.value, documentId: id } })
 }
 
 function openDocumentationRoot() {
@@ -70,7 +68,6 @@ useBreadcrumbs(() => [
 
 watch(projectId, () => tree.load(), { immediate: true })
 
-// Opening a document by URL has to reveal it, so its branch is expanded from the root down.
 watch(
     ancestorIds,
     (ids) => {
@@ -99,7 +96,7 @@ watch(
                     :rows="tree.rows.value"
                     :is-pending="tree.isPending.value"
                     :is-error="tree.isError.value"
-                    :selected-document-id="selectedDocumentId"
+                    :selected-document-id="documentId || null"
                     @select="openDocument"
                     @toggle-node="tree.toggleNode"
                     @load-more="tree.loadMore"
@@ -112,40 +109,9 @@ watch(
 
             <SplitterPanel :size="isDetailsPanelOpen ? 56 : 78" :min-size="30">
                 <section class="flex h-full flex-col overflow-auto">
-                    <div v-if="isDocumentMissing" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
-                        <Icon icon="heroicons:document-magnifying-glass" class="text-surface-300 text-4xl" />
-                        <p class="text-surface-700 dark:text-surface-200 text-base font-medium">Document not found</p>
-                        <p class="text-surface-500 max-w-sm text-sm text-center">
-                            It was deleted or moved to another project. Pick another document on the left, or go back to
-                            the documentation root.
-                        </p>
-                        <Button
-                            label="Back to documentation root"
-                            size="small"
-                            severity="secondary"
-                            @click="openDocumentationRoot()"
-                        />
-                    </div>
-
-                    <div v-else-if="!documentId" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
-                        <Icon icon="heroicons:document-text" class="text-surface-300 text-4xl" />
-                        <p class="text-surface-700 dark:text-surface-200 text-base font-medium">Select a document</p>
-                        <p class="text-surface-500 max-w-sm text-sm text-center">
-                            The tree shows the documentation structure of this project. Pick a document to open it here.
-                        </p>
-                    </div>
-
-                    <div v-else-if="!openedDocument && isDocumentFetching" class="gap-3 p-8 flex flex-col">
-                        <Skeleton height="2rem" width="20rem" />
-                        <Skeleton v-for="n in 6" :key="n" height="1rem" />
-                    </div>
-
-                    <div v-else-if="openedDocument" class="gap-2 p-8 flex flex-col">
-                        <h1 class="text-surface-900 dark:text-surface-0 text-xl font-semibold">
-                            {{ openedDocument.title }}
-                        </h1>
-                        <span class="text-surface-500 text-xs">{{ openedDocument.key }}</span>
-                    </div>
+                    <RouterView v-slot="{ Component }">
+                        <component :is="Component" @create-document="tree.createRootDocument" />
+                    </RouterView>
                 </section>
             </SplitterPanel>
 

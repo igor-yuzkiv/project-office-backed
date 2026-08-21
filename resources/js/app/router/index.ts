@@ -69,10 +69,21 @@ const router = createRouter({
             ],
         },
         {
-            path: '/projects/:projectId/documentation/:documentId?',
-            name: 'project-documentation',
+            path: '/projects/:projectId/documentation',
             component: () => import('@/pages/project-documentation/workspace/ProjectDocumentationWorkspacePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
+            children: [
+                {
+                    path: '',
+                    name: 'project-documentation',
+                    component: () => import('@/pages/project-documentation/workspace/panes/SelectDocumentPage.vue'),
+                },
+                {
+                    path: ':documentId',
+                    name: 'project-documentation.document',
+                    component: () => import('@/pages/project-documentation/workspace/panes/OpenedDocumentPage.vue'),
+                },
+            ],
         },
         {
             path: '/tasks',
