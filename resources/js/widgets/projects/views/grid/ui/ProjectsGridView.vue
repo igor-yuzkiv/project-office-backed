@@ -93,14 +93,10 @@ function onPageChange(event: { page: number }) {
                         <span class="text-surface-700 dark:text-surface-200 text-xs truncate">
                             {{ project.updated_by.name }}
                         </span>
-                        <span class="text-surface-400 text-xs">
-                            Updated <DisplayDate :date="project.updated_at" />
-                        </span>
+                        <DisplayDate label="Updated" :date="project.updated_at" class="text-xs" />
                     </div>
                 </div>
-                <span v-else class="text-surface-400 text-xs">
-                    Updated <DisplayDate :date="project.updated_at" />
-                </span>
+                <DisplayDate v-else label="Updated" :date="project.updated_at" class="text-xs" />
 
                 <div class="border-surface-200 dark:border-surface-700 gap-2 pt-3 mt-auto flex items-center border-t">
                     <Button
