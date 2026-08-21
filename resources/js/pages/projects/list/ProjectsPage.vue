@@ -125,7 +125,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
+        <div class="gap-2 p-3 max-w-7xl mx-auto flex w-full flex-1 flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
