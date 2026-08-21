@@ -1,5 +1,8 @@
 <?php
 
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
 use App\Domains\Task\Exceptions\InvalidTaskOwnerAssignmentException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -29,6 +32,18 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (InvalidTaskOwnerAssignmentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        });
+
+        $exceptions->render(function (ProjectDocumentCyclicParentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        });
+
+        $exceptions->render(function (ProjectDocumentParentProjectMismatchException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        });
+
+        $exceptions->render(function (ProjectDocumentMaxDepthExceededException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         });
     })->create();

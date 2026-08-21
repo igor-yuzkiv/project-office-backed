@@ -7,6 +7,9 @@ use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
@@ -21,7 +24,6 @@ use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TaskFilter;
 use Database\Factories\ProjectDocumentModelFactory;
-use DomainException;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -114,21 +116,21 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
         }
 
         if ($this->parent_id === $this->id) {
-            throw new DomainException('A document cannot be its own parent.');
+            throw ProjectDocumentCyclicParentException::itself();
         }
 
         $parent = static::query()->select(['id', 'project_id', 'path', 'depth'])->findOrFail($this->parent_id);
 
         if ($parent->project_id !== $this->project_id) {
-            throw new DomainException('A child document must belong to the same project as its parent.');
+            throw ProjectDocumentParentProjectMismatchException::make();
         }
 
         if ($this->exists && in_array($this->id, explode('.', (string) $parent->path), true)) {
-            throw new DomainException('A document cannot be moved under its own descendant.');
+            throw ProjectDocumentCyclicParentException::ownDescendant();
         }
 
         if ($parent->depth >= self::maxDepth()) {
-            throw new DomainException('Maximum document nesting depth ('.(self::maxDepth() + 1).' levels) exceeded.');
+            throw ProjectDocumentMaxDepthExceededException::withLevels(self::maxDepth() + 1);
         }
 
         $this->path = $parent->path.'.'.$this->id;

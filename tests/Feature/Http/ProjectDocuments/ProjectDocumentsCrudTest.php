@@ -430,3 +430,20 @@ it('records a project_document.updated event', function () {
         ->and($record->title)->toBe("{$this->user->name} updated «Architecture»")
         ->and($record->description)->toBeNull();
 });
+
+it('answers 422 when a document would be nested deeper than the limit allows', function () {
+    $document = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+
+    foreach (range(1, ProjectDocumentModel::maxDepth()) as $ignored) {
+        $document = ProjectDocumentModel::factory()
+            ->for($this->project, 'project')
+            ->create(['parent_id' => $document->id]);
+    }
+
+    $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'One level too deep',
+        'parent_id' => $document->id,
+    ])
+        ->assertStatus(422)
+        ->assertJsonPath('message', 'Maximum document nesting depth (3 levels) exceeded.');
+});

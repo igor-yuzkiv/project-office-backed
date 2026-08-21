@@ -2,6 +2,9 @@
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Task\Models\TaskModel;
 use Illuminate\Database\QueryException;
@@ -44,7 +47,7 @@ it('rejects creating a document beyond the maximum nesting depth', function () {
     expect($grandchild->depth)->toBe(ProjectDocumentModel::maxDepth());
 
     ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $grandchild->id]);
-})->throws(DomainException::class);
+})->throws(ProjectDocumentMaxDepthExceededException::class);
 
 it('rejects a child document whose parent belongs to a different project', function () {
     $projectA = ProjectModel::factory()->create();
@@ -53,7 +56,7 @@ it('rejects a child document whose parent belongs to a different project', funct
     $root = ProjectDocumentModel::factory()->for($projectA, 'project')->create();
 
     ProjectDocumentModel::factory()->for($projectB, 'project')->create(['parent_id' => $root->id]);
-})->throws(DomainException::class);
+})->throws(ProjectDocumentParentProjectMismatchException::class);
 
 it('rejects a document being its own parent', function () {
     $project = ProjectModel::factory()->create();
@@ -61,7 +64,7 @@ it('rejects a document being its own parent', function () {
 
     $document->parent_id = $document->id;
     $document->save();
-})->throws(DomainException::class);
+})->throws(ProjectDocumentCyclicParentException::class);
 
 it('rejects moving a document under its own descendant', function () {
     $project = ProjectModel::factory()->create();
@@ -71,7 +74,7 @@ it('rejects moving a document under its own descendant', function () {
 
     $root->parent_id = $child->id;
     $root->save();
-})->throws(DomainException::class);
+})->throws(ProjectDocumentCyclicParentException::class);
 
 it('rejects reassigning a child document to a different project without moving it out from under its parent', function () {
     $projectA = ProjectModel::factory()->create();
@@ -82,7 +85,7 @@ it('rejects reassigning a child document to a different project without moving i
 
     $child->project_id = $projectB->id;
     $child->save();
-})->throws(DomainException::class);
+})->throws(ProjectDocumentParentProjectMismatchException::class);
 
 it('enforces unique titles among siblings including root level', function () {
     $project = ProjectModel::factory()->create();
@@ -116,7 +119,7 @@ it('takes the nesting limit from configuration', function () {
     expect($document->canHaveChildren())->toBeFalse();
 
     expect(fn () => ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $document->id]))
-        ->toThrow(DomainException::class, 'Maximum document nesting depth (4 levels) exceeded.');
+        ->toThrow(ProjectDocumentMaxDepthExceededException::class, 'Maximum document nesting depth (4 levels) exceeded.');
 });
 
 it('rejects a fourth level with a message that counts levels, not depth', function () {
@@ -129,5 +132,5 @@ it('rejects a fourth level with a message that counts levels, not depth', functi
     }
 
     expect(fn () => ProjectDocumentModel::factory()->for($project, 'project')->create(['parent_id' => $document->id]))
-        ->toThrow(DomainException::class, 'Maximum document nesting depth (3 levels) exceeded.');
+        ->toThrow(ProjectDocumentMaxDepthExceededException::class, 'Maximum document nesting depth (3 levels) exceeded.');
 });
