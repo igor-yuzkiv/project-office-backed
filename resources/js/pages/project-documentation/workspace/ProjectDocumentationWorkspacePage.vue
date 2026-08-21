@@ -2,8 +2,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
-import Splitter from 'primevue/splitter'
-import SplitterPanel from 'primevue/splitterpanel'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
@@ -86,10 +84,10 @@ watch(
 
 <template>
     <div class="gap-2 p-2 flex flex-1 overflow-hidden">
-        <Splitter
-            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex-1 overflow-hidden border"
+        <div
+            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
         >
-            <SplitterPanel :size="22" :min-size="12">
+            <div class="border-surface-200 dark:border-surface-700 w-72 shrink-0 overflow-hidden border-r">
                 <DocumentationTreePanel
                     :rows="tree.rows.value"
                     :is-pending="tree.isPending.value"
@@ -103,23 +101,21 @@ watch(
                     @delete="tree.deleteNodeDocument"
                     @retry="tree.load"
                 />
-            </SplitterPanel>
+            </div>
 
-            <SplitterPanel :size="56" :min-size="30">
-                <section class="flex h-full flex-col overflow-auto">
-                    <RouterView v-slot="{ Component }">
-                        <component :is="Component" @create-document="tree.createRootDocument" />
-                    </RouterView>
-                </section>
-            </SplitterPanel>
+            <section class="min-w-0 flex flex-1 flex-col overflow-auto">
+                <RouterView v-slot="{ Component }">
+                    <component :is="Component" @create-document="tree.createRootDocument" />
+                </RouterView>
+            </section>
 
-            <!-- Always mounted: PrimeVue writes each panel's flex-basis inline on mount, so a
-                 panel that comes and goes forces the whole splitter to remount. Collapsing
-                 overrides that basis instead, and the tree keeps its place. -->
-            <SplitterPanel :size="22" :min-size="14" :class="{ '!basis-11 !grow-0': !isDetailsPanelOpen }">
+            <div
+                class="border-surface-200 dark:border-surface-700 shrink-0 overflow-hidden border-l"
+                :class="isDetailsPanelOpen ? 'w-80' : 'w-11'"
+            >
                 <DocumentDetailsPanel v-model:open="isDetailsPanelOpen" />
-            </SplitterPanel>
-        </Splitter>
+            </div>
+        </div>
 
         <ProjectDocumentCreateDialog
             v-model:visible="tree.createDialog.visible.value"
