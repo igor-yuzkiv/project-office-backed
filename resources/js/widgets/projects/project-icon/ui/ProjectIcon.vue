@@ -10,6 +10,7 @@ import { PROJECT_ICON_SIZE_MAP } from '../project-icon.config'
 const props = withDefaults(
     defineProps<{
         prefix: string
+        iconEmoji?: string | null
         size?: ComponentSize
         shape?: AvatarProps['shape']
         status?: ProjectStatusValue
@@ -18,6 +19,9 @@ const props = withDefaults(
 )
 
 const sizeClasses = computed(() => PROJECT_ICON_SIZE_MAP[props.size])
+
+// The emoji stands in for the prefix, never for the status colour behind it.
+const label = computed(() => props.iconEmoji || props.prefix)
 
 const statusStyle = computed(() => {
     if (!props.status) return undefined
@@ -34,7 +38,7 @@ const rootClass = computed(() => [
 
 <template>
     <Avatar
-        :label="prefix"
+        :label="label"
         :shape="shape"
         :pt="{
             root: { class: rootClass, style: statusStyle },

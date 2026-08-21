@@ -8,6 +8,7 @@ import type { ITaskListOverview } from '@/entities/task-list/types'
 export interface IProject extends IEntity {
     name: string
     prefix: string
+    icon_emoji: string | null
     status: ProjectStatusValue
     description: string | null
     start_date: string | null
@@ -29,6 +30,7 @@ export type ProjectOverviewDto = Pick<
     | 'id'
     | 'name'
     | 'prefix'
+    | 'icon_emoji'
     | 'status'
     | 'created_at'
     | 'updated_at'

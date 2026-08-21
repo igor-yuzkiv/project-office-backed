@@ -5,10 +5,11 @@ import type { LaravelValidationErrors } from '@/shared/types'
 
 export interface ProjectCreateFormData {
     name: string
+    icon_emoji: string | null
 }
 
 function getDefaultFormData(): ProjectCreateFormData {
-    return { name: '' }
+    return { name: '', icon_emoji: null }
 }
 
 export function useProjectCreateDialog() {
@@ -36,7 +37,10 @@ export function useProjectCreateDialog() {
 
     function submit() {
         validationErrors.value = {}
-        create({ name: formData.value.name }, { onSuccess: close, onError: handleError })
+        create(
+            { name: formData.value.name, icon_emoji: formData.value.icon_emoji },
+            { onSuccess: close, onError: handleError }
+        )
     }
 
     return { visible, formData, validationErrors, isPending, open, close, submit }

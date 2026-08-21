@@ -20,9 +20,11 @@ import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
 import { IconButton } from '@/shared/components/button'
+import { EmojiPickerField } from '@/shared/components/emoji-picker'
 
 interface ProjectEditFormData {
     name: string
+    icon_emoji: string | null
     status: ProjectStatusValue
     description: string
     start_date: Date | null
@@ -40,6 +42,7 @@ const { mutate: updateProject } = useUpdateProjectMutation()
 
 const formData = ref<ProjectEditFormData>({
     name: '',
+    icon_emoji: null,
     status: 'draft',
     description: '',
     start_date: null,
@@ -85,6 +88,7 @@ function submit() {
 
     const input: IUpdateProjectInput = {
         name: formData.value.name,
+        icon_emoji: formData.value.icon_emoji,
         status: formData.value.status,
         description: formData.value.description || null,
         start_date: formatDateForApi(formData.value.start_date),
@@ -111,6 +115,7 @@ watch(
         if (p && !isFormInitialized.value) {
             formData.value = {
                 name: p.name,
+                icon_emoji: p.icon_emoji,
                 status: p.status,
                 description: p.description ?? '',
                 start_date: p.start_date ? new Date(p.start_date) : null,
@@ -140,6 +145,10 @@ useBreadcrumbs(() => [
     <div v-if="project" class="p-2 flex flex-1 flex-col overflow-hidden">
         <div class="p-3 gap-3 flex flex-col">
             <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
+                <InputContainer label="Icon" :error="validationErrors.icon_emoji">
+                    <EmojiPickerField v-model="formData.icon_emoji" />
+                </InputContainer>
+
                 <InputContainer label="Name" :error="validationErrors.name" required>
                     <InputText
                         v-model="formData.name"

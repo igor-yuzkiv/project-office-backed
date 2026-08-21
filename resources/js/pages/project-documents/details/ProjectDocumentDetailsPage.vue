@@ -95,6 +95,7 @@ useBreadcrumbs(() => [
                         <DisplayField v-if="projectDocument.project" inline>
                             <ProjectIcon
                                 :prefix="projectDocument.project.prefix"
+                                :icon-emoji="projectDocument.project.icon_emoji"
                                 size="small"
                                 :status="projectDocument.project.status"
                             />

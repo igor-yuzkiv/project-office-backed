@@ -60,7 +60,12 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
             <div class="p-3 flex shrink-0 items-start justify-between">
                 <div class="gap-1 flex flex-col">
                     <div class="gap-x-2 text-2xl font-semibold flex items-center">
-                        <ProjectIcon :prefix="project.prefix" size="small" :status="project.status" />
+                        <ProjectIcon
+                            :prefix="project.prefix"
+                            :icon-emoji="project.icon_emoji"
+                            size="small"
+                            :status="project.status"
+                        />
                         <h1 class="text-surface-900 dark:text-surface-0">{{ project.name }}</h1>
                     </div>
 

@@ -45,7 +45,7 @@ const columns: EntityTableColumnDef[] = [
         @page-change="$emit('pageChange', $event)"
     >
         <template #column:prefix="{ row }">
-            <ProjectIcon :prefix="row.prefix" :status="row.status" size="medium" />
+            <ProjectIcon :prefix="row.prefix" :icon-emoji="row.icon_emoji" :status="row.status" size="medium" />
         </template>
         <template #column:status="{ row }">
             <ProjectStatusTag :status="row.status" />

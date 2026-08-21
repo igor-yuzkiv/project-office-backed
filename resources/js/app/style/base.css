@@ -2,6 +2,7 @@
 @import 'tailwindcss-primeui';
 @import 'app.css';
 @import './md-editor.css';
+@import 'vue3-emoji-picker/css';
 
 @source '../../../../**/*.{html,js,ts,vue,tsx,jsx}';
 
