@@ -19,19 +19,7 @@ const activeTab = useRouteQuery<string>('tab', 'document')
 
 defineProps<{
     isEditing?: boolean
-    isDirty?: boolean
-    isSaving?: boolean
-    canAnnotate?: boolean
     handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
-}>()
-
-const emit = defineEmits<{
-    (e: 'edit'): void
-    (e: 'annotate'): void
-    (e: 'move'): void
-    (e: 'delete'): void
-    (e: 'save'): void
-    (e: 'cancel'): void
 }>()
 
 const draftTitle = defineModel<string>('draftTitle', { default: '' })
@@ -86,16 +74,7 @@ function openDocument(id: string) {
         v-model:draft-content="draftContent"
         :document="openedDocument"
         :is-editing="isEditing"
-        :is-dirty="isDirty"
-        :is-saving="isSaving"
-        :can-annotate="canAnnotate"
         :handle-image-upload="handleImageUpload"
         @open-document="openDocument"
-        @edit="emit('edit')"
-        @annotate="emit('annotate')"
-        @move="emit('move')"
-        @delete="emit('delete')"
-        @save="emit('save')"
-        @cancel="emit('cancel')"
     />
 </template>

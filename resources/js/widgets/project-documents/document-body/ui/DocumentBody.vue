@@ -3,8 +3,6 @@ import { computed, watch } from 'vue'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
-import Button from 'primevue/button'
-import { Icon } from '@iconify/vue'
 import { useProjectDocumentTasksQuery } from '@/entities/project-document'
 import type { IProjectDocument } from '@/entities/project-document/types'
 import { CopyToClipboard } from '@/shared/components/display'
@@ -18,9 +16,6 @@ import DocumentRelatedTasksTab from './DocumentRelatedTasksTab.vue'
 const props = defineProps<{
     document: IProjectDocument
     isEditing?: boolean
-    isDirty?: boolean
-    isSaving?: boolean
-    canAnnotate?: boolean
     handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
 }>()
 
@@ -29,12 +24,6 @@ const draftContent = defineModel<string>('draftContent', { default: '' })
 
 const emit = defineEmits<{
     (e: 'open-document', documentId: string): void
-    (e: 'edit'): void
-    (e: 'annotate'): void
-    (e: 'move'): void
-    (e: 'delete'): void
-    (e: 'save'): void
-    (e: 'cancel'): void
 }>()
 
 const activeTab = defineModel<string>('tab', { default: 'document' })
@@ -69,57 +58,10 @@ watch(
             </template>
         </div>
 
-        <div class="gap-3 px-4 pt-2 flex items-start justify-between">
-            <div class="gap-x-2 min-w-0 text-xl font-semibold flex flex-1 items-center">
-                <CopyToClipboard class="text-surface-400 text-sm" :text="document.key" hide-copy-icon />
-                <EditableDocumentTitle v-if="isEditing" v-model="draftTitle" class="min-w-0 flex-1" />
-                <h1 v-else class="text-surface-900 dark:text-surface-0 truncate">{{ document.title }}</h1>
-            </div>
-
-            <div class="gap-1 flex shrink-0 items-center">
-                <span v-if="isEditing && isDirty" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
-                    Unsaved changes
-                </span>
-
-                <template v-if="isEditing">
-                    <Button
-                        :label="isSaving ? 'Saving…' : 'Save'"
-                        size="small"
-                        text
-                        :disabled="isSaving"
-                        @click="emit('save')"
-                    >
-                        <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
-                    </Button>
-                    <Button label="Cancel" size="small" text severity="secondary" @click="emit('cancel')">
-                        <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
-                    </Button>
-                </template>
-
-                <template v-else>
-                    <Button label="Edit" size="small" text severity="secondary" @click="emit('edit')">
-                        <template #icon><Icon icon="heroicons:pencil-square" class="mr-1 text-base" /></template>
-                    </Button>
-                    <Button
-                        v-if="canAnnotate"
-                        label="Annotate"
-                        size="small"
-                        text
-                        severity="secondary"
-                        @click="emit('annotate')"
-                    >
-                        <template #icon
-                            ><Icon icon="heroicons:chat-bubble-left-right" class="mr-1 text-base"
-                        /></template>
-                    </Button>
-                    <Button label="Move" size="small" text severity="secondary" @click="emit('move')">
-                        <template #icon><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base" /></template>
-                    </Button>
-                    <Button label="Delete" size="small" text severity="danger" @click="emit('delete')">
-                        <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
-                    </Button>
-                </template>
-            </div>
+        <div class="gap-x-2 px-4 pt-2 min-w-0 text-xl font-semibold flex items-center">
+            <CopyToClipboard class="text-surface-400 text-sm" :text="document.key" hide-copy-icon />
+            <EditableDocumentTitle v-if="isEditing" v-model="draftTitle" class="min-w-0 flex-1" />
+            <h1 v-else class="text-surface-900 dark:text-surface-0 truncate">{{ document.title }}</h1>
         </div>
 
         <Tabs :value="activeTab" class="min-h-0 flex flex-1 flex-col" @update:value="activeTab = String($event)">

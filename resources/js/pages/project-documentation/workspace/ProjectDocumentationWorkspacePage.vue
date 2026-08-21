@@ -3,6 +3,8 @@ import { computed, ref, watch } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
+import { Icon } from '@iconify/vue'
+import Button from 'primevue/button'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
@@ -149,24 +151,64 @@ watch(
                 />
             </div>
 
-            <section class="min-w-0 flex flex-1 flex-col overflow-auto">
+            <section class="min-w-0 flex flex-1 flex-col overflow-hidden">
+                <div
+                    v-if="openedDocument"
+                    class="border-surface-200 dark:border-surface-700 gap-1 px-3 py-1.5 flex shrink-0 items-center justify-end border-b"
+                >
+                    <template v-if="editing.isEditing.value">
+                        <span v-if="editing.isDirty.value" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
+                            Unsaved changes
+                        </span>
+                        <Button
+                            :label="editing.isSaving.value ? 'Saving…' : 'Save'"
+                            size="small"
+                            text
+                            :disabled="editing.isSaving.value"
+                            @click="editing.save"
+                        >
+                            <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
+                        </Button>
+                        <Button label="Cancel" size="small" text severity="secondary" @click="discardEditing">
+                            <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
+                        </Button>
+                    </template>
+
+                    <template v-else>
+                        <Button label="Edit" size="small" text severity="secondary" @click="editing.start">
+                            <template #icon><Icon icon="heroicons:pencil-square" class="mr-1 text-base" /></template>
+                        </Button>
+                        <Button
+                            v-if="annotationRoute"
+                            label="Annotate"
+                            size="small"
+                            text
+                            severity="secondary"
+                            @click="openAnnotationMode"
+                        >
+                            <template #icon>
+                                <Icon icon="heroicons:chat-bubble-left-right" class="mr-1 text-base" />
+                            </template>
+                        </Button>
+                        <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open">
+                            <template #icon
+                                ><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base"
+                            /></template>
+                        </Button>
+                        <Button label="Delete" size="small" text severity="danger" @click="remove">
+                            <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
+                        </Button>
+                    </template>
+                </div>
+
                 <RouterView v-slot="{ Component }">
                     <component
                         :is="Component"
                         v-model:draft-title="editing.draft.value.title"
                         v-model:draft-content="editing.draft.value.content"
                         :is-editing="editing.isEditing.value"
-                        :is-dirty="editing.isDirty.value"
-                        :is-saving="editing.isSaving.value"
-                        :can-annotate="Boolean(annotationRoute)"
                         :handle-image-upload="editing.handleContentImageUpload"
                         @create-document="tree.createRootDocument"
-                        @edit="editing.start"
-                        @annotate="openAnnotationMode"
-                        @move="moveDialog.open"
-                        @delete="remove"
-                        @save="editing.save"
-                        @cancel="discardEditing"
                     />
                 </RouterView>
             </section>
