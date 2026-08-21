@@ -75,6 +75,14 @@ function openDocument(id: string) {
     router.push({ name: 'project-documentation.document', params: { projectId: projectId.value, documentId: id } })
 }
 
+function openRelatedTasksTab() {
+    router.replace({
+        name: 'project-documentation.document',
+        params: { projectId: projectId.value, documentId: documentId.value },
+        query: { tab: 'tasks' },
+    })
+}
+
 function openDocumentationRoot() {
     router.push({ name: 'project-documentation', params: { projectId: projectId.value } })
 }
@@ -135,7 +143,12 @@ watch(
                 class="border-surface-200 dark:border-surface-700 shrink-0 overflow-hidden border-l"
                 :class="isDetailsPanelOpen ? 'w-80' : 'w-11'"
             >
-                <DocumentDetailsPanel v-model:open="isDetailsPanelOpen" />
+                <DocumentDetailsPanel
+                    v-model:open="isDetailsPanelOpen"
+                    :document="openedDocument"
+                    @open-document="openDocument"
+                    @view-all-tasks="openRelatedTasksTab"
+                />
             </div>
         </div>
 

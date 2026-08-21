@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useRouteParams } from '@vueuse/router'
+import { useRouteParams, useRouteQuery } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import Skeleton from 'primevue/skeleton'
@@ -12,6 +12,10 @@ const router = useRouter()
 
 const projectId = useRouteParams<string>('projectId')
 const documentId = useRouteParams<string>('documentId')
+
+// The tab lives in the URL: the details panel sits in the parent route and switches
+// it from there, and moving to another document drops the query along with it.
+const activeTab = useRouteQuery<string>('tab', 'document')
 
 const { projectDocument, isError, isFetching, refetch } = useProjectDocumentQuery(documentId, { with_path: true })
 
@@ -55,5 +59,10 @@ function openDocument(id: string) {
         <Skeleton v-for="n in 6" :key="n" height="1rem" />
     </div>
 
-    <DocumentBody v-else-if="openedDocument" :document="openedDocument" @open-document="openDocument" />
+    <DocumentBody
+        v-else-if="openedDocument"
+        v-model:tab="activeTab"
+        :document="openedDocument"
+        @open-document="openDocument"
+    />
 </template>

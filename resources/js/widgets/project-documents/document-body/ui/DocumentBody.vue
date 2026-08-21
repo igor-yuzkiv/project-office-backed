@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
@@ -20,7 +20,7 @@ const emit = defineEmits<{
     (e: 'open-document', documentId: string): void
 }>()
 
-const activeTab = ref('document')
+const activeTab = defineModel<string>('tab', { default: 'document' })
 
 const documentId = computed(() => props.document.id)
 
@@ -32,10 +32,6 @@ const { paginationMeta: taskPaginationMeta } = useProjectDocumentTasksQuery(docu
 })
 
 const ancestors = computed(() => (props.document.path ?? []).slice(0, -1))
-
-watch(documentId, () => {
-    activeTab.value = 'document'
-})
 </script>
 
 <template>

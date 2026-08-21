@@ -6,10 +6,12 @@ import { ProjectDocumentTaskQueryKey } from '../config'
 
 export function useProjectDocumentTasksQuery(
     documentId: MaybeRefOrGetter<string>,
-    pagination: MaybeRefOrGetter<PagingParams> = { page: 1, per_page: 20 }
+    pagination: MaybeRefOrGetter<PagingParams> = { page: 1, per_page: 20 },
+    options?: { enabled?: MaybeRefOrGetter<boolean> }
 ) {
     const { data, isPending, isError, isFetching } = useQuery({
         queryKey: ProjectDocumentTaskQueryKey.documentTasksPaginated(documentId, pagination),
+        enabled: computed(() => (options?.enabled === undefined ? true : toValue(options.enabled))),
         queryFn: () => {
             const { page, per_page } = toValue(pagination)
             return fetchProjectDocumentTasksRequest(toValue(documentId), page, per_page)
