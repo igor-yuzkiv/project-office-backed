@@ -35,10 +35,6 @@ const layoutStore = useAppLayoutStore()
             />
         </nav>
 
-        <div v-if="!layoutStore.sidebarCollapsed" class="mt-4 px-2">
-            <slot />
-        </div>
-
         <div class="gap-0.5 border-surface-700 px-2 py-2 mt-auto flex flex-col border-t">
             <button
                 class="rounded-md text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"

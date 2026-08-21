@@ -33,47 +33,11 @@ const navItems: SidebarNavItem[] = [
         activeWhen: '/task-lists',
     },
 ]
-
-const recentProjects = [
-    { id: '1', name: 'Atlas Platform', color: '#6366f1' },
-    { id: '2', name: 'Horizon CRM', color: '#10b981' },
-    { id: '3', name: 'Nexus API', color: '#f59e0b' },
-]
 </script>
 
 <template>
     <div class="flex h-screen w-full overflow-hidden">
-        <AppLeftNavigationSidebar :items="navItems">
-            <template #default>
-                <div class="flex flex-col">
-                    <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">
-                        Recent Projects
-                    </p>
-                    <div
-                        v-for="project in recentProjects"
-                        :key="project.id"
-                        class="gap-2 rounded-md px-3 py-1.5 text-sm text-surface-300 hover:bg-surface-800 flex items-center"
-                    >
-                        <div class="h-2 w-2 shrink-0 rounded-full" :style="{ background: project.color }" />
-                        <span class="truncate">{{ project.name }}</span>
-                    </div>
-                </div>
-
-                <div class="mt-3 flex flex-col">
-                    <p class="mb-1 px-3 text-xs font-semibold tracking-wider text-surface-500 uppercase">
-                        Recent Tasks
-                    </p>
-                    <div
-                        v-for="project in recentProjects"
-                        :key="project.id"
-                        class="gap-2 rounded-md px-3 py-1.5 text-sm text-surface-300 hover:bg-surface-800 flex items-center"
-                    >
-                        <div class="h-2 w-2 shrink-0 rounded-full" :style="{ background: project.color }" />
-                        <span class="truncate">{{ project.name }}</span>
-                    </div>
-                </div>
-            </template>
-        </AppLeftNavigationSidebar>
+        <AppLeftNavigationSidebar :items="navItems" />
 
         <div class="bg-white dark:bg-surface-950 relative flex flex-1 flex-col overflow-hidden">
             <AppHeader :title="store.pageTitle" :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
