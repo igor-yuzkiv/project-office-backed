@@ -63,7 +63,7 @@ const router = createRouter({
         },
         {
             path: '/projects/:projectId/documentation',
-            component: () => import('@/pages/documentation/workspace/ProjectDocumentationWorkspacePage.vue'),
+            component: () => import('@/pages/documentation/workspace/DocumentationWorkspacePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
             children: [
                 {
