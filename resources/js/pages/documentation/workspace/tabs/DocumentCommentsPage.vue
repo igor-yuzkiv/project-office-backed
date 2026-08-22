@@ -14,15 +14,16 @@ import { PAGE_SIZE } from '@/app/config'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import CommentInputForm from '@/widgets/comments/ui/CommentInputForm.vue'
 import CommentItem from '@/widgets/comments/ui/CommentItem.vue'
+import type { IProjectDocument } from '@/entities/project-document/types'
 
 const props = defineProps<{
-    documentId: string
+    document: IProjectDocument
 }>()
 
 const authStore = useAuthStore()
 const page = ref(1)
 
-const documentId = computed(() => props.documentId)
+const documentId = computed(() => props.document.id)
 const pagination = computed(() => ({ page: page.value, per_page: PAGE_SIZE }))
 
 const { comments, paginationMeta, isPending } = useProjectDocumentCommentsQuery(documentId, pagination)

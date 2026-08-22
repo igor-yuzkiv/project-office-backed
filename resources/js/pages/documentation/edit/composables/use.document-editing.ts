@@ -14,20 +14,20 @@ import { ApiError } from '@/shared/api/api.error'
 import { useConfirmDialog, useToast } from '@/shared/composables'
 import type { LaravelValidationErrors } from '@/shared/types'
 
-export interface ProjectDocumentEditingOptions {
+export interface DocumentEditingOptions {
     // The tree keeps its own snapshots of the rows, so a saved title reaches it
     // only when its owner is told to reload.
     onSaved?: () => void
 }
 
-export interface ProjectDocumentDraft {
+export interface DocumentDraft {
     title: string
     content: string
     status: ProjectDocumentStatusValue
     tags: ITag[]
 }
 
-function draftFrom(document: IProjectDocument): ProjectDocumentDraft {
+function draftFrom(document: IProjectDocument): DocumentDraft {
     return {
         title: document.title,
         content: document.content ?? '',
@@ -45,9 +45,9 @@ function sameTags(left: ITag[], right: ITag[]): boolean {
  * document: nothing the user types reaches the tree, the path strip or the details
  * panel until the server has accepted it.
  */
-export function useProjectDocumentEditing(
+export function useDocumentEditing(
     document: MaybeRefOrGetter<IProjectDocument | undefined>,
-    options: ProjectDocumentEditingOptions = {}
+    options: DocumentEditingOptions = {}
 ) {
     const toast = useToast()
     const confirm = useConfirmDialog()
@@ -55,7 +55,7 @@ export function useProjectDocumentEditing(
     // Not a mode any more — the route is. It marks the window between start() and a
     // finished save, which is what isDirty and cancel() are asking about.
     const isEditing = ref(false)
-    const draft = ref<ProjectDocumentDraft>({ title: '', content: '', status: 'draft', tags: [] })
+    const draft = ref<DocumentDraft>({ title: '', content: '', status: 'draft', tags: [] })
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: update, isPending: isSaving } = useUpdateProjectDocumentMutation()

@@ -62,6 +62,14 @@ const router = createRouter({
             ],
         },
         {
+            // Editing is a page of its own: no tree, no tabs, and a draft that belongs to
+            // nothing but this route.
+            path: '/projects/:projectId/documentation/:documentId/edit',
+            name: 'project-documentation.document.edit',
+            component: () => import('@/pages/documentation/edit/EditDocumentPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit document' },
+        },
+        {
             path: '/projects/:projectId/documentation',
             component: () => import('@/pages/documentation/workspace/DocumentationWorkspacePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
@@ -69,17 +77,27 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'project-documentation',
-                    component: () => import('@/pages/documentation/workspace/panes/SelectDocumentPage.vue'),
+                    component: () => import('@/pages/documentation/workspace/tabs/SelectDocumentPage.vue'),
                 },
                 {
                     path: ':documentId',
                     name: 'project-documentation.document',
-                    component: () => import('@/pages/documentation/workspace/panes/ViewDocumentPage.vue'),
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentContentPage.vue'),
                 },
                 {
-                    path: ':documentId/edit',
-                    name: 'project-documentation.document.edit',
-                    component: () => import('@/pages/documentation/workspace/panes/EditDocumentPage.vue'),
+                    path: ':documentId/details',
+                    name: 'project-documentation.document.details',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentDetailsPage.vue'),
+                },
+                {
+                    path: ':documentId/comments',
+                    name: 'project-documentation.document.comments',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentCommentsPage.vue'),
+                },
+                {
+                    path: ':documentId/tasks',
+                    name: 'project-documentation.document.tasks',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentTasksPage.vue'),
                 },
             ],
         },

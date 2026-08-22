@@ -8,13 +8,13 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { AssociateTasksDialog } from '@/widgets/project-documents/associate-tasks-dialog'
 import { PAGE_SIZE } from '@/app/config'
+import type { IProjectDocument } from '@/entities/project-document/types'
 
 const props = defineProps<{
-    documentId: string
-    projectId: string
+    document: IProjectDocument
 }>()
 
-const documentId = computed(() => props.documentId)
+const documentId = computed(() => props.document.id)
 const page = ref(1)
 const pagination = computed(() => ({ page: page.value, per_page: PAGE_SIZE }))
 
@@ -56,7 +56,7 @@ function taskDetailsRoute(task: TaskOverviewDto) {
         <AssociateTasksDialog
             v-model:visible="isAssociateDialogVisible"
             :document-id="documentId"
-            :project-id="projectId"
+            :project-id="document.project_id"
         />
     </div>
 </template>

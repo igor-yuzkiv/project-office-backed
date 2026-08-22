@@ -61,10 +61,14 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
 <template>
     <section class="flex h-full flex-col overflow-hidden">
         <!-- Same height as the document toolbar across the way, so the two rows line up. -->
-        <header class="px-3 py-1.5 flex items-center" style="min-height: 2.75rem">
+        <header class="gap-2 px-3 py-1.5 flex items-center" style="min-height: 2.75rem">
             <h2 class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase">
                 Documents
             </h2>
+
+            <Button label="Add" size="small" text severity="secondary" class="ml-auto" @click="emit('create-root')">
+                <template #icon><Icon icon="material-symbols:add" class="mr-1 text-base" /></template>
+            </Button>
         </header>
 
         <div v-if="isPending" class="gap-2 p-3 flex flex-col">
