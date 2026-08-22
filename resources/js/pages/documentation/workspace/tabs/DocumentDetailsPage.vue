@@ -36,7 +36,7 @@ const parent = computed(() => {
 </script>
 
 <template>
-    <div class="gap-4 p-2 flex flex-col">
+    <div class="gap-4 p-2 flex flex-col overflow-auto">
         <Panel header="General" :toggleable="true">
             <DisplayFields :item="document" :fields="generalFields">
                 <template #[`field:key:value`]="{ item }">

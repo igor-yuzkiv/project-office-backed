@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
+import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import Popover from 'primevue/popover'
 import type { IAnnotation } from '@/entities/annotation'
 import { useProjectDocumentAnnotationsQuery } from '@/entities/project-document'
 import { useAuthStore } from '@/app/stores/use.auth.store'
@@ -22,6 +24,7 @@ const authStore = useAuthStore()
 const toast = useToast()
 
 const previewRef = ref<InstanceType<typeof MarkdownPreview>>()
+const catalogPopover = ref<InstanceType<typeof Popover>>()
 
 // shallowRef: these hold live DOM nodes, and a deep ref would wrap them in reactive proxies.
 const hoveredBlock = shallowRef<DomBlock | null>(null)
@@ -177,14 +180,29 @@ onScopeDispose(() => {
         <div class="min-h-0 flex flex-1 flex-col">
             <div class="gap-3 p-6 annotation-canvas min-h-0 flex flex-1 flex-col items-center overflow-y-auto">
                 <div class="gap-6 max-w-7xl flex w-full items-start">
-                    <!-- Beside the sheet, not over it: the sheet is the thing being annotated. -->
-                    <MarkdownCatalog
-                        v-if="previewRef"
-                        class="top-0 rounded-lg p-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 w-64 text-sm shadow-sm md:block sticky hidden max-h-[70vh] shrink-0 overflow-y-auto border"
-                        :catalog="previewRef.catalog"
-                    />
-
                     <div class="gap-3 min-w-0 flex flex-1 flex-col">
+                        <!-- The catalog is wanted rarely, so it waits behind a button instead
+                             of holding a column beside the sheet. -->
+                        <div class="gap-2 flex items-center">
+                            <Button
+                                label="Contents"
+                                size="small"
+                                text
+                                severity="secondary"
+                                @click="catalogPopover?.toggle($event)"
+                            >
+                                <template #icon><Icon icon="heroicons:list-bullet" class="mr-1 text-base" /></template>
+                            </Button>
+                        </div>
+
+                        <Popover ref="catalogPopover">
+                            <MarkdownCatalog
+                                v-if="previewRef"
+                                class="w-64 text-sm max-h-[60vh] overflow-y-auto"
+                                :catalog="previewRef.catalog"
+                            />
+                        </Popover>
+
                         <div
                             v-if="isReanchoring"
                             class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"

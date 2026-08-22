@@ -55,7 +55,7 @@ async function handleCommentImageUpload(files: File[], callback: (urls: string[]
 </script>
 
 <template>
-    <div class="gap-4 p-4 flex flex-col">
+    <div class="gap-4 p-4 flex flex-col overflow-auto">
         <div class="gap-3 flex items-start">
             <UserAvatar
                 :initials="authStore.user?.initials ?? ''"

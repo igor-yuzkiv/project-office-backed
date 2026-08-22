@@ -59,13 +59,6 @@ const moveDialog = useProjectDocumentMove(() => documentId.value, { onMoved: () 
 
 const { mutateWithConfirm: deleteDocument } = useDeleteProjectDocumentMutation()
 
-// Annotating needs something to annotate.
-const annotationRoute = computed(() =>
-    openedDocument.value?.content
-        ? { name: 'project-document-annotations', params: { id: openedDocument.value.id } }
-        : null
-)
-
 function removeDocument() {
     const document = openedDocument.value
 
@@ -218,19 +211,6 @@ watch(
                         </div>
 
                         <div class="gap-1 ml-auto flex shrink-0 items-center">
-                            <Button
-                                v-if="annotationRoute"
-                                label="Annotate"
-                                size="small"
-                                text
-                                severity="secondary"
-                                @click="router.push(annotationRoute)"
-                            >
-                                <template #icon>
-                                    <Icon icon="heroicons:chat-bubble-left-right" class="mr-1 text-base" />
-                                </template>
-                            </Button>
-
                             <Button label="Edit" size="small" text severity="secondary" @click="openEditor">
                                 <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
                             </Button>
@@ -256,7 +236,9 @@ watch(
                         </TabList>
                     </Tabs>
 
-                    <div class="min-h-0 flex flex-1 flex-col overflow-auto">
+                    <!-- Each tab scrolls itself: the annotation sheet keeps its own canvas and its
+                         sidebar has to reach full height. -->
+                    <div class="min-h-0 flex flex-1 flex-col overflow-hidden">
                         <RouterView v-slot="{ Component }">
                             <component :is="Component" :document="openedDocument" />
                         </RouterView>

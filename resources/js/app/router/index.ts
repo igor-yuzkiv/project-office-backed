@@ -209,15 +209,8 @@ const router = createRouter({
         },
         {
             // The five-tab surface is gone, but its URLs are in people's bookmarks.
-            // Only the tabs that existed are listed, so `/annotations` still matches itself.
             path: '/project-documents/:id/:removedTab(details|content|children|tasks|comments|edit)',
             redirect: (to) => ({ name: 'project-document-resolver', params: { id: to.params.id } }),
-        },
-        {
-            path: '/project-documents/:id/annotations',
-            name: 'project-document-annotations',
-            component: () => import('@/pages/documentation/annotations/ProjectDocumentAnnotationsPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Annotation Mode' },
         },
         {
             path: '/profile',
