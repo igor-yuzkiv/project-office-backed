@@ -147,8 +147,10 @@ watch(
 </script>
 
 <template>
-    <div class="flex flex-1 overflow-hidden">
-        <div class="bg-surface-0 dark:bg-surface-900 flex flex-1 overflow-hidden">
+    <div class="gap-2 p-2 flex flex-1 overflow-hidden">
+        <div
+            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
+        >
             <div class="border-surface-200 dark:border-surface-700 w-100 shrink-0 overflow-hidden border-r">
                 <DocumentationTreePanel
                     :rows="tree.rows.value"

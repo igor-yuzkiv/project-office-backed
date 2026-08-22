@@ -178,32 +178,31 @@ onScopeDispose(() => {
 <template>
     <div class="min-h-0 flex flex-1 overflow-hidden">
         <div class="min-h-0 flex flex-1 flex-col">
-            <!-- The catalog is wanted rarely, so it waits behind a button instead of
-                 holding a column beside the sheet. -->
-            <div class="gap-2 px-2 py-1 flex shrink-0 items-center">
-                <Button
-                    size="small"
-                    text
-                    severity="secondary"
-                    title="Contents"
-                    aria-label="Contents"
-                    @click="catalogPopover?.toggle($event)"
-                >
-                    <template #icon><Icon icon="heroicons:list-bullet" class="text-base" /></template>
-                </Button>
-            </div>
+            <div class="gap-3 p-6 annotation-canvas min-h-0 flex flex-1 flex-col items-center overflow-y-auto">
+                <div class="gap-6 max-w-7xl flex w-full items-start">
+                    <div class="gap-3 min-w-0 flex flex-1 flex-col">
+                        <!-- The catalog is wanted rarely, so it waits behind a button instead
+                             of holding a column beside the sheet. -->
+                        <div class="gap-2 flex items-center">
+                            <Button
+                                label="Contents"
+                                size="small"
+                                text
+                                severity="secondary"
+                                @click="catalogPopover?.toggle($event)"
+                            >
+                                <template #icon><Icon icon="heroicons:list-bullet" class="mr-1 text-base" /></template>
+                            </Button>
+                        </div>
 
-            <Popover ref="catalogPopover">
-                <MarkdownCatalog
-                    v-if="previewRef"
-                    class="w-64 text-sm max-h-[60vh] overflow-y-auto"
-                    :catalog="previewRef.catalog"
-                />
-            </Popover>
+                        <Popover ref="catalogPopover">
+                            <MarkdownCatalog
+                                v-if="previewRef"
+                                class="w-64 text-sm max-h-[60vh] overflow-y-auto"
+                                :catalog="previewRef.catalog"
+                            />
+                        </Popover>
 
-            <div class="gap-3 px-4 pb-4 min-h-0 flex flex-1 flex-col items-center overflow-y-auto">
-                <div class="max-w-7xl flex w-full items-start">
-                    <div class="gap-2 min-w-0 flex flex-1 flex-col">
                         <div
                             v-if="isReanchoring"
                             class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
@@ -217,7 +216,7 @@ onScopeDispose(() => {
                         <p v-else class="text-xs text-surface-500">Click a block of the document to comment on it.</p>
 
                         <div
-                            class="annotation-sheet relative"
+                            class="p-10 rounded-xl bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-700 annotation-sheet shadow-sm relative border"
                             :class="{ 'annotation-picking': isReanchoring }"
                             @mouseover="handleMouseOver"
                             @mouseleave="handleMouseLeave"
@@ -259,6 +258,18 @@ onScopeDispose(() => {
 
 <!-- Not scoped: the markdown is rendered through v-html, so scoped attributes never reach it. -->
 <style>
+/* The document reads as a sheet, so the surface behind it is a drafting canvas. */
+.annotation-canvas {
+    background-color: var(--p-surface-100);
+    background-image: radial-gradient(circle, var(--p-surface-300) 1px, transparent 1px);
+    background-size: 18px 18px;
+}
+
+.dark .annotation-canvas {
+    background-color: var(--p-surface-950);
+    background-image: radial-gradient(circle, var(--p-surface-800) 1px, transparent 1px);
+}
+
 /* md-editor-v3 sets word-break: break-all on the preview, which snaps words mid-syllable.
    Long unbreakable tokens (urls, paths) still wrap, ordinary prose no longer does. */
 .annotation-sheet .md-editor-preview,
