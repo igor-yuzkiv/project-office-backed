@@ -63,23 +63,23 @@ const router = createRouter({
         },
         {
             path: '/projects/:projectId/documentation',
-            component: () => import('@/pages/project-documentation/workspace/ProjectDocumentationWorkspacePage.vue'),
+            component: () => import('@/pages/documentation/workspace/ProjectDocumentationWorkspacePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
             children: [
                 {
                     path: '',
                     name: 'project-documentation',
-                    component: () => import('@/pages/project-documentation/workspace/panes/SelectDocumentPage.vue'),
+                    component: () => import('@/pages/documentation/workspace/panes/SelectDocumentPage.vue'),
                 },
                 {
                     path: ':documentId',
                     name: 'project-documentation.document',
-                    component: () => import('@/pages/project-documentation/workspace/panes/ViewDocumentPage.vue'),
+                    component: () => import('@/pages/documentation/workspace/panes/ViewDocumentPage.vue'),
                 },
                 {
                     path: ':documentId/edit',
                     name: 'project-documentation.document.edit',
-                    component: () => import('@/pages/project-documentation/workspace/panes/EditDocumentPage.vue'),
+                    component: () => import('@/pages/documentation/workspace/panes/EditDocumentPage.vue'),
                 },
             ],
         },
@@ -186,7 +186,7 @@ const router = createRouter({
             // workspace. Saved links and the activity stream know only the document.
             path: '/project-documents/:id',
             name: 'project-document-resolver',
-            component: () => import('@/pages/project-documents/resolver/ProjectDocumentResolverPage.vue'),
+            component: () => import('@/pages/documentation/resolver/ProjectDocumentResolverPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Document' },
         },
         {
@@ -198,7 +198,7 @@ const router = createRouter({
         {
             path: '/project-documents/:id/annotations',
             name: 'project-document-annotations',
-            component: () => import('@/pages/project-documents/annotations/ProjectDocumentAnnotationsPage.vue'),
+            component: () => import('@/pages/documentation/annotations/ProjectDocumentAnnotationsPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Annotation Mode' },
         },
         {
