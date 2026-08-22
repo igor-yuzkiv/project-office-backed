@@ -1,4 +1,4 @@
-import { computed, ref, type MaybeRefOrGetter, toValue } from 'vue'
+import { ref, type MaybeRefOrGetter, toValue } from 'vue'
 import {
     ProjectDocumentAttachmentRoles,
     uploadProjectDocumentAttachmentRequest,
@@ -11,7 +11,7 @@ import type {
 } from '@/entities/project-document/types'
 import type { ITag } from '@/entities/tag/types'
 import { ApiError } from '@/shared/api/api.error'
-import { useConfirmDialog, useToast } from '@/shared/composables'
+import { useToast } from '@/shared/composables'
 import type { LaravelValidationErrors } from '@/shared/types'
 
 export interface DocumentEditingOptions {
@@ -36,10 +36,6 @@ function draftFrom(document: IProjectDocument): DocumentDraft {
     }
 }
 
-function sameTags(left: ITag[], right: ITag[]): boolean {
-    return left.length === right.length && left.every((tag, index) => tag.id === right[index]?.id)
-}
-
 /**
  * Editing a document in place. The draft is deliberately separate from the loaded
  * document: nothing the user types reaches the tree, the path strip or the details
@@ -50,28 +46,11 @@ export function useDocumentEditing(
     options: DocumentEditingOptions = {}
 ) {
     const toast = useToast()
-    const confirm = useConfirmDialog()
 
-    // Not a mode any more — the route is. It marks the window between start() and a
-    // finished save, which is what isDirty and cancel() are asking about.
-    const isEditing = ref(false)
     const draft = ref<DocumentDraft>({ title: '', content: '', status: 'draft', tags: [] })
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: update, isPending: isSaving } = useUpdateProjectDocumentMutation()
-
-    const isDirty = computed(() => {
-        const current = toValue(document)
-
-        if (!isEditing.value || !current) return false
-
-        return (
-            draft.value.title !== current.title ||
-            draft.value.content !== (current.content ?? '') ||
-            draft.value.status !== current.status ||
-            !sameTags(draft.value.tags, current.tags ?? [])
-        )
-    })
 
     function start() {
         const current = toValue(document)
@@ -79,12 +58,6 @@ export function useDocumentEditing(
         if (!current) return
 
         draft.value = draftFrom(current)
-        validationErrors.value = {}
-        isEditing.value = true
-    }
-
-    function cancel() {
-        isEditing.value = false
         validationErrors.value = {}
     }
 
@@ -115,7 +88,6 @@ export function useDocumentEditing(
             { id: current.id, data: input },
             {
                 onSuccess: () => {
-                    isEditing.value = false
                     toast.success('Document saved.')
                     options.onSaved?.()
                 },
@@ -134,21 +106,6 @@ export function useDocumentEditing(
         )
     }
 
-    async function confirmDiscard(): Promise<boolean> {
-        if (!isDirty.value) return true
-
-        const discarded = await confirm.requireAsync({
-            header: 'Unsaved changes',
-            message: 'This document has changes that were never saved. Leave and lose them?',
-            acceptLabel: 'Discard changes',
-            rejectLabel: 'Keep editing',
-        })
-
-        if (discarded) cancel()
-
-        return discarded
-    }
-
     async function handleContentImageUpload(files: File[], callback: (urls: string[]) => void) {
         const current = toValue(document)
 
@@ -164,14 +121,11 @@ export function useDocumentEditing(
     }
 
     return {
-        isDirty,
         isSaving,
         draft,
         validationErrors,
         start,
-        cancel,
         save,
-        confirmDiscard,
         handleContentImageUpload,
     }
 }

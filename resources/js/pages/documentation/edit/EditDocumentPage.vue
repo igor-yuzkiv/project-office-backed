@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
-import { useEventListener } from '@vueuse/core'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import { useProjectDocumentQuery } from '@/entities/project-document'
@@ -30,8 +29,8 @@ const openedDocument = computed(() =>
 
 const showManageTagsDialog = ref(false)
 
-// The draft belongs to this page and dies with it, which is what an explicit save
-// means. The guards below are the only thing standing between the two.
+// The draft belongs to this page and dies with it: nothing typed here reaches the
+// tree or the document until the server has accepted it.
 const editing = useDocumentEditing(openedDocument, {
     onSaved: () => openView(),
 })
@@ -44,61 +43,31 @@ function openView() {
 }
 
 // Not found, wrong project, failed request — the workspace already says all three,
-// so the editor hands those cases back instead of showing an empty form. The draft is
-// dropped first: there is nothing left to ask the user about saving it into.
+// so the editor hands those cases back instead of showing an empty form.
 watch([isError, projectDocument], () => {
-    if (!isError.value && !(projectDocument.value && !openedDocument.value)) return
-
-    editing.cancel()
-    openView()
+    if (isError.value || (projectDocument.value && !openedDocument.value)) openView()
 })
 
-// Entering the route is what starts editing, and it starts exactly once: after a save
-// the document refetches, and a plain watch would re-fill the draft while the
-// navigation away is still in flight.
-const hasStarted = ref(false)
+// The draft is built from whichever document this route currently points at, and
+// rebuilt when that changes: the same component serves /A/edit and /B/edit, and A's
+// text must never be saved into B. A refetch of the same document does not restart it.
+const draftDocumentId = ref('')
 
 watch(
     openedDocument,
     (document) => {
-        if (!document || hasStarted.value) return
+        if (!document || draftDocumentId.value === document.id) return
 
-        hasStarted.value = true
+        draftDocumentId.value = document.id
         editing.start()
         layoutStore.setPageTitle(`${document.key} | ${document.title}`)
     },
     { immediate: true }
 )
 
-async function cancel() {
-    if (await editing.confirmDiscard()) openView()
-}
-
-onBeforeRouteLeave(() => editing.confirmDiscard())
-
-// This route is its own record, so moving from one document's editor straight to
-// another's reuses the component: the draft has to be asked about and then rebuilt,
-// or document A's text would be saved over document B.
-onBeforeRouteUpdate(async (to, from) => {
-    if (to.params.documentId === from.params.documentId) return true
-
-    if (!(await editing.confirmDiscard())) return false
-
-    hasStarted.value = false
-
-    return true
-})
-
-useEventListener(window, 'beforeunload', (event: BeforeUnloadEvent) => {
-    if (!editing.isDirty.value) return
-
-    event.preventDefault()
-    event.returnValue = ''
-})
-
 useHeaderActions([
     { key: 'save-document', title: 'Save', action: () => editing.save(), is_primary: true },
-    { key: 'cancel-document', title: 'Cancel', action: cancel },
+    { key: 'cancel-document', title: 'Cancel', action: openView },
 ])
 
 useBreadcrumbs(() => [
