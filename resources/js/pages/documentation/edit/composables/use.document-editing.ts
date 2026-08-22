@@ -167,6 +167,7 @@ export function useDocumentEditing(
         isDirty,
         isSaving,
         draft,
+        validationErrors,
         start,
         cancel,
         save,

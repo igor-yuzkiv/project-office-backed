@@ -3,35 +3,35 @@ import { computed, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import { useEventListener } from '@vueuse/core'
-import { Icon } from '@iconify/vue'
-import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import Skeleton from 'primevue/skeleton'
 import { useProjectDocumentQuery } from '@/entities/project-document'
 import { projectDocumentStatusOptions } from '@/entities/project-document/config'
-import { useDocumentEditing } from './composables/use.document-editing'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
 import { TagList } from '@/widgets/tags/metadata'
 import { IconButton } from '@/shared/components/button'
+import { InputContainer } from '@/shared/components/input'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import { useBreadcrumbs } from '@/app/shell'
+import { useBreadcrumbs, useHeaderActions } from '@/app/shell'
+import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useDocumentEditing } from './composables/use.document-editing'
 
 const router = useRouter()
+const layoutStore = useAppLayoutStore()
 
 const projectId = useRouteParams<string>('projectId')
 const documentId = useRouteParams<string>('documentId')
 
-const { projectDocument, isError, isFetching } = useProjectDocumentQuery(documentId, { with_path: true })
+const { projectDocument, isError } = useProjectDocumentQuery(documentId, { with_path: true })
 
 const openedDocument = computed(() =>
     projectDocument.value?.project_id === projectId.value ? projectDocument.value : undefined
 )
 
-const isTagsDialogVisible = ref(false)
+const showManageTagsDialog = ref(false)
 
 // The draft belongs to this page and dies with it, which is what an explicit save
-// means. The guard below is the only thing standing between the two.
+// means. The guards below are the only thing standing between the two.
 const editing = useDocumentEditing(openedDocument, {
     onSaved: () => openView(),
 })
@@ -65,6 +65,7 @@ watch(
 
         hasStarted.value = true
         editing.start()
+        layoutStore.setPageTitle(`${document.key} | ${document.title}`)
     },
     { immediate: true }
 )
@@ -95,12 +96,14 @@ useEventListener(window, 'beforeunload', (event: BeforeUnloadEvent) => {
     event.returnValue = ''
 })
 
+useHeaderActions([
+    { key: 'save-document', title: 'Save', action: () => editing.save(), is_primary: true },
+    { key: 'cancel-document', title: 'Cancel', action: cancel },
+])
+
 useBreadcrumbs(() => [
     { label: 'Projects', to: { name: 'projects' } },
-    {
-        label: 'Documentation',
-        to: { name: 'project-documentation', params: { projectId: projectId.value } },
-    },
+    { label: 'Documentation', to: { name: 'project-documentation', params: { projectId: projectId.value } } },
     {
         label: openedDocument.value?.key ?? 'Document',
         to: {
@@ -113,78 +116,50 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div class="gap-2 p-2 flex flex-1 overflow-hidden">
-        <div
-            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 gap-3 p-4 rounded-xl flex flex-1 flex-col overflow-hidden border"
-        >
-            <div v-if="!openedDocument && isFetching" class="gap-3 flex flex-col">
-                <Skeleton height="2rem" width="20rem" />
-                <Skeleton v-for="n in 6" :key="n" height="1rem" />
+    <div v-if="openedDocument" class="p-2 flex flex-1 flex-col overflow-hidden">
+        <div class="gap-3 p-3 flex flex-col">
+            <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
+                <InputContainer label="Title" :error="editing.validationErrors.value.title" required>
+                    <InputText
+                        v-model="editing.draft.value.title"
+                        placeholder="Document title..."
+                        :invalid="!!editing.validationErrors.value.title"
+                    />
+                </InputContainer>
+
+                <InputContainer label="Status" :error="editing.validationErrors.value.status">
+                    <Select
+                        v-model="editing.draft.value.status"
+                        :options="projectDocumentStatusOptions()"
+                        option-label="label"
+                        option-value="value"
+                        :invalid="!!editing.validationErrors.value.status"
+                    />
+                </InputContainer>
             </div>
 
-            <template v-else-if="openedDocument">
-                <div class="gap-2 flex shrink-0 items-center">
-                    <span class="text-surface-400 text-sm">{{ openedDocument.key }}</span>
-
-                    <div class="gap-1 ml-auto flex items-center">
-                        <span v-if="editing.isDirty.value" class="mr-2 text-xs text-amber-600 dark:text-amber-400">
-                            Unsaved changes
-                        </span>
-
-                        <Button label="Cancel" size="small" text severity="secondary" @click="cancel">
-                            <template #icon><Icon icon="heroicons:x-mark" class="mr-1 text-base" /></template>
-                        </Button>
-
-                        <Button
-                            :label="editing.isSaving.value ? 'Saving…' : 'Save'"
-                            size="small"
-                            :disabled="editing.isSaving.value"
-                            @click="editing.save"
-                        >
-                            <template #icon><Icon icon="heroicons:check" class="mr-1 text-base" /></template>
-                        </Button>
-                    </div>
-                </div>
-
-                <div class="gap-3 md:grid-cols-[1fr_12rem] grid shrink-0 grid-cols-1">
-                    <label class="gap-1 flex flex-col">
-                        <span class="text-surface-500 text-xs">Title</span>
-                        <InputText v-model="editing.draft.value.title" size="small" />
-                    </label>
-
-                    <label class="gap-1 flex flex-col">
-                        <span class="text-surface-500 text-xs">Status</span>
-                        <Select
-                            v-model="editing.draft.value.status"
-                            :options="projectDocumentStatusOptions()"
-                            option-label="label"
-                            option-value="value"
-                            size="small"
-                        />
-                    </label>
-                </div>
-
-                <div class="gap-2 flex shrink-0 items-center">
-                    <span class="text-surface-500 text-xs">Tags</span>
+            <InputContainer label="Tags" :error="editing.validationErrors.value.tag_ids">
+                <div class="gap-2 p-1 flex items-center">
                     <IconButton
-                        size="small"
+                        size="medium"
                         severity="success"
                         icon="mdi:tag-edit"
-                        @click="isTagsDialogVisible = true"
+                        @click="showManageTagsDialog = true"
                     />
                     <TagList :tags="editing.draft.value.tags" />
                 </div>
-
-                <MarkdownEditor
-                    v-model="editing.draft.value.content"
-                    preview
-                    class="min-h-0 flex-1"
-                    style="height: 100%"
-                    :handle-image-upload="editing.handleContentImageUpload"
-                />
-            </template>
+            </InputContainer>
         </div>
 
-        <ManageRecordTagsDialog v-model:visible="isTagsDialogVisible" v-model="editing.draft.value.tags" />
+        <div class="flex-1 overflow-auto">
+            <MarkdownEditor
+                v-model="editing.draft.value.content"
+                preview
+                style="height: 100%"
+                :handle-image-upload="editing.handleContentImageUpload"
+            />
+        </div>
+
+        <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="editing.draft.value.tags" />
     </div>
 </template>
