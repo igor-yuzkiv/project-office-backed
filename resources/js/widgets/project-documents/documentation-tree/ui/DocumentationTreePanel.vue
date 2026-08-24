@@ -21,6 +21,7 @@ const emit = defineEmits<{
     (e: 'select', documentId: string): void
     (e: 'toggle-node', document: ProjectDocumentTreeNodeDto): void
     (e: 'load-more', levelKey: string): void
+    (e: 'expand-all'): void
     (e: 'create-root'): void
     (e: 'create-child', document: ProjectDocumentTreeNodeDto): void
     (e: 'delete', document: ProjectDocumentTreeNodeDto): void
@@ -65,6 +66,22 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
             <h2 class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase">
                 Documents
             </h2>
+
+            <Button
+                v-if="!isPending && !isError && !isEmpty"
+                severity="secondary"
+                text
+                rounded
+                size="small"
+                class="ml-auto"
+                aria-label="Expand all"
+                title="Expand all"
+                @click="emit('expand-all')"
+            >
+                <template #icon>
+                    <Icon icon="heroicons:bars-arrow-down" class="text-base" />
+                </template>
+            </Button>
         </header>
 
         <div v-if="isPending" class="gap-2 p-3 flex flex-col">

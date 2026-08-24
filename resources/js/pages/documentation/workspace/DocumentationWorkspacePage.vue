@@ -140,6 +140,7 @@ watch(
                     @select="openDocument"
                     @toggle-node="tree.toggleNode"
                     @load-more="tree.loadMore"
+                    @expand-all="tree.expandAll"
                     @create-root="tree.createRootDocument"
                     @create-child="tree.createChildDocument"
                     @delete="tree.deleteDocument"

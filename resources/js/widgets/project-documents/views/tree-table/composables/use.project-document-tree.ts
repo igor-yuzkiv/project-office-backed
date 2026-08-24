@@ -220,7 +220,6 @@ export function useProjectDocumentTree(
         isLevelLoading,
         isLevelExpanded,
         loadMoreLevel,
-        reloadLevel,
         reloadLoadedLevels,
         forgetLevel,
         clearLevels,

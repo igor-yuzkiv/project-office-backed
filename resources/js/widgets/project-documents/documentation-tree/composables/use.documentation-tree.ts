@@ -112,6 +112,12 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         await tree.expandNode(document.id)
     }
 
+    // Opens every root row that has children. Their own children stay closed: the
+    // rows below are only fetched when something asks for that level.
+    function expandAll() {
+        return tree.expandAllOnPage()
+    }
+
     // Ancestors are expanded from the root down: each level has to load before the
     // next one can be found in it.
     async function expandAncestors(ancestorIds: string[]) {
@@ -151,6 +157,7 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         load,
         reload,
         toggleNode,
+        expandAll,
         expandAncestors,
         loadMore,
         createRootDocument,
