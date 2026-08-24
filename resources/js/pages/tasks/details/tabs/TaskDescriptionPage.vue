@@ -2,7 +2,7 @@
 import { useRouteParams } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import { useTaskQuery } from '@/entities/task/queries'
-import { DocumentSheet } from '@/widgets/project-documents/document-sheet'
+import { DocumentSheet } from '@/shared/components/document-sheet'
 
 const taskId = useRouteParams<string>('id')
 

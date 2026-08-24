@@ -137,7 +137,7 @@ useBreadcrumbs(() => [
         <SidePanel
             :panel="sidebarPanel"
             side="right"
-            width="24rem"
+            width="28rem"
             icon="heroicons:bars-3-bottom-right"
             show-label="Show task details"
         >
