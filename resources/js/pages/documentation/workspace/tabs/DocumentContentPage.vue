@@ -158,6 +158,7 @@ function dockSidebar() {
         <div
             v-else-if="annotationsEnabled"
             class="border-surface-200 dark:border-surface-700 py-1.5 w-11 flex shrink-0 flex-col items-center border-l"
+            @mouseenter="isDrawerOpen = true"
         >
             <Button
                 severity="secondary"
@@ -166,7 +167,6 @@ function dockSidebar() {
                 size="small"
                 aria-label="Show annotations"
                 title="Show annotations"
-                @mouseenter="isDrawerOpen = true"
                 @click="dockSidebar"
             >
                 <template #icon>

@@ -183,6 +183,7 @@ watch(
             <div
                 v-else
                 class="border-surface-200 dark:border-surface-700 py-1.5 w-11 flex shrink-0 flex-col items-center border-r"
+                @mouseenter="isTreeDrawerOpen = true"
             >
                 <Button
                     severity="secondary"
@@ -191,7 +192,6 @@ watch(
                     size="small"
                     aria-label="Show the document list"
                     title="Show the document list"
-                    @mouseenter="isTreeDrawerOpen = true"
                     @click="dockTree"
                 >
                     <template #icon>
