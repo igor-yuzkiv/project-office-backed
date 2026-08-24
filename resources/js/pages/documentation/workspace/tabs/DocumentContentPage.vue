@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import ToggleSwitch from 'primevue/toggleswitch'
 import type { IProjectDocument } from '@/entities/project-document/types'
 import { DocumentSheet } from '@/widgets/project-documents/document-sheet'
 import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
@@ -17,6 +18,17 @@ const authStore = useAuthStore()
 // The sheet finds the blocks in its own DOM and hands them over; the session resolves
 // annotations against them. shallowRef, because these hold live elements.
 const blocks = shallowRef<DomBlocks>(EMPTY_DOM_BLOCKS)
+
+// Annotating is what this screen is for, so it starts on. A reader who turns it off is
+// turning it off for the document in front of them, not setting a preference.
+const annotationsEnabled = ref(true)
+
+watch(
+    () => props.document.id,
+    () => {
+        annotationsEnabled.value = true
+    }
+)
 
 const {
     selectedBlock,
@@ -43,7 +55,7 @@ const {
     () => blocks.value,
     // A document with no content renders no sheet, so there is nothing to annotate and
     // nothing to ask the server about.
-    { enabled: () => Boolean(props.document.content) }
+    { enabled: () => annotationsEnabled.value && Boolean(props.document.content) }
 )
 
 const currentUserId = computed(() => authStore.user?.id ?? null)
@@ -55,13 +67,20 @@ const currentUserId = computed(() => authStore.user?.id ?? null)
             <DocumentSheet
                 :selected-block="selectedBlock"
                 :content="document.content"
-                blocks-pickable
+                :blocks-pickable="annotationsEnabled"
                 @blocks-changed="blocks = $event"
                 @pick-block="pickBlock"
             >
+                <template #toolbar>
+                    <label class="gap-2 text-surface-500 text-xs flex cursor-pointer items-center">
+                        Annotations
+                        <ToggleSwitch v-model="annotationsEnabled" />
+                    </label>
+                </template>
+
                 <template #banner>
                     <div
-                        v-if="isReanchoring"
+                        v-if="annotationsEnabled && isReanchoring"
                         class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
                     >
                         <span class="text-sm text-surface-700 dark:text-surface-200">
@@ -70,13 +89,15 @@ const currentUserId = computed(() => authStore.user?.id ?? null)
                         <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
                     </div>
 
-                    <p v-else class="text-xs text-surface-500">Click a block of the document to comment on it.</p>
+                    <p v-else-if="annotationsEnabled" class="text-xs text-surface-500">
+                        Click a block of the document to comment on it.
+                    </p>
                 </template>
             </DocumentSheet>
 
             <!-- Docked like a chat composer: it appears once a block is picked, and never covers the text. -->
             <AnnotationComposer
-                v-if="isComposing"
+                v-if="annotationsEnabled && isComposing"
                 :key="selectedBlock?.descriptor.index"
                 v-model:draft="draft"
                 :is-editing="editing !== null"
@@ -87,6 +108,7 @@ const currentUserId = computed(() => authStore.user?.id ?? null)
         </div>
 
         <AnnotationSidebar
+            v-if="annotationsEnabled"
             :anchors="orderedAnchors"
             :is-pending="isPending"
             :is-error="isError"

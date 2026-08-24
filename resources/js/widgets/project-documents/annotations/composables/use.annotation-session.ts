@@ -27,10 +27,15 @@ export function useAnnotationSession(
     const editing = ref<IAnnotation | null>(null)
     const reanchoring = ref<IAnnotation | null>(null)
 
+    const isEnabled = computed(() => (options.enabled === undefined ? true : toValue(options.enabled)))
+
     const { annotations, isPending, isError, refetch } = useProjectDocumentAnnotationsQuery(() => toValue(documentId), {
-        enabled: () => (options.enabled === undefined ? true : toValue(options.enabled)),
+        enabled: isEnabled,
     })
-    const { orderedAnchors } = useAnnotationAnchors(annotations, blocks)
+
+    // A disabled query keeps its last answer, so the anchors have to be emptied by hand —
+    // otherwise a switched-off session would leave its highlights on the document.
+    const { orderedAnchors } = useAnnotationAnchors(() => (isEnabled.value ? annotations.value : []), blocks)
     const { create, update, remove, isSaving, isUpdating } = useAnnotationEditor(documentId)
 
     const isBusy = computed(() => isSaving.value || isUpdating.value)
@@ -150,7 +155,7 @@ export function useAnnotationSession(
      * to empty takes its rendered blocks away without ending the session. A draft carried across
      * either boundary would be saved against a block the reader is no longer looking at.
      */
-    watch([() => toValue(documentId), () => (options.enabled === undefined ? true : toValue(options.enabled))], () => {
+    watch([() => toValue(documentId), isEnabled], () => {
         clearDraft()
         reanchoring.value = null
         selectedBlock.value = null
