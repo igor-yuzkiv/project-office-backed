@@ -38,6 +38,7 @@
 # ---------------------------------------------------------------------------
 artifacts:
   progress_update: project-office   # `project-office task:checkpoint --task MTM-<n>`
+  workflow_record: project-office    # `project-office task:comment-add --task MTM-<n>`
   client_update: none               # this project has no audience outside the team
 
 # ---------------------------------------------------------------------------

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
-import Drawer from 'primevue/drawer'
 import Skeleton from 'primevue/skeleton'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
@@ -16,7 +15,8 @@ import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/pro
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useLocalStorage } from '@vueuse/core'
+import { SidePanel } from '@/shared/components/side-panel'
+import { useCollapsibleSidePanel } from '@/shared/composables'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -45,10 +45,7 @@ const tree = useDocumentationTree(projectId, {
     },
 })
 
-// Hiding the column is a preference worth keeping; opening the drawer over the document is a
-// moment, and leaving it takes nothing back.
-const isTreeCollapsed = useLocalStorage('docs:tree-collapsed', false)
-const isTreeDrawerOpen = ref(false)
+const treePanel = useCollapsibleSidePanel('docs:tree-collapsed')
 
 // The same panel is rendered in two places — a column and a drawer — and its bindings are
 // described once so the two cannot drift apart.
@@ -60,7 +57,6 @@ const treePanelProps = computed(() => ({
 }))
 
 const treePanelHandlers = {
-    collapse: collapseTree,
     select: openDocument,
     'toggle-node': tree.toggleNode,
     'load-more': tree.loadMore,
@@ -69,15 +65,6 @@ const treePanelHandlers = {
     'create-child': tree.createChildDocument,
     delete: tree.deleteDocument,
     retry: tree.load,
-}
-
-function collapseTree() {
-    isTreeCollapsed.value = true
-}
-
-function dockTree() {
-    isTreeCollapsed.value = false
-    isTreeDrawerOpen.value = false
 }
 
 const moveDialog = useProjectDocumentMove(() => documentId.value, { onMoved: () => tree.reload() })
@@ -121,7 +108,7 @@ function openTab(value: string) {
 
 function openDocument(id: string) {
     // The drawer covers what the reader just asked to see, so picking a document dismisses it.
-    isTreeDrawerOpen.value = false
+    treePanel.closeDrawer()
 
     router.push({
         name: 'project-documentation.document',
@@ -171,34 +158,17 @@ watch(
         <div
             class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
         >
-            <div
-                v-if="!isTreeCollapsed"
-                class="border-surface-200 dark:border-surface-700 w-100 shrink-0 overflow-hidden border-r"
+            <SidePanel
+                :panel="treePanel"
+                side="left"
+                width="25rem"
+                icon="heroicons:bars-3"
+                show-label="Show the document list"
             >
-                <DocumentationTreePanel v-bind="treePanelProps" v-on="treePanelHandlers" />
-            </div>
-
-            <!-- What is left of the column: a full-height strip holding the same control in the
-                 same place. Hovering it peeks at the tree, clicking brings the column back. -->
-            <div
-                v-else
-                class="border-surface-200 dark:border-surface-700 py-1.5 w-11 flex shrink-0 flex-col items-center border-r"
-                @mouseenter="isTreeDrawerOpen = true"
-            >
-                <Button
-                    severity="secondary"
-                    text
-                    rounded
-                    size="small"
-                    aria-label="Show the document list"
-                    title="Show the document list"
-                    @click="dockTree"
-                >
-                    <template #icon>
-                        <Icon icon="heroicons:bars-3" class="text-base" />
-                    </template>
-                </Button>
-            </div>
+                <template #default="{ collapse }">
+                    <DocumentationTreePanel v-bind="treePanelProps" v-on="{ ...treePanelHandlers, collapse }" />
+                </template>
+            </SidePanel>
 
             <div class="min-w-0 flex flex-1 flex-col overflow-hidden">
                 <RouterView v-if="!documentId" @create-document="tree.createRootDocument" />
@@ -279,22 +249,6 @@ watch(
                 </template>
             </div>
         </div>
-
-        <!-- Only while the column is hidden, so the panel is never mounted twice. A peek rather
-             than a mode: no mask over the document, and it leaves when the pointer does. The
-             panel's own header button docks it here instead of hiding what is already hidden. -->
-        <Drawer
-            v-if="isTreeCollapsed"
-            v-model:visible="isTreeDrawerOpen"
-            position="left"
-            :modal="false"
-            class="!w-100 !max-w-full"
-            :pt="{ header: { class: 'hidden' }, content: { class: '!p-0' } }"
-        >
-            <div class="h-full" @mouseleave="isTreeDrawerOpen = false">
-                <DocumentationTreePanel v-bind="treePanelProps" v-on="{ ...treePanelHandlers, collapse: dockTree }" />
-            </div>
-        </Drawer>
 
         <ProjectDocumentMoveDialog
             v-if="openedDocument"
