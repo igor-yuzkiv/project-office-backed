@@ -34,7 +34,7 @@ const activeTab = computed(
     () =>
         String(route.name ?? '')
             .split('.')
-            .at(-1) ?? 'overview'
+            .at(-1) ?? 'description'
 )
 
 watch(isError, (value) => {
@@ -98,7 +98,7 @@ useBreadcrumbs(() => [
             </div>
 
             <TabList>
-                <Tab value="overview" class="px-4 py-2">Overview</Tab>
+                <Tab value="description" class="px-4 py-2">Description</Tab>
                 <Tab value="tasks" class="px-4 py-2">Tasks</Tab>
                 <Tab value="comments" class="px-4 py-2">Comments</Tab>
                 <Tab value="attachments" class="px-4 py-2">Attachments</Tab>

@@ -175,12 +175,18 @@ const router = createRouter({
             name: 'task-list-details',
             component: () => import('@/pages/task-lists/details/TaskListDetailsPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Task List' },
-            redirect: (to) => ({ name: 'task-list-details.overview', params: to.params }),
+            redirect: (to) => ({ name: 'task-list-details.description', params: to.params }),
             children: [
                 {
+                    path: 'description',
+                    name: 'task-list-details.description',
+                    component: () => import('@/pages/task-lists/details/tabs/TaskListDescriptionPage.vue'),
+                },
+                {
+                    // The tab was called Overview until it stopped holding one; links that
+                    // predate the rename still land on it.
                     path: 'overview',
-                    name: 'task-list-details.overview',
-                    component: () => import('@/pages/task-lists/details/tabs/TaskListOverviewPage.vue'),
+                    redirect: (to) => ({ name: 'task-list-details.description', params: to.params }),
                 },
                 {
                     path: 'tasks',
