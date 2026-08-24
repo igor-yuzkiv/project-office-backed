@@ -483,6 +483,31 @@ it('records a project_document.updated event', function () {
         ->and($record->description)->toBeNull();
 });
 
+// Creating too deep is refused by the domain, moving too deep by a validator. The reader must
+// not be able to tell which path they took.
+it('gives the same depth message whether the document is created or moved too deep', function () {
+    $branch = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+
+    foreach (range(1, ProjectDocumentModel::maxDepth()) as $ignored) {
+        $branch = ProjectDocumentModel::factory()
+            ->for($this->project, 'project')
+            ->create(['parent_id' => $branch->id]);
+    }
+
+    $created = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'One level too deep',
+        'parent_id' => $branch->id,
+    ])->assertStatus(422);
+
+    $loose = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+
+    $moved = $this->patchJson('/api/project-documents/'.$loose->id.'/move', [
+        'parent_id' => $branch->id,
+    ])->assertStatus(422);
+
+    expect($moved->json('errors.parent_id.0'))->toBe($created->json('message'));
+});
+
 it('answers 422 when a document would be nested deeper than the limit allows', function () {
     $document = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
 

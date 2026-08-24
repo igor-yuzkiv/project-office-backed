@@ -65,7 +65,7 @@ class MoveProjectDocumentRequest extends FormRequest
             $newDepth = $newParent !== null ? $newParent->depth + 1 : 0;
 
             if ($newDepth + $subtreeHeight > ProjectDocumentModel::maxDepth()) {
-                $validator->errors()->add('parent_id', 'Maximum document nesting depth exceeded.');
+                $validator->errors()->add('parent_id', ProjectDocumentModel::maxDepthMessage());
 
                 return;
             }

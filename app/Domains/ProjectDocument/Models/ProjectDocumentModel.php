@@ -88,6 +88,21 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
         return (int) config('domains.project-document.max_depth');
     }
 
+    /** The same limit counted the way a person says it aloud: a root plus everything under it. */
+    public static function maxLevels(): int
+    {
+        return self::maxDepth() + 1;
+    }
+
+    /**
+     * How the limit is put to the reader. Creating too deep is refused by the domain and moving
+     * too deep by a validator, and the reader must not be able to tell which path they took.
+     */
+    public static function maxDepthMessage(): string
+    {
+        return 'Maximum document nesting depth ('.self::maxLevels().' levels) exceeded.';
+    }
+
     public function canHaveChildren(): bool
     {
         return $this->depth < self::maxDepth();
@@ -130,7 +145,7 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
         }
 
         if ($parent->depth >= self::maxDepth()) {
-            throw ProjectDocumentMaxDepthExceededException::withLevels(self::maxDepth() + 1);
+            throw ProjectDocumentMaxDepthExceededException::exceeded(self::maxDepthMessage());
         }
 
         $this->path = $parent->path.'.'.$this->id;

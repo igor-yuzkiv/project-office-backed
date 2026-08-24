@@ -6,9 +6,9 @@ use RuntimeException;
 
 class ProjectDocumentMaxDepthExceededException extends RuntimeException
 {
-    /** @param  int  $levels  How many levels of nesting are allowed, counting the root. */
-    public static function withLevels(int $levels): self
+    /** The wording lives on the model, which is what the limit belongs to. */
+    public static function exceeded(string $message): self
     {
-        return new self("Maximum document nesting depth ({$levels} levels) exceeded.");
+        return new self($message);
     }
 }
