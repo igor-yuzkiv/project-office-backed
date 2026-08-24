@@ -53,7 +53,7 @@ class TaskListsController extends ResourceController
             'createdBy',
             'updatedBy',
             'tags',
-            'tasks' => fn (HasMany $query) => $query->orderBy('sequence_number'),
+            'tasks' => fn (HasMany $query) => $query->orderBy('name'),
         ]);
 
         return new TaskListResource($taskList);
