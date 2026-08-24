@@ -13,7 +13,8 @@ import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
-import { TagList } from '@/widgets/tags/metadata'
+import { SidePanel } from '@/shared/components/side-panel'
+import { useCollapsibleSidePanel } from '@/shared/composables'
 import { TaskDetailsSidebar } from '@/widgets/tasks/details-sidebar'
 
 const route = useRoute()
@@ -25,6 +26,7 @@ const toast = useToast()
 const taskId = useRouteParams<string>('id')
 
 const { task, isError } = useTaskQuery(taskId)
+const sidebarPanel = useCollapsibleSidePanel('tasks:sidebar-collapsed')
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 
 function handleDeleteTask() {
@@ -105,8 +107,6 @@ useBreadcrumbs(() => [
                     <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
                     <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
                 </div>
-
-                <TagList :tags="task.tags ?? []" />
             </div>
 
             <TabList>
@@ -127,8 +127,16 @@ useBreadcrumbs(() => [
             </div>
         </Tabs>
 
-        <!-- Below lg the column would leave the tab content too narrow to read, so it is dropped
-             entirely rather than stacked: everything in it is reachable elsewhere on the page. -->
-        <TaskDetailsSidebar :task="task" class="lg:flex hidden" />
+        <SidePanel
+            :panel="sidebarPanel"
+            side="right"
+            width="24rem"
+            icon="heroicons:bars-3-bottom-right"
+            show-label="Show task details"
+        >
+            <template #default="{ collapse }">
+                <TaskDetailsSidebar :task="task" @collapse="collapse" />
+            </template>
+        </SidePanel>
     </div>
 </template>
