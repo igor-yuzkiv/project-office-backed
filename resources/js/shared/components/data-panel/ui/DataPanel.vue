@@ -13,8 +13,8 @@ withDefaults(
         errorMessage?: string
         skeletonRows?: number
         /**
-         * `card` draws its own surface and belongs on a page. `plain` draws none, for a host
-         * that already is one — a full-height sidebar, a panel inside another panel.
+         * `card` draws its own surface and belongs on a page. `plain` draws none and wears a
+         * quiet label, for a host that already is one — a full-height sidebar beside another.
          */
         appearance?: 'card' | 'plain'
     }>(),
@@ -40,11 +40,26 @@ const emit = defineEmits<{
                 : ''
         "
     >
+        <!-- A card announces itself with a full heading; a panel inside someone else's chrome
+             wears the quieter label its neighbours wear. -->
         <header
-            class="gap-3 px-4 py-3.5 flex items-baseline justify-between"
-            :class="{ 'border-surface-200 dark:border-surface-700 border-b': appearance === 'card' }"
+            class="gap-3 flex justify-between"
+            :class="
+                appearance === 'card'
+                    ? 'border-surface-200 dark:border-surface-700 px-4 py-3.5 items-baseline border-b'
+                    : 'px-3 py-1.5 items-center'
+            "
+            :style="appearance === 'plain' ? { minHeight: '2.75rem' } : undefined"
         >
-            <h2 class="text-surface-900 dark:text-surface-0 text-base font-semibold">{{ title }}</h2>
+            <h2
+                :class="
+                    appearance === 'card'
+                        ? 'text-surface-900 dark:text-surface-0 text-base font-semibold'
+                        : 'text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase'
+                "
+            >
+                {{ title }}
+            </h2>
             <span v-if="subtitle" class="text-surface-400 text-xs">{{ subtitle }}</span>
             <slot name="action" />
         </header>

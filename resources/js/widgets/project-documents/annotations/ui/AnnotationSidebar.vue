@@ -80,15 +80,19 @@ function isOwn(annotation: IAnnotation): boolean {
                 </Button>
             </template>
 
-            <div class="gap-3 px-4 pb-4 min-h-0 flex flex-1 flex-col overflow-y-auto">
+            <div class="min-h-0 flex-1 overflow-y-auto">
+                <!-- Rows rather than cards, like the activity stream and the document tree: the
+                     sidebar is a list inside the workspace, not a stack of surfaces on top of it.
+                     The amber left bar is the same hue the sheet uses while a block is being
+                     picked, so the row and the document agree about what is happening. -->
                 <article
                     v-for="anchor in anchors"
                     :key="anchor.annotation.id"
-                    class="gap-2 rounded-lg p-3 bg-white dark:bg-surface-950 border-surface-200 dark:border-surface-700 flex cursor-pointer flex-col border transition-colors"
+                    class="border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/60 gap-2 px-4 py-3 flex cursor-pointer flex-col border-t border-l-2 border-l-transparent transition-colors first:border-t-0"
                     :class="{
-                        'border-primary-500': anchor.annotation.id === editingId,
+                        'border-l-primary-500 bg-primary-50 dark:bg-primary-950/40': anchor.annotation.id === editingId,
+                        'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40': anchor.annotation.id === reanchoringId,
                         'opacity-60': anchor.block === null,
-                        'ring-primary-500 ring-2': anchor.annotation.id === reanchoringId,
                     }"
                     @click="emit('select', anchor.annotation)"
                 >

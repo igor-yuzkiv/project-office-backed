@@ -146,10 +146,7 @@ function dockSidebar() {
             />
         </div>
 
-        <aside
-            v-if="showsColumn"
-            class="border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 w-96 shrink-0 border-l"
-        >
+        <aside v-if="showsColumn" class="border-surface-200 dark:border-surface-700 w-96 shrink-0 border-l">
             <AnnotationSidebar v-bind="sidebarProps" v-on="sidebarHandlers" />
         </aside>
 
