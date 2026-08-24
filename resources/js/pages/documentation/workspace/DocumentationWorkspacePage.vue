@@ -34,9 +34,9 @@ const { projectDocument, isError, isFetching, refetch } = useProjectDocumentQuer
     { enabled: () => Boolean(documentId.value) }
 )
 
-const belongsElsewhere = computed(() => !!projectDocument.value && projectDocument.value.project_id !== projectId.value)
+const documentFromAnotherProject = computed(() => !!projectDocument.value && projectDocument.value.project_id !== projectId.value)
 
-const openedDocument = computed(() => (belongsElsewhere.value ? undefined : projectDocument.value))
+const openedDocument = computed(() => (documentFromAnotherProject.value ? undefined : projectDocument.value))
 
 const tree = useDocumentationTree(projectId, {
     onCreated: (document) => openDocument(document.id),
@@ -203,7 +203,7 @@ watch(
             <div class="min-w-0 flex flex-1 flex-col overflow-hidden">
                 <RouterView v-if="!documentId" @create-document="tree.createRootDocument" />
 
-                <div v-else-if="belongsElsewhere" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
+                <div v-else-if="documentFromAnotherProject" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
                     <Icon icon="heroicons:document-magnifying-glass" class="text-surface-300 text-4xl" />
                     <p class="text-surface-700 dark:text-surface-200 text-base font-medium">Document not found</p>
                     <p class="text-surface-500 max-w-sm text-sm text-center">
@@ -214,7 +214,7 @@ watch(
                         label="Back to documentation root"
                         size="small"
                         severity="secondary"
-                        @click="openDocumentationRoot()"
+                        @click="openDocumentationRoot"
                     />
                 </div>
 
@@ -248,13 +248,13 @@ watch(
                                 <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
                             </Button>
 
-                            <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open()">
+                            <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open">
                                 <template #icon
                                     ><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base"
                                 /></template>
                             </Button>
 
-                            <Button label="Delete" size="small" text severity="secondary" @click="removeDocument()">
+                            <Button label="Delete" size="small" text severity="secondary" @click="removeDocument">
                                 <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
                             </Button>
                         </div>

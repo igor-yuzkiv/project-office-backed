@@ -15,8 +15,6 @@ const props = withDefaults(
 
 const sizeClasses = computed(() => PROJECT_ICON_SIZE_MAP[props.size])
 
-// The prefix carries the tint whether or not an icon was chosen, so a project keeps the same
-// colour on the day someone gives it one.
 const tintClass = computed(() => projectTintClass(props.prefix))
 
 // A name can be typed by hand, so it can also be wrong. An icon that never resolves would

@@ -45,8 +45,6 @@ const openedDocument = computed(() =>
     projectDocument.value?.project_id === projectId ? projectDocument.value : undefined
 )
 
-// The draft belongs to this page and dies with it: nothing typed here reaches the tree,
-// the path strip or the details panel until the server has accepted it.
 const formData = ref<DocumentEditFormData>({ title: '', content: '', status: 'draft', tags: [] })
 const isFormInitialized = ref(false)
 const validationErrors = ref<LaravelValidationErrors>({})

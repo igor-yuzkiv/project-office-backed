@@ -79,7 +79,7 @@ function toggle(id: string) {
             type="button"
             class="border-surface-200 dark:border-surface-700 text-primary hover:bg-surface-50 dark:hover:bg-surface-800/60 py-2.5 text-sm font-semibold w-full cursor-pointer border-t text-center disabled:cursor-default disabled:opacity-60"
             :disabled="isFetching"
-            @click="loadMore()"
+            @click="loadMore"
         >
             {{ isFetching ? 'Loading…' : 'Load more' }}
         </button>

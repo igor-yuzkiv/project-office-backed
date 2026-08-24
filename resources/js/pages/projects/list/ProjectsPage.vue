@@ -130,7 +130,7 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
                 <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
                     <FilterButton v-bind="filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open" />
                 </div>
             </div>
 

@@ -77,7 +77,7 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'project-documentation',
-                    component: () => import('@/pages/documentation/workspace/tabs/SelectDocumentPage.vue'),
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentationLandingPage.vue'),
                 },
                 {
                     path: ':documentId',

@@ -79,6 +79,12 @@ const emit = defineEmits<{
 
 Do not introduce the shorthand tuple form in new or modified components.
 
+In template event handlers, bind a method reference instead of an inline call when the handler
+takes no arguments: `@click="moveDialog.open"`, not `@click="moveDialog.open()"`. A bare reference
+receives the event as an argument, so keep the explicit call when the method has optional
+parameters the event object could fill (`open(payload?)`), and when real arguments are passed the
+inline call is the only form.
+
 ## Libraries and reuse
 
 - Check installed packages before building a custom primitive.
