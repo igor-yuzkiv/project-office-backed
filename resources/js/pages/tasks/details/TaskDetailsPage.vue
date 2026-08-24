@@ -2,6 +2,7 @@
 import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
+import Button from 'primevue/button'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
@@ -12,8 +13,9 @@ import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
-import { TagList } from '@/widgets/tags/metadata'
+import { useBreadcrumbs } from '@/app/shell'
+import { SidePanel } from '@/shared/components/side-panel'
+import { useCollapsibleSidePanel } from '@/shared/composables'
 import { TaskDetailsSidebar } from '@/widgets/tasks/details-sidebar'
 
 const route = useRoute()
@@ -25,7 +27,12 @@ const toast = useToast()
 const taskId = useRouteParams<string>('id')
 
 const { task, isError } = useTaskQuery(taskId)
+const sidebarPanel = useCollapsibleSidePanel('tasks:sidebar-collapsed')
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
+
+function openEditor() {
+    router.push({ name: 'task-edit', params: { id: taskId.value } })
+}
 
 function handleDeleteTask() {
     deleteTask(taskId.value, `Are you sure you want to delete "${task.value?.name}"?`, () =>
@@ -55,16 +62,6 @@ watch(
 function onTabChange(value: string | number) {
     router.push({ name: `task-details.${value}`, params: { id: taskId.value } })
 }
-
-useHeaderActions(() => [
-    {
-        key: 'edit-task',
-        title: 'Edit Task',
-        to: { name: 'task-edit', params: { id: taskId.value } },
-        is_primary: true,
-    },
-    { key: 'delete-task', title: 'Delete', action: handleDeleteTask },
-])
 
 useBreadcrumbs(() => [
     { label: 'Tasks', to: { name: 'tasks' } },
@@ -101,12 +98,22 @@ useBreadcrumbs(() => [
                     </DisplayField>
                 </div>
 
-                <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
-                    <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
-                    <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
-                </div>
+                <div class="gap-2 flex items-center">
+                    <div class="gap-x-2 text-2xl font-semibold min-w-0 flex items-center truncate">
+                        <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
+                        <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
+                    </div>
 
-                <TagList :tags="task.tags ?? []" />
+                    <div class="gap-1 ml-auto flex shrink-0 items-center">
+                        <Button label="Edit" size="small" text severity="secondary" @click="openEditor">
+                            <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
+                        </Button>
+
+                        <Button label="Delete" size="small" text severity="secondary" @click="handleDeleteTask">
+                            <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
+                        </Button>
+                    </div>
+                </div>
             </div>
 
             <TabList>
@@ -127,8 +134,16 @@ useBreadcrumbs(() => [
             </div>
         </Tabs>
 
-        <!-- Below lg the column would leave the tab content too narrow to read, so it is dropped
-             entirely rather than stacked: everything in it is reachable elsewhere on the page. -->
-        <TaskDetailsSidebar :task="task" class="lg:flex hidden" />
+        <SidePanel
+            :panel="sidebarPanel"
+            side="right"
+            width="28rem"
+            icon="heroicons:bars-3-bottom-right"
+            show-label="Show task details"
+        >
+            <template #default="{ collapse }">
+                <TaskDetailsSidebar :task="task" @collapse="collapse" />
+            </template>
+        </SidePanel>
     </div>
 </template>

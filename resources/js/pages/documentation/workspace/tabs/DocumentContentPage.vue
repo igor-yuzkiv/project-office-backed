@@ -2,14 +2,14 @@
 import { computed, ref, shallowRef, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
-import Drawer from 'primevue/drawer'
 import ToggleSwitch from 'primevue/toggleswitch'
 import type { IAnnotation } from '@/entities/annotation'
 import type { IProjectDocument } from '@/entities/project-document/types'
-import { DocumentSheet } from '@/widgets/project-documents/document-sheet'
+import { DocumentSheet } from '@/shared/components/document-sheet'
 import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
 import { useAuthStore } from '@/app/stores/use.auth.store'
-import { useLocalStorage } from '@vueuse/core'
+import { SidePanel } from '@/shared/components/side-panel'
+import { useCollapsibleSidePanel } from '@/shared/composables'
 import { EMPTY_DOM_BLOCKS, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 
 const props = defineProps<{
@@ -63,12 +63,7 @@ const {
 
 const currentUserId = computed(() => authStore.user?.id ?? null)
 
-// Two ways to be out of sight, and only one of them is a choice worth keeping: hiding the
-// column is a preference, opening the drawer over the document is a moment.
-const isCollapsed = useLocalStorage('docs:annotations-collapsed', false)
-const isDrawerOpen = ref(false)
-
-const showsColumn = computed(() => annotationsEnabled.value && !isCollapsed.value)
+const sidebarPanel = useCollapsibleSidePanel('docs:annotations-collapsed')
 
 // The same sidebar is rendered in two places — a column when there is room, a drawer when
 // there is not — and its bindings are described once so the two cannot drift apart.
@@ -82,21 +77,11 @@ const sidebarProps = computed(() => ({
 }))
 
 const sidebarHandlers = {
-    collapse: collapseSidebar,
     select: selectAnnotation,
     edit: editAnnotation,
     delete: (annotation: IAnnotation) => removeAnnotation(annotation.id),
     reanchor: startReanchoring,
     retry: () => refetch(),
-}
-
-function collapseSidebar() {
-    isCollapsed.value = true
-}
-
-function dockSidebar() {
-    isCollapsed.value = false
-    isDrawerOpen.value = false
 }
 </script>
 
@@ -148,47 +133,18 @@ function dockSidebar() {
             />
         </div>
 
-        <aside v-if="showsColumn" class="border-surface-200 dark:border-surface-700 w-96 shrink-0 border-l">
-            <AnnotationSidebar v-bind="sidebarProps" v-on="sidebarHandlers" />
-        </aside>
-
-        <!-- What is left of the column: a full-height strip holding the same control in the same
-             place. Hovering it peeks at the annotations, clicking brings the column back. -->
-        <div
-            v-else-if="annotationsEnabled"
-            class="border-surface-200 dark:border-surface-700 py-1.5 w-11 flex shrink-0 flex-col items-center border-l"
-            @mouseenter="isDrawerOpen = true"
+        <SidePanel
+            v-if="annotationsEnabled"
+            :panel="sidebarPanel"
+            side="right"
+            width="24rem"
+            icon="heroicons:bars-3-bottom-right"
+            show-label="Show annotations"
         >
-            <Button
-                severity="secondary"
-                text
-                rounded
-                size="small"
-                aria-label="Show annotations"
-                title="Show annotations"
-                @click="dockSidebar"
-            >
-                <template #icon>
-                    <Icon icon="heroicons:bars-3-bottom-right" class="text-base" />
-                </template>
-            </Button>
-        </div>
-
-        <!-- Only while the column is hidden, so the sidebar is never mounted twice. A peek rather
-             than a mode: no mask over the document, and it leaves when the pointer does. The
-             sidebar's own header button docks it here instead of hiding what is already hidden. -->
-        <Drawer
-            v-if="annotationsEnabled && isCollapsed"
-            v-model:visible="isDrawerOpen"
-            position="right"
-            :modal="false"
-            class="!w-96 !max-w-full"
-            :pt="{ header: { class: 'hidden' }, content: { class: '!p-0' } }"
-        >
-            <div class="h-full" @mouseleave="isDrawerOpen = false">
-                <AnnotationSidebar v-bind="sidebarProps" v-on="{ ...sidebarHandlers, collapse: dockSidebar }" />
-            </div>
-        </Drawer>
+            <template #default="{ collapse }">
+                <AnnotationSidebar v-bind="sidebarProps" v-on="{ ...sidebarHandlers, collapse }" />
+            </template>
+        </SidePanel>
     </div>
 
     <div v-else class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center">
