@@ -299,8 +299,13 @@ is what the eye picks up first. `resolveActivityType()` falls back to a neutral 
 anything it has never seen.
 
 A separate map turns `subject.type` into a route name (`task-details`,
-`task-list-details`, `project-details`, `project-document-details`). A link is built only when
+`task-list-details`, `project-details`, `project-document-resolver`). A link is built only when
 the type is linkable, the subject exists, and its type is in that map.
+
+A document is the one subject whose route needs more than the subject id: the documentation
+workspace is addressed by project and document together, and an audit record carries neither
+the project nor any way to derive it. `project-document-resolver` is a redirect-only route
+that looks the document up and forwards to the workspace.
 
 The row is a `<button>` with `aria-expanded` and `aria-controls`, so keyboard and screen
 reader support come for free; the badge, the chevron and the avatar are `aria-hidden`, leaving

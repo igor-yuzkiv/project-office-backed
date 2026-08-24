@@ -59,10 +59,45 @@ const router = createRouter({
                     name: 'project-details.attachments',
                     component: () => import('@/pages/projects/details/tabs/ProjectAttachmentsPage.vue'),
                 },
+            ],
+        },
+        {
+            // Editing is a page of its own: no tree, no tabs, and a draft that belongs to
+            // nothing but this route.
+            path: '/projects/:projectId/documentation/:documentId/edit',
+            name: 'project-documentation.document.edit',
+            component: () => import('@/pages/documentation/edit/EditDocumentPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit document' },
+        },
+        {
+            path: '/projects/:projectId/documentation',
+            component: () => import('@/pages/documentation/workspace/DocumentationWorkspacePage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
+            children: [
                 {
-                    path: 'documentation',
-                    name: 'project-details.documentation',
-                    component: () => import('@/pages/projects/details/tabs/ProjectDocumentationPage.vue'),
+                    path: '',
+                    name: 'project-documentation',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentationLandingPage.vue'),
+                },
+                {
+                    path: ':documentId',
+                    name: 'project-documentation.document',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentContentPage.vue'),
+                },
+                {
+                    path: ':documentId/details',
+                    name: 'project-documentation.document.details',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentDetailsPage.vue'),
+                },
+                {
+                    path: ':documentId/comments',
+                    name: 'project-documentation.document.comments',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentCommentsPage.vue'),
+                },
+                {
+                    path: ':documentId/tasks',
+                    name: 'project-documentation.document.tasks',
+                    component: () => import('@/pages/documentation/workspace/tabs/DocumentTasksPage.vue'),
                 },
             ],
         },
@@ -165,57 +200,25 @@ const router = createRouter({
             ],
         },
         {
+            // Not a page: it resolves a document to its project and hands it to the
+            // workspace. The activity stream and the documentation tables know only
+            // the document.
             path: '/project-documents/:id',
-            name: 'project-document-details',
-            component: () => import('@/pages/project-documents/details/ProjectDocumentDetailsPage.vue'),
+            name: 'project-document-resolver',
+            component: () => import('@/pages/documentation/resolver/ProjectDocumentResolverPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Document' },
-            redirect: (to) => ({ name: 'project-document-details.details', params: to.params }),
-            children: [
-                {
-                    path: 'details',
-                    name: 'project-document-details.details',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentOverviewPage.vue'),
-                },
-                {
-                    path: 'content',
-                    name: 'project-document-details.content',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentContentPage.vue'),
-                },
-                {
-                    path: 'related-tasks',
-                    name: 'project-document-details.related-tasks',
-                    component: () =>
-                        import('@/pages/project-documents/details/tabs/ProjectDocumentRelatedTasksPage.vue'),
-                },
-                {
-                    path: 'comments',
-                    name: 'project-document-details.comments',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentCommentsPage.vue'),
-                },
-                {
-                    path: 'children',
-                    name: 'project-document-details.children',
-                    component: () => import('@/pages/project-documents/details/tabs/ProjectDocumentChildrenPage.vue'),
-                },
-            ],
-        },
-        {
-            path: '/project-documents/:id/edit',
-            name: 'project-document-edit',
-            component: () => import('@/pages/project-documents/edit/ProjectDocumentEditPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Edit Document' },
-        },
-        {
-            path: '/project-documents/:id/annotations',
-            name: 'project-document-annotations',
-            component: () => import('@/pages/project-documents/annotations/ProjectDocumentAnnotationsPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Annotation Mode' },
         },
         {
             path: '/profile',
             name: 'profile',
             component: () => import('@/pages/user/CurrentUserProfilePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Profile' },
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/pages/errors/not-found/NotFoundPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Not found' },
         },
     ],
 })

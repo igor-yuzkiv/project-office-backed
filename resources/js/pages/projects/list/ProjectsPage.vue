@@ -10,7 +10,7 @@ import { PAGE_SIZE } from '@/app/config'
 import type { ProjectOverviewDto, ProjectSearchParams } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectCreateDialog, useProjectCreateDialog } from '@/widgets/projects/create-dialog'
-import { ProjectsTableView } from '@/widgets/projects/views/table'
+import { ProjectsGridView } from '@/widgets/projects/views/grid'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { usePersistedListState } from '@/shared/composables'
@@ -95,6 +95,8 @@ const searchParams = computed<ProjectSearchParams>(() => ({
 
 const { projects, paginationMeta, isPending } = useProjectsSearchQuery(searchParams)
 
+const isFiltered = computed(() => Boolean(searchQuery.value) || filterSidebar.resolvedFilters.value.length > 0)
+
 function onSortApply() {
     sort.apply()
     sort.close()
@@ -103,10 +105,6 @@ function onSortApply() {
 function onSearchSubmit() {
     searchQuery.value = searchInput.value
     page.value = 1
-}
-
-function projectTasksRoute(project: ProjectOverviewDto) {
-    return { name: 'project-details.tasks', params: { id: project.id } }
 }
 
 function openRowMenu(event: MouseEvent, project: ProjectOverviewDto) {
@@ -127,32 +125,32 @@ useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, 
 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
+        <div class="gap-2 p-3 max-w-7xl mx-auto flex w-full flex-1 flex-col overflow-hidden">
             <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
                 <div class="gap-2 flex items-center">
                     <FilterButton v-bind="filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open" />
                 </div>
             </div>
 
             <div class="flex h-full w-full flex-col overflow-hidden">
-                <ProjectsTableView
+                <ProjectsGridView
                     :projects="projects"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    :to="projectTasksRoute"
+                    :is-filtered="isFiltered"
                     @page-change="onPageChange"
                 >
-                    <template #actions="{ row }">
+                    <template #actions="{ project }">
                         <IconButton
                             severity="secondary"
                             icon="pepicons-pop:dots-y"
-                            @click.stop="openRowMenu($event, row)"
+                            @click.stop="openRowMenu($event, project)"
                         />
                     </template>
-                </ProjectsTableView>
+                </ProjectsGridView>
             </div>
         </div>
 

@@ -7,6 +7,9 @@ use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
+use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
@@ -21,7 +24,6 @@ use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TagFilter;
 use App\Libs\EloquentFilters\Filters\TaskFilter;
 use Database\Factories\ProjectDocumentModelFactory;
-use DomainException;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -67,9 +69,6 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
     /** @use HasFactory<ProjectDocumentModelFactory> */
     use HasArchivableColumns, HasAuditableColumns, HasFactory, HasFilters, HasUlids, Searchable;
 
-    /** Maximum allowed nesting depth (0, 1, 2 — a document at MAX_DEPTH cannot have children). */
-    public const int MAX_DEPTH = 2;
-
     protected $table = 'project_documents';
 
     public $incrementing = false;
@@ -81,6 +80,32 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
             'depth'       => 'integer',
             'archived_at' => 'datetime',
         ];
+    }
+
+    /** The deepest a document may sit; zero-based, so the value is one less than the number of levels. */
+    public static function maxDepth(): int
+    {
+        return (int) config('domains.project-document.max_depth');
+    }
+
+    /** The same limit counted the way a person says it aloud: a root plus everything under it. */
+    public static function maxLevels(): int
+    {
+        return self::maxDepth() + 1;
+    }
+
+    /**
+     * How the limit is put to the reader. Creating too deep is refused by the domain and moving
+     * too deep by a validator, and the reader must not be able to tell which path they took.
+     */
+    public static function maxDepthMessage(): string
+    {
+        return 'Maximum document nesting depth ('.self::maxLevels().' levels) exceeded.';
+    }
+
+    public function canHaveChildren(): bool
+    {
+        return $this->depth < self::maxDepth();
     }
 
     protected static function booted(): void
@@ -106,21 +131,21 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
         }
 
         if ($this->parent_id === $this->id) {
-            throw new DomainException('A document cannot be its own parent.');
+            throw ProjectDocumentCyclicParentException::itself();
         }
 
         $parent = static::query()->select(['id', 'project_id', 'path', 'depth'])->findOrFail($this->parent_id);
 
         if ($parent->project_id !== $this->project_id) {
-            throw new DomainException('A child document must belong to the same project as its parent.');
+            throw ProjectDocumentParentProjectMismatchException::make();
         }
 
         if ($this->exists && in_array($this->id, explode('.', (string) $parent->path), true)) {
-            throw new DomainException('A document cannot be moved under its own descendant.');
+            throw ProjectDocumentCyclicParentException::ownDescendant();
         }
 
-        if ($parent->depth >= self::MAX_DEPTH) {
-            throw new DomainException('Maximum document nesting depth ('.(self::MAX_DEPTH + 1).' levels) exceeded.');
+        if ($parent->depth >= self::maxDepth()) {
+            throw ProjectDocumentMaxDepthExceededException::exceeded(self::maxDepthMessage());
         }
 
         $this->path = $parent->path.'.'.$this->id;

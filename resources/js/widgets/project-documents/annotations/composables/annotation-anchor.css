@@ -1,0 +1,7 @@
+/* Applied by use.annotation-anchors to the blocks annotations resolved to. The markdown is
+   rendered through v-html, so the class is put on the node by hand and styled globally. */
+.md-editor-preview .annotation-anchored {
+    border-left: 3px solid var(--p-primary-color);
+    background-color: color-mix(in srgb, var(--p-primary-color) 8%, transparent);
+    padding-left: 0.5rem;
+}

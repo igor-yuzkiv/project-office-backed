@@ -25,6 +25,9 @@ class ProjectsController extends ResourceController
         private readonly DeleteProjectHandler $deleteHandler,
     ) {}
 
+    /** The project card counts what a project holds, so every list response carries these. */
+    private const array COUNTED_RELATIONS = ['documents', 'taskLists', 'tasks'];
+
     protected function getAllowedIncludes(): array
     {
         return ['createdBy', 'updatedBy', 'archivedBy', 'tags', 'tasks', 'taskLists'];
@@ -38,6 +41,7 @@ class ProjectsController extends ResourceController
         $includes = $this->resolveIncludes(required: ['createdBy', 'updatedBy', 'tags'], requested: $this->parseRequestedIncludes());
 
         $projects = ProjectModel::with($includes)
+            ->withCount(self::COUNTED_RELATIONS)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -57,6 +61,7 @@ class ProjectsController extends ResourceController
                 /** @var Builder<ProjectModel> $q */
                 return $q
                     ->with($includes)
+                    ->withCount(self::COUNTED_RELATIONS)
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);

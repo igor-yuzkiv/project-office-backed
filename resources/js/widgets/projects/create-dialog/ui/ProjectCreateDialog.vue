@@ -4,6 +4,7 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { InputContainer } from '@/shared/components/input'
+import { IconPickerField } from '@/shared/components/icon-picker'
 import type { ProjectCreateFormData } from '../composables/use.project-create-dialog'
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -22,14 +23,19 @@ const emit = defineEmits<{
 <template>
     <Dialog v-model:visible="visible" header="New Project" modal :closable="!isPending" :style="{ width: '28rem' }">
         <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
-            <InputContainer label="Project Name" :error="validationErrors.name" required>
-                <InputText
-                    v-model="formData.name"
-                    placeholder="e.g. Atlas Platform"
-                    :invalid="!!validationErrors.name"
-                    class="w-full"
-                    autofocus
-                />
+            <!-- The icon shares the row with the name, so it shares the row's error line too:
+                 a refused icon has to say so somewhere the reader is already looking. -->
+            <InputContainer label="Project Name" :error="validationErrors.name ?? validationErrors.icon" required>
+                <div class="gap-2 flex items-center">
+                    <IconPickerField v-model="formData.icon" />
+                    <InputText
+                        v-model="formData.name"
+                        placeholder="e.g. Atlas Platform"
+                        :invalid="!!validationErrors.name"
+                        class="flex-1"
+                        autofocus
+                    />
+                </div>
             </InputContainer>
         </form>
 

@@ -5,7 +5,11 @@ import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import type { ProjectDocumentMoveSelection } from '../ui/ProjectDocumentMoveDialog.vue'
 
-export function useProjectDocumentMove(documentId: () => string) {
+export interface ProjectDocumentMoveOptions {
+    onMoved?: () => void
+}
+
+export function useProjectDocumentMove(documentId: () => string, options: ProjectDocumentMoveOptions = {}) {
     const toast = useToast()
 
     const visible = ref(false)
@@ -30,6 +34,7 @@ export function useProjectDocumentMove(documentId: () => string) {
             {
                 onSuccess: () => {
                     toast.success('Document moved.')
+                    options.onMoved?.()
                 },
                 onError: (error: unknown) => {
                     if (error instanceof ApiError && error.isValidationError) {

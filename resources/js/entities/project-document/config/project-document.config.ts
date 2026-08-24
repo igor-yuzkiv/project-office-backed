@@ -14,11 +14,3 @@ export const ProjectDocumentStatusMap: ProjectDocumentStatusMetadataMap = {
 export function projectDocumentStatusOptions(): ProjectDocumentStatusMetadata[] {
     return Object.values(ProjectDocumentStatusMap)
 }
-
-// Mirrors ProjectDocumentModel::MAX_DEPTH on the backend — a document at this depth
-// cannot have children (depth 0, 1, 2; the root is depth 0).
-export const PROJECT_DOCUMENT_MAX_DEPTH = 2
-
-export function canProjectDocumentHaveChildren(depth: number): boolean {
-    return depth < PROJECT_DOCUMENT_MAX_DEPTH
-}

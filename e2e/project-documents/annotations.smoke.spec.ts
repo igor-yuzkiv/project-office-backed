@@ -17,9 +17,9 @@ async function signIn(page: Page) {
     await expect(page).toHaveURL(/#\/$/)
 }
 
-// The document page folds its header actions into a SplitButton, so the entry point is a menu item.
+// The workspace folds its header actions into a SplitButton, so the entry point is a menu item.
 async function openAnnotationMode(page: Page) {
-    await page.goto(`/#/project-documents/${documentKey}/content`)
+    await page.goto(`/#/project-documents/${documentKey}`)
     await page.locator('[aria-haspopup="true"]').last().click()
     await page.getByRole('menuitem', { name: 'Annotation mode' }).click()
     await expect(page).toHaveURL(/\/annotations$/)
@@ -32,7 +32,7 @@ test.describe('document annotations', () => {
 
         const paragraph = page.locator('.md-editor-preview p', { hasText: paragraphText })
         await paragraph.click()
-        await expect(paragraph).toHaveClass(/annotation-selected/)
+        await expect(paragraph).toHaveClass(/document-block-selected/)
 
         await page.getByPlaceholder('Write a comment').fill(annotationText)
         await page.getByRole('button', { name: 'Save', exact: true }).click()

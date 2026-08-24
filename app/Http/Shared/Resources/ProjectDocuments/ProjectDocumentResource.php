@@ -30,14 +30,15 @@ class ProjectDocumentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'project_id' => $this->project_id,
-            'parent_id'  => $this->parent_id,
-            'key'        => $this->key,
-            'title'      => $this->title,
-            'content'    => $this->content,
-            'status'     => $this->status->value,
-            'depth'      => $this->depth,
+            'id'                => $this->id,
+            'project_id'        => $this->project_id,
+            'parent_id'         => $this->parent_id,
+            'key'               => $this->key,
+            'title'             => $this->title,
+            'content'           => $this->content,
+            'status'            => $this->status->value,
+            'depth'             => $this->depth,
+            'can_have_children' => $this->canHaveChildren(),
 
             'project'    => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
             'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
@@ -50,6 +51,7 @@ class ProjectDocumentResource extends JsonResource
             'updated_at' => $this->updated_at,
 
             'comments_count' => $this->whenCounted('comments', fn () => $this->comments_count),
+            'tasks_count'    => $this->whenCounted('tasks', fn () => $this->tasks_count),
         ];
     }
 }

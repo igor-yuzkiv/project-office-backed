@@ -33,6 +33,7 @@ it('creates a project document with default draft status and top-level hierarchy
         ->assertJsonPath('data.parent_id', null)
         ->assertJsonPath('data.status', ProjectDocumentStatus::Draft->value)
         ->assertJsonPath('data.depth', 0)
+        ->assertJsonPath('data.can_have_children', true)
         ->assertJsonPath('data.project.id', $this->project->id);
 
     $document = ProjectDocumentModel::findOrFail($response->json('data.id'));
@@ -222,6 +223,58 @@ it('includes linked tasks when explicitly requested via include', function () {
     $response = $this->getJson('/api/project-documents/'.$document->id.'?include=tasks');
 
     $response->assertOk()->assertJsonPath('data.tasks.0.id', $task->id);
+});
+
+it('counts linked tasks and comments on a shown document', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $document->tasks()->attach(TaskModel::factory()->count(2)->for($this->project, 'project')->create());
+    CommentModel::factory()->count(3)->create([
+        'commentable_id'   => $document->id,
+        'commentable_type' => $document->getMorphClass(),
+        'author_id'        => $this->user->id,
+    ]);
+
+    $response = $this->getJson('/api/project-documents/'.$document->id);
+
+    $response->assertOk()
+        ->assertJsonPath('data.tasks_count', 2)
+        ->assertJsonPath('data.comments_count', 3);
+});
+
+it('counts an unlinked document as zero rather than omitting the counts', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->getJson('/api/project-documents/'.$document->id);
+
+    $response->assertOk()
+        ->assertJsonPath('data.tasks_count', 0)
+        ->assertJsonPath('data.comments_count', 0);
+});
+
+// The two counts feed two tab badges side by side, so a response carrying one and not the
+// other leaves a badge silently blank.
+it('carries both counts on every response that returns a single document', function () {
+    $parent = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id, 'title' => 'Parent']);
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $responses = [
+        'store'  => $this->postJson("/api/projects/{$this->project->id}/project-documents", ['title' => 'Created']),
+        'show'   => $this->getJson('/api/project-documents/'.$document->id),
+        'update' => $this->putJson('/api/project-documents/'.$document->id, [
+            'title'  => 'Renamed',
+            'status' => $document->status->value,
+        ]),
+        'move' => $this->patchJson('/api/project-documents/'.$document->id.'/move', ['parent_id' => $parent->id]),
+    ];
+
+    foreach ($responses as $endpoint => $response) {
+        $response->assertSuccessful();
+
+        // None of these documents has a link, so a missing count and a wrong one both
+        // read as something other than 0.
+        expect($response->json('data.tasks_count'))->toBe(0, "{$endpoint} did not count tasks");
+        expect($response->json('data.comments_count'))->toBe(0, "{$endpoint} did not count comments");
+    }
 });
 
 it('does not include the ancestor path by default', function () {
@@ -428,4 +481,46 @@ it('records a project_document.updated event', function () {
     expect($record->type)->toBe('project_document.updated')
         ->and($record->title)->toBe("{$this->user->name} updated «Architecture»")
         ->and($record->description)->toBeNull();
+});
+
+// Creating too deep is refused by the domain, moving too deep by a validator. The reader must
+// not be able to tell which path they took.
+it('gives the same depth message whether the document is created or moved too deep', function () {
+    $branch = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+
+    foreach (range(1, ProjectDocumentModel::maxDepth()) as $ignored) {
+        $branch = ProjectDocumentModel::factory()
+            ->for($this->project, 'project')
+            ->create(['parent_id' => $branch->id]);
+    }
+
+    $created = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'One level too deep',
+        'parent_id' => $branch->id,
+    ])->assertStatus(422);
+
+    $loose = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+
+    $moved = $this->patchJson('/api/project-documents/'.$loose->id.'/move', [
+        'parent_id' => $branch->id,
+    ])->assertStatus(422);
+
+    expect($moved->json('errors.parent_id.0'))->toBe($created->json('message'));
+});
+
+it('answers 422 when a document would be nested deeper than the limit allows', function () {
+    $document = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+
+    foreach (range(1, ProjectDocumentModel::maxDepth()) as $ignored) {
+        $document = ProjectDocumentModel::factory()
+            ->for($this->project, 'project')
+            ->create(['parent_id' => $document->id]);
+    }
+
+    $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'     => 'One level too deep',
+        'parent_id' => $document->id,
+    ])
+        ->assertStatus(422)
+        ->assertJsonPath('message', 'Maximum document nesting depth (3 levels) exceeded.');
 });

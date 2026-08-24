@@ -15,21 +15,20 @@ resources/js/
 |- app/       bootstrap, plugins, router, shell, global stores, and application styles
 |- pages/     route-level composition
 |- widgets/   substantial feature UI assembled for a specific use case
-|- features/  self-contained slices of functionality with no entity behind them
 |- entities/  domain API, types, queries, mutations, composables, and configuration
 `- shared/    entity-agnostic UI and utilities
 ```
 
 - Pages compose widgets and entities and should remain thin.
 - Widgets own feature-specific UI, supporting components, and local composables.
-- Features own self-contained slices of functionality that no entity stands behind — `dashboard`
-  and `audit-trail`, which are read models rather than entities. A slice holds what an entity slice
-  holds: api, types, query keys, queries, composables.
-- Features may import entities and shared code; pages and widgets may import features. Entities
-  must never import features — that rule is what keeps the layer from decaying.
-- Slices of the same layer do not import one another.
 - Entities own server-facing API functions, TypeScript types, query keys, queries, mutations, and
   entity-level composables.
+- Read models live in Entities too — `dashboard` and `audit-trail` serve a screen rather than a
+  domain object, but they hold what any entity slice holds: api, types, query keys, queries,
+  composables.
+- Slices of the same layer do not import one another, with one exception: a read model may import
+  the types of the entities it reports on, because that is what it reports. The dependency runs one
+  way — an entity never imports a read model.
 - Shared code must be genuinely entity-agnostic, which is not the same as being a primitive.
   Opinionated components that establish a project contract live here too — `EntityTableView`
   renders its own empty state and paginator, `DataPanel` decides that an error means a `Try again`
@@ -37,8 +36,8 @@ resources/js/
 - Expose module APIs through `index.ts`; prefer public imports over reaching into another module's
   internals.
 
-Dependencies should generally flow from app and pages toward widgets, features, entities, and
-shared code. Do not move feature knowledge downward into Shared merely to avoid a local import.
+Dependencies should generally flow from app and pages toward widgets, entities, and shared code. Do
+not move feature knowledge downward into Shared merely to avoid a local import.
 
 ## Server state and contracts
 
@@ -79,6 +78,12 @@ const emit = defineEmits<{
 ```
 
 Do not introduce the shorthand tuple form in new or modified components.
+
+In template event handlers, bind a method reference instead of an inline call when the handler
+takes no arguments: `@click="moveDialog.open"`, not `@click="moveDialog.open()"`. A bare reference
+receives the event as an argument, so keep the explicit call when the method has optional
+parameters the event object could fill (`open(payload?)`), and when real arguments are passed the
+inline call is the only form.
 
 ## Libraries and reuse
 

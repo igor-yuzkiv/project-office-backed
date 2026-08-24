@@ -20,9 +20,11 @@ import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
 import { IconButton } from '@/shared/components/button'
+import { IconPickerField } from '@/shared/components/icon-picker'
 
 interface ProjectEditFormData {
     name: string
+    icon: string | null
     status: ProjectStatusValue
     description: string
     start_date: Date | null
@@ -40,6 +42,7 @@ const { mutate: updateProject } = useUpdateProjectMutation()
 
 const formData = ref<ProjectEditFormData>({
     name: '',
+    icon: null,
     status: 'draft',
     description: '',
     start_date: null,
@@ -85,6 +88,7 @@ function submit() {
 
     const input: IUpdateProjectInput = {
         name: formData.value.name,
+        icon: formData.value.icon,
         status: formData.value.status,
         description: formData.value.description || null,
         start_date: formatDateForApi(formData.value.start_date),
@@ -111,6 +115,7 @@ watch(
         if (p && !isFormInitialized.value) {
             formData.value = {
                 name: p.name,
+                icon: p.icon,
                 status: p.status,
                 description: p.description ?? '',
                 start_date: p.start_date ? new Date(p.start_date) : null,
@@ -179,17 +184,23 @@ useBreadcrumbs(() => [
                 </div>
             </div>
 
-            <InputContainer label="Tags" :error="validationErrors.tag_ids">
-                <div class="gap-2 p-1 flex items-center">
-                    <IconButton
-                        size="medium"
-                        severity="success"
-                        icon="mdi:tag-edit"
-                        @click="showManageTagsDialog = true"
-                    />
-                    <TagList :tags="formData.tags" />
-                </div>
-            </InputContainer>
+            <div class="gap-4 flex items-end">
+                <InputContainer label="Icon" :error="validationErrors.icon">
+                    <IconPickerField v-model="formData.icon" />
+                </InputContainer>
+
+                <InputContainer label="Tags" :error="validationErrors.tag_ids" class="flex-1">
+                    <div class="gap-2 p-1 flex items-center">
+                        <IconButton
+                            size="medium"
+                            severity="success"
+                            icon="mdi:tag-edit"
+                            @click="showManageTagsDialog = true"
+                        />
+                        <TagList :tags="formData.tags" />
+                    </div>
+                </InputContainer>
+            </div>
         </div>
 
         <div class="flex-1 overflow-auto">

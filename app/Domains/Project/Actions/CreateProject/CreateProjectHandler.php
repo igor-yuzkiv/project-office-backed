@@ -13,6 +13,7 @@ class CreateProjectHandler
         $project = ProjectModel::create([
             'name'        => $command->name,
             'prefix'      => $command->prefix,
+            'icon'        => $command->icon,
             'status'      => $command->status,
             'description' => $command->description,
             'start_date'  => $command->startDate,

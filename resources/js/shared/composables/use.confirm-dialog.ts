@@ -11,6 +11,9 @@ export function useConfirmDialog() {
                 ...options,
                 accept: () => resolve(true),
                 reject: () => resolve(false),
+                // Dismissing with Esc or the close icon answers too: without this the
+                // promise never settles, and a caller awaiting it waits forever.
+                onHide: () => resolve(false),
             })
         })
     }

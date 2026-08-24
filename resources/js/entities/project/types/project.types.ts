@@ -8,6 +8,7 @@ import type { ITaskListOverview } from '@/entities/task-list/types'
 export interface IProject extends IEntity {
     name: string
     prefix: string
+    icon: string | null
     status: ProjectStatusValue
     description: string | null
     start_date: string | null
@@ -22,6 +23,10 @@ export interface IProject extends IEntity {
     tags?: ITag[]
     tasks?: ITask[]
     task_lists?: ITaskListOverview[]
+
+    docs_count?: number
+    task_lists_count?: number
+    tasks_count?: number
 }
 
 export type ProjectOverviewDto = Pick<
@@ -29,6 +34,7 @@ export type ProjectOverviewDto = Pick<
     | 'id'
     | 'name'
     | 'prefix'
+    | 'icon'
     | 'status'
     | 'created_at'
     | 'updated_at'
@@ -36,6 +42,9 @@ export type ProjectOverviewDto = Pick<
     | 'updated_by'
     | 'archived_by'
     | 'tags'
+    | 'docs_count'
+    | 'task_lists_count'
+    | 'tasks_count'
     | 'tasks'
     | 'task_lists'
 >

@@ -11,6 +11,7 @@ class CreateProjectCommand
         public readonly string $name,
         public readonly ?string $prefix = null,
         public readonly ProjectStatus $status = ProjectStatus::DRAFT,
+        public readonly ?string $icon = null,
         public readonly ?string $description = null,
         public readonly ?Carbon $startDate = null,
         public readonly ?Carbon $endDate = null,

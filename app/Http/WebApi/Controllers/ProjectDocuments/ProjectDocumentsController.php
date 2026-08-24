@@ -33,6 +33,9 @@ class ProjectDocumentsController extends ResourceController
 
     private const array FULL_RELATIONS = ['tags', 'project', 'createdBy', 'updatedBy'];
 
+    /** Tab badges read these off the document itself, so every single-document response carries them. */
+    private const array COUNTED_RELATIONS = ['comments', 'tasks'];
+
     protected function getAllowedIncludes(): array
     {
         return [...self::FULL_RELATIONS, 'tasks'];
@@ -72,7 +75,7 @@ class ProjectDocumentsController extends ResourceController
     {
         $includes = $this->resolveIncludes(required: self::FULL_RELATIONS, requested: $this->parseRequestedIncludes());
         $projectDocument->load($includes);
-        $projectDocument->loadCount('comments');
+        $projectDocument->loadCount(self::COUNTED_RELATIONS);
 
         $resource = new ProjectDocumentResource($projectDocument);
 
@@ -87,6 +90,7 @@ class ProjectDocumentsController extends ResourceController
     {
         $document = $this->createHandler->handle($request->toCommand($project));
         $document->load(self::FULL_RELATIONS);
+        $document->loadCount(self::COUNTED_RELATIONS);
 
         return (new ProjectDocumentResource($document))
             ->response()
@@ -97,6 +101,7 @@ class ProjectDocumentsController extends ResourceController
     {
         $document = $this->updateHandler->handle($request->toCommand($projectDocument));
         $document->load(self::FULL_RELATIONS);
+        $document->loadCount(self::COUNTED_RELATIONS);
 
         return new ProjectDocumentResource($document);
     }
@@ -105,6 +110,7 @@ class ProjectDocumentsController extends ResourceController
     {
         $document = $this->moveHandler->handle($request->toCommand($projectDocument));
         $document->load(self::FULL_RELATIONS);
+        $document->loadCount(self::COUNTED_RELATIONS);
 
         $resource = new ProjectDocumentResource($document);
 

@@ -3,6 +3,7 @@
 namespace App\Domains\Attachment\Actions\UploadAttachment;
 
 use App\Domains\Attachment\AuditRecords\AttachmentUploadedAuditRecord;
+use App\Domains\Attachment\Exceptions\AttachmentStorageFailedException;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Attachment\Services\AttachmentStorageService;
 use App\Domains\Attachment\ValueObjects\AttachmentStorageKey;
@@ -31,7 +32,7 @@ class UploadAttachmentHandler
 
         $stored = $this->storageService->store($command->file, $attachment->storage_key);
         if ($stored === false) {
-            throw new \RuntimeException('Attachment file could not be stored.');
+            throw AttachmentStorageFailedException::couldNotStoreFile();
         }
 
         if ($command->attachable !== null) {

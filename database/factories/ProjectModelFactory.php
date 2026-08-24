@@ -29,6 +29,7 @@ class ProjectModelFactory extends Factory
         return [
             'name'        => $name,
             'prefix'      => TextUtils::acronym($name),
+            'icon'        => fake()->boolean(40) ? fake()->randomElement(['tabler:rocket', 'tabler:book', 'tabler:bug', 'tabler:target']) : null,
             'status'      => fake()->randomElement(ProjectStatus::cases())->value,
             'description' => fake()->boolean(60) ? fake()->paragraphs(2, true) : null,
             'start_date'  => $startDate !== null ? $startDate->format('Y-m-d') : null,

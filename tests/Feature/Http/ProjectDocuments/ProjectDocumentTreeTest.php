@@ -97,3 +97,33 @@ it('returns no results when parent_id belongs to a different project', function 
 
     $response->assertOk()->assertJsonCount(0, 'data');
 });
+
+it('says whether a node may still take a child at every depth', function () {
+    $root = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+    $child = ProjectDocumentModel::factory()->for($this->project, 'project')->create(['parent_id' => $root->id]);
+    $grandchild = ProjectDocumentModel::factory()->for($this->project, 'project')->create(['parent_id' => $child->id]);
+
+    $this->getJson("/api/projects/{$this->project->id}/project-documents/tree")
+        ->assertOk()
+        ->assertJsonPath('data.0.can_have_children', true);
+
+    $this->getJson("/api/projects/{$this->project->id}/project-documents/tree?parent_id={$root->id}")
+        ->assertOk()
+        ->assertJsonPath('data.0.can_have_children', true);
+
+    $this->getJson("/api/projects/{$this->project->id}/project-documents/tree?parent_id={$child->id}")
+        ->assertOk()
+        ->assertJsonPath('data.0.id', $grandchild->id)
+        ->assertJsonPath('data.0.can_have_children', false);
+});
+
+it('follows the configured depth limit when saying a node may take a child', function () {
+    config(['domains.project-document.max_depth' => 1]);
+
+    $root = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+    ProjectDocumentModel::factory()->for($this->project, 'project')->create(['parent_id' => $root->id]);
+
+    $this->getJson("/api/projects/{$this->project->id}/project-documents/tree?parent_id={$root->id}")
+        ->assertOk()
+        ->assertJsonPath('data.0.can_have_children', false);
+});
