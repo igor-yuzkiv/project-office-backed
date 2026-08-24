@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Button from 'primevue/button'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useTaskListQuery } from '@/entities/task-list/queries'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
+import { Icon } from '@iconify/vue'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast, useCollapsibleSidePanel } from '@/shared/composables'
 import { SidePanel } from '@/shared/components/side-panel'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
+import { useBreadcrumbs } from '@/app/shell'
 import { TaskListDetailsSidebar } from '@/widgets/task-list/details-sidebar'
 
 const route = useRoute()
@@ -23,6 +25,10 @@ const taskListId = route.params.id as string
 const { taskList, isError } = useTaskListQuery(taskListId)
 const sidebarPanel = useCollapsibleSidePanel('task-lists:sidebar-collapsed')
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
+
+function openEditor() {
+    router.push({ name: 'task-list-edit', params: { id: taskListId } })
+}
 
 function handleDeleteTaskList() {
     deleteTaskList(taskListId, `Are you sure you want to delete "${taskList.value?.name}"?`, () =>
@@ -53,16 +59,6 @@ function onTabChange(value: string | number) {
     router.push({ name: `task-list-details.${value}`, params: { id: taskListId } })
 }
 
-useHeaderActions([
-    {
-        key: 'edit-task-list',
-        title: 'Edit Task List',
-        to: { name: 'task-list-edit', params: { id: taskListId } },
-        is_primary: true,
-    },
-    { key: 'delete-task-list', title: 'Delete', action: handleDeleteTaskList },
-])
-
 useBreadcrumbs(() => [
     { label: 'Task Lists', to: { name: 'task-lists' } },
     ...(taskList.value?.project
@@ -91,9 +87,21 @@ useBreadcrumbs(() => [
                     </RouterLink>
                 </DisplayField>
 
-                <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
-                    <CopyToClipboard class="text-surface-400" :text="taskList.key" hide-copy-icon />
-                    <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ taskList.name }}</h1>
+                <div class="gap-2 flex items-center">
+                    <div class="gap-x-2 text-2xl font-semibold min-w-0 flex items-center truncate">
+                        <CopyToClipboard class="text-surface-400" :text="taskList.key" hide-copy-icon />
+                        <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ taskList.name }}</h1>
+                    </div>
+
+                    <div class="gap-1 ml-auto flex shrink-0 items-center">
+                        <Button label="Edit" size="small" text severity="secondary" @click="openEditor">
+                            <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
+                        </Button>
+
+                        <Button label="Delete" size="small" text severity="secondary" @click="handleDeleteTaskList">
+                            <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
+                        </Button>
+                    </div>
                 </div>
             </div>
 
