@@ -31,28 +31,32 @@ it('shows the task list by key and by ulid alike', function () {
     expect($byKey->json('data'))->toBe($byUlid->json('data'));
 });
 
-it('includes tasks of every status in sequence order', function () {
+it('includes tasks of every status, in name order', function () {
     foreach ([
-        ['sequence_number' => 3, 'status' => TaskStatus::Closed, 'key' => 'MTM-3'],
-        ['sequence_number' => 1, 'status' => TaskStatus::Backlog, 'key' => 'MTM-1'],
-        ['sequence_number' => 2, 'status' => TaskStatus::Open, 'key' => 'MTM-2'],
-    ] as $task) {
+        ['name' => 'Ship the release notes', 'status' => TaskStatus::Closed, 'key' => 'MTM-3'],
+        ['name' => 'Audit the changelog', 'status' => TaskStatus::Backlog, 'key' => 'MTM-1'],
+        ['name' => 'Freeze the branch', 'status' => TaskStatus::Open, 'key' => 'MTM-2'],
+    ] as $index => $task) {
         TaskModel::factory()->create([
             'project_id'      => $this->project->id,
             'task_list_id'    => $this->taskList->id,
-            'sequence_number' => $task['sequence_number'],
+            'sequence_number' => 3 - $index,
             'key'             => $task['key'],
+            'name'            => $task['name'],
             'status'          => $task['status']->value,
         ]);
     }
 
     $response = $this->getJson("/api/cli/projects/{$this->project->id}/task-lists/MTM-TL-7");
 
+    // Alphabetical, not the order they were written and not their sequence numbers: the reader
+    // of a list looks things up by name.
     $response->assertOk()
-        ->assertJsonPath('data.tasks.0.key', 'MTM-1')
-        ->assertJsonPath('data.tasks.1.key', 'MTM-2')
-        ->assertJsonPath('data.tasks.2.key', 'MTM-3')
+        ->assertJsonPath('data.tasks.0.name', 'Audit the changelog')
+        ->assertJsonPath('data.tasks.1.name', 'Freeze the branch')
+        ->assertJsonPath('data.tasks.2.name', 'Ship the release notes')
         ->assertJsonPath('data.tasks.0.status', TaskStatus::Backlog->value)
+        ->assertJsonPath('data.tasks.1.status', TaskStatus::Open->value)
         ->assertJsonPath('data.tasks.2.status', TaskStatus::Closed->value);
 });
 
