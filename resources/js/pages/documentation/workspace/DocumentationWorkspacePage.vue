@@ -9,17 +9,12 @@ import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useProjectQuery } from '@/entities/project/queries'
-import {
-    useDeleteProjectDocumentMutation,
-    useProjectDocumentQuery,
-    useProjectDocumentTasksQuery,
-} from '@/entities/project-document'
+import { useDeleteProjectDocumentMutation, useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/project-documents/move-dialog'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { PAGE_SIZE } from '@/app/config'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -40,13 +35,6 @@ const { projectDocument, isError, isFetching, refetch } = useProjectDocumentQuer
 const belongsElsewhere = computed(() => !!projectDocument.value && projectDocument.value.project_id !== projectId.value)
 
 const openedDocument = computed(() => (belongsElsewhere.value ? undefined : projectDocument.value))
-
-// Shares the tab page's own query key, so the count costs no extra request.
-const { paginationMeta: taskPaginationMeta } = useProjectDocumentTasksQuery(
-    documentId,
-    { page: 1, per_page: PAGE_SIZE },
-    { enabled: () => Boolean(documentId.value) }
-)
 
 const tree = useDocumentationTree(projectId, {
     onCreated: (document) => openDocument(document.id),
@@ -84,7 +72,7 @@ const tabs = computed(() => [
         value: 'tasks',
         label: 'Related tasks',
         route: 'project-documentation.document.tasks',
-        count: taskPaginationMeta.value?.total,
+        count: openedDocument.value?.tasks_count,
     },
 ])
 

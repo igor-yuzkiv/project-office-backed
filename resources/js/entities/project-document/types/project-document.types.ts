@@ -32,6 +32,7 @@ export interface IProjectDocument extends IEntity {
     updated_by?: UserOverviewDto
 
     comments_count?: number
+    tasks_count?: number
 }
 
 export type ProjectDocumentOverviewDto = Pick<

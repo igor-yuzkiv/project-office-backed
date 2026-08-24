@@ -51,6 +51,7 @@ class ProjectDocumentResource extends JsonResource
             'updated_at' => $this->updated_at,
 
             'comments_count' => $this->whenCounted('comments', fn () => $this->comments_count),
+            'tasks_count'    => $this->whenCounted('tasks', fn () => $this->tasks_count),
         ];
     }
 }

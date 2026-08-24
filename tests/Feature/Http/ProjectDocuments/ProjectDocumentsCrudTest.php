@@ -225,6 +225,58 @@ it('includes linked tasks when explicitly requested via include', function () {
     $response->assertOk()->assertJsonPath('data.tasks.0.id', $task->id);
 });
 
+it('counts linked tasks and comments on a shown document', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+    $document->tasks()->attach(TaskModel::factory()->count(2)->for($this->project, 'project')->create());
+    CommentModel::factory()->count(3)->create([
+        'commentable_id'   => $document->id,
+        'commentable_type' => $document->getMorphClass(),
+        'author_id'        => $this->user->id,
+    ]);
+
+    $response = $this->getJson('/api/project-documents/'.$document->id);
+
+    $response->assertOk()
+        ->assertJsonPath('data.tasks_count', 2)
+        ->assertJsonPath('data.comments_count', 3);
+});
+
+it('counts an unlinked document as zero rather than omitting the counts', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $response = $this->getJson('/api/project-documents/'.$document->id);
+
+    $response->assertOk()
+        ->assertJsonPath('data.tasks_count', 0)
+        ->assertJsonPath('data.comments_count', 0);
+});
+
+// The two counts feed two tab badges side by side, so a response carrying one and not the
+// other leaves a badge silently blank.
+it('carries both counts on every response that returns a single document', function () {
+    $parent = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id, 'title' => 'Parent']);
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $responses = [
+        'store'  => $this->postJson("/api/projects/{$this->project->id}/project-documents", ['title' => 'Created']),
+        'show'   => $this->getJson('/api/project-documents/'.$document->id),
+        'update' => $this->putJson('/api/project-documents/'.$document->id, [
+            'title'  => 'Renamed',
+            'status' => $document->status->value,
+        ]),
+        'move' => $this->patchJson('/api/project-documents/'.$document->id.'/move', ['parent_id' => $parent->id]),
+    ];
+
+    foreach ($responses as $endpoint => $response) {
+        $response->assertSuccessful();
+
+        // None of these documents has a link, so a missing count and a wrong one both
+        // read as something other than 0.
+        expect($response->json('data.tasks_count'))->toBe(0, "{$endpoint} did not count tasks");
+        expect($response->json('data.comments_count'))->toBe(0, "{$endpoint} did not count comments");
+    }
+});
+
 it('does not include the ancestor path by default', function () {
     $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
 
