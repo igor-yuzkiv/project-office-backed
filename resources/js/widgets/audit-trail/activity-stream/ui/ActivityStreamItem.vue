@@ -4,8 +4,13 @@ import { Icon } from '@iconify/vue'
 import { RouterLink } from 'vue-router'
 import { formatDate } from '@/shared/utils/date.util'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import type { AuditRecordDto } from '@/entities/audit-trail'
-import { ACTIVITY_ACCENT_CLASSES, UNKNOWN_ACTIVITY_TYPE, resolveActivityType, resolveSubjectRouteName } from '../config'
+import {
+    ACTIVITY_ACCENT_CLASSES,
+    UNKNOWN_ACTIVITY_TYPE,
+    resolveActivityType,
+    resolveSubjectRouteName,
+    type AuditRecordDto,
+} from '@/entities/audit-trail'
 
 const props = defineProps<{ record: AuditRecordDto; expanded: boolean }>()
 
