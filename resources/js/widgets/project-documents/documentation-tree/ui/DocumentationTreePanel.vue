@@ -21,6 +21,7 @@ const emit = defineEmits<{
     (e: 'select', documentId: string): void
     (e: 'toggle-node', document: ProjectDocumentTreeNodeDto): void
     (e: 'load-more', levelKey: string): void
+    (e: 'collapse'): void
     (e: 'expand-all'): void
     (e: 'create-root'): void
     (e: 'create-child', document: ProjectDocumentTreeNodeDto): void
@@ -62,7 +63,22 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
 <template>
     <section class="flex h-full flex-col overflow-hidden">
         <!-- Same height as the document toolbar across the way, so the two rows line up. -->
-        <header class="px-3 py-1.5 flex items-center" style="min-height: 2.75rem">
+        <header class="gap-1 px-3 py-1.5 flex items-center" style="min-height: 2.75rem">
+            <Button
+                severity="secondary"
+                text
+                rounded
+                size="small"
+                class="shrink-0"
+                aria-label="Hide the document list"
+                title="Hide the document list"
+                @click="emit('collapse')"
+            >
+                <template #icon>
+                    <Icon icon="heroicons:bars-3-bottom-left" class="text-base" />
+                </template>
+            </Button>
+
             <h2 class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase">
                 Documents
             </h2>

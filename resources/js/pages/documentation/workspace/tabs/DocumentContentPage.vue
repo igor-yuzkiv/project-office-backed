@@ -82,6 +82,7 @@ const sidebarProps = computed(() => ({
 }))
 
 const sidebarHandlers = {
+    collapse: collapseSidebar,
     select: selectAnnotation,
     edit: editAnnotation,
     delete: (annotation: IAnnotation) => removeAnnotation(annotation.id),
@@ -89,14 +90,8 @@ const sidebarHandlers = {
     retry: () => refetch(),
 }
 
-function toggleSidebar() {
-    if (!isCollapsed.value) {
-        isCollapsed.value = true
-
-        return
-    }
-
-    isDrawerOpen.value = !isDrawerOpen.value
+function collapseSidebar() {
+    isCollapsed.value = true
 }
 
 function dockSidebar() {
@@ -120,24 +115,6 @@ function dockSidebar() {
                         Annotations
                         <ToggleSwitch v-model="annotationsEnabled" />
                     </label>
-
-                    <Button
-                        v-if="annotationsEnabled"
-                        severity="secondary"
-                        text
-                        rounded
-                        size="small"
-                        :aria-label="showsColumn ? 'Hide annotations' : 'Show annotations'"
-                        :title="showsColumn ? 'Hide annotations' : 'Show annotations'"
-                        @click="toggleSidebar"
-                    >
-                        <template #icon>
-                            <Icon
-                                :icon="showsColumn ? 'heroicons:chevron-double-right' : 'heroicons:chevron-double-left'"
-                                class="text-base"
-                            />
-                        </template>
-                    </Button>
                 </template>
 
                 <template #banner>
@@ -176,21 +153,42 @@ function dockSidebar() {
             <AnnotationSidebar v-bind="sidebarProps" v-on="sidebarHandlers" />
         </aside>
 
-        <!-- Only while the column is hidden, so the sidebar is never mounted twice. -->
+        <!-- What is left of the column: a full-height strip holding the same control in the same
+             place. Hovering it peeks at the annotations, clicking brings the column back. -->
+        <div
+            v-else-if="annotationsEnabled"
+            class="border-surface-200 dark:border-surface-700 py-1.5 w-11 flex shrink-0 flex-col items-center border-l"
+        >
+            <Button
+                severity="secondary"
+                text
+                rounded
+                size="small"
+                aria-label="Show annotations"
+                title="Show annotations"
+                @mouseenter="isDrawerOpen = true"
+                @click="dockSidebar"
+            >
+                <template #icon>
+                    <Icon icon="heroicons:bars-3-bottom-right" class="text-base" />
+                </template>
+            </Button>
+        </div>
+
+        <!-- Only while the column is hidden, so the sidebar is never mounted twice. A peek rather
+             than a mode: no mask over the document, and it leaves when the pointer does. The
+             sidebar's own header button docks it here instead of hiding what is already hidden. -->
         <Drawer
             v-if="annotationsEnabled && isCollapsed"
             v-model:visible="isDrawerOpen"
             position="right"
+            :modal="false"
             class="!w-96 !max-w-full"
-            :pt="{ content: { class: '!p-0' } }"
+            :pt="{ header: { class: 'hidden' }, content: { class: '!p-0' } }"
         >
-            <template #header>
-                <Button label="Keep open" size="small" text severity="secondary" @click="dockSidebar">
-                    <template #icon><Icon icon="heroicons:arrow-right-on-rectangle" class="mr-1 text-base" /></template>
-                </Button>
-            </template>
-
-            <AnnotationSidebar v-bind="sidebarProps" v-on="sidebarHandlers" />
+            <div class="h-full" @mouseleave="isDrawerOpen = false">
+                <AnnotationSidebar v-bind="sidebarProps" v-on="{ ...sidebarHandlers, collapse: dockSidebar }" />
+            </div>
         </Drawer>
     </div>
 

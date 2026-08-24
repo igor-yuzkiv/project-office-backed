@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
 import type { IAnnotation } from '@/entities/annotation'
 import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { formatDateTime } from '@/shared/utils/date.util'
@@ -17,6 +18,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+    (e: 'collapse'): void
     (e: 'select', annotation: IAnnotation): void
     (e: 'edit', annotation: IAnnotation): void
     (e: 'delete', annotation: IAnnotation): void
@@ -62,6 +64,22 @@ function isOwn(annotation: IAnnotation): boolean {
             class="min-h-0 flex flex-1 flex-col"
             @retry="emit('retry')"
         >
+            <template #action>
+                <Button
+                    severity="secondary"
+                    text
+                    rounded
+                    size="small"
+                    aria-label="Hide annotations"
+                    title="Hide annotations"
+                    @click="emit('collapse')"
+                >
+                    <template #icon>
+                        <Icon icon="heroicons:bars-3-bottom-right" class="text-base" />
+                    </template>
+                </Button>
+            </template>
+
             <div class="gap-3 px-4 pb-4 min-h-0 flex flex-1 flex-col overflow-y-auto">
                 <article
                     v-for="anchor in anchors"
