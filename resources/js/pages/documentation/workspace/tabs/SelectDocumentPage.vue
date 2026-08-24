@@ -33,12 +33,6 @@ const searchParams = computed(() => ({
 }))
 
 const { projectDocuments: recentDocuments } = useProjectDocumentsSearchQuery(searchParams)
-
-const hints = [
-    { action: 'Open a document', where: 'click it in the tree' },
-    { action: 'Nest a document', where: 'node menu → New document inside' },
-    { action: 'Delete a document', where: 'node menu → Delete' },
-]
 </script>
 
 <template>
@@ -76,12 +70,5 @@ const hints = [
                 </span>
             </RouterLink>
         </div>
-
-        <dl class="gap-y-2 gap-x-6 text-surface-400 text-xs grid grid-cols-[auto_auto] items-baseline">
-            <template v-for="hint in hints" :key="hint.action">
-                <dt class="text-surface-500 dark:text-surface-300 text-right">{{ hint.action }}</dt>
-                <dd>{{ hint.where }}</dd>
-            </template>
-        </dl>
     </div>
 </template>
