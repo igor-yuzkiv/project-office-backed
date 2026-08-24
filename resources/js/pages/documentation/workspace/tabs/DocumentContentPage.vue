@@ -2,11 +2,14 @@
 import { computed, ref, shallowRef, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import Drawer from 'primevue/drawer'
 import ToggleSwitch from 'primevue/toggleswitch'
+import type { IAnnotation } from '@/entities/annotation'
 import type { IProjectDocument } from '@/entities/project-document/types'
 import { DocumentSheet } from '@/widgets/project-documents/document-sheet'
 import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
 import { useAuthStore } from '@/app/stores/use.auth.store'
+import { useLocalStorage } from '@vueuse/core'
 import { EMPTY_DOM_BLOCKS, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 
 const props = defineProps<{
@@ -59,6 +62,47 @@ const {
 )
 
 const currentUserId = computed(() => authStore.user?.id ?? null)
+
+// Two ways to be out of sight, and only one of them is a choice worth keeping: hiding the
+// column is a preference, opening the drawer over the document is a moment.
+const isCollapsed = useLocalStorage('docs:annotations-collapsed', false)
+const isDrawerOpen = ref(false)
+
+const showsColumn = computed(() => annotationsEnabled.value && !isCollapsed.value)
+
+// The same sidebar is rendered in two places — a column when there is room, a drawer when
+// there is not — and its bindings are described once so the two cannot drift apart.
+const sidebarProps = computed(() => ({
+    anchors: orderedAnchors.value,
+    isPending: isPending.value,
+    isError: isError.value,
+    editingId: editing.value?.id ?? null,
+    reanchoringId: reanchoring.value?.id ?? null,
+    currentUserId: currentUserId.value,
+}))
+
+const sidebarHandlers = {
+    select: selectAnnotation,
+    edit: editAnnotation,
+    delete: (annotation: IAnnotation) => removeAnnotation(annotation.id),
+    reanchor: startReanchoring,
+    retry: () => refetch(),
+}
+
+function toggleSidebar() {
+    if (!isCollapsed.value) {
+        isCollapsed.value = true
+
+        return
+    }
+
+    isDrawerOpen.value = !isDrawerOpen.value
+}
+
+function dockSidebar() {
+    isCollapsed.value = false
+    isDrawerOpen.value = false
+}
 </script>
 
 <template>
@@ -76,6 +120,24 @@ const currentUserId = computed(() => authStore.user?.id ?? null)
                         Annotations
                         <ToggleSwitch v-model="annotationsEnabled" />
                     </label>
+
+                    <Button
+                        v-if="annotationsEnabled"
+                        severity="secondary"
+                        text
+                        rounded
+                        size="small"
+                        :aria-label="showsColumn ? 'Hide annotations' : 'Show annotations'"
+                        :title="showsColumn ? 'Hide annotations' : 'Show annotations'"
+                        @click="toggleSidebar"
+                    >
+                        <template #icon>
+                            <Icon
+                                :icon="showsColumn ? 'heroicons:chevron-double-right' : 'heroicons:chevron-double-left'"
+                                class="text-base"
+                            />
+                        </template>
+                    </Button>
                 </template>
 
                 <template #banner>
@@ -107,20 +169,29 @@ const currentUserId = computed(() => authStore.user?.id ?? null)
             />
         </div>
 
-        <AnnotationSidebar
-            v-if="annotationsEnabled"
-            :anchors="orderedAnchors"
-            :is-pending="isPending"
-            :is-error="isError"
-            :editing-id="editing?.id ?? null"
-            :reanchoring-id="reanchoring?.id ?? null"
-            :current-user-id="currentUserId"
-            @select="selectAnnotation"
-            @edit="editAnnotation"
-            @delete="removeAnnotation($event.id)"
-            @reanchor="startReanchoring"
-            @retry="refetch()"
-        />
+        <aside
+            v-if="showsColumn"
+            class="border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 w-96 shrink-0 border-l"
+        >
+            <AnnotationSidebar v-bind="sidebarProps" v-on="sidebarHandlers" />
+        </aside>
+
+        <!-- Only while the column is hidden, so the sidebar is never mounted twice. -->
+        <Drawer
+            v-if="annotationsEnabled && isCollapsed"
+            v-model:visible="isDrawerOpen"
+            position="right"
+            class="!w-96 !max-w-full"
+            :pt="{ content: { class: '!p-0' } }"
+        >
+            <template #header>
+                <Button label="Keep open" size="small" text severity="secondary" @click="dockSidebar">
+                    <template #icon><Icon icon="heroicons:arrow-right-on-rectangle" class="mr-1 text-base" /></template>
+                </Button>
+            </template>
+
+            <AnnotationSidebar v-bind="sidebarProps" v-on="sidebarHandlers" />
+        </Drawer>
     </div>
 
     <div v-else class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center">

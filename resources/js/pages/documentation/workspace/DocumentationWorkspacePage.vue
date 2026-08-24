@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import Drawer from 'primevue/drawer'
 import Skeleton from 'primevue/skeleton'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
@@ -15,6 +16,7 @@ import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/pro
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useLocalStorage } from '@vueuse/core'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -42,6 +44,46 @@ const tree = useDocumentationTree(projectId, {
         if (deletedId === documentId.value) openDocumentationRoot()
     },
 })
+
+// Hiding the column is a preference worth keeping; opening the drawer over the document is a
+// moment, and leaving it takes nothing back.
+const isTreeCollapsed = useLocalStorage('docs:tree-collapsed', false)
+const isTreeDrawerOpen = ref(false)
+
+// The same panel is rendered in two places — a column and a drawer — and its bindings are
+// described once so the two cannot drift apart.
+const treePanelProps = computed(() => ({
+    rows: tree.rows.value,
+    isPending: tree.isPending.value,
+    isError: tree.isError.value,
+    selectedDocumentId: documentId.value || null,
+}))
+
+const treePanelHandlers = {
+    select: openDocument,
+    'toggle-node': tree.toggleNode,
+    'load-more': tree.loadMore,
+    'expand-all': tree.expandAll,
+    'create-root': tree.createRootDocument,
+    'create-child': tree.createChildDocument,
+    delete: tree.deleteDocument,
+    retry: tree.load,
+}
+
+function toggleTree() {
+    if (!isTreeCollapsed.value) {
+        isTreeCollapsed.value = true
+
+        return
+    }
+
+    isTreeDrawerOpen.value = !isTreeDrawerOpen.value
+}
+
+function dockTree() {
+    isTreeCollapsed.value = false
+    isTreeDrawerOpen.value = false
+}
 
 const moveDialog = useProjectDocumentMove(() => documentId.value, { onMoved: () => tree.reload() })
 
@@ -83,6 +125,9 @@ function openTab(value: string) {
 }
 
 function openDocument(id: string) {
+    // The drawer covers what the reader just asked to see, so picking a document dismisses it.
+    isTreeDrawerOpen.value = false
+
     router.push({
         name: 'project-documentation.document',
         params: { projectId: projectId.value, documentId: id },
@@ -131,24 +176,62 @@ watch(
         <div
             class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
         >
-            <div class="border-surface-200 dark:border-surface-700 w-100 shrink-0 overflow-hidden border-r">
-                <DocumentationTreePanel
-                    :rows="tree.rows.value"
-                    :is-pending="tree.isPending.value"
-                    :is-error="tree.isError.value"
-                    :selected-document-id="documentId || null"
-                    @select="openDocument"
-                    @toggle-node="tree.toggleNode"
-                    @load-more="tree.loadMore"
-                    @expand-all="tree.expandAll"
-                    @create-root="tree.createRootDocument"
-                    @create-child="tree.createChildDocument"
-                    @delete="tree.deleteDocument"
-                    @retry="tree.load"
-                />
+            <div
+                v-if="!isTreeCollapsed"
+                class="border-surface-200 dark:border-surface-700 w-100 shrink-0 overflow-hidden border-r"
+            >
+                <DocumentationTreePanel v-bind="treePanelProps" v-on="treePanelHandlers" />
             </div>
 
             <div class="min-w-0 flex flex-1 flex-col overflow-hidden">
+                <!-- One row for the content column, aligned with the tree panel's own header. It
+                     carries the tree toggle in every state, because a collapsed tree has to be
+                     reachable from a screen with no document open too. -->
+                <div class="gap-2 px-4 pt-2 flex shrink-0 items-center" style="min-height: 2.75rem">
+                    <Button
+                        severity="secondary"
+                        text
+                        rounded
+                        size="small"
+                        class="shrink-0"
+                        :aria-label="isTreeCollapsed ? 'Show documents' : 'Hide documents'"
+                        :title="isTreeCollapsed ? 'Show documents' : 'Hide documents'"
+                        @click="toggleTree"
+                    >
+                        <template #icon>
+                            <Icon
+                                :icon="isTreeCollapsed ? 'heroicons:bars-3' : 'heroicons:bars-3-bottom-left'"
+                                class="text-base"
+                            />
+                        </template>
+                    </Button>
+
+                    <template v-if="openedDocument">
+                        <div class="gap-2 min-w-0 flex items-baseline">
+                            <span class="text-surface-400 text-sm shrink-0">{{ openedDocument.key }}</span>
+                            <h1 class="text-surface-900 dark:text-surface-0 text-xl font-semibold truncate">
+                                {{ openedDocument.title }}
+                            </h1>
+                        </div>
+
+                        <div class="gap-1 ml-auto flex shrink-0 items-center">
+                            <Button label="Edit" size="small" text severity="secondary" @click="openEditor">
+                                <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
+                            </Button>
+
+                            <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open()">
+                                <template #icon
+                                    ><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base"
+                                /></template>
+                            </Button>
+
+                            <Button label="Delete" size="small" text severity="secondary" @click="removeDocument()">
+                                <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
+                            </Button>
+                        </div>
+                    </template>
+                </div>
+
                 <RouterView v-if="!documentId" @create-document="tree.createRootDocument" />
 
                 <div v-else-if="belongsElsewhere" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
@@ -183,31 +266,6 @@ watch(
                 </div>
 
                 <template v-else-if="openedDocument">
-                    <div class="gap-2 px-4 pt-2 flex items-center" style="min-height: 2.75rem">
-                        <div class="gap-2 min-w-0 flex items-baseline">
-                            <span class="text-surface-400 text-sm shrink-0">{{ openedDocument.key }}</span>
-                            <h1 class="text-surface-900 dark:text-surface-0 text-xl font-semibold truncate">
-                                {{ openedDocument.title }}
-                            </h1>
-                        </div>
-
-                        <div class="gap-1 ml-auto flex shrink-0 items-center">
-                            <Button label="Edit" size="small" text severity="secondary" @click="openEditor">
-                                <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
-                            </Button>
-
-                            <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open()">
-                                <template #icon
-                                    ><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base"
-                                /></template>
-                            </Button>
-
-                            <Button label="Delete" size="small" text severity="secondary" @click="removeDocument()">
-                                <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
-                            </Button>
-                        </div>
-                    </div>
-
                     <Tabs :value="activeTab" @update:value="openTab(String($event))">
                         <TabList>
                             <Tab v-for="tab in tabs" :key="tab.value" :value="tab.value" class="px-4 py-2">
@@ -227,6 +285,23 @@ watch(
                 </template>
             </div>
         </div>
+
+        <!-- Only while the column is hidden, so the panel is never mounted twice. -->
+        <Drawer
+            v-if="isTreeCollapsed"
+            v-model:visible="isTreeDrawerOpen"
+            position="left"
+            class="!w-100 !max-w-full"
+            :pt="{ content: { class: '!p-0' } }"
+        >
+            <template #header>
+                <Button label="Keep open" size="small" text severity="secondary" @click="dockTree">
+                    <template #icon><Icon icon="heroicons:arrow-left-on-rectangle" class="mr-1 text-base" /></template>
+                </Button>
+            </template>
+
+            <DocumentationTreePanel v-bind="treePanelProps" v-on="treePanelHandlers" />
+        </Drawer>
 
         <ProjectDocumentMoveDialog
             v-if="openedDocument"

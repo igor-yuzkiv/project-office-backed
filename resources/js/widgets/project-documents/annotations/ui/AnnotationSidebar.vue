@@ -50,9 +50,9 @@ function isOwn(annotation: IAnnotation): boolean {
 </script>
 
 <template>
-    <aside
-        class="border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 w-96 flex h-full shrink-0 flex-col border-l"
-    >
+    <!-- No width, border or surface of its own: the host renders this either as a column
+         beside the document or as the body of a drawer over it. -->
+    <div class="flex h-full flex-col">
         <DataPanel
             title="Annotations"
             appearance="plain"
@@ -147,5 +147,5 @@ function isOwn(annotation: IAnnotation): boolean {
                 </article>
             </div>
         </DataPanel>
-    </aside>
+    </div>
 </template>
