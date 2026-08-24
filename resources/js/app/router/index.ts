@@ -201,22 +201,24 @@ const router = createRouter({
         },
         {
             // Not a page: it resolves a document to its project and hands it to the
-            // workspace. Saved links and the activity stream know only the document.
+            // workspace. The activity stream and the documentation tables know only
+            // the document.
             path: '/project-documents/:id',
             name: 'project-document-resolver',
             component: () => import('@/pages/documentation/resolver/ProjectDocumentResolverPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Document' },
         },
         {
-            // The five-tab surface is gone, but its URLs are in people's bookmarks.
-            path: '/project-documents/:id/:removedTab(details|content|children|tasks|comments|edit)',
-            redirect: (to) => ({ name: 'project-document-resolver', params: { id: to.params.id } }),
-        },
-        {
             path: '/profile',
             name: 'profile',
             component: () => import('@/pages/user/CurrentUserProfilePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Profile' },
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/pages/errors/not-found/NotFoundPage.vue'),
+            meta: { requiresAuth: true, layout: 'default', title: 'Not found' },
         },
     ],
 })
