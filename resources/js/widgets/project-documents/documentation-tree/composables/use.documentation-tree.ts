@@ -30,7 +30,7 @@ export interface DocumentationTreeCallbacks {
 
 export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callbacks: DocumentationTreeCallbacks = {}) {
     const tree = useProjectDocumentTree(projectId)
-    const { mutateWithConfirm: deleteDocument } = useDeleteProjectDocumentMutation()
+    const { mutateWithConfirm: deleteDocumentMutation } = useDeleteProjectDocumentMutation()
 
     const isPending = ref(true)
     const isError = ref(false)
@@ -120,12 +120,6 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         }
     }
 
-    // Lets the owner drop a deleted document's branch when the delete happened
-    // somewhere other than the tree's own context menu.
-    function forgetLevel(documentId: string) {
-        tree.forgetLevel(documentId)
-    }
-
     function loadMore(levelKey: string) {
         return tree.loadMoreLevel(levelKey)
     }
@@ -138,8 +132,11 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         createDialog.open(toValue(projectId), { id: document.id, key: document.key, title: document.title })
     }
 
-    function deleteNodeDocument(document: ProjectDocumentTreeNodeDto) {
-        return deleteDocument(document.id, document.title, async () => {
+    // The one way a document is deleted here. The tree's own context menu and the
+    // workspace toolbar both come through it, so both confirm, forget the branch and
+    // reload the same way.
+    function deleteDocument(document: { id: string; title: string }) {
+        return deleteDocumentMutation(document.id, document.title, async () => {
             tree.forgetLevel(document.id)
             callbacks.onDeleted?.(document.id)
             await reload()
@@ -156,9 +153,8 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         toggleNode,
         expandAncestors,
         loadMore,
-        forgetLevel,
         createRootDocument,
         createChildDocument,
-        deleteNodeDocument,
+        deleteDocument,
     }
 }

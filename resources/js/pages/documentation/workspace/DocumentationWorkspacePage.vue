@@ -9,7 +9,7 @@ import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useProjectQuery } from '@/entities/project/queries'
-import { useDeleteProjectDocumentMutation, useProjectDocumentQuery } from '@/entities/project-document'
+import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
 import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/project-documents/move-dialog'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
@@ -45,18 +45,10 @@ const tree = useDocumentationTree(projectId, {
 
 const moveDialog = useProjectDocumentMove(() => documentId.value, { onMoved: () => tree.reload() })
 
-const { mutateWithConfirm: deleteDocument } = useDeleteProjectDocumentMutation()
-
 function removeDocument() {
     const document = openedDocument.value
 
-    if (!document) return
-
-    deleteDocument(document.id, document.title, () => {
-        tree.forgetLevel(document.id)
-        openDocumentationRoot()
-        tree.reload()
-    })
+    if (document) tree.deleteDocument(document)
 }
 
 const tabs = computed(() => [
@@ -150,7 +142,7 @@ watch(
                     @load-more="tree.loadMore"
                     @create-root="tree.createRootDocument"
                     @create-child="tree.createChildDocument"
-                    @delete="tree.deleteNodeDocument"
+                    @delete="tree.deleteDocument"
                     @retry="tree.load"
                 />
             </div>
