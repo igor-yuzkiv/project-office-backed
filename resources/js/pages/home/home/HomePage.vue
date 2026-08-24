@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useDashboardQuery } from '@/entities/dashboard'
 import { ActivityStream } from '@/widgets/audit-trail/activity-stream'
-import { DashboardSummary } from '@/widgets/dashboard/summary'
-import { RecentTasks } from '@/widgets/dashboard/recent-tasks'
-import { RecentTaskLists } from '@/widgets/dashboard/recent-task-lists'
+import { DashboardSummary } from '@/widgets/home-dashboard/summary'
+import { RecentTasks, RecentTaskLists } from '@/widgets/home-dashboard/recent'
 
 const { summary, recentTasks, recentTaskLists, isPending, isError, refetch } = useDashboardQuery()
 </script>
