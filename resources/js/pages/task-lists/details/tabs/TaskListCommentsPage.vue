@@ -7,7 +7,7 @@ import { uploadTaskListAttachmentRequest } from '@/entities/task-list/api'
 import { TaskListAttachmentRoles } from '@/entities/task-list/config'
 import { useDeleteCommentMutation } from '@/entities/comment'
 import { PAGE_SIZE } from '@/app/config'
-import { CommentThread } from '@/widgets/comments'
+import { CommentThread } from '@/widgets/comments/comment-thread'
 
 const taskListId = useRouteParams<string>('id')
 

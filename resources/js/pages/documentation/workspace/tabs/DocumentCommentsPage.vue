@@ -8,7 +8,7 @@ import {
 } from '@/entities/project-document'
 import { useDeleteCommentMutation } from '@/entities/comment'
 import { PAGE_SIZE } from '@/app/config'
-import { CommentThread } from '@/widgets/comments'
+import { CommentThread } from '@/widgets/comments/comment-thread'
 import type { IProjectDocument } from '@/entities/project-document/types'
 
 const props = defineProps<{

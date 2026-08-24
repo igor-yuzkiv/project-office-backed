@@ -4,7 +4,7 @@ import { useRouteParams } from '@vueuse/router'
 import { useTaskCommentsQuery, useUpsertTaskComment } from '@/entities/task'
 import { useDeleteCommentMutation } from '@/entities/comment'
 import { PAGE_SIZE } from '@/app/config'
-import { CommentThread } from '@/widgets/comments'
+import { CommentThread } from '@/widgets/comments/comment-thread'
 import { TaskAttachmentRoles } from '@/entities/task/config/task-attachment.config'
 import { uploadTaskAttachmentRequest } from '@/entities/task/api/task-attachments.api'
 
