@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
-import Button from 'primevue/button'
 import Paginator from 'primevue/paginator'
 import Skeleton from 'primevue/skeleton'
 import type { ProjectOverviewDto } from '@/entities/project/types'
@@ -10,6 +9,7 @@ import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import { ProjectStatusTag } from '@/widgets/projects/status-tag'
 import { DisplayDate } from '@/shared/components/display'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps<{
     projects: ProjectOverviewDto[]
@@ -26,6 +26,30 @@ const emit = defineEmits<{
 
 const perPage = computed(() => props.paginationMeta?.per_page ?? props.projects.length)
 const showPaginator = computed(() => !!props.paginationMeta && props.paginationMeta.last_page > 1)
+
+/** Each count opens the section it counts, so the number is also the way in. */
+function counters(project: ProjectOverviewDto) {
+    return [
+        {
+            label: 'Docs',
+            icon: 'tabler:file-text',
+            count: project.docs_count ?? 0,
+            to: { name: 'project-documentation', params: { projectId: project.id } },
+        },
+        {
+            label: 'Task Lists',
+            icon: 'tabler:list-details',
+            count: project.task_lists_count ?? 0,
+            to: { name: 'project-details.task-lists', params: { id: project.id } },
+        },
+        {
+            label: 'Tasks',
+            icon: 'tabler:circle-check',
+            count: project.tasks_count ?? 0,
+            to: { name: 'project-details.tasks', params: { id: project.id } },
+        },
+    ]
+}
 
 function onPageChange(event: { page: number }) {
     emit('page-change', event.page + 1)
@@ -59,66 +83,51 @@ function onPageChange(event: { page: number }) {
                 class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 gap-3 p-4 rounded-xl flex flex-col border"
             >
                 <div class="gap-3 flex items-start">
-                    <ProjectIcon
-                        :prefix="project.prefix"
-                        :icon-emoji="project.icon_emoji"
-                        :status="project.status"
-                        size="large"
-                        class="shrink-0"
-                    />
+                    <ProjectIcon :prefix="project.prefix" :icon="project.icon" size="large" class="shrink-0" />
 
                     <div class="gap-1 min-w-0 flex flex-1 flex-col">
-                        <div class="gap-2 flex items-center justify-between">
-                            <h3
-                                class="text-surface-900 dark:text-surface-0 min-w-0 font-semibold truncate"
-                                :title="project.name"
-                            >
-                                {{ project.name }}
-                            </h3>
+                        <!-- The name is the way into the project; the card itself is not a link,
+                             so the counters below stay reachable. -->
+                        <RouterLink
+                            :to="{ name: 'project-details', params: { id: project.id } }"
+                            class="text-surface-900 dark:text-surface-0 hover:text-primary min-w-0 font-semibold truncate"
+                            :title="project.name"
+                        >
+                            {{ project.name }}
+                        </RouterLink>
+
+                        <div class="gap-2 flex items-center">
+                            <span class="text-surface-400 text-xs">{{ project.prefix }}</span>
                             <ProjectStatusTag :status="project.status" class="shrink-0" />
                         </div>
-
-                        <span class="text-surface-400 text-xs">{{ project.prefix }}</span>
                     </div>
+
+                    <slot name="actions" :project="project" />
                 </div>
 
-                <div v-if="project.updated_by" class="gap-2 flex items-center">
+                <div class="gap-2 flex items-center">
                     <UserAvatar
+                        v-if="project.updated_by"
                         :initials="project.updated_by.initials"
                         :avatar-url="project.updated_by.avatar_url"
                         size="small"
                         class="shrink-0"
                     />
-                    <div class="min-w-0 flex flex-col">
-                        <span class="text-surface-700 dark:text-surface-200 text-xs truncate">
-                            {{ project.updated_by.name }}
-                        </span>
-                        <DisplayDate label="Updated" :date="project.updated_at" class="text-xs" />
-                    </div>
+                    <DisplayDate label="Updated" :date="project.updated_at" class="text-xs" />
                 </div>
-                <DisplayDate v-else label="Updated" :date="project.updated_at" class="text-xs" />
 
-                <div class="border-surface-200 dark:border-surface-700 gap-2 pt-3 mt-auto flex items-center border-t">
-                    <Button
-                        label="Details"
-                        size="small"
-                        severity="secondary"
-                        outlined
-                        class="flex-1"
-                        :as="'router-link'"
-                        :to="{ name: 'project-details', params: { id: project.id } }"
-                    />
-                    <Button
-                        label="Documentation"
-                        size="small"
-                        severity="secondary"
-                        text
-                        class="flex-1"
-                        :as="'router-link'"
-                        :to="{ name: 'project-documentation', params: { projectId: project.id } }"
-                    />
-
-                    <slot name="actions" :project="project" />
+                <div class="gap-2 mt-auto grid grid-cols-3">
+                    <RouterLink
+                        v-for="counter in counters(project)"
+                        :key="counter.label"
+                        :to="counter.to"
+                        class="border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 gap-1.5 px-2 py-1.5 text-xs rounded-lg flex items-center justify-center border transition-colors"
+                    >
+                        <Icon :icon="counter.icon" class="text-surface-400 text-sm shrink-0" />
+                        <span class="text-surface-700 dark:text-surface-200 truncate">
+                            {{ counter.count }} {{ counter.label }}
+                        </span>
+                    </RouterLink>
                 </div>
             </article>
         </div>

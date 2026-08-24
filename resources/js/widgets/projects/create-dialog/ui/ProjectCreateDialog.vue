@@ -4,7 +4,7 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { InputContainer } from '@/shared/components/input'
-import { EmojiPickerField } from '@/shared/components/emoji-picker'
+import { IconPickerField } from '@/shared/components/icon-picker'
 import type { ProjectCreateFormData } from '../composables/use.project-create-dialog'
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -25,7 +25,7 @@ const emit = defineEmits<{
         <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
             <InputContainer label="Project Name" :error="validationErrors.name" required>
                 <div class="gap-2 flex items-center">
-                    <EmojiPickerField v-model="formData.icon_emoji" class="shrink-0" />
+                    <IconPickerField v-model="formData.icon" class="shrink-0" />
                     <InputText
                         v-model="formData.name"
                         placeholder="e.g. Atlas Platform"

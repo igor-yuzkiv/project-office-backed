@@ -16,7 +16,7 @@ class UpdateProjectRequest extends FormRequest
         return [
             'name'        => ['required', 'string', 'max:255'],
             'status'      => ['required', Rule::enum(ProjectStatus::class)],
-            'icon_emoji'  => ['nullable', 'string', 'max:32'],
+            'icon'        => ['nullable', 'string', 'max:64'],
             'description' => ['nullable', 'string'],
             'start_date'  => ['nullable', 'date'],
             'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
@@ -33,7 +33,7 @@ class UpdateProjectRequest extends FormRequest
         return new UpdateProjectCommand(
             project: $project,
             name: $this->validated('name'),
-            iconEmoji: $this->validated('icon_emoji'),
+            icon: $this->validated('icon'),
             status: ProjectStatus::from($this->validated('status')),
             description: $this->validated('description'),
             startDate: $startDate ? Carbon::parse($startDate) : null,

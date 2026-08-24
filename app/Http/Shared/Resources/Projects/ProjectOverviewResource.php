@@ -19,7 +19,7 @@ class ProjectOverviewResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->name,
             'prefix'     => $this->prefix,
-            'icon_emoji' => $this->icon_emoji,
+            'icon'       => $this->icon,
             'status'     => $this->status->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
@@ -30,6 +30,10 @@ class ProjectOverviewResource extends JsonResource
             'tags'        => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'tasks'       => $this->whenLoaded('tasks', fn () => TaskResource::collection($this->tasks)),
             'task_lists'  => $this->whenLoaded('taskLists', fn () => TaskListOverviewResource::collection($this->taskLists)),
+
+            'docs_count'       => $this->whenCounted('documents', fn () => $this->documents_count),
+            'task_lists_count' => $this->whenCounted('taskLists', fn () => $this->task_lists_count),
+            'tasks_count'      => $this->whenCounted('tasks', fn () => $this->tasks_count),
         ];
     }
 }

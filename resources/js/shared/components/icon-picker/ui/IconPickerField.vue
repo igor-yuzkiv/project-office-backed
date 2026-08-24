@@ -2,17 +2,17 @@
 import { useTemplateRef } from 'vue'
 import { Icon } from '@iconify/vue'
 import Popover from 'primevue/popover'
-import EmojiPicker from './EmojiPicker.vue'
+import IconPicker from './IconPicker.vue'
 
 withDefaults(
     defineProps<{
         placeholder?: string
         clearLabel?: string
     }>(),
-    { placeholder: 'Pick an emoji', clearLabel: 'Remove icon' }
+    { placeholder: 'Pick an icon', clearLabel: 'Remove icon' }
 )
 
-const emoji = defineModel<string | null>({ required: true })
+const icon = defineModel<string | null>({ required: true })
 
 const popover = useTemplateRef<InstanceType<typeof Popover>>('popover')
 
@@ -21,12 +21,12 @@ function toggle(event: MouseEvent) {
 }
 
 function select(value: string) {
-    emoji.value = value
+    icon.value = value
     popover.value?.hide()
 }
 
 function clear() {
-    emoji.value = null
+    icon.value = null
 }
 </script>
 
@@ -34,18 +34,18 @@ function clear() {
     <div class="group w-11 relative shrink-0">
         <button
             type="button"
-            class="border-surface-300 dark:border-surface-600 hover:border-surface-400 h-11 w-11 rounded-lg text-2xl flex items-center justify-center border transition-colors"
+            class="border-surface-300 dark:border-surface-600 hover:border-surface-400 h-11 w-11 rounded-lg flex items-center justify-center border transition-colors"
             :aria-label="placeholder"
             @click="toggle"
         >
-            <span v-if="emoji">{{ emoji }}</span>
-            <Icon v-else icon="heroicons:face-smile" class="text-surface-400 text-xl" />
+            <Icon v-if="icon" :icon="icon" class="text-surface-700 dark:text-surface-200 text-2xl" />
+            <Icon v-else icon="tabler:square-rounded-plus" class="text-surface-400 text-xl" />
         </button>
 
         <!-- Clearing is a correction, not a field of its own: it appears over the icon
              it removes, and only when there is one to remove. -->
         <button
-            v-if="emoji"
+            v-if="icon"
             type="button"
             class="bg-surface-700 text-surface-0 hover:bg-surface-900 dark:bg-surface-600 dark:hover:bg-surface-400 h-4 w-4 -top-1 -right-1 absolute flex items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
             :title="clearLabel"
@@ -57,6 +57,6 @@ function clear() {
     </div>
 
     <Popover ref="popover">
-        <EmojiPicker @select="select" />
+        <IconPicker v-model="icon" @select="select" />
     </Popover>
 </template>

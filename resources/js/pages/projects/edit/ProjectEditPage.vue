@@ -20,11 +20,11 @@ import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
 import { IconButton } from '@/shared/components/button'
-import { EmojiPickerField } from '@/shared/components/emoji-picker'
+import { IconPickerField } from '@/shared/components/icon-picker'
 
 interface ProjectEditFormData {
     name: string
-    icon_emoji: string | null
+    icon: string | null
     status: ProjectStatusValue
     description: string
     start_date: Date | null
@@ -42,7 +42,7 @@ const { mutate: updateProject } = useUpdateProjectMutation()
 
 const formData = ref<ProjectEditFormData>({
     name: '',
-    icon_emoji: null,
+    icon: null,
     status: 'draft',
     description: '',
     start_date: null,
@@ -88,7 +88,7 @@ function submit() {
 
     const input: IUpdateProjectInput = {
         name: formData.value.name,
-        icon_emoji: formData.value.icon_emoji,
+        icon: formData.value.icon,
         status: formData.value.status,
         description: formData.value.description || null,
         start_date: formatDateForApi(formData.value.start_date),
@@ -115,7 +115,7 @@ watch(
         if (p && !isFormInitialized.value) {
             formData.value = {
                 name: p.name,
-                icon_emoji: p.icon_emoji,
+                icon: p.icon,
                 status: p.status,
                 description: p.description ?? '',
                 start_date: p.start_date ? new Date(p.start_date) : null,
@@ -185,8 +185,8 @@ useBreadcrumbs(() => [
             </div>
 
             <div class="gap-4 flex items-end">
-                <InputContainer label="Icon" :error="validationErrors.icon_emoji">
-                    <EmojiPickerField v-model="formData.icon_emoji" />
+                <InputContainer label="Icon" :error="validationErrors.icon">
+                    <IconPickerField v-model="formData.icon" />
                 </InputContainer>
 
                 <InputContainer label="Tags" :error="validationErrors.tag_ids" class="flex-1">

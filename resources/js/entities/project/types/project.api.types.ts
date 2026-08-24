@@ -9,7 +9,7 @@ export type ProjectInclude = 'createdBy' | 'updatedBy' | 'archivedBy' | 'tags' |
 export interface ICreateProjectInput {
     name: string
     prefix?: string
-    icon_emoji?: string | null
+    icon?: string | null
     status?: ProjectStatusValue
     description?: string | null
     start_date?: string | null
@@ -21,7 +21,7 @@ export interface ICreateProjectInput {
 export interface IUpdateProjectInput {
     name: string
     // The API writes every field on update, so leaving this out clears the icon.
-    icon_emoji: string | null
+    icon: string | null
     status: ProjectStatusValue
     description?: string | null
     start_date?: string | null

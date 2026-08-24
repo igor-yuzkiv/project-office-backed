@@ -11,17 +11,17 @@ beforeEach(function () {
 });
 
 it('returns the project emoji', function () {
-    $project = ProjectModel::factory()->create(['icon_emoji' => '🚀']);
+    $project = ProjectModel::factory()->create(['icon' => 'tabler:rocket']);
 
     $this->getJson("/api/cli/projects/{$project->id}")
         ->assertOk()
-        ->assertJsonPath('data.icon_emoji', '🚀');
+        ->assertJsonPath('data.icon', 'tabler:rocket');
 });
 
 it('returns null for a project without an emoji', function () {
-    $project = ProjectModel::factory()->create(['icon_emoji' => null]);
+    $project = ProjectModel::factory()->create(['icon' => null]);
 
     $this->getJson("/api/cli/projects/{$project->id}")
         ->assertOk()
-        ->assertJsonPath('data.icon_emoji', null);
+        ->assertJsonPath('data.icon', null);
 });

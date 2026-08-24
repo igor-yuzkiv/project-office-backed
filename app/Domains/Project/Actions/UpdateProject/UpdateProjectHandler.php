@@ -12,7 +12,7 @@ class UpdateProjectHandler
     {
         $command->project->update([
             'name'        => $command->name,
-            'icon_emoji'  => $command->iconEmoji,
+            'icon'        => $command->icon,
             'status'      => $command->status,
             'description' => $command->description,
             'start_date'  => $command->startDate,

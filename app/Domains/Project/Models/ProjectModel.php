@@ -32,7 +32,7 @@ use Laravel\Scout\Searchable;
 
 /**
  * @property ProjectStatus $status
- * @property string|null $icon_emoji
+ * @property string|null $icon
  * @property string|null $description
  * @property Carbon|null $start_date
  * @property Carbon|null $end_date
@@ -46,7 +46,7 @@ use Laravel\Scout\Searchable;
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
-#[Fillable(['id', 'name', 'prefix', 'icon_emoji', 'status', 'description', 'start_date', 'end_date', 'created_by', 'updated_by'])]
+#[Fillable(['id', 'name', 'prefix', 'icon', 'status', 'description', 'start_date', 'end_date', 'created_by', 'updated_by'])]
 class ProjectModel extends Model implements Archivable
 {
     /** @use HasFactory<ProjectModelFactory> */

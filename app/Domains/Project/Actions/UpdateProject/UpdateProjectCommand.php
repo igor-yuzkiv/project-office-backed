@@ -12,7 +12,7 @@ class UpdateProjectCommand
         public readonly ProjectModel $project,
         public readonly string $name,
         public readonly ProjectStatus $status,
-        public readonly ?string $iconEmoji = null,
+        public readonly ?string $icon = null,
         public readonly ?string $description = null,
         public readonly ?Carbon $startDate = null,
         public readonly ?Carbon $endDate = null,
