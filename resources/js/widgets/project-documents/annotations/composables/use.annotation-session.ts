@@ -1,4 +1,4 @@
-import { computed, ref, shallowRef, type MaybeRefOrGetter, toValue } from 'vue'
+import { computed, ref, shallowRef, watch, type MaybeRefOrGetter, toValue } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
 import type { IAnnotation } from '@/entities/annotation'
 import { useProjectDocumentAnnotationsQuery } from '@/entities/project-document'
@@ -143,6 +143,18 @@ export function useAnnotationSession(
     }
 
     onKeyStroke('Escape', () => (isReanchoring.value ? cancelReanchoring() : cancel()))
+
+    /**
+     * Everything here points at one document's blocks, and the session can outlive them: the
+     * workspace reuses the same page instance from document to document, and a document edited
+     * to empty takes its rendered blocks away without ending the session. A draft carried across
+     * either boundary would be saved against a block the reader is no longer looking at.
+     */
+    watch([() => toValue(documentId), () => (options.enabled === undefined ? true : toValue(options.enabled))], () => {
+        clearDraft()
+        reanchoring.value = null
+        selectedBlock.value = null
+    })
 
     return {
         selectedBlock,
