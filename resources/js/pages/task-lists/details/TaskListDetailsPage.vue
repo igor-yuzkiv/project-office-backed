@@ -7,12 +7,12 @@ import Tabs from 'primevue/tabs'
 import { useTaskListQuery } from '@/entities/task-list/queries'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import { DisplayField, CopyToClipboard } from '@/shared/components/display'
-import { TaskListStatusTag } from '@/widgets/task-list/metadata'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
-import { useToast } from '@/shared/composables'
+import { useToast, useCollapsibleSidePanel } from '@/shared/composables'
+import { SidePanel } from '@/shared/components/side-panel'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
-import { TagList } from '@/widgets/tags/metadata'
+import { TaskListDetailsSidebar } from '@/widgets/task-list/details-sidebar'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,6 +21,7 @@ const toast = useToast()
 const taskListId = route.params.id as string
 
 const { taskList, isError } = useTaskListQuery(taskListId)
+const sidebarPanel = useCollapsibleSidePanel('task-lists:sidebar-collapsed')
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 
 function handleDeleteTaskList() {
@@ -77,29 +78,23 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div v-if="taskList" class="p-2 flex flex-1 overflow-hidden">
+    <div v-if="taskList" class="gap-4 p-2 flex flex-1 overflow-hidden">
         <Tabs :value="activeTab" class="flex flex-1 flex-col overflow-hidden" @update:value="onTabChange">
-            <div class="p-3 flex shrink-0 items-start justify-between truncate">
-                <div class="gap-1 flex flex-col truncate">
-                    <DisplayField v-if="taskList.project" inline>
-                        <ProjectIcon :prefix="taskList.project.prefix" :icon="taskList.project.icon" size="small" />
-                        <RouterLink
-                            :to="{ name: 'project-details', params: { id: taskList.project_id } }"
-                            class="text-sm app-link"
-                        >
-                            {{ taskList.project.name }}
-                        </RouterLink>
-                    </DisplayField>
+            <div class="gap-1 p-3 flex shrink-0 flex-col truncate">
+                <DisplayField v-if="taskList.project" inline>
+                    <ProjectIcon :prefix="taskList.project.prefix" :icon="taskList.project.icon" size="small" />
+                    <RouterLink
+                        :to="{ name: 'project-details', params: { id: taskList.project_id } }"
+                        class="text-sm app-link"
+                    >
+                        {{ taskList.project.name }}
+                    </RouterLink>
+                </DisplayField>
 
-                    <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
-                        <CopyToClipboard class="text-surface-400" :text="taskList.key" hide-copy-icon />
-                        <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ taskList.name }}</h1>
-                    </div>
-
-                    <TagList :tags="taskList.tags ?? []" />
+                <div class="gap-x-2 text-2xl font-semibold flex items-center truncate">
+                    <CopyToClipboard class="text-surface-400" :text="taskList.key" hide-copy-icon />
+                    <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ taskList.name }}</h1>
                 </div>
-
-                <TaskListStatusTag :status="taskList.status" class="w-fit" />
             </div>
 
             <TabList>
@@ -117,5 +112,17 @@ useBreadcrumbs(() => [
                 </router-view>
             </div>
         </Tabs>
+
+        <SidePanel
+            :panel="sidebarPanel"
+            side="right"
+            width="28rem"
+            icon="heroicons:bars-3-bottom-right"
+            show-label="Show task list details"
+        >
+            <template #default="{ collapse }">
+                <TaskListDetailsSidebar :task-list="taskList" @collapse="collapse" />
+            </template>
+        </SidePanel>
     </div>
 </template>
