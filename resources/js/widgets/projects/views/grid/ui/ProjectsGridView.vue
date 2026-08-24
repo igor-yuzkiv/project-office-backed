@@ -88,18 +88,18 @@ function onPageChange(event: { page: number }) {
                     <div class="gap-1 min-w-0 flex flex-1 flex-col">
                         <!-- The name is the way into the project; the card itself is not a link,
                              so the counters below stay reachable. -->
-                        <RouterLink
-                            :to="{ name: 'project-details', params: { id: project.id } }"
-                            class="text-surface-900 dark:text-surface-0 hover:text-primary min-w-0 font-semibold truncate"
-                            :title="project.name"
-                        >
-                            {{ project.name }}
-                        </RouterLink>
-
-                        <div class="gap-2 flex items-center">
-                            <span class="text-surface-400 text-xs">{{ project.prefix }}</span>
-                            <ProjectStatusTag :status="project.status" class="shrink-0" />
+                        <div class="gap-2 min-w-0 flex items-baseline">
+                            <span class="text-surface-400 text-xs shrink-0">{{ project.prefix }}</span>
+                            <RouterLink
+                                :to="{ name: 'project-details', params: { id: project.id } }"
+                                class="text-surface-900 dark:text-surface-0 hover:text-primary min-w-0 font-semibold truncate"
+                                :title="project.name"
+                            >
+                                {{ project.name }}
+                            </RouterLink>
                         </div>
+
+                        <ProjectStatusTag :status="project.status" variant="light" class="w-fit" />
                     </div>
 
                     <slot name="actions" :project="project" />

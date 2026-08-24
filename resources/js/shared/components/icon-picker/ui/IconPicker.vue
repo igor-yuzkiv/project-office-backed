@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import InputText from 'primevue/inputtext'
@@ -19,12 +19,18 @@ const emit = defineEmits<{
 /** The name currently written in the field, which may name an icon from any set. */
 const typed = defineModel<string | null>({ required: true })
 
+const fieldId = useId()
+
 const query = ref('')
 const debouncedQuery = refDebounced(query, 250)
 
 const results = ref<string[]>([])
 const isSearching = ref(false)
 const hasFailed = ref(false)
+
+// Answers can arrive out of order, and an older one must not overwrite what the reader is
+// looking at now.
+let latestRun = 0
 
 const icons = computed(() => (debouncedQuery.value.trim() ? results.value : [...STARTER_ICONS]))
 
@@ -44,6 +50,8 @@ watch(debouncedQuery, async (current) => {
         return
     }
 
+    const run = ++latestRun
+
     isSearching.value = true
     hasFailed.value = false
 
@@ -59,13 +67,17 @@ watch(debouncedQuery, async (current) => {
 
         const payload: { icons?: string[] } = await response.json()
 
+        if (run !== latestRun) return
+
         results.value = payload.icons ?? []
     } catch {
+        if (run !== latestRun) return
+
         // The catalogue is someone else's service: say so and keep the typed name usable.
         results.value = []
         hasFailed.value = true
     } finally {
-        isSearching.value = false
+        if (run === latestRun) isSearching.value = false
     }
 })
 </script>
@@ -73,14 +85,13 @@ watch(debouncedQuery, async (current) => {
 <template>
     <div class="gap-3 p-1 w-80 flex flex-col">
         <div class="gap-2 flex flex-col">
-            <label class="text-surface-600 dark:text-surface-300 text-xs font-medium" for="icon-picker-name">
-                Icon name
-            </label>
+            <label class="text-surface-600 dark:text-surface-300 text-xs font-medium" :for="fieldId"> Icon name </label>
             <div class="gap-2 flex items-center">
                 <InputText
-                    id="icon-picker-name"
+                    :id="fieldId"
                     v-model="typed"
                     placeholder="tabler:rocket"
+                    maxlength="64"
                     size="small"
                     class="flex-1"
                 />
