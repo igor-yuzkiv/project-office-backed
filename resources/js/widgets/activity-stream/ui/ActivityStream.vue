@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import Button from 'primevue/button'
-import { useAuditRecordFeed } from '@/features/audit-trail'
+import { useAuditRecordFeed } from '@/entities/audit-trail'
 import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { groupRecordsByDay } from '../lib'
 import ActivityStreamItem from './ActivityStreamItem.vue'

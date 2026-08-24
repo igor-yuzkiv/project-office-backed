@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import Button from 'primevue/button'
 import Skeleton from 'primevue/skeleton'
-import type { DashboardSummaryDto } from '@/features/dashboard'
+import type { DashboardSummaryDto } from '@/entities/dashboard'
 import { resolveSummaryBanner, type SummaryBanner } from '../config'
 import DashboardSummaryCard from './DashboardSummaryCard.vue'
 

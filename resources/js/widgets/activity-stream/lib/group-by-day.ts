@@ -1,6 +1,6 @@
 import { isToday, isYesterday } from 'date-fns'
 import { formatDate } from '@/shared/utils/date.util'
-import type { AuditRecordDto } from '@/features/audit-trail'
+import type { AuditRecordDto } from '@/entities/audit-trail'
 
 export type ActivityDayGroup = {
     key: string

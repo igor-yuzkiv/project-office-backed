@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { RouterLink, useRouter } from 'vue-router'
-import type { DashboardTaskListDto } from '@/features/dashboard'
+import type { DashboardTaskListDto } from '@/entities/dashboard'
 import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { TaskListStatusTag } from '@/widgets/task-list/metadata'
 import { PanelViewAllLink, formatRelativeTime } from '@/widgets/dashboard/shared'

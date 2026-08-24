@@ -1,4 +1,4 @@
-import type { AuditRecordSubjectType, KnownAuditRecordSubjectType } from '@/features/audit-trail'
+import type { AuditRecordSubjectType, KnownAuditRecordSubjectType } from '@/entities/audit-trail'
 
 /**
  * Accents group by what happened, not by which domain it happened in: in a mixed feed a creation
