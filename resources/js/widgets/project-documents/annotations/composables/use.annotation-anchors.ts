@@ -2,7 +2,10 @@ import { computed, onScopeDispose, type MaybeRefOrGetter, toValue, watch } from 
 import type { IAnnotation } from '@/entities/annotation'
 import { findBlock, type DomBlock, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 import type { AnchorMatchKind } from '@/shared/utils/markdown-anchor.util'
-import { ANNOTATION_CLASS, syncClass } from './annotation-decoration'
+import { syncClass } from '@/shared/utils/dom-class.util'
+import './annotation-anchor.css'
+
+const ANCHORED_CLASS = 'annotation-anchored'
 
 export interface AnnotationAnchor {
     annotation: IAnnotation
@@ -50,13 +53,13 @@ export function useAnnotationAnchors(
         (current) => {
             const elements = [...new Set(current.map((anchor) => anchor.block?.element).filter((el) => el != null))]
 
-            decorated = syncClass(ANNOTATION_CLASS.anchored, decorated, elements)
+            decorated = syncClass(ANCHORED_CLASS, decorated, elements)
         },
         { immediate: true }
     )
 
     onScopeDispose(() => {
-        decorated = syncClass(ANNOTATION_CLASS.anchored, decorated, [])
+        decorated = syncClass(ANCHORED_CLASS, decorated, [])
     })
 
     return { orderedAnchors }

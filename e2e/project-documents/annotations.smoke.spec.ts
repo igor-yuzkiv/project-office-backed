@@ -32,7 +32,7 @@ test.describe('document annotations', () => {
 
         const paragraph = page.locator('.md-editor-preview p', { hasText: paragraphText })
         await paragraph.click()
-        await expect(paragraph).toHaveClass(/annotation-selected/)
+        await expect(paragraph).toHaveClass(/document-block-selected/)
 
         await page.getByPlaceholder('Write a comment').fill(annotationText)
         await page.getByRole('button', { name: 'Save', exact: true }).click()

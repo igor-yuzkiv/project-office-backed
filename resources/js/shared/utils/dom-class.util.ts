@@ -1,12 +1,8 @@
 /**
- * The markdown arrives through v-html, so scoped styles never reach it and the classes below
- * are put on the nodes by hand. They live together with the rules in DocumentAnnotationMode.
+ * Markdown arrives through v-html, so scoped styles never reach it and decoration classes are
+ * put on the nodes by hand. These helpers write only the difference, leaving untouched nodes
+ * alone — the preview replaces its own elements often, and a blanket rewrite would fight it.
  */
-export const ANNOTATION_CLASS = {
-    anchored: 'annotation-anchored',
-    hovered: 'annotation-hovered',
-    selected: 'annotation-selected',
-} as const
 
 /** Moves a class from one element to another, touching neither when nothing changed. */
 export function moveClass(className: string, from: HTMLElement | null, to: HTMLElement | null) {

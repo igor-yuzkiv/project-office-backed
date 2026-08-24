@@ -8,7 +8,8 @@ import {
 } from '@/shared/utils/markdown-anchor.dom.util'
 import { ANNOTATABLE_BLOCK_SELECTOR } from '@/shared/utils/markdown-anchor.util'
 
-export function useAnnotationBlocks(getPreviewRoot: () => HTMLElement | null) {
+/** Collects the blocks a rendered markdown document is made of, and finds the one under a click. */
+export function useDocumentBlocks(getPreviewRoot: () => HTMLElement | null) {
     // shallowRef, not ref: a deep ref would hand back reactive proxies of the elements, and
     // every identity comparison against a live DOM node would fail.
     const blocks = shallowRef<DomBlocks>(EMPTY_DOM_BLOCKS)

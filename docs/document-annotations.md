@@ -115,7 +115,7 @@ for any annotation the user owns, not only orphaned ones — a card marked
 | WebApi | `app/Http/WebApi/Controllers/Annotation/`, `.../ProjectDocuments/ProjectDocumentAnnotationsController.php` |
 | Anchor functions | `resources/js/shared/utils/markdown-anchor.util.ts` (+ `.dom.util.ts`) |
 | Data layer | `resources/js/entities/annotation/`, `resources/js/entities/project-document/` |
-| UI | `resources/js/widgets/project-documents/annotation-mode/` |
+| UI | `resources/js/widgets/project-documents/document-sheet/` (the document surface), `resources/js/widgets/project-documents/annotations/` (the annotation session, composer and sidebar) |
 | Unit tests | `resources/js/shared/utils/markdown-anchor.util.spec.ts` (`npx vitest run`) |
 | E2E | `e2e/project-documents/annotations.smoke.spec.ts` |
 
