@@ -102,7 +102,9 @@ function dockSidebar() {
 
 <template>
     <div v-if="document.content" class="min-h-0 flex flex-1 overflow-hidden">
-        <div class="min-h-0 flex flex-1 flex-col">
+        <!-- min-w-0: without it this column is as wide as its widest child, and one unbreakable
+             code block in the document would push the sidebar off the screen. -->
+        <div class="min-h-0 min-w-0 flex flex-1 flex-col">
             <DocumentSheet
                 :selected-block="selectedBlock"
                 :content="document.content"

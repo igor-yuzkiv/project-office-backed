@@ -148,6 +148,13 @@ onScopeDispose(() => {
     overflow-wrap: anywhere;
 }
 
+/* A code block or a wide table scrolls inside the sheet rather than widening it. Without this the
+   sheet grows to fit its widest line and takes the whole layout with it. */
+.document-sheet .md-editor-preview :is(pre, table) {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 /* md-editor-v3 gives the sticky code-block header z-index: 10000, which lands it above dialogs.
    Its own selector is three classes deep, so the override needs the sheet class to outrank it. */
 .document-sheet .md-editor-preview .md-editor-code .md-editor-code-head {
