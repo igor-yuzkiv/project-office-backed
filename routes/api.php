@@ -6,12 +6,12 @@ use App\Http\WebApi\Controllers\AuditRecords\AuditRecordsController;
 use App\Http\WebApi\Controllers\AuthController;
 use App\Http\WebApi\Controllers\Comment\CommentController;
 use App\Http\WebApi\Controllers\Dashboard\DashboardController;
-use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAnnotationsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTasksController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentVersionAnnotationsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentVersionsController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
@@ -166,13 +166,13 @@ Route::group([
 });
 
 /**
- * Project Document Annotations
+ * Project Document Version Annotations
  */
 Route::group([
-    'prefix'     => 'project-documents/{project_document}/annotations',
-    'as'         => 'project-documents.annotations.',
+    'prefix'     => 'project-document-versions/{project_document_version}/annotations',
+    'as'         => 'project-document-versions.annotations.',
     'middleware' => ['auth:sanctum'],
-    'controller' => ProjectDocumentAnnotationsController::class,
+    'controller' => ProjectDocumentVersionAnnotationsController::class,
 ], function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');

@@ -1,23 +1,29 @@
 # Document annotations
 
-Block-level comments on a project document. Annotations live in their own view,
-`/#/project-documents/{id}/annotations`, reachable from the documentation workspace through
-the `Annotation mode` header action. The document is rendered as a sheet on a canvas: clicking a
-block selects it, and a chat-style composer docks below the document to write a comment
-against that selection. The sidebar on the right lists every annotation in document order;
-`Edit` scrolls to the annotated block, selects it, and loads the comment back into the
-composer.
+Block-level comments on a project document. They live on the workspace's `Content` tab, where
+the document is rendered as a sheet on a canvas: clicking a block selects it, and a chat-style
+composer docks below the document to write a comment against that selection. The sidebar on the
+right lists every annotation in document order; `Edit` scrolls to the annotated block, selects
+it, and loads the comment back into the composer. The `Annotations` switch in the canvas toolbar
+turns the whole thing off for the document in front of the reader.
 
-An annotation belongs to a block of the *rendered* document, not to a character range of
-the markdown source. Editing the document therefore does not move annotations by itself:
-each one is re-resolved against the freshly rendered page every time the view opens.
+An annotation belongs to one **version** of a document — its anchor is resolved against that
+version's text. Switching versions therefore shows a different set of annotations.
+
+Within a version, an annotation belongs to a block of the *rendered* document, not to a
+character range of the markdown source. Editing the document therefore does not move
+annotations by itself: each one is re-resolved against the freshly rendered page every time
+the view opens.
+
+Deleting a version deletes its annotations, and so does deleting the document. The polymorphic
+link has no foreign key, so both handlers remove them by hand.
 
 ## Entities
 
 - `App\Domains\Annotation\Models\AnnotationModel` (table `annotations`) — polymorphic
   through `annotatable_type`/`annotatable_id`, the same shape as `CommentModel`.
 - `App\Infrastructure\Models\Contracts\Annotatable` — one method, `annotations()`.
-  `ProjectDocumentModel` is the only implementer today.
+  `ProjectDocumentVersionModel` is the only implementer today.
 - Actions in `App\Domains\Annotation\Actions\` — `CreateAnnotation`, `UpdateAnnotation`,
   `DeleteAnnotation`, each a Command plus a Handler.
 
@@ -33,8 +39,8 @@ comparing `author.id`, but that is presentation only. The API enforces nothing.
 All four routes sit behind `auth:sanctum`. The CLI API does not expose annotations.
 
 ```
-GET    /api/project-documents/{project_document}/annotations
-POST   /api/project-documents/{project_document}/annotations
+GET    /api/project-document-versions/{project_document_version}/annotations
+POST   /api/project-document-versions/{project_document_version}/annotations
 PATCH  /api/annotations/{annotation}
 DELETE /api/annotations/{annotation}
 ```
@@ -112,17 +118,17 @@ for any annotation the user owns, not only orphaned ones — a card marked
 | Piece | Path |
 |---|---|
 | Domain | `app/Domains/Annotation/` |
-| WebApi | `app/Http/WebApi/Controllers/Annotation/`, `.../ProjectDocuments/ProjectDocumentAnnotationsController.php` |
+| WebApi | `app/Http/WebApi/Controllers/Annotation/`, `.../ProjectDocuments/ProjectDocumentVersionAnnotationsController.php` |
 | Anchor functions | `resources/js/shared/utils/markdown-anchor.util.ts` (+ `.dom.util.ts`) |
 | Data layer | `resources/js/entities/annotation/`, `resources/js/entities/project-document/` |
-| UI | `resources/js/widgets/project-documents/document-sheet/` (the document surface), `resources/js/widgets/project-documents/annotations/` (the annotation session, composer and sidebar) |
+| UI | `resources/js/shared/components/document-sheet/` (the document surface), `resources/js/widgets/project-documents/annotations/` (the annotation session, composer and sidebar), `resources/js/pages/documentation/workspace/tabs/DocumentContentPage.vue` (what wires them together) |
 | Unit tests | `resources/js/shared/utils/markdown-anchor.util.spec.ts` (`npx vitest run`) |
-| E2E | `e2e/project-documents/annotations.smoke.spec.ts` |
+| E2E | `e2e/project-documents/annotations.smoke.spec.ts` — **stale and failing.** It drives an `Annotation mode` menu item that the workspace redesign removed, and predates annotations moving to versions. |
 
 ## Limits of this version
 
 No resolved/approved states, no Open/Resolved tabs, no search or filtering in the sidebar,
-no annotations on a selected range of text, no CLI API, and no carrying annotations across
-document revisions. Concurrent editing is last-write-wins: if someone else changes the
-document while annotation mode is open, anchors resolve against the stale content until the
-page is reloaded.
+no annotations on a selected range of text, no CLI API, and no carrying annotations from one
+version to another. Concurrent editing is last-write-wins: if someone else changes the
+document while the tab is open, anchors resolve against the stale content until the page is
+reloaded.

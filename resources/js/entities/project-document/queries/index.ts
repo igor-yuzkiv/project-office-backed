@@ -1,7 +1,7 @@
 export { useProjectDocumentQuery } from './use.project-document.query'
 export { useProjectDocumentsQuery } from './use.project-documents.query'
 export { useProjectDocumentCommentsQuery } from './use.project-document-comments.query'
-export { useProjectDocumentAnnotationsQuery } from './use.project-document-annotations.query'
+export { useProjectDocumentVersionAnnotationsQuery } from './use.project-document-version-annotations.query'
 export { useProjectDocumentTasksQuery } from './use.project-document-tasks.query'
 export { useProjectDocumentsSearchQuery } from './use.project-documents-search.query'
 export { useProjectDocumentVersionsQuery } from './use.project-document-versions.query'

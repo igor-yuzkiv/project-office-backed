@@ -1,7 +1,7 @@
 import { computed, ref, shallowRef, watch, type MaybeRefOrGetter, toValue } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
 import type { IAnnotation } from '@/entities/annotation'
-import { useProjectDocumentAnnotationsQuery } from '@/entities/project-document'
+import { useProjectDocumentVersionAnnotationsQuery } from '@/entities/project-document'
 import { useToast } from '@/shared/composables/use.toast'
 import type { DomBlock, DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 import { buildAnchor, buildTextSnapshot } from '@/shared/utils/markdown-anchor.util'
@@ -9,12 +9,15 @@ import { useAnnotationAnchors } from './use.annotation-anchors'
 import { useAnnotationEditor } from './use.annotation-editor'
 
 /**
- * Annotating a document: which block is picked, what is being written about it, and which
- * annotation is being edited or re-anchored. The blocks come from whoever renders the
- * document — this composable never touches the DOM it points at.
+ * Annotating one version of a document: which block is picked, what is being written about it,
+ * and which annotation is being edited or re-anchored. The blocks come from whoever renders the
+ * version — this composable never touches the DOM it points at.
+ *
+ * An annotation belongs to a version because its anchor is resolved against that version's text,
+ * which does not survive a switch to another one.
  */
 export function useAnnotationSession(
-    documentId: MaybeRefOrGetter<string>,
+    versionId: MaybeRefOrGetter<string>,
     blocks: MaybeRefOrGetter<DomBlocks>,
     options: { enabled?: MaybeRefOrGetter<boolean> } = {}
 ) {
@@ -29,14 +32,15 @@ export function useAnnotationSession(
 
     const isEnabled = computed(() => (options.enabled === undefined ? true : toValue(options.enabled)))
 
-    const { annotations, isPending, isError, refetch } = useProjectDocumentAnnotationsQuery(() => toValue(documentId), {
-        enabled: isEnabled,
-    })
+    const { annotations, isPending, isError, refetch } = useProjectDocumentVersionAnnotationsQuery(
+        () => toValue(versionId),
+        { enabled: isEnabled }
+    )
 
     // A disabled query keeps its last answer, so the anchors have to be emptied by hand —
     // otherwise a switched-off session would leave its highlights on the document.
     const { orderedAnchors } = useAnnotationAnchors(() => (isEnabled.value ? annotations.value : []), blocks)
-    const { create, update, remove, isSaving, isUpdating } = useAnnotationEditor(documentId)
+    const { create, update, remove, isSaving, isUpdating } = useAnnotationEditor(versionId)
 
     const isBusy = computed(() => isSaving.value || isUpdating.value)
     const isReanchoring = computed(() => reanchoring.value !== null)
@@ -150,12 +154,13 @@ export function useAnnotationSession(
     onKeyStroke('Escape', () => (isReanchoring.value ? cancelReanchoring() : cancel()))
 
     /**
-     * Everything here points at one document's blocks, and the session can outlive them: the
-     * workspace reuses the same page instance from document to document, and a document edited
-     * to empty takes its rendered blocks away without ending the session. A draft carried across
-     * either boundary would be saved against a block the reader is no longer looking at.
+     * Everything here points at one version's blocks, and the session can outlive them: the
+     * workspace reuses the same page instance from document to document and from version to
+     * version, and a version with no content takes its rendered blocks away without ending the
+     * session. A draft carried across any of those boundaries would be saved against a block the
+     * reader is no longer looking at.
      */
-    watch([() => toValue(documentId), isEnabled], () => {
+    watch([() => toValue(versionId), isEnabled], () => {
         clearDraft()
         reanchoring.value = null
         selectedBlock.value = null

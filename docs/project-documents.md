@@ -5,8 +5,9 @@ filesystem-like structure. A document carries no content of its own: content
 lives in its versions, and a document may act as a container for child
 documents — there is no separate "folder" type.
 
-This covers the data model only. No API, UI, editor, or move/reorder commands
-exist yet (out of scope for this iteration).
+This document covers the data model. The WebApi, the CLI API, the documentation
+workspace and the editor are all built on top of it; annotations have their own
+document, `document-annotations.md`.
 
 ## Entities
 
@@ -76,24 +77,26 @@ required for efficient ancestor/descendant tree lookups
   unique constraints treat `NULL` as distinct and would not otherwise dedupe
   root titles.
 
-Validation lives directly in the model's boot hooks rather than in an
-Actions/Handler (there is no Handler/API layer for this entity yet — adding
-one was out of scope for this iteration).
+Hierarchy validation lives in the model's boot hooks rather than in a Handler,
+so that it holds for every writer — the Actions in
+`app/Domains/ProjectDocument/Actions/Document/` included.
 
-## Known limitations (explicitly out of scope for this iteration)
+## Known limitations
 
-The task excluded "move within the tree" business logic except where minimally
-necessary for a correct model. As a result:
+Moving within the tree was only ever taken as far as a correct model needs.
+As a result:
 
 - Moving a document that has children does **not** cascade `path`/`depth`
   updates to its descendants — only the moved document itself is recomputed.
-- Deleting a parent document sets children's `parent_id` to `NULL` at the
-  database level (`nullOnDelete`), bypassing Eloquent hooks — orphaned
-  children keep a stale `path`/`depth` pointing at the deleted ancestor.
+- `DeleteProjectDocumentHandler` removes the whole `path <@` subtree, deepest
+  first, so a delete through the API takes the descendants with it. The
+  `nullOnDelete` on `parent_id` is only reached by a delete that bypasses that
+  handler, and such a delete leaves children with a stale `path`/`depth`
+  pointing at an ancestor that is gone.
 - No pessimistic locking guards the cycle check, so two concurrent opposite
   moves (A under B, B under A) could theoretically both pass validation.
 
-Any future work implementing document moves/reordering needs to address these.
+Any future work on document moves and reordering needs to address these.
 
 ## Local setup note: the `ltree` extension
 

@@ -59,9 +59,9 @@ const {
     cancelReanchoring,
     removeAnnotation,
 } = useAnnotationSession(
-    () => props.document.id,
+    () => openVersion.value?.id ?? '',
     () => blocks.value,
-    // A document with no content renders no sheet, so there is nothing to annotate and
+    // A document with no versions renders no sheet, so there is nothing to annotate and
     // nothing to ask the server about.
     { enabled: () => annotationsEnabled.value && openVersion.value !== null }
 )

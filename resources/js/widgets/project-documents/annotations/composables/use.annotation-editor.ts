@@ -1,12 +1,12 @@
 import { type MaybeRefOrGetter } from 'vue'
 import { useDeleteAnnotationMutation, useUpdateAnnotationMutation, type SaveAnnotationDto } from '@/entities/annotation'
-import { useCreateProjectDocumentAnnotationMutation } from '@/entities/project-document'
+import { useCreateProjectDocumentVersionAnnotationMutation } from '@/entities/project-document'
 import { ApiError } from '@/shared/api/api.error'
 import { useToast } from '@/shared/composables/use.toast'
 
-export function useAnnotationEditor(documentId: MaybeRefOrGetter<string>) {
+export function useAnnotationEditor(versionId: MaybeRefOrGetter<string>) {
     const toast = useToast()
-    const createMutation = useCreateProjectDocumentAnnotationMutation(documentId)
+    const createMutation = useCreateProjectDocumentVersionAnnotationMutation(versionId)
     const updateMutation = useUpdateAnnotationMutation()
     const deleteMutation = useDeleteAnnotationMutation()
 

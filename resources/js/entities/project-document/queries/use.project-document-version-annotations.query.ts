@@ -1,15 +1,15 @@
 import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { fetchProjectDocumentAnnotationsRequest } from '../api'
-import { ProjectDocumentAnnotationQueryKey } from '../config'
+import { fetchProjectDocumentVersionAnnotationsRequest } from '../api'
+import { ProjectDocumentVersionAnnotationQueryKey } from '../config'
 
-export function useProjectDocumentAnnotationsQuery(
-    documentId: MaybeRefOrGetter<string>,
+export function useProjectDocumentVersionAnnotationsQuery(
+    versionId: MaybeRefOrGetter<string>,
     options?: { enabled?: MaybeRefOrGetter<boolean> }
 ) {
     const { data, isPending, isError, isFetching, refetch } = useQuery({
-        queryKey: ProjectDocumentAnnotationQueryKey.documentAnnotations(documentId),
-        queryFn: () => fetchProjectDocumentAnnotationsRequest(toValue(documentId)),
+        queryKey: ProjectDocumentVersionAnnotationQueryKey.versionAnnotations(versionId),
+        queryFn: () => fetchProjectDocumentVersionAnnotationsRequest(toValue(versionId)),
         enabled: computed(() => (options?.enabled === undefined ? true : toValue(options.enabled))),
     })
 

@@ -4,6 +4,7 @@ namespace App\Domains\ProjectDocument\Actions\Version\DeleteProjectDocumentVersi
 
 use App\Domains\ProjectDocument\AuditRecords\ProjectDocumentVersionDeletedAuditRecord;
 use App\Libs\AuditTrail\Facades\AuditTrail;
+use Illuminate\Support\Facades\DB;
 
 class DeleteProjectDocumentVersionHandler
 {
@@ -18,7 +19,10 @@ class DeleteProjectDocumentVersionHandler
         $versionNumber = $version->version_number;
         $label = $version->label;
 
-        $version->delete();
+        DB::transaction(function () use ($version): void {
+            $version->annotations()->delete();
+            $version->delete();
+        });
 
         AuditTrail::capture(new ProjectDocumentVersionDeletedAuditRecord($document, $versionNumber, $label));
     }

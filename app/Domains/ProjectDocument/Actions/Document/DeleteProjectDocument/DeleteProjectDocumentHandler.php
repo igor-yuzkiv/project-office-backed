@@ -18,7 +18,7 @@ class DeleteProjectDocumentHandler
         DB::transaction(function () use ($command): void {
             $subtree = ProjectDocumentModel::query()
                 ->whereRaw('path <@ ?::ltree', [$command->document->path])
-                ->with('attachments')
+                ->with(['attachments', 'versions'])
                 ->orderByDesc('depth')
                 ->get();
 
@@ -30,7 +30,12 @@ class DeleteProjectDocumentHandler
                 }
 
                 $node->comments()->delete();
-                $node->annotations()->delete();
+
+                // Versions go with the document through the foreign key, but their annotations
+                // are a polymorphic link with nothing to cascade along.
+                foreach ($node->versions as $version) {
+                    $version->annotations()->delete();
+                }
                 $node->tags()->detach();
                 $node->delete();
             }

@@ -3,6 +3,6 @@ export { useUpdateProjectDocumentMutation } from './use.update-project-document.
 export { useMoveProjectDocumentMutation } from './use.move-project-document.mutation'
 export { useDeleteProjectDocumentMutation } from './use.delete-project-document.mutation'
 export { useCreateProjectDocumentCommentMutation } from './use.create-project-document-comment.mutation'
-export { useCreateProjectDocumentAnnotationMutation } from './use.create-project-document-annotation.mutation'
+export { useCreateProjectDocumentVersionAnnotationMutation } from './use.create-project-document-version-annotation.mutation'
 export { useSyncProjectDocumentTasksMutation } from './use.sync-project-document-tasks.mutation'
 export * from './use.project-document-version.mutations'

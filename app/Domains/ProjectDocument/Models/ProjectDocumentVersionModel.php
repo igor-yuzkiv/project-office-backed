@@ -2,11 +2,15 @@
 
 namespace App\Domains\ProjectDocument\Models;
 
+use App\Domains\Annotation\Models\AnnotationModel;
 use App\Domains\User\Models\UserModel;
+use App\Infrastructure\Models\Contracts\Annotatable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -20,9 +24,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon $updated_at
  * @property-read ProjectDocumentModel $document
  * @property-read UserModel|null $author
+ * @property-read Collection<int, AnnotationModel> $annotations
  */
 #[Fillable(['project_document_id', 'version_number', 'label', 'content', 'author_id'])]
-class ProjectDocumentVersionModel extends Model
+class ProjectDocumentVersionModel extends Model implements Annotatable
 {
     use HasUlids;
 
@@ -51,5 +56,11 @@ class ProjectDocumentVersionModel extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(UserModel::class, 'author_id');
+    }
+
+    /** @return MorphMany<AnnotationModel, $this> */
+    public function annotations(): MorphMany
+    {
+        return $this->morphMany(AnnotationModel::class, 'annotatable');
     }
 }

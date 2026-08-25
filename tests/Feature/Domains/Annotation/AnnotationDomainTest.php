@@ -12,6 +12,7 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\Document\DeleteProjectDocument\DeleteProjectDocumentCommand;
 use App\Domains\ProjectDocument\Actions\Document\DeleteProjectDocument\DeleteProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
+use App\Domains\ProjectDocument\Models\ProjectDocumentVersionModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -36,12 +37,17 @@ function documentFixture(): ProjectDocumentModel
     return ProjectDocumentModel::factory()->for(ProjectModel::factory(), 'project')->create();
 }
 
-it('attaches a created annotation to the document and stores its anchor', function () {
-    $document = documentFixture();
+function versionFixture(?ProjectDocumentModel $document = null): ProjectDocumentVersionModel
+{
+    return ($document ?? documentFixture())->versions()->create(['version_number' => 1, 'content' => 'Body']);
+}
+
+it('attaches a created annotation to the version and stores its anchor', function () {
+    $version = versionFixture();
     $author = UserModel::factory()->create();
 
     $annotation = app(CreateAnnotationHandler::class)->handle(new CreateAnnotationCommand(
-        annotatable: $document,
+        annotatable: $version,
         author: $author,
         content: 'Needs a clearer example here.',
         anchor: BlockAnchorDTO::fromArray(anchorFixture()),
@@ -51,15 +57,15 @@ it('attaches a created annotation to the document and stores its anchor', functi
     expect(Str::isUlid($annotation->id))->toBeTrue()
         ->and($annotation->anchor)->toBe(anchorFixture())
         ->and($annotation->text_snapshot)->toBe('The first sentence of the block.')
-        ->and($document->annotations()->pluck('id')->all())->toBe([$annotation->id]);
+        ->and($version->annotations()->pluck('id')->all())->toBe([$annotation->id]);
 });
 
 it('does not record an audit trail entry when an annotation is created', function () {
-    $document = documentFixture();
+    $version = versionFixture();
     $author = UserModel::factory()->create();
 
     app(CreateAnnotationHandler::class)->handle(new CreateAnnotationCommand(
-        annotatable: $document,
+        annotatable: $version,
         author: $author,
         content: 'Review note.',
         anchor: BlockAnchorDTO::fromArray(anchorFixture()),
@@ -69,11 +75,11 @@ it('does not record an audit trail entry when an annotation is created', functio
 });
 
 it('updates content, anchor and text snapshot together', function () {
-    $document = documentFixture();
+    $version = versionFixture();
     $author = UserModel::factory()->create();
 
     $annotation = AnnotationModel::factory()
-        ->for($document, 'annotatable')
+        ->for($version, 'annotatable')
         ->for($author, 'author')
         ->create(['anchor' => anchorFixture()]);
 
@@ -92,7 +98,7 @@ it('updates content, anchor and text snapshot together', function () {
 
 it('deletes an annotation', function () {
     $annotation = AnnotationModel::factory()
-        ->for(documentFixture(), 'annotatable')
+        ->for(versionFixture(), 'annotatable')
         ->for(UserModel::factory(), 'author')
         ->create();
 
@@ -101,11 +107,12 @@ it('deletes an annotation', function () {
     expect(AnnotationModel::query()->count())->toBe(0);
 });
 
-it('removes the annotations of a deleted document', function () {
+it('removes the annotations of a deleted document, through its versions', function () {
     $document = documentFixture();
+    $version = versionFixture($document);
 
     AnnotationModel::factory()
-        ->for($document, 'annotatable')
+        ->for($version, 'annotatable')
         ->for(UserModel::factory(), 'author')
         ->create();
 
