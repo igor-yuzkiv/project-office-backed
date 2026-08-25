@@ -39,9 +39,22 @@ class UpdateProjectDocumentRequest extends FormRequest
         return new UpdateProjectDocumentCommand(
             document: $document,
             title: $this->has('title') ? $this->validated('title') : $document->title,
-            content: $this->has('content') ? $this->validated('content') : $document->content,
             status: $document->status,
             tagIds: $tagIds,
         );
+    }
+
+    /**
+     * Content is written separately, into the document's effective version. Omitting it leaves
+     * every version untouched.
+     */
+    public function hasContent(): bool
+    {
+        return $this->has('content');
+    }
+
+    public function content(): ?string
+    {
+        return $this->validated('content');
     }
 }

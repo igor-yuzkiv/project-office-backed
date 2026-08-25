@@ -21,8 +21,17 @@ class ProjectDocumentModelFactory extends Factory
             'key'             => 'DOC-'.$sequence,
             'sequence_number' => $sequence,
             'title'           => fake()->unique()->words(3, true),
-            'content'         => fake()->boolean(60) ? fake()->paragraphs(2, true) : null,
             'status'          => ProjectDocumentStatus::Draft->value,
         ];
+    }
+
+    public function withContent(?string $content = null): static
+    {
+        return $this->afterCreating(function (ProjectDocumentModel $document) use ($content): void {
+            $document->versions()->create([
+                'version_number' => 1,
+                'content'        => $content ?? fake()->paragraphs(2, true),
+            ]);
+        });
     }
 }

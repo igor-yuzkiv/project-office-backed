@@ -38,8 +38,21 @@ class StoreProjectDocumentRequest extends FormRequest
             project: $project,
             title: $this->validated('title'),
             parentId: null,
-            content: $this->validated('content'),
             tagIds: $tagIds,
         );
+    }
+
+    /**
+     * Content is written separately, into the document's first version. Absent and null are
+     * different here: absent leaves the document without any version at all.
+     */
+    public function hasContent(): bool
+    {
+        return $this->has('content');
+    }
+
+    public function content(): ?string
+    {
+        return $this->validated('content');
     }
 }

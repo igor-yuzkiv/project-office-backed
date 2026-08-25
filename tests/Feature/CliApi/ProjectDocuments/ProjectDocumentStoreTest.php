@@ -4,6 +4,7 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -111,4 +112,16 @@ it('rejects a tag name longer than 64 characters', function () {
 
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['tags']);
+});
+
+it('reports creating a document with content as a creation only, not as an update on top of it', function () {
+    $response = $this->postJson("/api/cli/projects/{$this->project->id}/docs", [
+        'title'   => 'Created With Body',
+        'content' => 'Body',
+    ])->assertCreated();
+
+    $document = ProjectDocumentModel::findOrFail($response->json('data.id'));
+
+    expect(AuditRecordModel::query()->pluck('type')->all())->toBe(['project_document.created'])
+        ->and($document->effectiveVersion()->author_id)->toBe(auth()->id());
 });

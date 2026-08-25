@@ -35,7 +35,7 @@ class ProjectDocumentResource extends JsonResource
             'parent_id'         => $this->parent_id,
             'key'               => $this->key,
             'title'             => $this->title,
-            'content'           => $this->content,
+            'content'           => $this->effectiveVersion()?->content,
             'status'            => $this->status->value,
             'depth'             => $this->depth,
             'can_have_children' => $this->canHaveChildren(),

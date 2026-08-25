@@ -162,9 +162,8 @@ it('lists only documents belonging to the given project', function () {
 
 it('includes tags in the project document list, but not content', function () {
     $tag = TagModel::create(['name' => 'listed', 'color' => '#444444']);
-    $document = ProjectDocumentModel::factory()->create([
+    $document = ProjectDocumentModel::factory()->withContent('Body that should not appear in the list.')->create([
         'project_id' => $this->project->id,
-        'content'    => 'Body that should not appear in the list.',
     ]);
     $document->tags()->sync([$tag->id]);
 
@@ -301,30 +300,40 @@ it('includes the ancestor path from root to the document when requested via with
         ->assertJsonPath('data.path.1.id', $child->id);
 });
 
-it('updates the title, content and tags of a project document', function () {
+it('updates the title and tags of a project document', function () {
     $tag = TagModel::create(['name' => 'reviewed', 'color' => '#333333']);
 
     $document = ProjectDocumentModel::factory()->create([
         'project_id' => $this->project->id,
         'title'      => 'Old Title',
-        'content'    => null,
     ]);
 
     $response = $this->putJson('/api/project-documents/'.$document->id, [
         'title'   => 'New Title',
-        'content' => 'Updated body.',
         'status'  => $document->status->value,
         'tag_ids' => [$tag->id],
     ]);
 
     $response->assertOk()
-        ->assertJsonPath('data.title', 'New Title')
-        ->assertJsonPath('data.content', 'Updated body.');
+        ->assertJsonPath('data.title', 'New Title');
 
     $document->refresh();
     expect($document->title)->toBe('New Title');
-    expect($document->content)->toBe('Updated body.');
     expect($document->tags()->pluck('id')->all())->toBe([$tag->id]);
+});
+
+it('refuses content sent to the document update endpoint', function () {
+    $document = ProjectDocumentModel::factory()->withContent('Original body.')->create([
+        'project_id' => $this->project->id,
+    ]);
+
+    $this->putJson('/api/project-documents/'.$document->id, [
+        'title'   => $document->title,
+        'status'  => $document->status->value,
+        'content' => 'Sent to the wrong endpoint.',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['content']);
+
+    expect($document->effectiveVersion()->content)->toBe('Original body.');
 });
 
 it('updates the status of a project document', function () {
@@ -353,24 +362,6 @@ it('rejects an invalid status value on update', function () {
     ]);
 
     $response->assertUnprocessable()->assertJsonValidationErrors(['status']);
-});
-
-it('clears the content when explicitly updated with null', function () {
-    $document = ProjectDocumentModel::factory()->create([
-        'project_id' => $this->project->id,
-        'content'    => 'Some body.',
-    ]);
-
-    $response = $this->putJson('/api/project-documents/'.$document->id, [
-        'title'   => $document->title,
-        'status'  => $document->status->value,
-        'content' => null,
-    ]);
-
-    $response->assertOk()->assertJsonPath('data.content', null);
-
-    $document->refresh();
-    expect($document->content)->toBeNull();
 });
 
 it('deletes a single project document', function () {
@@ -471,9 +462,8 @@ it('records a project_document.updated event', function () {
     ]);
 
     $this->putJson("/api/project-documents/{$document->id}", [
-        'title'   => 'Architecture',
-        'content' => 'Rewritten.',
-        'status'  => $document->status->value,
+        'title'  => 'Architecture',
+        'status' => ProjectDocumentStatus::InReview->value,
     ])->assertOk();
 
     $record = AuditRecordModel::query()->sole();

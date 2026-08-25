@@ -1,8 +1,9 @@
 # Project documents (documentation hub)
 
 Backend foundation for storing project-scoped documentation in a hierarchical,
-filesystem-like structure. Each document can hold content and/or act as a
-container for child documents — there is no separate "folder" type.
+filesystem-like structure. A document carries no content of its own: content
+lives in its versions, and a document may act as a container for child
+documents — there is no separate "folder" type.
 
 This covers the data model only. No API, UI, editor, or move/reorder commands
 exist yet (out of scope for this iteration).
@@ -10,12 +11,32 @@ exist yet (out of scope for this iteration).
 ## Entities
 
 - `App\Domains\ProjectDocument\Models\ProjectDocumentModel` (table `project_documents`)
+- `App\Domains\ProjectDocument\Models\ProjectDocumentVersionModel` (table
+  `project_document_versions`) — the content of a document, numbered per document.
 - `App\Domains\ProjectDocument\Enums\ProjectDocumentStatus`
 - Pivot table `project_document_task` — many-to-many between documents and tasks
   (both must belong to the same project; not enforced at the DB level, see
   Constraints below).
 - Tags — reuses the existing polymorphic `taggables` mechanism, same as
   `ProjectModel`/`TaskModel` (`tags(): MorphToMany`).
+
+## Versions and the effective version
+
+Content is stored per version, not on the document. `version_number` increments
+per document and is unique within it.
+
+`project_documents.primary_version_id` pins one version as the primary one. When
+it is `null` the effective version is the newest by `version_number`; when it is
+set, that version is effective regardless of what came after it. Clearing it
+returns the document to following the newest version.
+
+A document may have **no versions at all** — a document created with only a title
+has none until content is written. Everything reading content has to handle that.
+
+`WriteProjectDocumentContentHandler` is how a caller that knows nothing about
+versions writes content: it overwrites the effective version in place, or creates
+version 1 when there is none. The CLI API is built on it, which is why the CLI
+contract still exposes `content` as a plain string.
 
 ## Hierarchy: parent_id + ltree path
 

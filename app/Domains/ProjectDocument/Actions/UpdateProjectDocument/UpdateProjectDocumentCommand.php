@@ -13,7 +13,6 @@ class UpdateProjectDocumentCommand
     public function __construct(
         public readonly ProjectDocumentModel $document,
         public readonly ?string $title = null,
-        public readonly ?string $content = null,
         public readonly ?ProjectDocumentStatus $status = null,
         public readonly ?array $tagIds = null,
     ) {}
@@ -24,9 +23,8 @@ class UpdateProjectDocumentCommand
     public function toModelAttributes(): array
     {
         return [
-            'title'   => $this->title,
-            'content' => $this->content,
-            'status'  => $this->status?->value,
+            'title'  => $this->title,
+            'status' => $this->status?->value,
         ];
     }
 }

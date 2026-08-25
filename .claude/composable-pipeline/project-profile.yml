@@ -82,7 +82,7 @@ exemplars:
   web_api_update_request: app/Http/WebApi/Requests/TaskLists/UpdateTaskListRequest.php
   web_api_store_request: app/Http/WebApi/Requests/TaskLists/StoreTaskListRequest.php
   resource: app/Http/Shared/Resources/Tasks/TaskResource.php
-  console_command: app/Console/Commands/ImportProjectDocumentsFromMarkdownCommand.php
+  console_command:   # the markdown import was removed with document versioning; no exemplar left
   migration: database/migrations/2026_08_08_120000_add_status_description_and_key_to_task_lists_table.php
   test_unit: tests/Unit/Libs/EloquentFilters/FilterResolverTest.php
   test_feature: tests/Feature/CliApi/Tasks/TaskWorkflowCheckpointTest.php

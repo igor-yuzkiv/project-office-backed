@@ -45,7 +45,7 @@ use Laravel\Scout\Searchable;
  * @property string $key
  * @property int $sequence_number
  * @property string $title
- * @property string|null $content
+ * @property string|null $primary_version_id
  * @property ProjectDocumentStatus $status
  * @property string $path
  * @property int $depth
@@ -61,9 +61,11 @@ use Laravel\Scout\Searchable;
  * @property-read Collection<int, CommentModel> $comments
  * @property-read Collection<int, AnnotationModel> $annotations
  * @property-read Collection<int, AttachmentModel> $attachments
+ * @property-read Collection<int, ProjectDocumentVersionModel> $versions
+ * @property-read ProjectDocumentVersionModel|null $primaryVersion
  * @property-read UserModel|null $archivedBy
  */
-#[Fillable(['id', 'project_id', 'parent_id', 'key', 'sequence_number', 'title', 'content', 'status', 'created_by', 'updated_by'])]
+#[Fillable(['id', 'project_id', 'parent_id', 'key', 'sequence_number', 'title', 'primary_version_id', 'status', 'created_by', 'updated_by'])]
 class ProjectDocumentModel extends Model implements Annotatable, Archivable, Commentable
 {
     /** @use HasFactory<ProjectDocumentModelFactory> */
@@ -168,10 +170,9 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
     public function toSearchableArray(): array
     {
         return [
-            'id'      => $this->id,
-            'key'     => $this->key,
-            'title'   => $this->title,
-            'content' => $this->content,
+            'id'    => $this->id,
+            'key'   => $this->key,
+            'title' => $this->title,
         ];
     }
 
@@ -209,6 +210,29 @@ class ProjectDocumentModel extends Model implements Annotatable, Archivable, Com
     public function comments(): MorphMany
     {
         return $this->morphMany(CommentModel::class, 'commentable');
+    }
+
+    /** @return HasMany<ProjectDocumentVersionModel, $this> */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ProjectDocumentVersionModel::class, 'project_document_id')
+            ->orderBy('version_number');
+    }
+
+    /** @return BelongsTo<ProjectDocumentVersionModel, $this> */
+    public function primaryVersion(): BelongsTo
+    {
+        return $this->belongsTo(ProjectDocumentVersionModel::class, 'primary_version_id');
+    }
+
+    /** A document may legitimately have no version at all, so null is an ordinary answer here. */
+    public function effectiveVersion(): ?ProjectDocumentVersionModel
+    {
+        if ($this->primary_version_id !== null) {
+            return $this->primaryVersion;
+        }
+
+        return $this->versions()->reorder()->orderByDesc('version_number')->first();
     }
 
     public function annotations(): MorphMany

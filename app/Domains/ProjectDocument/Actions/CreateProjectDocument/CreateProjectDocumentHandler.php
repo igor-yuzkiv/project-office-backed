@@ -21,9 +21,7 @@ class CreateProjectDocumentHandler
 
         $this->syncTags($document, $command);
 
-        if ($command->recordAudit) {
-            AuditTrail::capture(new ProjectDocumentCreatedAuditRecord($document, (string) $command->project->name));
-        }
+        AuditTrail::capture(new ProjectDocumentCreatedAuditRecord($document, (string) $command->project->name));
 
         return $document->refresh();
     }

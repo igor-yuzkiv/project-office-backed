@@ -14,10 +14,9 @@ beforeEach(function () {
 });
 
 it('shows a document by id with the expected fields', function () {
-    $document = ProjectDocumentModel::factory()->create([
+    $document = ProjectDocumentModel::factory()->withContent('Some content')->create([
         'project_id' => $this->project->id,
         'title'      => 'Architecture',
-        'content'    => 'Some content',
     ]);
 
     $response = $this->getJson("/api/cli/projects/{$this->project->id}/docs/{$document->id}");

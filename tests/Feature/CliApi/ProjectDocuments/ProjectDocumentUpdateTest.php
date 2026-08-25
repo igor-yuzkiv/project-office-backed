@@ -5,6 +5,7 @@ use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
 use App\Domains\User\Models\UserModel;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -15,10 +16,9 @@ beforeEach(function () {
 });
 
 it('updates the title and content', function () {
-    $document = ProjectDocumentModel::factory()->create([
+    $document = ProjectDocumentModel::factory()->withContent('Original body')->create([
         'project_id' => $this->project->id,
         'title'      => 'Original',
-        'content'    => 'Original body',
     ]);
 
     $response = $this->putJson("/api/cli/projects/{$this->project->id}/docs/{$document->id}", [
@@ -32,7 +32,8 @@ it('updates the title and content', function () {
 
     $fresh = $document->fresh();
     expect($fresh->title)->toBe('Updated');
-    expect($fresh->content)->toBe('Updated body');
+    expect($fresh->effectiveVersion()->content)->toBe('Updated body');
+    expect($fresh->versions()->count())->toBe(1);
 });
 
 it('updates a document resolved by key', function () {
@@ -122,4 +123,29 @@ it('returns 404 when updating a document from another project', function () {
 
     $response->assertNotFound();
     expect($document->fresh()->title)->not->toBe('Hijacked');
+});
+
+it('records a document update and stamps the author when only the content changes', function () {
+    $document = ProjectDocumentModel::factory()->withContent('Original body')->create([
+        'project_id' => $this->project->id,
+    ]);
+    $updatedAt = $document->updated_at;
+    $this->travel(1)->minutes();
+
+    $this->putJson("/api/cli/projects/{$this->project->id}/docs/{$document->id}", [
+        'content' => 'Updated body',
+    ])->assertOk();
+
+    expect(AuditRecordModel::query()->where('type', 'project_document.updated')->count())->toBe(1)
+        ->and($document->fresh()->updated_at->greaterThan($updatedAt))->toBeTrue();
+});
+
+it('creates the first version with the acting user as its author', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $this->putJson("/api/cli/projects/{$this->project->id}/docs/{$document->id}", [
+        'content' => 'First body',
+    ])->assertOk();
+
+    expect($document->effectiveVersion()->author_id)->toBe(auth()->id());
 });

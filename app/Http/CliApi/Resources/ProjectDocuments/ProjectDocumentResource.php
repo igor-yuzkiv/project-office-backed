@@ -37,7 +37,7 @@ class ProjectDocumentResource extends JsonResource
             'key'     => $this->key,
             'title'   => $this->title,
             'status'  => $this->status->value,
-            'content' => $this->content,
+            'content' => $this->effectiveVersion()?->content,
             'tags'    => TagResource::collection($this->whenLoaded('tags')),
             'path'    => ProjectDocumentPathNodeResource::collection($this->ancestorPath),
         ];

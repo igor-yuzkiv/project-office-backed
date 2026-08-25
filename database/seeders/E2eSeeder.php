@@ -50,15 +50,19 @@ class E2eSeeder extends Seeder
             ['name' => 'E2E Project', 'status' => 'active'],
         );
 
-        ProjectDocumentModel::updateOrCreate(
+        $document = ProjectDocumentModel::updateOrCreate(
             ['key' => 'DOC-E2E-1'],
             [
                 'project_id'      => $project->id,
                 'sequence_number' => 1,
                 'title'           => 'Annotated Document',
-                'content'         => self::DOCUMENT_CONTENT,
                 'status'          => ProjectDocumentStatus::Draft->value,
             ],
+        );
+
+        $document->versions()->updateOrCreate(
+            ['version_number' => 1],
+            ['content' => self::DOCUMENT_CONTENT],
         );
     }
 }

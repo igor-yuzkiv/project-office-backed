@@ -14,13 +14,7 @@ class CreateProjectDocumentCommand
         public readonly ProjectModel $project,
         public readonly string $title,
         public readonly ?string $parentId = null,
-        public readonly ?string $content = null,
         public readonly ?array $tagIds = null,
-        /**
-         * The markdown import creates documents in bulk from the console, where there is no
-         * actor and no user action to report; it passes false.
-         */
-        public readonly bool $recordAudit = true,
     ) {}
 
     /**
@@ -34,7 +28,6 @@ class CreateProjectDocumentCommand
             'key'             => $documentKey->value,
             'sequence_number' => $documentKey->sequenceNumber,
             'title'           => $this->title,
-            'content'         => $this->content,
         ];
     }
 }
