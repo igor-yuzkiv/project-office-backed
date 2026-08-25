@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\WebApi\Controllers\ProjectDocuments;
+
+use App\Domains\ProjectDocument\Actions\CreateProjectDocumentVersion\CreateProjectDocumentVersionHandler;
+use App\Domains\ProjectDocument\Actions\DeleteProjectDocumentVersion\DeleteProjectDocumentVersionCommand;
+use App\Domains\ProjectDocument\Actions\DeleteProjectDocumentVersion\DeleteProjectDocumentVersionHandler;
+use App\Domains\ProjectDocument\Actions\SetProjectDocumentPrimaryVersion\SetProjectDocumentPrimaryVersionHandler;
+use App\Domains\ProjectDocument\Actions\UpdateProjectDocumentVersions\UpdateProjectDocumentVersionsHandler;
+use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
+use App\Domains\ProjectDocument\Models\ProjectDocumentVersionModel;
+use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentResource;
+use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentVersionResource;
+use App\Http\WebApi\Requests\ProjectDocuments\SetProjectDocumentPrimaryVersionRequest;
+use App\Http\WebApi\Requests\ProjectDocuments\StoreProjectDocumentVersionRequest;
+use App\Http\WebApi\Requests\ProjectDocuments\UpdateProjectDocumentVersionsRequest;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+class ProjectDocumentVersionsController
+{
+    public function __construct(
+        private readonly CreateProjectDocumentVersionHandler $createHandler,
+        private readonly UpdateProjectDocumentVersionsHandler $updateHandler,
+        private readonly DeleteProjectDocumentVersionHandler $deleteHandler,
+        private readonly SetProjectDocumentPrimaryVersionHandler $setPrimaryHandler,
+    ) {}
+
+    public function index(ProjectDocumentModel $projectDocument): AnonymousResourceCollection
+    {
+        $versions = $projectDocument->versions()->with('author')->get();
+        $this->markPrimary($projectDocument, $versions);
+
+        return ProjectDocumentVersionResource::collection($versions);
+    }
+
+    public function store(StoreProjectDocumentVersionRequest $request, ProjectDocumentModel $projectDocument): JsonResponse
+    {
+        $version = $this->createHandler->handle($request->toCommand());
+        $version->load('author');
+
+        $this->markPrimary($projectDocument->refresh(), new Collection([$version]));
+
+        return (new ProjectDocumentVersionResource($version))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function update(UpdateProjectDocumentVersionsRequest $request, ProjectDocumentModel $projectDocument): AnonymousResourceCollection
+    {
+        $versions = $this->updateHandler->handle($request->toCommand())->load('author');
+        $this->markPrimary($projectDocument, $versions);
+
+        return ProjectDocumentVersionResource::collection($versions);
+    }
+
+    public function destroy(ProjectDocumentVersionModel $projectDocumentVersion): JsonResponse
+    {
+        $this->deleteHandler->handle(new DeleteProjectDocumentVersionCommand($projectDocumentVersion));
+
+        return response()->json(status: 204);
+    }
+
+    public function setPrimary(SetProjectDocumentPrimaryVersionRequest $request, ProjectDocumentModel $projectDocument): ProjectDocumentResource
+    {
+        return new ProjectDocumentResource($this->setPrimaryHandler->handle($request->toCommand()));
+    }
+
+    /**
+     * @param  Collection<int, ProjectDocumentVersionModel>  $versions
+     */
+    private function markPrimary(ProjectDocumentModel $document, Collection $versions): void
+    {
+        $primaryId = $document->effectiveVersion()?->id;
+
+        foreach ($versions as $version) {
+            $version->isPrimary = $version->id === $primaryId;
+        }
+    }
+}

@@ -26,6 +26,12 @@ class ProjectDocumentVersionModel extends Model
 {
     use HasUlids;
 
+    /**
+     * Whether this is the version a reader gets by default. It cannot be decided from one row —
+     * whoever loads the set resolves it and stamps it here before the resource reads it.
+     */
+    public bool $isPrimary = false;
+
     protected $table = 'project_document_versions';
 
     public $incrementing = false;

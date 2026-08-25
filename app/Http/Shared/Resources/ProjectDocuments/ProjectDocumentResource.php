@@ -29,13 +29,21 @@ class ProjectDocumentResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $version = $this->effectiveVersion();
+
         return [
-            'id'                => $this->id,
-            'project_id'        => $this->project_id,
-            'parent_id'         => $this->parent_id,
-            'key'               => $this->key,
-            'title'             => $this->title,
-            'content'           => $this->effectiveVersion()?->content,
+            'id'                 => $this->id,
+            'project_id'         => $this->project_id,
+            'parent_id'          => $this->parent_id,
+            'key'                => $this->key,
+            'title'              => $this->title,
+            'content'            => $version?->content,
+            'primary_version_id' => $this->primary_version_id,
+            'version'            => $version === null ? null : [
+                'id'             => $version->id,
+                'version_number' => $version->version_number,
+                'label'          => $version->label,
+            ],
             'status'            => $this->status->value,
             'depth'             => $this->depth,
             'can_have_children' => $this->canHaveChildren(),

@@ -12,6 +12,7 @@ use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsControll
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTasksController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
+use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentVersionsController;
 use App\Http\WebApi\Controllers\Projects\ProjectAttachmentsController;
 use App\Http\WebApi\Controllers\Projects\ProjectsController;
 use App\Http\WebApi\Controllers\Tags\TagsController;
@@ -133,6 +134,21 @@ Route::apiResource('project-documents', ProjectDocumentsController::class)
     ->middleware(['auth:sanctum']);
 Route::patch('project-documents/{project_document}/move', [ProjectDocumentsController::class, 'move'])
     ->middleware(['auth:sanctum'])->name('project-documents.move');
+
+Route::group([
+    'prefix'     => 'project-documents/{project_document}/versions',
+    'as'         => 'project-documents.versions.',
+    'middleware' => ['auth:sanctum'],
+    'controller' => ProjectDocumentVersionsController::class,
+], function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+    Route::put('/', 'update')->name('update');
+});
+Route::put('project-documents/{project_document}/primary-version', [ProjectDocumentVersionsController::class, 'setPrimary'])
+    ->middleware(['auth:sanctum'])->name('project-documents.primary-version.update');
+Route::delete('project-document-versions/{project_document_version}', [ProjectDocumentVersionsController::class, 'destroy'])
+    ->middleware(['auth:sanctum'])->name('project-document-versions.destroy');
 Route::get('projects/{project}/project-documents/tree', [ProjectDocumentTreeController::class, 'index'])
     ->middleware(['auth:sanctum'])->name('projects.project-documents.tree');
 
