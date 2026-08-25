@@ -3,7 +3,7 @@
 namespace App\Http\WebApi\Requests\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentCommand;
+use App\Domains\ProjectDocument\Actions\Document\CreateProjectDocument\CreateProjectDocumentCommand;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

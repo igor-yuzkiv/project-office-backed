@@ -2,7 +2,7 @@
 
 namespace App\Http\WebApi\Requests\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentCommand;
+use App\Domains\ProjectDocument\Actions\Document\UpdateProjectDocument\UpdateProjectDocumentCommand;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Illuminate\Foundation\Http\FormRequest;

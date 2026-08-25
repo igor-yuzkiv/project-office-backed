@@ -2,11 +2,11 @@
 
 namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\CreateProjectDocumentVersion\CreateProjectDocumentVersionHandler;
-use App\Domains\ProjectDocument\Actions\DeleteProjectDocumentVersion\DeleteProjectDocumentVersionCommand;
-use App\Domains\ProjectDocument\Actions\DeleteProjectDocumentVersion\DeleteProjectDocumentVersionHandler;
-use App\Domains\ProjectDocument\Actions\SetProjectDocumentPrimaryVersion\SetProjectDocumentPrimaryVersionHandler;
-use App\Domains\ProjectDocument\Actions\UpdateProjectDocumentVersions\UpdateProjectDocumentVersionsHandler;
+use App\Domains\ProjectDocument\Actions\Version\CreateProjectDocumentVersion\CreateProjectDocumentVersionHandler;
+use App\Domains\ProjectDocument\Actions\Version\DeleteProjectDocumentVersion\DeleteProjectDocumentVersionCommand;
+use App\Domains\ProjectDocument\Actions\Version\DeleteProjectDocumentVersion\DeleteProjectDocumentVersionHandler;
+use App\Domains\ProjectDocument\Actions\Version\SetProjectDocumentPrimaryVersion\SetProjectDocumentPrimaryVersionHandler;
+use App\Domains\ProjectDocument\Actions\Version\UpdateProjectDocumentVersions\UpdateProjectDocumentVersionsHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\Models\ProjectDocumentVersionModel;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentResource;

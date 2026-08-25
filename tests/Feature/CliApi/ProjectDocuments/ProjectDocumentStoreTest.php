@@ -114,7 +114,7 @@ it('rejects a tag name longer than 64 characters', function () {
         ->assertJsonValidationErrors(['tags']);
 });
 
-it('reports creating a document with content as a creation only, not as an update on top of it', function () {
+it('reports creating a document with content as one document event and one version event', function () {
     $response = $this->postJson("/api/cli/projects/{$this->project->id}/docs", [
         'title'   => 'Created With Body',
         'content' => 'Body',
@@ -122,6 +122,15 @@ it('reports creating a document with content as a creation only, not as an updat
 
     $document = ProjectDocumentModel::findOrFail($response->json('data.id'));
 
-    expect(AuditRecordModel::query()->pluck('type')->all())->toBe(['project_document.created'])
+    expect(AuditRecordModel::query()->orderBy('id')->pluck('type')->all())
+        ->toBe(['project_document.created', 'project_document_version.created'])
         ->and($document->effectiveVersion()->author_id)->toBe(auth()->id());
+});
+
+it('reports creating a document without content as a creation alone', function () {
+    $this->postJson("/api/cli/projects/{$this->project->id}/docs", [
+        'title' => 'Created Empty',
+    ])->assertCreated();
+
+    expect(AuditRecordModel::query()->pluck('type')->all())->toBe(['project_document.created']);
 });

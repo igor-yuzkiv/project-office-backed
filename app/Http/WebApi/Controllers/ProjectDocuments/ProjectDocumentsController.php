@@ -3,11 +3,11 @@
 namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentHandler;
-use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentCommand;
-use App\Domains\ProjectDocument\Actions\DeleteProjectDocument\DeleteProjectDocumentHandler;
-use App\Domains\ProjectDocument\Actions\MoveProjectDocument\MoveProjectDocumentHandler;
-use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\Document\CreateProjectDocument\CreateProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\Document\DeleteProjectDocument\DeleteProjectDocumentCommand;
+use App\Domains\ProjectDocument\Actions\Document\DeleteProjectDocument\DeleteProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\Document\MoveProjectDocument\MoveProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\Document\UpdateProjectDocument\UpdateProjectDocumentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\Queries\GetProjectDocumentAncestorPathQuery;
 use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentOverviewResource;

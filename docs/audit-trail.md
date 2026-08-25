@@ -28,7 +28,7 @@ so there is nothing to filter by.
 
 ## What gets recorded
 
-Eighteen event types. `title` is the whole sentence shown in the list; `description` is what
+Twenty-two event types. `title` is the whole sentence shown in the list; `description` is what
 the row adds when it is expanded.
 
 | type | title | description | links to |
@@ -50,6 +50,10 @@ the row adds when it is expanded.
 | `project.deleted` | Igor deleted project «Sandbox» | — | — |
 | `project_document.created` | Igor created «Architecture» | project name | document |
 | `project_document.updated` | Igor updated «Architecture» | — | document |
+| `project_document_version.created` | Igor created version 3 of «Architecture» | version label | document |
+| `project_document_version.updated` | Igor updated version 3 of «Architecture» | Changed content | document |
+| `project_document_version.deleted` | Igor deleted version 3 of «Architecture» | version label | document |
+| `project_document_version.primary_changed` | Igor made version 3 primary for «Architecture» | version label | document |
 | `attachment.uploaded` | Igor uploaded «schema.png» | the carrier's name | the carrier |
 
 All product text is English. Human-written content — task names, comment excerpts, checkpoint
@@ -64,6 +68,13 @@ the handlers they call.
 **A status change and an edit are different facts.** One update can produce both
 `task.status_changed` and `task.updated` — that is two lines about two different things, not a
 duplicate.
+
+**So are two different entities.** An event belongs to whatever actually changed. One save on
+the document editor produces `project_document.updated` for the document's own fields and a
+`project_document_version.updated` for each version whose text moved — different rows, so
+silencing one would lose a fact rather than deduplicate it. Writing only a version's content
+produces no document event: `updated_at` is still touched, so the feed stays chronological, but
+nothing claims the document itself was edited.
 
 **An update that changes nothing records nothing.** The feed reflects what actually moved,
 not what was submitted.

@@ -2,7 +2,7 @@
 
 namespace App\Http\WebApi\Requests\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\CreateProjectDocumentVersion\CreateProjectDocumentVersionCommand;
+use App\Domains\ProjectDocument\Actions\Version\CreateProjectDocumentVersion\CreateProjectDocumentVersionCommand;
 use App\Http\WebApi\Requests\Concerns\ResolvesRoutedProjectDocument;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

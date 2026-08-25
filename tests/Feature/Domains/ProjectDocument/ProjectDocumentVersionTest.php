@@ -1,8 +1,8 @@
 <?php
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\ProjectDocument\Actions\WriteProjectDocumentContent\WriteProjectDocumentContentCommand;
-use App\Domains\ProjectDocument\Actions\WriteProjectDocumentContent\WriteProjectDocumentContentHandler;
+use App\Domains\ProjectDocument\Actions\Version\WriteProjectDocumentContent\WriteProjectDocumentContentCommand;
+use App\Domains\ProjectDocument\Actions\Version\WriteProjectDocumentContent\WriteProjectDocumentContentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Database\Backfills\ProjectDocumentContentBackfill;
 use Illuminate\Database\QueryException;

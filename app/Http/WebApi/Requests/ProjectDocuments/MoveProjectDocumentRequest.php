@@ -2,7 +2,7 @@
 
 namespace App\Http\WebApi\Requests\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\MoveProjectDocument\MoveProjectDocumentCommand;
+use App\Domains\ProjectDocument\Actions\Document\MoveProjectDocument\MoveProjectDocumentCommand;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;

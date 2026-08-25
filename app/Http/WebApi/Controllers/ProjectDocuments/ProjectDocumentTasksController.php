@@ -2,7 +2,7 @@
 
 namespace App\Http\WebApi\Controllers\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\SyncProjectDocumentTasks\SyncProjectDocumentTasksHandler;
+use App\Domains\ProjectDocument\Actions\Document\SyncProjectDocumentTasks\SyncProjectDocumentTasksHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Http\Shared\Resources\Tasks\TaskOverviewResource;
 use App\Http\WebApi\Requests\ProjectDocuments\SyncProjectDocumentTasksRequest;

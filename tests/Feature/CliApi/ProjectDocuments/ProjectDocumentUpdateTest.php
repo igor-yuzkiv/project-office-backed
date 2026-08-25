@@ -125,7 +125,7 @@ it('returns 404 when updating a document from another project', function () {
     expect($document->fresh()->title)->not->toBe('Hijacked');
 });
 
-it('records a document update and stamps the author when only the content changes', function () {
+it('reports a content-only change as a version event, and keeps the document recent', function () {
     $document = ProjectDocumentModel::factory()->withContent('Original body')->create([
         'project_id' => $this->project->id,
     ]);
@@ -136,8 +136,18 @@ it('records a document update and stamps the author when only the content change
         'content' => 'Updated body',
     ])->assertOk();
 
-    expect(AuditRecordModel::query()->where('type', 'project_document.updated')->count())->toBe(1)
+    expect(AuditRecordModel::query()->pluck('type')->all())->toBe(['project_document_version.updated'])
         ->and($document->fresh()->updated_at->greaterThan($updatedAt))->toBeTrue();
+});
+
+it('reports writing content into a document that had none as a version creation', function () {
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
+
+    $this->putJson("/api/cli/projects/{$this->project->id}/docs/{$document->id}", [
+        'content' => 'First body',
+    ])->assertOk();
+
+    expect(AuditRecordModel::query()->pluck('type')->all())->toBe(['project_document_version.created']);
 });
 
 it('creates the first version with the acting user as its author', function () {

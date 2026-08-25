@@ -3,10 +3,10 @@
 namespace App\Http\CliApi\Controllers\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentHandler;
-use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentHandler;
-use App\Domains\ProjectDocument\Actions\WriteProjectDocumentContent\WriteProjectDocumentContentCommand;
-use App\Domains\ProjectDocument\Actions\WriteProjectDocumentContent\WriteProjectDocumentContentHandler;
+use App\Domains\ProjectDocument\Actions\Document\CreateProjectDocument\CreateProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\Document\UpdateProjectDocument\UpdateProjectDocumentHandler;
+use App\Domains\ProjectDocument\Actions\Version\WriteProjectDocumentContent\WriteProjectDocumentContentCommand;
+use App\Domains\ProjectDocument\Actions\Version\WriteProjectDocumentContent\WriteProjectDocumentContentHandler;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\ProjectDocument\Queries\GetProjectDocumentAncestorPathQuery;
 use App\Domains\Tag\Actions\CreateTags\CreateTagsCommand;
@@ -49,7 +49,6 @@ class ProjectDocumentsController
                     document: $document,
                     content: $request->content(),
                     authorId: auth()->id(),
-                    recordsUpdate: false,
                 ));
                 $document->refresh();
             }

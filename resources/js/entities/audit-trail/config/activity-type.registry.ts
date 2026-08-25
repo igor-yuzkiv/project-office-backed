@@ -38,6 +38,12 @@ export const ACTIVITY_TYPE_REGISTRY: Record<string, ActivityTypeDef> = {
     'project_document.created': { icon: 'heroicons:document-plus', accent: 'create', linkable: true },
     'project_document.updated': { icon: 'heroicons:document-text', accent: 'update', linkable: true },
 
+    'project_document_version.created': { icon: 'heroicons:document-duplicate', accent: 'create', linkable: true },
+    'project_document_version.updated': { icon: 'heroicons:pencil-square', accent: 'update', linkable: true },
+    // Unlike the other deletions this one still links: the version is gone, the document is not.
+    'project_document_version.deleted': { icon: 'heroicons:trash', accent: 'delete', linkable: true },
+    'project_document_version.primary_changed': { icon: 'heroicons:bookmark', accent: 'status', linkable: true },
+
     'attachment.uploaded': { icon: 'heroicons:paper-clip', accent: 'create', linkable: true },
 }
 

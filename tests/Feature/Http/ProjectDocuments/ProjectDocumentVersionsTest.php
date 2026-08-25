@@ -131,14 +131,42 @@ describe('saving several versions at once', function () {
             ->and($second->fresh()->content)->toBe('Second edited');
     });
 
-    it('records one document update for the whole request', function () {
-        $version = $this->document->versions()->create(['version_number' => 1]);
+    it('records one version event per version that actually moved', function () {
+        $first = $this->document->versions()->create(['version_number' => 1, 'content' => 'First']);
+        $second = $this->document->versions()->create(['version_number' => 2, 'content' => 'Second']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions", [
+            'versions' => [
+                ['id' => $first->id, 'content' => 'First edited', 'label' => null],
+                ['id' => $second->id, 'content' => 'Second edited', 'label' => null],
+            ],
+        ])->assertOk();
+
+        expect(AuditRecordModel::query()->pluck('type')->all())
+            ->toBe(['project_document_version.updated', 'project_document_version.updated']);
+    });
+
+    it('records nothing when the versions come back unchanged', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
 
         $this->putJson("/api/project-documents/{$this->document->id}/versions", [
             'versions' => [['id' => $version->id, 'content' => 'Body', 'label' => null]],
         ])->assertOk();
 
-        expect(AuditRecordModel::query()->where('type', 'project_document.updated')->count())->toBe(1);
+        expect(AuditRecordModel::query()->count())->toBe(0);
+    });
+
+    it('names the version and points at the document', function () {
+        $version = $this->document->versions()->create(['version_number' => 7, 'content' => 'Body']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions", [
+            'versions' => [['id' => $version->id, 'content' => 'Rewritten', 'label' => null]],
+        ])->assertOk();
+
+        $record = AuditRecordModel::query()->sole();
+        expect($record->title)->toBe("{$this->user->name} updated version 7 of «{$this->document->title}»")
+            ->and($record->description)->toBe('Changed content')
+            ->and($record->subject_id)->toBe($this->document->id);
     });
 
     it('saves nothing when one of the versions belongs to another document', function () {
@@ -242,5 +270,75 @@ describe('choosing the primary version', function () {
     it('requires the version_id key to be sent', function () {
         $this->putJson("/api/project-documents/{$this->document->id}/primary-version", [])
             ->assertUnprocessable()->assertJsonValidationErrors(['version_id']);
+    });
+});
+
+describe('what reaches the activity feed', function () {
+    it('reports creating a version and nothing about the document', function () {
+        $this->postJson("/api/project-documents/{$this->document->id}/versions", ['label' => 'Draft two'])
+            ->assertCreated();
+
+        $record = AuditRecordModel::query()->sole();
+        expect($record->type)->toBe('project_document_version.created')
+            ->and($record->title)->toBe("{$this->user->name} created version 1 of «{$this->document->title}»")
+            ->and($record->description)->toBe('Draft two')
+            ->and($record->subject_id)->toBe($this->document->id);
+    });
+
+    it('reports deleting a version with the number that disappeared', function () {
+        $version = $this->document->versions()->create(['version_number' => 3, 'label' => 'Old']);
+
+        $this->deleteJson("/api/project-document-versions/{$version->id}")->assertNoContent();
+
+        $record = AuditRecordModel::query()->sole();
+        expect($record->type)->toBe('project_document_version.deleted')
+            ->and($record->title)->toBe("{$this->user->name} deleted version 3 of «{$this->document->title}»")
+            ->and($record->description)->toBe('Old')
+            ->and($record->subject_id)->toBe($this->document->id);
+    });
+
+    it('reports pinning a version as primary', function () {
+        $version = $this->document->versions()->create(['version_number' => 2]);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/primary-version", [
+            'version_id' => $version->id,
+        ])->assertOk();
+
+        $record = AuditRecordModel::query()->sole();
+        expect($record->type)->toBe('project_document_version.primary_changed')
+            ->and($record->title)->toBe("{$this->user->name} made version 2 primary for «{$this->document->title}»");
+    });
+
+    it('reports going back to following the latest version', function () {
+        $version = $this->document->versions()->create(['version_number' => 1]);
+        $this->document->update(['primary_version_id' => $version->id]);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/primary-version", ['version_id' => null])
+            ->assertOk();
+
+        expect(AuditRecordModel::query()->sole()->title)
+            ->toBe("{$this->user->name} made «{$this->document->title}» follow its latest version");
+    });
+
+    it('reports nothing when the primary version is set to what it already was', function () {
+        $version = $this->document->versions()->create(['version_number' => 1]);
+        $this->document->update(['primary_version_id' => $version->id]);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/primary-version", [
+            'version_id' => $version->id,
+        ])->assertOk();
+
+        expect(AuditRecordModel::query()->count())->toBe(0);
+    });
+
+    it('still reports a document update on its own fields alone', function () {
+        $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}", [
+            'title'  => 'Renamed',
+            'status' => $this->document->status->value,
+        ])->assertOk();
+
+        expect(AuditRecordModel::query()->pluck('type')->all())->toBe(['project_document.updated']);
     });
 });

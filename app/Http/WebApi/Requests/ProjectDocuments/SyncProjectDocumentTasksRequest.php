@@ -2,7 +2,7 @@
 
 namespace App\Http\WebApi\Requests\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\SyncProjectDocumentTasks\SyncProjectDocumentTasksCommand;
+use App\Domains\ProjectDocument\Actions\Document\SyncProjectDocumentTasks\SyncProjectDocumentTasksCommand;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

@@ -2,7 +2,7 @@
 
 namespace App\Http\CliApi\Requests\ProjectDocuments;
 
-use App\Domains\ProjectDocument\Actions\UpdateProjectDocument\UpdateProjectDocumentCommand;
+use App\Domains\ProjectDocument\Actions\Document\UpdateProjectDocument\UpdateProjectDocumentCommand;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Http\CliApi\Requests\Concerns\HasTagDtos;
 use Illuminate\Foundation\Http\FormRequest;

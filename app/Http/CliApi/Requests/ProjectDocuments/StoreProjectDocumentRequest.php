@@ -3,7 +3,7 @@
 namespace App\Http\CliApi\Requests\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
-use App\Domains\ProjectDocument\Actions\CreateProjectDocument\CreateProjectDocumentCommand;
+use App\Domains\ProjectDocument\Actions\Document\CreateProjectDocument\CreateProjectDocumentCommand;
 use App\Http\CliApi\Requests\Concerns\HasTagDtos;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
