@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
@@ -7,6 +8,7 @@ import type { IAnnotation } from '@/entities/annotation'
 import type { IProjectDocument } from '@/entities/project-document/types'
 import { DocumentSheet } from '@/shared/components/document-sheet'
 import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
+import { DocumentVersionSwitcher, useOpenDocumentVersion } from '@/widgets/project-documents/versions'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { SidePanel } from '@/shared/components/side-panel'
 import { useCollapsibleSidePanel } from '@/shared/composables'
@@ -16,7 +18,10 @@ const props = defineProps<{
     document: IProjectDocument
 }>()
 
+const router = useRouter()
 const authStore = useAuthStore()
+
+const { versions, openVersionId, openVersion, selectVersion } = useOpenDocumentVersion(() => props.document.id)
 
 // The sheet finds the blocks in its own DOM and hands them over; the session resolves
 // annotations against them. shallowRef, because these hold live elements.
@@ -58,7 +63,7 @@ const {
     () => blocks.value,
     // A document with no content renders no sheet, so there is nothing to annotate and
     // nothing to ask the server about.
-    { enabled: () => annotationsEnabled.value && Boolean(props.document.content) }
+    { enabled: () => annotationsEnabled.value && openVersion.value !== null }
 )
 
 const currentUserId = computed(() => authStore.user?.id ?? null)
@@ -76,6 +81,13 @@ const sidebarProps = computed(() => ({
     currentUserId: currentUserId.value,
 }))
 
+function openEditor() {
+    router.push({
+        name: 'project-documentation.document.edit',
+        params: { projectId: props.document.project_id, documentId: props.document.id },
+    })
+}
+
 const sidebarHandlers = {
     select: selectAnnotation,
     edit: editAnnotation,
@@ -86,18 +98,24 @@ const sidebarHandlers = {
 </script>
 
 <template>
-    <div v-if="document.content" class="min-h-0 flex flex-1 overflow-hidden">
+    <div v-if="openVersion" class="min-h-0 flex flex-1 overflow-hidden">
         <!-- min-w-0: without it this column is as wide as its widest child, and one unbreakable
              code block in the document would push the sidebar off the screen. -->
         <div class="min-h-0 min-w-0 flex flex-1 flex-col">
             <DocumentSheet
                 :selected-block="selectedBlock"
-                :content="document.content"
+                :content="openVersion.content ?? ''"
                 :blocks-pickable="annotationsEnabled"
                 @blocks-changed="blocks = $event"
                 @pick-block="pickBlock"
             >
                 <template #toolbar>
+                    <DocumentVersionSwitcher
+                        :versions="versions"
+                        :open-version-id="openVersionId"
+                        @open="selectVersion"
+                    />
+
                     <label class="gap-2 text-surface-500 text-xs flex cursor-pointer items-center">
                         Annotations
                         <ToggleSwitch v-model="annotationsEnabled" />
@@ -149,9 +167,15 @@ const sidebarHandlers = {
 
     <div v-else class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center">
         <Icon icon="heroicons:document" class="text-surface-300 text-4xl" />
-        <p class="text-surface-700 dark:text-surface-200 text-sm font-medium">This document has no content</p>
+        <p class="text-surface-700 dark:text-surface-200 text-sm font-medium">This document has no versions yet</p>
         <p class="text-surface-500 max-w-sm text-xs">
-            It can stay a section that only holds nested documents, or you can write something in it.
+            It can stay a section that only holds nested documents, or you can write a first version of it.
         </p>
+        <Button
+            label="Create a version"
+            size="small"
+            outlined
+            @click="openEditor()"
+        />
     </div>
 </template>

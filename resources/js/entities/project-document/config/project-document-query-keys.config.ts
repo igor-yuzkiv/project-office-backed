@@ -14,6 +14,11 @@ export const ProjectDocumentQueryKey = {
         [...ProjectDocumentQueryKey.all, 'search', params] as const,
 }
 
+export const ProjectDocumentVersionQueryKey = {
+    documentVersions: (documentId: MaybeRefOrGetter<string>) =>
+        ['project-document-versions', documentId] as const,
+}
+
 export const ProjectDocumentCommentQueryKey = {
     documentComments: (documentId: MaybeRefOrGetter<string>) =>
         ['comments', { commentable_type: 'project_document', commentable_id: documentId }] as const,

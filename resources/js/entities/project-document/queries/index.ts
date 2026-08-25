@@ -4,3 +4,4 @@ export { useProjectDocumentCommentsQuery } from './use.project-document-comments
 export { useProjectDocumentAnnotationsQuery } from './use.project-document-annotations.query'
 export { useProjectDocumentTasksQuery } from './use.project-document-tasks.query'
 export { useProjectDocumentsSearchQuery } from './use.project-documents-search.query'
+export { useProjectDocumentVersionsQuery } from './use.project-document-versions.query'

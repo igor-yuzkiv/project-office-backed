@@ -77,7 +77,7 @@ function removeDocument() {
 
 const tabs = computed(() => [
     { value: 'details', label: 'Details', route: 'project-documentation.document.details', count: undefined },
-    { value: 'document', label: 'Document', route: 'project-documentation.document', count: undefined },
+    { value: 'document', label: 'Content', route: 'project-documentation.document', count: undefined },
     {
         value: 'comments',
         label: 'Comments',

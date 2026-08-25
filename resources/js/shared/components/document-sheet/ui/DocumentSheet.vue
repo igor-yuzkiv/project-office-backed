@@ -87,7 +87,7 @@ onScopeDispose(() => {
             <div class="gap-3 min-w-0 flex flex-1 flex-col">
                 <!-- The catalog is wanted rarely, so it waits behind a button instead
                      of holding a column beside the sheet. -->
-                <div class="gap-2 flex items-center">
+                <div class="gap-2 flex flex-wrap items-center">
                     <Button
                         label="Contents"
                         size="small"
@@ -98,7 +98,9 @@ onScopeDispose(() => {
                         <template #icon><Icon icon="heroicons:list-bullet" class="mr-1 text-base" /></template>
                     </Button>
 
-                    <div class="ml-auto flex items-center">
+                    <!-- Wrapping rather than clipping: the column is narrow whenever the tree and a
+                         side panel are both open, and whatever the host puts here has to survive that. -->
+                    <div class="gap-2 ml-auto flex flex-wrap items-center justify-end">
                         <slot name="toolbar" />
                     </div>
                 </div>

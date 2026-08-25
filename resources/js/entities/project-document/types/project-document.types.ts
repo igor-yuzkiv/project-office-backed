@@ -6,6 +6,12 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 
 export type ProjectDocumentStatusValue = 'draft' | 'in_review' | 'active' | 'deprecated' | 'archived'
 
+export interface ProjectDocumentVersionSummaryDto {
+    id: string
+    version_number: number
+    label: string | null
+}
+
 export interface ProjectDocumentPathNodeDto {
     id: string
     key: string
@@ -18,6 +24,10 @@ export interface IProjectDocument extends IEntity {
     key: string
     title: string
     content: string | null
+    /** Null while nothing is pinned, in which case the newest version is the effective one. */
+    primary_version_id: string | null
+    /** The effective version, or null for a document that has none yet. */
+    version: ProjectDocumentVersionSummaryDto | null
     status: ProjectDocumentStatusValue
     depth: number
     can_have_children: boolean
