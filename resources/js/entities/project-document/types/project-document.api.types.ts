@@ -40,7 +40,6 @@ export interface ICreateProjectDocumentInput {
 export interface IUpdateProjectDocumentInput {
     title: string
     status: ProjectDocumentStatusValue
-    content?: string
     tag_ids?: string[]
 }
 

@@ -18,3 +18,21 @@ export interface IProjectDocumentVersion extends IEntity {
 export interface IProjectDocumentVersionsResponse {
     data: IProjectDocumentVersion[]
 }
+
+export interface ICreateProjectDocumentVersionInput {
+    label?: string | null
+    copy_content_from_version_id?: string | null
+}
+
+export interface IUpdateProjectDocumentVersionsInput {
+    versions: Array<{ id: string; content: string | null; label: string | null }>
+}
+
+export interface ISetProjectDocumentPrimaryVersionInput {
+    /** Null returns the document to following its newest version. */
+    version_id: string | null
+}
+
+export interface IProjectDocumentVersionResponse {
+    data: IProjectDocumentVersion
+}
