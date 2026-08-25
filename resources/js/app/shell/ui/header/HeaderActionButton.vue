@@ -37,8 +37,19 @@ const isSingle = computed(() => props.actions.length === 1)
             :to="primaryAction.to"
             :label="primaryAction.title"
             size="small"
+            text
+            rounded
+            severity="secondary"
         />
-        <Button v-else :label="primaryAction.title" size="small" @click="primaryAction.action?.()" />
+        <Button
+            v-else
+            :label="primaryAction.title"
+            size="small"
+            @click="primaryAction.action?.()"
+            text
+            rounded
+            severity="secondary"
+        />
     </template>
 
     <template v-else-if="primaryAction">
@@ -47,6 +58,9 @@ const isSingle = computed(() => props.actions.length === 1)
             :model="dropdownItems"
             size="small"
             @click="primaryAction.to ? router.push(primaryAction.to) : primaryAction.action?.()"
+            text
+            rounded
+            severity="secondary"
         />
     </template>
 </template>
