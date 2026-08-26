@@ -19,8 +19,8 @@ import type {
 import type { ITag } from '@/entities/tag/types'
 import {
     DocumentVersionCreateDialog,
-    DocumentVersionIndicator,
     DocumentVersionPanel,
+    DocumentVersionRenameDialog,
     useDocumentVersionEditor,
 } from '@/widgets/project-documents/versions'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
@@ -61,6 +61,7 @@ const formData = ref<DocumentEditFormData>({ title: '', status: 'draft', tags: [
 
 const versionEditor = useDocumentVersionEditor(documentId)
 const showVersionCreateDialog = ref(false)
+const renamingVersion = ref<IProjectDocumentVersion | null>(null)
 
 // Starts out of the way: most editing sessions never touch more than the version already open.
 const versionsPanel = useCollapsibleSidePanel('docs:versions-collapsed', true)
@@ -140,6 +141,19 @@ async function createVersion(input: { label: string | null; copyContentFromVersi
         showVersionCreateDialog.value = false
     } catch (error) {
         handleError(error)
+    }
+}
+
+async function renameVersion(label: string | null) {
+    const version = renamingVersion.value
+
+    if (!version) return
+
+    try {
+        await versionEditor.rename(version, label)
+        renamingVersion.value = null
+    } catch (error) {
+        handleError(error, 'The version could not be renamed.')
     }
 }
 
@@ -257,12 +271,8 @@ useBreadcrumbs(() => [
                 </InputContainer>
             </div>
 
-            <div class="gap-3 px-3 pb-2 flex flex-wrap items-center">
-                <DocumentVersionIndicator :version="versionEditor.openVersion.value" />
-
-                <span v-if="versionEditor.isDirty.value" class="text-amber-600 dark:text-amber-400 text-xs">
-                    Unsaved changes
-                </span>
+            <div v-if="versionEditor.isDirty.value" class="px-3 pb-2">
+                <span class="text-amber-600 dark:text-amber-400 text-xs">Unsaved changes</span>
             </div>
 
             <div v-if="versionEditor.openVersion.value" class="flex-1 overflow-auto">
@@ -288,6 +298,14 @@ useBreadcrumbs(() => [
                 <Button label="New version" size="small" outlined @click="showVersionCreateDialog = true" />
             </div>
 
+            <DocumentVersionRenameDialog
+                :visible="renamingVersion !== null"
+                :version="renamingVersion"
+                :is-pending="versionEditor.isBusy.value"
+                @update:visible="(open: boolean) => !open && (renamingVersion = null)"
+                @submit="renameVersion"
+            />
+
             <DocumentVersionCreateDialog
                 v-model:visible="showVersionCreateDialog"
                 :versions="versionEditor.versions.value"
@@ -310,6 +328,7 @@ useBreadcrumbs(() => [
                     @collapse="collapse"
                     @open="versionEditor.selectVersion"
                     @create="showVersionCreateDialog = true"
+                    @rename="renamingVersion = $event"
                     @delete="removeVersion"
                     @set-primary="setPrimary($event.id)"
                     @use-latest-as-primary="setPrimary(null)"

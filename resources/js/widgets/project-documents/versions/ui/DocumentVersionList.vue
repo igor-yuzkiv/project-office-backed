@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { computed, ref, useTemplateRef } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
 import type { IProjectDocumentVersion } from '@/entities/project-document/types'
 
 // The rows and their actions, with no surface of its own: the host renders this inside a
@@ -21,6 +24,7 @@ const props = withDefaults(
 const emit = defineEmits<{
     (e: 'open', version: IProjectDocumentVersion): void
     (e: 'create'): void
+    (e: 'rename', version: IProjectDocumentVersion): void
     (e: 'delete', version: IProjectDocumentVersion): void
     (e: 'set-primary', version: IProjectDocumentVersion): void
     (e: 'use-latest-as-primary'): void
@@ -29,10 +33,31 @@ const emit = defineEmits<{
 function isDirty(version: IProjectDocumentVersion) {
     return props.dirtyIds.includes(version.id)
 }
+
+const rowMenu = useTemplateRef<InstanceType<typeof Menu>>('rowMenu')
+const menuVersion = ref<IProjectDocumentVersion | null>(null)
+
+const menuItems = computed<MenuItem[]>(() => {
+    const version = menuVersion.value
+
+    if (!version) return []
+
+    return [
+        { label: 'Edit', icon: 'pi pi-pencil', command: () => emit('rename', version) },
+        { label: 'Delete', icon: 'pi pi-trash', command: () => emit('delete', version) },
+    ]
+})
+
+function openRowMenu(event: MouseEvent, version: IProjectDocumentVersion) {
+    menuVersion.value = version
+    rowMenu.value?.toggle(event)
+}
 </script>
 
 <template>
     <div class="min-h-0 text-sm flex flex-1 flex-col">
+        <Menu ref="rowMenu" :model="menuItems" popup />
+
         <ul class="min-h-0 flex-1 overflow-y-auto">
             <li v-for="version in versions" :key="version.id">
                 <div
@@ -76,13 +101,15 @@ function isDirty(version: IProjectDocumentVersion) {
                         <Button
                             size="small"
                             text
-                            severity="danger"
-                            title="Delete version"
-                            aria-label="Delete version"
+                            severity="secondary"
+                            :title="`Actions for version ${version.version_number}`"
+                            :aria-label="`Actions for version ${version.version_number}`"
                             :disabled="isBusy"
-                            @click="emit('delete', version)"
+                            @click="openRowMenu($event, version)"
                         >
-                            <template #icon><Icon icon="heroicons:trash" class="text-sm" /></template>
+                            <template #icon>
+                                <Icon icon="heroicons:ellipsis-horizontal" class="text-sm" />
+                            </template>
                         </Button>
                     </template>
                 </div>

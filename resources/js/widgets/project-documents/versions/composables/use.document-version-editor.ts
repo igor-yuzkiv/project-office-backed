@@ -83,6 +83,17 @@ export function useDocumentVersionEditor(documentId: MaybeRefOrGetter<string>) {
         openVersionId.value = created.data.id
     }
 
+    /**
+     * Only the name moves. The content sent back is the one the server already holds, so a draft
+     * for this version stays a draft — renaming is not a way to save, and not a way to lose.
+     */
+    async function rename(version: IProjectDocumentVersion, label: string | null) {
+        await saveVersions({
+            documentId: toValue(documentId),
+            data: { versions: [{ id: version.id, content: version.content, label }] },
+        })
+    }
+
     async function remove(version: IProjectDocumentVersion) {
         await deleteVersion({ documentId: toValue(documentId), versionId: version.id })
 
@@ -127,6 +138,7 @@ export function useDocumentVersionEditor(documentId: MaybeRefOrGetter<string>) {
         isBusy: computed(() => isCreating.value || isSavingVersions.value || isDeleting.value || isPinning.value),
         selectVersion,
         create,
+        rename,
         remove,
         setPrimary,
         saveDrafts,

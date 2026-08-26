@@ -19,6 +19,7 @@ const emit = defineEmits<{
     (e: 'collapse'): void
     (e: 'open', version: IProjectDocumentVersion): void
     (e: 'create'): void
+    (e: 'rename', version: IProjectDocumentVersion): void
     (e: 'delete', version: IProjectDocumentVersion): void
     (e: 'set-primary', version: IProjectDocumentVersion): void
     (e: 'use-latest-as-primary'): void
@@ -67,6 +68,7 @@ const state = computed<DataPanelState>(() => {
                 :is-busy="isBusy"
                 @open="emit('open', $event)"
                 @create="emit('create')"
+                @rename="emit('rename', $event)"
                 @delete="emit('delete', $event)"
                 @set-primary="emit('set-primary', $event)"
                 @use-latest-as-primary="emit('use-latest-as-primary')"
