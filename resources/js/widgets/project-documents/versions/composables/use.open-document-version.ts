@@ -10,9 +10,7 @@ export function useOpenDocumentVersion(documentId: MaybeRefOrGetter<string>) {
 
     const openVersionId = ref<string | null>(null)
 
-    const openVersion = computed(
-        () => versions.value.find((version) => version.id === openVersionId.value) ?? null
-    )
+    const openVersion = computed(() => versions.value.find((version) => version.id === openVersionId.value) ?? null)
 
     // A reader who opens a document gets the version the document itself would give them, and a
     // reader who switches documents starts over rather than keeping a version id from the last one.

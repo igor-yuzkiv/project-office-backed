@@ -8,7 +8,11 @@ import type { IAnnotation } from '@/entities/annotation'
 import type { IProjectDocument } from '@/entities/project-document/types'
 import { DocumentSheet } from '@/shared/components/document-sheet'
 import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
-import { DocumentVersionSwitcher, useOpenDocumentVersion } from '@/widgets/project-documents/versions'
+import {
+    DocumentVersionIndicator,
+    DocumentVersionSwitcher,
+    useOpenDocumentVersion,
+} from '@/widgets/project-documents/versions'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { SidePanel } from '@/shared/components/side-panel'
 import { useCollapsibleSidePanel } from '@/shared/composables'
@@ -109,13 +113,15 @@ const sidebarHandlers = {
                 @blocks-changed="blocks = $event"
                 @pick-block="pickBlock"
             >
-                <template #toolbar>
+                <template #toolbar-leading>
                     <DocumentVersionSwitcher
                         :versions="versions"
                         :open-version-id="openVersionId"
                         @open="selectVersion"
                     />
+                </template>
 
+                <template #toolbar>
                     <label class="gap-2 text-surface-500 text-xs flex cursor-pointer items-center">
                         Annotations
                         <ToggleSwitch v-model="annotationsEnabled" />
@@ -133,9 +139,7 @@ const sidebarHandlers = {
                         <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
                     </div>
 
-                    <p v-else-if="annotationsEnabled" class="text-xs text-surface-500">
-                        Click a block of the document to comment on it.
-                    </p>
+                    <DocumentVersionIndicator v-else :version="openVersion" />
                 </template>
             </DocumentSheet>
 
@@ -171,11 +175,6 @@ const sidebarHandlers = {
         <p class="text-surface-500 max-w-sm text-xs">
             It can stay a section that only holds nested documents, or you can write a first version of it.
         </p>
-        <Button
-            label="Create a version"
-            size="small"
-            outlined
-            @click="openEditor()"
-        />
+        <Button label="Create a version" size="small" outlined @click="openEditor()" />
     </div>
 </template>

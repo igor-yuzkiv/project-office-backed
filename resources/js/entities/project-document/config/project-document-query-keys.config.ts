@@ -15,8 +15,7 @@ export const ProjectDocumentQueryKey = {
 }
 
 export const ProjectDocumentVersionQueryKey = {
-    documentVersions: (documentId: MaybeRefOrGetter<string>) =>
-        ['project-document-versions', documentId] as const,
+    documentVersions: (documentId: MaybeRefOrGetter<string>) => ['project-document-versions', documentId] as const,
 }
 
 export const ProjectDocumentCommentQueryKey = {

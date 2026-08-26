@@ -60,13 +60,8 @@ export function useSetProjectDocumentPrimaryVersionMutation() {
     const invalidate = useVersionMutationInvalidation()
 
     return useMutation({
-        mutationFn: ({
-            documentId,
-            data,
-        }: {
-            documentId: string
-            data: ISetProjectDocumentPrimaryVersionInput
-        }) => setProjectDocumentPrimaryVersionRequest(documentId, data),
+        mutationFn: ({ documentId, data }: { documentId: string; data: ISetProjectDocumentPrimaryVersionInput }) =>
+            setProjectDocumentPrimaryVersionRequest(documentId, data),
         onSuccess: (_result, { documentId }) => invalidate(documentId),
     })
 }

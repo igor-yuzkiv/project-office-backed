@@ -85,9 +85,11 @@ onScopeDispose(() => {
     <div class="gap-3 p-6 document-canvas min-h-0 flex flex-1 flex-col items-center overflow-y-auto">
         <div class="gap-6 max-w-7xl flex w-full items-start">
             <div class="gap-3 min-w-0 flex flex-1 flex-col">
-                <!-- The catalog is wanted rarely, so it waits behind a button instead
-                     of holding a column beside the sheet. -->
                 <div class="gap-2 flex flex-wrap items-center">
+                    <slot name="toolbar-leading" />
+
+                    <!-- The catalog is wanted rarely, so it waits behind a button instead
+                         of holding a column beside the sheet. -->
                     <Button
                         label="Contents"
                         size="small"

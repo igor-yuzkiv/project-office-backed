@@ -18,9 +18,10 @@ export interface CollapsibleSidePanel {
  * and whether the drawer peeking at it is open. Render it with `SidePanel`.
  *
  * @param storageKey localStorage key the collapsed flag is kept under, one per panel.
+ * @param collapsedByDefault where a panel starts before the reader has expressed a preference.
  */
-export function useCollapsibleSidePanel(storageKey: string): CollapsibleSidePanel {
-    const isCollapsed = useLocalStorage(storageKey, false)
+export function useCollapsibleSidePanel(storageKey: string, collapsedByDefault = false): CollapsibleSidePanel {
+    const isCollapsed = useLocalStorage(storageKey, collapsedByDefault)
     const isDrawerOpen = ref(false)
 
     function collapse() {

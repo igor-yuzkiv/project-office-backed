@@ -19,7 +19,8 @@ import type {
 import type { ITag } from '@/entities/tag/types'
 import {
     DocumentVersionCreateDialog,
-    DocumentVersionSwitcher,
+    DocumentVersionIndicator,
+    DocumentVersionPanel,
     useDocumentVersionEditor,
 } from '@/widgets/project-documents/versions'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
@@ -27,8 +28,9 @@ import { TagList } from '@/widgets/tags/metadata'
 import { IconButton } from '@/shared/components/button'
 import { InputContainer } from '@/shared/components/input'
 import { MarkdownEditor } from '@/shared/components/md-editor'
+import { SidePanel } from '@/shared/components/side-panel'
 import { ApiError } from '@/shared/api/api.error'
-import { useConfirmDialog, useToast } from '@/shared/composables'
+import { useCollapsibleSidePanel, useConfirmDialog, useToast } from '@/shared/composables'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useBreadcrumbs, useHeaderActions } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
@@ -59,6 +61,9 @@ const formData = ref<DocumentEditFormData>({ title: '', status: 'draft', tags: [
 
 const versionEditor = useDocumentVersionEditor(documentId)
 const showVersionCreateDialog = ref(false)
+
+// Starts out of the way: most editing sessions never touch more than the version already open.
+const versionsPanel = useCollapsibleSidePanel('docs:versions-collapsed', true)
 const isFormInitialized = ref(false)
 const validationErrors = ref<LaravelValidationErrors>({})
 const showManageTagsDialog = ref(false)
@@ -216,89 +221,100 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div v-if="openedDocument" class="p-2 flex flex-1 flex-col overflow-hidden">
-        <div class="gap-3 p-3 flex flex-col">
-            <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
-                <InputContainer label="Title" :error="validationErrors.title" required>
-                    <InputText
-                        v-model="formData.title"
-                        placeholder="Document title..."
-                        :invalid="!!validationErrors.title"
-                    />
-                </InputContainer>
+    <div v-if="openedDocument" class="min-h-0 flex flex-1 overflow-hidden">
+        <div class="p-2 min-w-0 flex flex-1 flex-col overflow-hidden">
+            <div class="gap-3 p-3 flex flex-col">
+                <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
+                    <InputContainer label="Title" :error="validationErrors.title" required>
+                        <InputText
+                            v-model="formData.title"
+                            placeholder="Document title..."
+                            :invalid="!!validationErrors.title"
+                        />
+                    </InputContainer>
 
-                <InputContainer label="Status" :error="validationErrors.status">
-                    <Select
-                        v-model="formData.status"
-                        :options="projectDocumentStatusOptions()"
-                        option-label="label"
-                        option-value="value"
-                        :invalid="!!validationErrors.status"
-                    />
+                    <InputContainer label="Status" :error="validationErrors.status">
+                        <Select
+                            v-model="formData.status"
+                            :options="projectDocumentStatusOptions()"
+                            option-label="label"
+                            option-value="value"
+                            :invalid="!!validationErrors.status"
+                        />
+                    </InputContainer>
+                </div>
+
+                <InputContainer label="Tags" :error="validationErrors.tag_ids">
+                    <div class="gap-2 p-1 flex items-center">
+                        <IconButton
+                            size="medium"
+                            severity="success"
+                            icon="mdi:tag-edit"
+                            @click="showManageTagsDialog = true"
+                        />
+                        <TagList :tags="formData.tags" />
+                    </div>
                 </InputContainer>
             </div>
 
-            <InputContainer label="Tags" :error="validationErrors.tag_ids">
-                <div class="gap-2 p-1 flex items-center">
-                    <IconButton
-                        size="medium"
-                        severity="success"
-                        icon="mdi:tag-edit"
-                        @click="showManageTagsDialog = true"
-                    />
-                    <TagList :tags="formData.tags" />
-                </div>
-            </InputContainer>
-        </div>
+            <div class="gap-3 px-3 pb-2 flex flex-wrap items-center">
+                <DocumentVersionIndicator :version="versionEditor.openVersion.value" />
 
-        <div class="gap-2 px-3 pb-2 flex flex-wrap items-center">
-            <DocumentVersionSwitcher
-                editable
-                :versions="versionEditor.versions.value"
-                :open-version-id="versionEditor.openVersionId.value"
-                :dirty-ids="versionEditor.dirtyIds.value"
-                :has-pinned-version="Boolean(openedDocument.primary_version_id)"
-                :is-busy="versionEditor.isBusy.value"
-                @open="versionEditor.selectVersion"
-                @create="showVersionCreateDialog = true"
-                @delete="removeVersion"
-                @set-primary="setPrimary($event.id)"
-                @use-latest-as-primary="setPrimary(null)"
-            />
+                <span v-if="versionEditor.isDirty.value" class="text-amber-600 dark:text-amber-400 text-xs">
+                    Unsaved changes
+                </span>
+            </div>
 
-            <span v-if="versionEditor.isDirty.value" class="text-amber-600 dark:text-amber-400 text-xs">
-                Unsaved changes
-            </span>
-        </div>
+            <div v-if="versionEditor.openVersion.value" class="flex-1 overflow-auto">
+                <MarkdownEditor
+                    v-model="versionEditor.openContent.value"
+                    preview
+                    style="height: 100%"
+                    :handle-image-upload="handleImageUpload"
+                />
+            </div>
 
-        <div v-if="versionEditor.openVersion.value" class="flex-1 overflow-auto">
-            <MarkdownEditor
-                v-model="versionEditor.openContent.value"
-                preview
-                style="height: 100%"
-                :handle-image-upload="handleImageUpload"
-            />
-        </div>
-
-        <!-- Nothing to type into until a version exists: content belongs to a version, not to
+            <!-- Nothing to type into until a version exists: content belongs to a version, not to
              the document, so the editor has nowhere to put it. Held back while a version write is
              in flight, so it does not flash between creating one and the list catching up. -->
-        <div
-            v-else-if="!versionEditor.isBusy.value && !versionEditor.isPending.value"
-            class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center"
-        >
-            <p class="text-surface-700 dark:text-surface-200 text-sm font-medium">This document has no versions yet</p>
-            <p class="text-surface-500 max-w-sm text-xs">Create one to start writing.</p>
-            <Button label="New version" size="small" outlined @click="showVersionCreateDialog = true" />
+            <div
+                v-else-if="!versionEditor.isBusy.value && !versionEditor.isPending.value"
+                class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center"
+            >
+                <p class="text-surface-700 dark:text-surface-200 text-sm font-medium">
+                    This document has no versions yet
+                </p>
+                <p class="text-surface-500 max-w-sm text-xs">Create one to start writing.</p>
+                <Button label="New version" size="small" outlined @click="showVersionCreateDialog = true" />
+            </div>
+
+            <DocumentVersionCreateDialog
+                v-model:visible="showVersionCreateDialog"
+                :versions="versionEditor.versions.value"
+                :is-pending="versionEditor.isBusy.value"
+                @submit="createVersion"
+            />
+
+            <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
         </div>
 
-        <DocumentVersionCreateDialog
-            v-model:visible="showVersionCreateDialog"
-            :versions="versionEditor.versions.value"
-            :is-pending="versionEditor.isBusy.value"
-            @submit="createVersion"
-        />
-
-        <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
+        <SidePanel :panel="versionsPanel" side="right" width="20rem" icon="heroicons:clock" show-label="Show versions">
+            <template #default="{ collapse }">
+                <DocumentVersionPanel
+                    :versions="versionEditor.versions.value"
+                    :open-version-id="versionEditor.openVersionId.value"
+                    :dirty-ids="versionEditor.dirtyIds.value"
+                    :has-pinned-version="Boolean(openedDocument.primary_version_id)"
+                    :is-busy="versionEditor.isBusy.value"
+                    :is-pending="versionEditor.isPending.value"
+                    @collapse="collapse"
+                    @open="versionEditor.selectVersion"
+                    @create="showVersionCreateDialog = true"
+                    @delete="removeVersion"
+                    @set-primary="setPrimary($event.id)"
+                    @use-latest-as-primary="setPrimary(null)"
+                />
+            </template>
+        </SidePanel>
     </div>
 </template>

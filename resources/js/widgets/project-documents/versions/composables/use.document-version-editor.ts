@@ -124,9 +124,7 @@ export function useDocumentVersionEditor(documentId: MaybeRefOrGetter<string>) {
         openContent,
         dirtyIds,
         isDirty,
-        isBusy: computed(
-            () => isCreating.value || isSavingVersions.value || isDeleting.value || isPinning.value
-        ),
+        isBusy: computed(() => isCreating.value || isSavingVersions.value || isDeleting.value || isPinning.value),
         selectVersion,
         create,
         remove,
