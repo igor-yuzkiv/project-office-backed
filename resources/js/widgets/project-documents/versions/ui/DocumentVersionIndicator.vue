@@ -16,5 +16,8 @@ defineProps<{ version: IProjectDocumentVersion | null }>()
             class="text-primary-500 text-sm"
             aria-label="Primary version"
         />
+        <!-- Named even when it has no name: the placeholder is what the version list shows too,
+             and a line that sometimes ends after the number reads as truncated. -->
+        <span class="min-w-0 truncate">{{ version.label ?? 'Untitled' }}</span>
     </p>
 </template>
