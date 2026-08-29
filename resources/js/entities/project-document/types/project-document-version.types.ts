@@ -24,10 +24,6 @@ export interface ICreateProjectDocumentVersionInput {
     copy_content_from_version_id?: string | null
 }
 
-export interface IUpdateProjectDocumentVersionsInput {
-    versions: Array<{ id: string; content: string | null; label: string | null }>
-}
-
 export interface IUpdateProjectDocumentVersionContentInput {
     content: string | null
 }

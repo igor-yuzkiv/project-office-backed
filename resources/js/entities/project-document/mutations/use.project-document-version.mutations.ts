@@ -3,13 +3,11 @@ import {
     createProjectDocumentVersionRequest,
     deleteProjectDocumentVersionRequest,
     setProjectDocumentPrimaryVersionRequest,
-    updateProjectDocumentVersionsRequest,
 } from '../api'
 import { ProjectDocumentQueryKey, ProjectDocumentVersionQueryKey } from '../config'
 import type {
     ICreateProjectDocumentVersionInput,
     ISetProjectDocumentPrimaryVersionInput,
-    IUpdateProjectDocumentVersionsInput,
 } from '../types'
 
 /**
@@ -32,16 +30,6 @@ export function useCreateProjectDocumentVersionMutation() {
     return useMutation({
         mutationFn: ({ documentId, data }: { documentId: string; data: ICreateProjectDocumentVersionInput }) =>
             createProjectDocumentVersionRequest(documentId, data),
-        onSuccess: (_result, { documentId }) => invalidate(documentId),
-    })
-}
-
-export function useUpdateProjectDocumentVersionsMutation() {
-    const invalidate = useVersionMutationInvalidation()
-
-    return useMutation({
-        mutationFn: ({ documentId, data }: { documentId: string; data: IUpdateProjectDocumentVersionsInput }) =>
-            updateProjectDocumentVersionsRequest(documentId, data),
         onSuccess: (_result, { documentId }) => invalidate(documentId),
     })
 }

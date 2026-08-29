@@ -62,14 +62,6 @@ const router = createRouter({
             ],
         },
         {
-            // Editing is a page of its own: no tree, no tabs, and a draft that belongs to
-            // nothing but this route.
-            path: '/projects/:projectId/documentation/:documentId/edit',
-            name: 'project-documentation.document.edit',
-            component: () => import('@/pages/documentation/edit/EditDocumentPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Edit document' },
-        },
-        {
             path: '/projects/:projectId/documentation',
             component: () => import('@/pages/documentation/workspace/DocumentationWorkspacePage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Documentation' },
