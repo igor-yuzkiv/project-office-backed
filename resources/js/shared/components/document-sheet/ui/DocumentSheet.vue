@@ -77,17 +77,25 @@ onScopeDispose(() => {
     setHovered(null)
     moveClass(BLOCK_CLASS.selected, props.selectedBlock?.element ?? null, null)
 })
+
+// Folded until asked for: the document is what the reader came for.
+const catalogExpanded = ref(false)
 </script>
 
 <template>
-    <!-- The catalog is its own card above the document, so a long one folds away instead of
-         pushing the text down for good. -->
-    <ContentCard v-if="showCatalog && previewRef?.catalog.hasHeadings" density="compact" expandable>
+    <!-- The catalog is its own card above the document, folded until asked for: the document is
+         what the reader came for, and a long catalog would push it below the fold. -->
+    <ContentCard
+        v-if="showCatalog && previewRef?.catalog.hasHeadings"
+        v-model:expanded="catalogExpanded"
+        density="compact"
+        expandable
+    >
         <template #collapsed>
-            <p class="text-surface-500 text-xs font-medium uppercase tracking-wide">Contents</p>
+            <p class="text-surface-500 text-xs font-medium uppercase tracking-wide">Table of contents</p>
         </template>
 
-        <p class="mb-3 text-surface-500 text-xs font-medium uppercase tracking-wide">Contents</p>
+        <p class="mb-3 text-surface-500 text-xs font-medium uppercase tracking-wide">Table of contents</p>
         <MarkdownCatalog class="text-sm" :catalog="previewRef.catalog" />
     </ContentCard>
 

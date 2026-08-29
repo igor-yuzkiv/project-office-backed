@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, provide, reactive } from 'vue'
+import { computed, provide, reactive, ref } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
-import Drawer from 'primevue/drawer'
 import type { TabbedSidePanel } from '@/shared/composables'
 import { SIDE_TABS_CONTEXT, type SideTabDescriptor } from '../side-tabs.context'
 
@@ -13,9 +13,6 @@ const props = defineProps<{
     /** CSS length for the column and the drawer, e.g. `24rem`. */
     width: string
 }>()
-
-// The strip is wide enough for its own buttons; the drawer stays clear of it by the same amount.
-const STRIP_WIDTH = '2.75rem'
 
 // Tabs announce themselves in template order, so the strip needs no list of its own.
 const tabs = reactive<SideTabDescriptor[]>([])
@@ -55,10 +52,17 @@ function toggle() {
     if (props.panel.isCollapsed.value) props.panel.expand()
     else props.panel.collapse()
 }
+
+const stripRef = ref<HTMLElement>()
+const drawerRef = ref<HTMLElement>()
+
+// A click anywhere else dismisses the drawer. The strip is excluded because its icons have
+// their own answer to a click — switching or closing the tab — and must not be pre-empted.
+onClickOutside(drawerRef, props.panel.closeDrawer, { ignore: [stripRef] })
 </script>
 
 <template>
-    <div class="min-h-0 flex shrink-0" :class="side === 'left' ? 'flex-row-reverse' : ''">
+    <div class="min-h-0 flex shrink-0 relative" :class="side === 'left' ? 'flex-row-reverse' : ''">
         <aside
             v-if="!panel.isCollapsed.value"
             class="border-surface-200 dark:border-surface-700 min-h-0 shrink-0 overflow-hidden"
@@ -71,6 +75,7 @@ function toggle() {
         <!-- Always there, even with the column open, so the tabs stay reachable in one place.
              No hover behaviour: a tab opens on a click and nothing else. -->
         <div
+            ref="stripRef"
             class="border-surface-200 dark:border-surface-700 gap-1 py-1.5 w-11 flex shrink-0 flex-col items-center"
             :class="side === 'left' ? 'border-r' : 'border-l'"
         >
@@ -112,24 +117,17 @@ function toggle() {
             <slot />
         </div>
 
-        <!-- Only while the column is hidden, so a tab is never mounted twice. Not modal: the
-             workspace stays usable, and it stops short of the strip so the icons stay clickable.
-             Not dismissable: an outside click would fire before the icon's own click and the two
-             would cancel out, so the drawer closes only through the icon or by showing the column
-             again. -->
-        <Drawer
-            v-if="panel.isCollapsed.value"
-            :visible="panel.isDrawerOpen.value"
-            :position="side"
-            :modal="false"
-            :dismissable="false"
-            class="!max-w-full"
-            :style="{ width, [side === 'left' ? 'marginLeft' : 'marginRight']: STRIP_WIDTH }"
-            :pt="{ header: { class: 'hidden' }, content: { class: '!p-0' } }"
+        <!-- Only while the column is hidden, so a tab is never mounted twice. It lives inside this
+             row, beside the strip, rather than over the whole viewport: the tabs belong to the
+             workspace, not to the page. -->
+        <div
+            v-if="panel.isCollapsed.value && panel.isDrawerOpen.value"
+            ref="drawerRef"
+            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 absolute inset-y-0 z-10 overflow-hidden shadow-lg"
+            :class="side === 'left' ? 'left-11 border-r' : 'right-11 border-l'"
+            :style="{ width }"
         >
-            <div class="h-full">
-                <slot />
-            </div>
-        </Drawer>
+            <slot />
+        </div>
     </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 
 // The same white card carries a document sheet and, later, an editor or a metadata card;
@@ -8,8 +7,8 @@ withDefaults(defineProps<{ density?: 'comfortable' | 'compact'; expandable?: boo
     density: 'comfortable',
 })
 
-// Open by default: a card whose content is worth folding is still worth seeing first.
-const expanded = ref(true)
+// Open unless the host says otherwise; the host may also bind it to remember or drive the fold.
+const expanded = defineModel<boolean>('expanded', { default: true })
 </script>
 
 <template>
