@@ -6,6 +6,7 @@ import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import type { IAnnotation } from '@/entities/annotation'
 import type { IProjectDocument } from '@/entities/project-document/types'
+import { DocumentCanvas } from '@/shared/components/document-canvas'
 import { DocumentSheet } from '@/shared/components/document-sheet'
 import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
 import {
@@ -106,29 +107,23 @@ const sidebarHandlers = {
         <!-- min-w-0: without it this column is as wide as its widest child, and one unbreakable
              code block in the document would push the sidebar off the screen. -->
         <div class="min-h-0 min-w-0 flex flex-1 flex-col">
-            <DocumentSheet
-                :selected-block="selectedBlock"
-                :content="openVersion.content ?? ''"
-                :blocks-pickable="annotationsEnabled"
-                @blocks-changed="blocks = $event"
-                @pick-block="pickBlock"
-            >
-                <template #toolbar-leading>
-                    <DocumentVersionSwitcher
-                        :versions="versions"
-                        :open-version-id="openVersionId"
-                        @open="selectVersion"
-                    />
-                </template>
+            <DocumentCanvas>
+                <template #start>
+                    <div class="gap-2 flex flex-wrap items-center">
+                        <DocumentVersionSwitcher
+                            :versions="versions"
+                            :open-version-id="openVersionId"
+                            @open="selectVersion"
+                        />
 
-                <template #toolbar>
-                    <label class="gap-2 text-surface-500 text-xs flex cursor-pointer items-center">
-                        Annotations
-                        <ToggleSwitch v-model="annotationsEnabled" />
-                    </label>
-                </template>
+                        <!-- Wrapping rather than clipping: the column is narrow whenever the tree and a
+                             side panel are both open, and the toolbar has to survive that. -->
+                        <label class="gap-2 text-surface-500 text-xs ml-auto flex cursor-pointer items-center">
+                            Annotations
+                            <ToggleSwitch v-model="annotationsEnabled" />
+                        </label>
+                    </div>
 
-                <template #banner>
                     <div
                         v-if="annotationsEnabled && isReanchoring"
                         class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
@@ -141,7 +136,16 @@ const sidebarHandlers = {
 
                     <DocumentVersionIndicator v-else :version="openVersion" />
                 </template>
-            </DocumentSheet>
+
+                <DocumentSheet
+                    :selected-block="selectedBlock"
+                    :content="openVersion.content ?? ''"
+                    :blocks-pickable="annotationsEnabled"
+                    show-catalog
+                    @blocks-changed="blocks = $event"
+                    @pick-block="pickBlock"
+                />
+            </DocumentCanvas>
 
             <!-- Docked like a chat composer: it appears once a block is picked, and never covers the text. -->
             <AnnotationComposer

@@ -2,6 +2,7 @@
 import { useRouteParams } from '@vueuse/router'
 import { Icon } from '@iconify/vue'
 import { useTaskQuery } from '@/entities/task/queries'
+import { DocumentCanvas } from '@/shared/components/document-canvas'
 import { DocumentSheet } from '@/shared/components/document-sheet'
 
 const taskId = useRouteParams<string>('id')
@@ -10,11 +11,13 @@ const { task } = useTaskQuery(taskId)
 </script>
 
 <template>
-    <!-- h-full: the sheet scrolls its own canvas, and without a bounded height it would grow
+    <!-- h-full: the canvas scrolls itself, and without a bounded height it would grow
          instead and hand the scrolling back to the tab host. -->
     <div class="flex h-full flex-col">
         <!-- Blocks stay unpickable: annotating belongs to documents, not to tasks. -->
-        <DocumentSheet v-if="task?.description" :content="task.description" />
+        <DocumentCanvas v-if="task?.description">
+            <DocumentSheet :content="task.description" />
+        </DocumentCanvas>
 
         <div v-else class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center">
             <Icon icon="heroicons:document" class="text-surface-300 text-4xl" />
