@@ -1,0 +1,32 @@
+import type { ToolbarNames } from 'md-editor-v3'
+
+// The full toolbar; a host embedding the editor in a narrow sheet passes MarkdownEditor a shorter one.
+export const DEFAULT_TOOLBARS: ToolbarNames[] = [
+    'bold',
+    'underline',
+    'italic',
+    '-',
+    'strikeThrough',
+    'title',
+    'sub',
+    'sup',
+    'quote',
+    'unorderedList',
+    'orderedList',
+    'task',
+    '-',
+    'codeRow',
+    'code',
+    'link',
+    'table',
+    'image',
+    '-',
+    'revoke',
+    'next',
+    '=',
+    'catalog',
+    'preview',
+    'previewOnly',
+    'pageFullscreen',
+    'fullscreen',
+]

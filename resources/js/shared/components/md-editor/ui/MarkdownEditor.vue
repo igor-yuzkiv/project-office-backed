@@ -2,50 +2,29 @@
 import { computed } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import type { ToolbarNames } from 'md-editor-v3'
+import { DEFAULT_TOOLBARS } from '../editor-toolbars'
 import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
 
 const props = withDefaults(
     defineProps<{
         preview?: boolean
+        toolbars?: ToolbarNames[]
+        /** CSS length. The editor grows with its content from here; `height: 100%` in `style` still bounds it. */
+        minHeight?: string
         handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
     }>(),
-    { preview: false }
+    { preview: false, toolbars: () => DEFAULT_TOOLBARS, minHeight: '300px' }
 )
+
+const emit = defineEmits<{
+    /** Ctrl/Cmd+S inside the editor. The html arrives once the preview has rendered it. */
+    (e: 'save', markdown: string, html: Promise<string>): void
+}>()
 
 const modelValue = defineModel<string>({ required: true })
 
 const themeStore = useAppThemeStore()
 const editorTheme = computed(() => (themeStore.isDark ? 'dark' : 'light'))
-
-const toolbars: ToolbarNames[] = [
-    'bold',
-    'underline',
-    'italic',
-    '-',
-    'strikeThrough',
-    'title',
-    'sub',
-    'sup',
-    'quote',
-    'unorderedList',
-    'orderedList',
-    'task',
-    '-',
-    'codeRow',
-    'code',
-    'link',
-    'table',
-    'image',
-    '-',
-    'revoke',
-    'next',
-    '=',
-    'catalog',
-    'preview',
-    'previewOnly',
-    'pageFullscreen',
-    'fullscreen',
-]
 
 function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
     if (!files.length) return
@@ -63,7 +42,8 @@ function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
         preview-theme="github"
         code-theme="github"
         :code-foldable="false"
-        style="min-height: 300px"
+        :style="{ minHeight }"
         @on-upload-img="handleUploadImages"
+        @on-save="(markdown: string, html: Promise<string>) => emit('save', markdown, html)"
     />
 </template>
