@@ -4,6 +4,7 @@ namespace App\Http\WebApi\Requests\ProjectDocuments;
 
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Actions\Document\CreateProjectDocument\CreateProjectDocumentCommand;
+use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,6 +33,7 @@ class StoreProjectDocumentRequest extends FormRequest
                 'ulid',
                 Rule::exists('project_documents', 'id')->where('project_id', $project->id),
             ],
+            'status'    => ['sometimes', 'string', Rule::enum(ProjectDocumentStatus::class)],
             'tag_ids'   => ['sometimes', 'array'],
             'tag_ids.*' => ['string', 'exists:tags,id'],
         ];
@@ -44,6 +46,7 @@ class StoreProjectDocumentRequest extends FormRequest
             title: $this->validated('title'),
             parentId: $this->validated('parent_id'),
             tagIds: $this->validated('tag_ids'),
+            status: $this->has('status') ? ProjectDocumentStatus::from($this->validated('status')) : null,
         );
     }
 }

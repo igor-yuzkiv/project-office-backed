@@ -144,6 +144,7 @@ Route::group([
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
     Route::put('/', 'update')->name('update');
+    Route::put('{project_document_version}', 'updateContent')->name('update-content');
 });
 Route::put('project-documents/{project_document}/primary-version', [ProjectDocumentVersionsController::class, 'setPrimary'])
     ->middleware(['auth:sanctum'])->name('project-documents.primary-version.update');

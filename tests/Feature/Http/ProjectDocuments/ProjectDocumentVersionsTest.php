@@ -5,6 +5,7 @@ use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\User\Models\UserModel;
 use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
@@ -194,6 +195,95 @@ describe('saving several versions at once', function () {
                 ['id' => $version->id, 'content' => 'Two', 'label' => null],
             ],
         ])->assertUnprocessable();
+    });
+});
+
+describe('saving one version', function () {
+    it('saves the content of the version in the route', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'First', 'label' => 'Stable']);
+        $other = $this->document->versions()->create(['version_number' => 2, 'content' => 'Second']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
+            'content' => 'First edited',
+        ])->assertOk()
+            ->assertJsonPath('data.id', $version->id)
+            ->assertJsonPath('data.content', 'First edited')
+            ->assertJsonPath('data.label', 'Stable')
+            ->assertJsonPath('data.is_primary', false);
+
+        expect($version->fresh()->content)->toBe('First edited')
+            ->and($other->fresh()->content)->toBe('Second');
+    });
+
+    it('accepts null content', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
+            'content' => null,
+        ])->assertOk();
+
+        expect($version->fresh()->content)->toBeNull();
+    });
+
+    it('requires the content key to be sent', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['content']);
+    });
+
+    it('does not find a version through another document', function () {
+        $other = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
+        $foreign = $other->versions()->create(['version_number' => 1, 'content' => 'Theirs']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$foreign->id}", [
+            'content' => 'Hijacked',
+        ])->assertNotFound();
+
+        expect($foreign->fresh()->content)->toBe('Theirs');
+    });
+
+    it('answers 404 for a version that does not exist', function () {
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/".((string) Str::ulid()), [
+            'content' => 'Anything',
+        ])->assertNotFound();
+    });
+
+    it('refuses an unauthenticated request', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+        auth()->logout();
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
+            'content' => 'Anything',
+        ])->assertUnauthorized();
+
+        expect($version->fresh()->content)->toBe('Body');
+    });
+
+    it('records one version event and touches the document', function () {
+        $version = $this->document->versions()->create(['version_number' => 3, 'content' => 'Body']);
+        $this->travel(1)->minute();
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
+            'content' => 'Rewritten',
+        ])->assertOk();
+
+        $record = AuditRecordModel::query()->sole();
+        expect($record->type)->toBe('project_document_version.updated')
+            ->and($record->title)->toBe("{$this->user->name} updated version 3 of «{$this->document->title}»")
+            ->and($record->description)->toBe('Changed content')
+            ->and($this->document->fresh()->updated_at)->not->toEqual($this->document->updated_at);
+    });
+
+    it('records nothing when the content comes back unchanged', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+
+        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
+            'content' => 'Body',
+        ])->assertOk();
+
+        expect(AuditRecordModel::query()->count())->toBe(0);
     });
 });
 

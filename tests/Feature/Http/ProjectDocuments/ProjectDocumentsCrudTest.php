@@ -41,6 +41,24 @@ it('creates a project document with default draft status and top-level hierarchy
     expect($document->depth)->toBe(0);
 });
 
+it('creates a project document with the given status', function () {
+    $response = $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'  => 'Architecture Notes',
+        'status' => ProjectDocumentStatus::Active->value,
+    ]);
+
+    $response->assertCreated()->assertJsonPath('data.status', ProjectDocumentStatus::Active->value);
+
+    expect(ProjectDocumentModel::findOrFail($response->json('data.id'))->status)->toBe(ProjectDocumentStatus::Active);
+});
+
+it('rejects a status outside the enum', function () {
+    $this->postJson("/api/projects/{$this->project->id}/project-documents", [
+        'title'  => 'Architecture Notes',
+        'status' => 'published',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['status']);
+});
+
 it('creates a project document with tags', function () {
     $tagA = TagModel::create(['name' => 'spec', 'color' => '#111111']);
     $tagB = TagModel::create(['name' => 'draft', 'color' => '#222222']);
