@@ -3,20 +3,23 @@ import { ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
-import type { IProjectDocumentVersion } from '@/entities/project-document/types'
+import type { IProjectDocumentVersion, IUpdateProjectDocumentVersionInput } from '@/entities/project-document/types'
 import { InputContainer } from '@/shared/components/input'
+import type { LaravelValidationErrors } from '@/shared/types'
 
 const visible = defineModel<boolean>('visible', { default: false })
 
 const props = defineProps<{
     version: IProjectDocumentVersion | null
+    validationErrors: LaravelValidationErrors
     isPending: boolean
 }>()
 
 const emit = defineEmits<{
-    (e: 'submit', label: string | null): void
+    (e: 'submit', input: IUpdateProjectDocumentVersionInput): void
 }>()
 
+// The version's own fields. Content is not one of them — it is written on the sheet.
 const label = ref('')
 
 watch(visible, (open) => {
@@ -24,21 +27,26 @@ watch(visible, (open) => {
 })
 
 function submit() {
-    emit('submit', label.value.trim() || null)
+    emit('submit', { label: label.value.trim() || null })
 }
 </script>
 
 <template>
     <Dialog
         v-model:visible="visible"
-        :header="version ? `Rename version ${version.version_number}` : 'Rename version'"
+        :header="version ? `Edit version ${version.version_number}` : 'Edit version'"
         modal
         :closable="!isPending"
         :style="{ width: '24rem' }"
     >
         <form class="pt-1" @submit.prevent="submit">
-            <InputContainer label="Name">
-                <InputText v-model="label" placeholder="Leave empty for no name" class="w-full" />
+            <InputContainer label="Name" :error="validationErrors.label">
+                <InputText
+                    v-model="label"
+                    placeholder="Leave empty for no name"
+                    :invalid="!!validationErrors.label"
+                    class="w-full"
+                />
             </InputContainer>
         </form>
 

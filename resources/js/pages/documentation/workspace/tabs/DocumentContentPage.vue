@@ -13,7 +13,11 @@ import {
     useProjectDocumentVersionAnnotationsQuery,
     useProjectDocumentVersionsQuery,
 } from '@/entities/project-document'
-import type { IProjectDocument, IProjectDocumentVersion } from '@/entities/project-document/types'
+import type {
+    IProjectDocument,
+    IProjectDocumentVersion,
+    IUpdateProjectDocumentVersionInput,
+} from '@/entities/project-document/types'
 import { DocumentCanvas } from '@/shared/components/document-canvas'
 import { DocumentSheet } from '@/shared/components/document-sheet'
 import { AnnotationComposer, AnnotationPanel, useAnnotationSession } from '@/widgets/project-documents/annotations'
@@ -22,6 +26,7 @@ import {
     DocumentVersionCreateDialog,
     DocumentVersionIndicator,
     DocumentVersionPanel,
+    DocumentVersionUpdateDialog,
     useDocumentVersionActions,
     useOpenDocumentVersion,
 } from '@/widgets/project-documents/versions'
@@ -29,6 +34,7 @@ import { useAuthStore } from '@/app/stores/use.auth.store'
 import { SideTab, SideTabs } from '@/shared/components/side-tabs'
 import { useConfirmDialog, useTabbedSidePanel, useToast } from '@/shared/composables'
 import { ApiError } from '@/shared/api'
+import type { LaravelValidationErrors } from '@/shared/types'
 import { EMPTY_DOM_BLOCKS, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 import { formatDate } from '@/shared/utils/date.util'
 
@@ -186,6 +192,30 @@ async function createVersion(input: { label: string | null; copyContentFromVersi
         if (editAfterCreate) mode.value = 'edit'
     } catch (error) {
         reportError(error, 'The version could not be created.')
+    }
+}
+
+const editingVersion = ref<IProjectDocumentVersion | null>(null)
+const versionValidationErrors = ref<LaravelValidationErrors>({})
+
+function openUpdateDialog(version: IProjectDocumentVersion) {
+    versionValidationErrors.value = {}
+    editingVersion.value = version
+}
+
+async function updateVersion(input: IUpdateProjectDocumentVersionInput) {
+    const version = editingVersion.value
+
+    if (!version) return
+
+    versionValidationErrors.value = {}
+
+    try {
+        await versionActions.update(version, input)
+        editingVersion.value = null
+    } catch (error) {
+        if (error instanceof ApiError && error.isValidationError) versionValidationErrors.value = error.validationErrors ?? {}
+        else reportError(error, 'The version could not be saved.')
     }
 }
 
@@ -391,6 +421,7 @@ onBeforeUnmount(() => {
                     :is-pending="isVersionsPending"
                     @open="selectVersion"
                     @create="openCreateDialog()"
+                    @edit="openUpdateDialog"
                     @delete="removeVersion"
                     @set-primary="setPrimary($event.id)"
                     @use-latest-as-primary="setPrimary(null)"
@@ -411,6 +442,15 @@ onBeforeUnmount(() => {
         </p>
         <Button label="Create a version" size="small" outlined @click="openCreateDialog(true)" />
     </div>
+
+    <DocumentVersionUpdateDialog
+        :visible="editingVersion !== null"
+        :version="editingVersion"
+        :validation-errors="versionValidationErrors"
+        :is-pending="versionActions.isBusy.value"
+        @update:visible="(open: boolean) => !open && (editingVersion = null)"
+        @submit="updateVersion"
+    />
 
     <DocumentVersionCreateDialog
         v-model:visible="showVersionCreateDialog"

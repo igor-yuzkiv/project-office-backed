@@ -5,18 +5,21 @@ import {
     useCreateProjectDocumentVersionMutation,
     useDeleteProjectDocumentVersionMutation,
     useSetProjectDocumentPrimaryVersionMutation,
+    useUpdateProjectDocumentVersionMutation,
     type ICreateProjectDocumentVersionInput,
+    type IUpdateProjectDocumentVersionInput,
     type IProjectDocumentVersion,
 } from '@/entities/project-document'
 
 /**
  * The writes a document's version list can ask for. No buffer of its own: content is written
- * elsewhere, one version at a time, and these three reach the server as soon as they are called.
+ * elsewhere, one version at a time, and these reach the server as soon as they are called.
  */
 export function useDocumentVersionActions(documentId: MaybeRefOrGetter<string>) {
     const queryClient = useQueryClient()
 
     const { mutateAsync: createVersion, isPending: isCreating } = useCreateProjectDocumentVersionMutation()
+    const { mutateAsync: updateVersion, isPending: isUpdating } = useUpdateProjectDocumentVersionMutation()
     const { mutateAsync: deleteVersion, isPending: isDeleting } = useDeleteProjectDocumentVersionMutation()
     const { mutateAsync: setPrimaryVersion, isPending: isPinning } = useSetProjectDocumentPrimaryVersionMutation()
 
@@ -31,6 +34,10 @@ export function useDocumentVersionActions(documentId: MaybeRefOrGetter<string>) 
         return created.data
     }
 
+    async function update(version: IProjectDocumentVersion, input: IUpdateProjectDocumentVersionInput) {
+        await updateVersion({ documentId: toValue(documentId), versionId: version.id, data: input })
+    }
+
     async function remove(version: IProjectDocumentVersion) {
         await deleteVersion({ documentId: toValue(documentId), versionId: version.id })
     }
@@ -42,8 +49,9 @@ export function useDocumentVersionActions(documentId: MaybeRefOrGetter<string>) 
 
     return {
         create,
+        update,
         remove,
         setPrimary,
-        isBusy: computed(() => isCreating.value || isDeleting.value || isPinning.value),
+        isBusy: computed(() => isCreating.value || isUpdating.value || isDeleting.value || isPinning.value),
     }
 }

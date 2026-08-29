@@ -147,6 +147,8 @@ Route::group([
 });
 Route::put('project-documents/{project_document}/primary-version', [ProjectDocumentVersionsController::class, 'setPrimary'])
     ->middleware(['auth:sanctum'])->name('project-documents.primary-version.update');
+Route::put('project-document-versions/{project_document_version}', [ProjectDocumentVersionsController::class, 'update'])
+    ->middleware(['auth:sanctum'])->name('project-document-versions.update');
 Route::delete('project-document-versions/{project_document_version}', [ProjectDocumentVersionsController::class, 'destroy'])
     ->middleware(['auth:sanctum'])->name('project-document-versions.destroy');
 Route::get('projects/{project}/project-documents/tree', [ProjectDocumentTreeController::class, 'index'])

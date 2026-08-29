@@ -24,6 +24,11 @@ export interface ICreateProjectDocumentVersionInput {
     copy_content_from_version_id?: string | null
 }
 
+/** The version's own fields; content travels separately. Every field is written. */
+export interface IUpdateProjectDocumentVersionInput {
+    label: string | null
+}
+
 export interface IUpdateProjectDocumentVersionContentInput {
     content: string | null
 }

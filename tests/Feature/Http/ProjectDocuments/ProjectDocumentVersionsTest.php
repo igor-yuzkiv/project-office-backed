@@ -204,6 +204,63 @@ describe('saving one version', function () {
     });
 });
 
+describe('naming a version', function () {
+    it('saves the name and leaves the content alone', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+
+        $this->putJson("/api/project-document-versions/{$version->id}", ['label' => 'Stable'])
+            ->assertOk()
+            ->assertJsonPath('data.label', 'Stable')
+            ->assertJsonPath('data.content', 'Body')
+            ->assertJsonPath('data.is_primary', true);
+
+        expect($version->fresh()->label)->toBe('Stable');
+    });
+
+    it('clears the name with null', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'label' => 'Stable']);
+
+        $this->putJson("/api/project-document-versions/{$version->id}", ['label' => null])->assertOk();
+
+        expect($version->fresh()->label)->toBeNull();
+    });
+
+    it('requires the label key and bounds its length', function () {
+        $version = $this->document->versions()->create(['version_number' => 1]);
+
+        $this->putJson("/api/project-document-versions/{$version->id}", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['label']);
+        $this->putJson("/api/project-document-versions/{$version->id}", ['label' => str_repeat('a', 256)])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['label']);
+    });
+
+    it('answers 404 for a version that does not exist', function () {
+        $this->putJson('/api/project-document-versions/'.((string) Str::ulid()), ['label' => 'x'])->assertNotFound();
+    });
+
+    it('records one version event and touches the document', function () {
+        $version = $this->document->versions()->create(['version_number' => 2, 'label' => 'Old']);
+        $this->travel(1)->minute();
+
+        $this->putJson("/api/project-document-versions/{$version->id}", ['label' => 'New'])->assertOk();
+
+        $record = AuditRecordModel::query()->sole();
+        expect($record->title)->toBe("{$this->user->name} updated version 2 of «{$this->document->title}»")
+            ->and($record->description)->toBe('Changed label')
+            ->and($this->document->fresh()->updated_at)->not->toEqual($this->document->updated_at);
+    });
+
+    it('records nothing when the name comes back unchanged', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'label' => 'Same']);
+
+        $this->putJson("/api/project-document-versions/{$version->id}", ['label' => 'Same'])->assertOk();
+
+        expect(AuditRecordModel::query()->count())->toBe(0);
+    });
+});
+
 describe('deleting a version', function () {
     it('deletes a version permanently', function () {
         $version = $this->document->versions()->create(['version_number' => 1]);

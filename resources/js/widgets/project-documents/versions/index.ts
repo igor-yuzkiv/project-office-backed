@@ -1,6 +1,6 @@
 export { default as DocumentVersionIndicator } from './ui/DocumentVersionIndicator.vue'
 export { default as DocumentVersionPanel } from './ui/DocumentVersionPanel.vue'
 export { default as DocumentVersionCreateDialog } from './ui/DocumentVersionCreateDialog.vue'
-export { default as DocumentVersionRenameDialog } from './ui/DocumentVersionRenameDialog.vue'
+export { default as DocumentVersionUpdateDialog } from './ui/DocumentVersionUpdateDialog.vue'
 export { useOpenDocumentVersion } from './composables/use.open-document-version'
 export { useDocumentVersionActions } from './composables/use.document-version-actions'
