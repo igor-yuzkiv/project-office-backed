@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Hash;
 /**
  * Deterministic dataset for Playwright e2e runs.
  *
- * Holds a known user plus one project document whose markdown covers every block
- * type the annotation anchors distinguish. Extend here as new e2e scenarios need
- * fixture data — credentials are mirrored by the E2E_USER_* variables in .env.e2e.
+ * Holds a known user plus three project documents: one whose markdown covers every block
+ * type the annotation anchors distinguish, and two for the specs that write — one per spec
+ * file, so parallel workers never autosave over each other. Extend here as new e2e
+ * scenarios need fixture data — credentials are mirrored by the E2E_USER_* variables in
+ * .env.e2e.
  */
 class E2eSeeder extends Seeder
 {
@@ -33,6 +35,12 @@ class E2eSeeder extends Seeder
         echo 'fenced code has no data-line';
         ```
         MD;
+
+    /** One document per writing spec file: autosave and modes each get their own. */
+    private const EDITABLE_DOCUMENTS = [
+        2 => ['key' => 'DOC-E2E-2', 'title' => 'Autosave Document', 'content' => "# Autosave document\n\nThe first paragraph of the autosave document."],
+        3 => ['key' => 'DOC-E2E-3', 'title' => 'Modes Document', 'content' => "# Modes document\n\nThe first paragraph of the modes document."],
+    ];
 
     public function run(): void
     {
@@ -64,5 +72,19 @@ class E2eSeeder extends Seeder
             ['version_number' => 1],
             ['content' => self::DOCUMENT_CONTENT],
         );
+
+        foreach (self::EDITABLE_DOCUMENTS as $sequenceNumber => $fixture) {
+            $editable = ProjectDocumentModel::updateOrCreate(
+                ['key' => $fixture['key']],
+                [
+                    'project_id'      => $project->id,
+                    'sequence_number' => $sequenceNumber,
+                    'title'           => $fixture['title'],
+                    'status'          => ProjectDocumentStatus::Draft->value,
+                ],
+            );
+
+            $editable->versions()->updateOrCreate(['version_number' => 1], ['content' => $fixture['content']]);
+        }
     }
 }
