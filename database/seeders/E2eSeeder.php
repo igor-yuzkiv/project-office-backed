@@ -36,7 +36,6 @@ class E2eSeeder extends Seeder
         ```
         MD;
 
-    /** One document per writing spec file: autosave and modes each get their own. */
     private const EDITABLE_DOCUMENTS = [
         2 => ['key' => 'DOC-E2E-2', 'title' => 'Autosave Document', 'content' => "# Autosave document\n\nThe first paragraph of the autosave document."],
         3 => ['key' => 'DOC-E2E-3', 'title' => 'Modes Document', 'content' => "# Modes document\n\nThe first paragraph of the modes document."],

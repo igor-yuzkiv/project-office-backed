@@ -78,7 +78,6 @@ onScopeDispose(() => {
     moveClass(BLOCK_CLASS.selected, props.selectedBlock?.element ?? null, null)
 })
 
-// Folded until asked for: the document is what the reader came for.
 const catalogExpanded = ref(false)
 </script>
 

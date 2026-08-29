@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
-export type Mode = 'View' | 'Edit' | 'Annotate'
+type Mode = 'View' | 'Edit' | 'Annotate'
 
 export function modeSwitch(page: Page) {
     return page.locator('.p-selectbutton')
@@ -21,7 +21,6 @@ export function preview(page: Page) {
     return page.locator('.document-canvas .md-editor-preview')
 }
 
-/** Types at the end of the editor; the marker is unique so a later assertion can find it. */
 export async function typeAtEnd(page: Page, text: string) {
     await editor(page).click()
     await page.keyboard.press('Control+End')

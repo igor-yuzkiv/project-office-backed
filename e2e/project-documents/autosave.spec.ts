@@ -34,6 +34,21 @@ test.describe('document autosave', () => {
         expect((await write).ok()).toBe(true)
     })
 
+    test('writes a draft to the document it was typed in after the reader moved on', async ({ page }) => {
+        const marker = `Left behind ${Date.now()}`
+        await typeAtEnd(page, `\n\n${marker}`)
+
+        // The route stays the same and only the document changes, so the page is reused and the
+        // write goes out from a page that already shows the other document.
+        const write = page.waitForResponse((res) => isVersionContentWrite(res.url(), res.request().method()))
+        await openDocument(page, DOCUMENTS.modes)
+        expect((await write).ok()).toBe(true)
+
+        await openDocument(page, DOCUMENTS.autosave)
+        await page.reload()
+        await expect(preview(page)).toContainText(marker)
+    })
+
     test('reports a failed write and lets Save retry it', async ({ page, context }) => {
         const marker = `Offline ${Date.now()}`
 

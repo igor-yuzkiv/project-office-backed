@@ -17,8 +17,8 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-    /** Ctrl/Cmd+S inside the editor. The html arrives once the preview has rendered it. */
-    (e: 'save', markdown: string, html: Promise<string>): void
+    /** Ctrl/Cmd+S inside the editor. */
+    (e: 'save'): void
 }>()
 
 const modelValue = defineModel<string>({ required: true })
@@ -44,6 +44,6 @@ function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
         :code-foldable="false"
         :style="{ minHeight }"
         @on-upload-img="handleUploadImages"
-        @on-save="(markdown: string, html: Promise<string>) => emit('save', markdown, html)"
+        @on-save="emit('save')"
     />
 </template>

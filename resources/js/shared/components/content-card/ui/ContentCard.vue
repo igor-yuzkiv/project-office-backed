@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 
-// The same white card carries a document sheet and, later, an editor or a metadata card;
-// density is the one thing that differs between those uses.
+// The same white card carries the document sheet and the editor; density is the one thing that
+// differs between those uses.
 withDefaults(defineProps<{ density?: 'comfortable' | 'compact'; expandable?: boolean }>(), {
     density: 'comfortable',
 })

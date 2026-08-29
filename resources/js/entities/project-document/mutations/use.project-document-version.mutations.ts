@@ -14,16 +14,18 @@ import type {
 
 /**
  * Every version write also changes what the document itself reports as its content, so both the
- * version list and the document detail are invalidated together.
+ * version list and the document detail are invalidated together. Returned from `onSuccess`, so
+ * `mutateAsync` settles only once the list is fresh.
  */
-function useVersionMutationInvalidation() {
+export function useVersionMutationInvalidation() {
     const queryClient = useQueryClient()
 
-    return (documentId: string) => {
-        queryClient.invalidateQueries({ queryKey: ProjectDocumentVersionQueryKey.documentVersions(documentId) })
-        // `all` is a prefix of every document key, so the open document's detail refreshes with it.
-        queryClient.invalidateQueries({ queryKey: ProjectDocumentQueryKey.all })
-    }
+    return (documentId: string) =>
+        Promise.all([
+            queryClient.invalidateQueries({ queryKey: ProjectDocumentVersionQueryKey.documentVersions(documentId) }),
+            // `all` is a prefix of every document key, so the open document's detail refreshes with it.
+            queryClient.invalidateQueries({ queryKey: ProjectDocumentQueryKey.all }),
+        ])
 }
 
 export function useCreateProjectDocumentVersionMutation() {

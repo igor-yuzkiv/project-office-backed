@@ -2,7 +2,7 @@
 import type { ToolbarNames } from 'md-editor-v3'
 import { ProjectDocumentAttachmentRoles, uploadProjectDocumentAttachmentRequest } from '@/entities/project-document'
 import { ContentCard } from '@/shared/components/content-card'
-import { MarkdownEditor } from '@/shared/components/md-editor'
+import { DEFAULT_TOOLBARS, MarkdownEditor } from '@/shared/components/md-editor'
 
 const props = defineProps<{ documentId: string }>()
 
@@ -14,31 +14,8 @@ const content = defineModel<string>({ required: true })
 
 // The sheet is the preview, so the editor's own preview, split view and catalog would only
 // double it; what stays is writing, images and a way to get more room.
-const TOOLBARS: ToolbarNames[] = [
-    'bold',
-    'underline',
-    'italic',
-    '-',
-    'strikeThrough',
-    'title',
-    'sub',
-    'sup',
-    'quote',
-    'unorderedList',
-    'orderedList',
-    'task',
-    '-',
-    'codeRow',
-    'code',
-    'link',
-    'table',
-    'image',
-    '-',
-    'revoke',
-    'next',
-    '=',
-    'pageFullscreen',
-]
+const DOUBLED_BY_THE_SHEET: ToolbarNames[] = ['catalog', 'preview', 'previewOnly', 'fullscreen']
+const TOOLBARS = DEFAULT_TOOLBARS.filter((name) => !DOUBLED_BY_THE_SHEET.includes(name))
 
 async function handleImageUpload(files: File[], callback: (urls: string[]) => void) {
     const results = await Promise.all(

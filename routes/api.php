@@ -143,7 +143,9 @@ Route::group([
 ], function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
-    Route::put('{project_document_version}', 'updateContent')->name('update-content');
+    // Scoped: the version is looked up through the document's own relation, so a version of
+    // another document is not found rather than written to.
+    Route::put('{version}', 'updateContent')->name('update-content')->scopeBindings();
 });
 Route::put('project-documents/{project_document}/primary-version', [ProjectDocumentVersionsController::class, 'setPrimary'])
     ->middleware(['auth:sanctum'])->name('project-documents.primary-version.update');

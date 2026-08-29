@@ -41,7 +41,6 @@ const state = computed<DataPanelState>(() => {
             class="min-h-0 flex flex-1 flex-col"
         >
             <DocumentVersionList
-                editable
                 class="px-2 pb-2"
                 :versions="versions"
                 :open-version-id="openVersionId"

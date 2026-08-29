@@ -10,10 +10,8 @@ import type { IProjectDocumentVersion } from '@/entities/project-document/types'
 defineProps<{
     versions: IProjectDocumentVersion[]
     openVersionId: string | null
-    /** Adds the per-row actions and the footer. A reader gets neither. */
-    editable?: boolean
-    hasPinnedVersion?: boolean
-    isBusy?: boolean
+    hasPinnedVersion: boolean
+    isBusy: boolean
 }>()
 
 const emit = defineEmits<{
@@ -71,8 +69,7 @@ function openRowMenu(event: MouseEvent, version: IProjectDocumentVersion) {
                         />
                     </button>
 
-                    <template v-if="editable">
-                        <Button
+                    <Button
                             v-if="!version.is_primary"
                             size="small"
                             text
@@ -96,12 +93,11 @@ function openRowMenu(event: MouseEvent, version: IProjectDocumentVersion) {
                         >
                             <template #icon><Icon icon="heroicons:ellipsis-horizontal" class="text-sm" /></template>
                         </Button>
-                    </template>
                 </div>
             </li>
         </ul>
 
-        <div v-if="editable" class="gap-2 mt-1 pt-2 border-surface-200 dark:border-surface-700 flex flex-wrap border-t">
+        <div class="gap-2 mt-1 pt-2 border-surface-200 dark:border-surface-700 flex flex-wrap border-t">
             <Button label="New version" size="small" text :disabled="isBusy" @click="emit('create')">
                 <template #icon><Icon icon="heroicons:plus" class="mr-1 text-sm" /></template>
             </Button>

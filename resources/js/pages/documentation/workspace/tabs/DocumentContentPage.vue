@@ -2,17 +2,11 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
-import { useQueryClient } from '@tanstack/vue-query'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import type { IAnnotation } from '@/entities/annotation'
-import {
-    ProjectDocumentQueryKey,
-    ProjectDocumentVersionQueryKey,
-    useProjectDocumentVersionAnnotationsQuery,
-    useProjectDocumentVersionsQuery,
-} from '@/entities/project-document'
+import { useProjectDocumentVersionAnnotationsQuery, useVersionMutationInvalidation } from '@/entities/project-document'
 import type {
     IProjectDocument,
     IProjectDocumentVersion,
@@ -44,14 +38,18 @@ const props = defineProps<{
     document: IProjectDocument
 }>()
 
-const queryClient = useQueryClient()
 const authStore = useAuthStore()
 const toast = useToast()
 const confirm = useConfirmDialog()
 
-const { versions, openVersionId, openVersion, selectVersion } = useOpenDocumentVersion(() => props.document.id)
+const {
+    versions,
+    isPending: isVersionsPending,
+    openVersionId,
+    openVersion,
+    selectVersion,
+} = useOpenDocumentVersion(() => props.document.id)
 const versionActions = useDocumentVersionActions(() => props.document.id)
-const { isPending: isVersionsPending } = useProjectDocumentVersionsQuery(() => props.document.id)
 
 // Local to the page: reading is the default, and a document opened fresh is opened to read.
 const mode = ref<Mode>('view')
@@ -162,8 +160,6 @@ const annotationPanelHandlers = computed(() =>
           }
 )
 
-// --- Versions ------------------------------------------------------------------------------
-
 const showVersionCreateDialog = ref(false)
 // A document with no versions is created into straight away: the dialog was opened to start
 // writing, not to look at an empty sheet.
@@ -229,12 +225,11 @@ async function removeVersion(version: IProjectDocumentVersion) {
 
     if (!confirmed) return
 
-    // A draft for the version being deleted has nowhere to go, and flushing it would write to
-    // an id that is about to be gone.
-    if (version.id === openVersion.value?.id) autosave.cancel()
-
     try {
         await versionActions.remove(version)
+        // Its draft has nowhere to go now; dropped only once the delete has landed, so a failed
+        // delete keeps the text.
+        if (version.id === openVersion.value?.id) autosave.cancel()
     } catch (error) {
         reportError(error, 'The version could not be deleted.')
     }
@@ -254,16 +249,11 @@ watch(openVersion, (version) => {
     if (version === null) mode.value = 'view'
 })
 
-// --- Leaving the editor -------------------------------------------------------------------
-
 const canvasRef = ref<InstanceType<typeof DocumentCanvas>>()
 
 // Autosave patches the cache version by version; leaving the editor is the one moment the
 // whole list and the document detail are refreshed for real.
-function invalidateVersions() {
-    queryClient.invalidateQueries({ queryKey: ProjectDocumentVersionQueryKey.documentVersions(props.document.id) })
-    queryClient.invalidateQueries({ queryKey: ProjectDocumentQueryKey.all })
-}
+const invalidateVersions = useVersionMutationInvalidation()
 
 // Swapping the sheet for the editor remounts the canvas content, and the reader's place in the
 // text would go with it. The editor scrolls inside itself and leaves the canvas at the top, so the
@@ -285,7 +275,7 @@ watch(mode, async (_next, previous) => {
     restoreScrollOnRender = true
 
     await autosave.flush()
-    invalidateVersions()
+    void invalidateVersions(props.document.id)
 })
 
 function handleBlocksChanged(next: DomBlocks) {
@@ -310,7 +300,7 @@ watch(
 onBeforeRouteLeave(async () => {
     const saved = await autosave.flush()
 
-    if (saved && mode.value === 'edit') invalidateVersions()
+    if (saved && mode.value === 'edit') void invalidateVersions(props.document.id)
 
     return saved
 })
@@ -354,7 +344,7 @@ onBeforeUnmount(() => {
                                     severity="secondary"
                                     outlined
                                     :loading="autosave.status.value === 'saving'"
-                                    @click="autosave.flush()"
+                                    @click="autosave.flush"
                                 />
                             </template>
 
@@ -385,7 +375,7 @@ onBeforeUnmount(() => {
                     v-if="isEditing"
                     v-model="autosave.value.value"
                     :document-id="document.id"
-                    @save="autosave.flush()"
+                    @save="autosave.flush"
                 />
 
                 <DocumentSheet

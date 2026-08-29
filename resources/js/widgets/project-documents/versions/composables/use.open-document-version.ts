@@ -6,7 +6,7 @@ import { useProjectDocumentVersionsQuery, type IProjectDocumentVersion } from '@
  * is a local choice and never another request.
  */
 export function useOpenDocumentVersion(documentId: MaybeRefOrGetter<string>) {
-    const { versions } = useProjectDocumentVersionsQuery(documentId)
+    const { versions, isPending } = useProjectDocumentVersionsQuery(documentId)
 
     const openVersionId = ref<string | null>(null)
 
@@ -28,5 +28,5 @@ export function useOpenDocumentVersion(documentId: MaybeRefOrGetter<string>) {
         openVersionId.value = version.id
     }
 
-    return { versions, openVersionId, openVersion, selectVersion }
+    return { versions, isPending, openVersionId, openVersion, selectVersion }
 }

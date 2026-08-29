@@ -20,10 +20,9 @@ export interface TabbedSidePanel {
  * with `SideTabs`.
  *
  * @param storagePrefix localStorage prefix; the collapsed flag and the active tab live under it.
- * @param collapsedByDefault where the column starts before the reader has expressed a preference.
  */
-export function useTabbedSidePanel(storagePrefix: string, collapsedByDefault = false): TabbedSidePanel {
-    const isCollapsed = useLocalStorage(`${storagePrefix}:collapsed`, collapsedByDefault)
+export function useTabbedSidePanel(storagePrefix: string): TabbedSidePanel {
+    const isCollapsed = useLocalStorage(`${storagePrefix}:collapsed`, false)
     const activeTab = useLocalStorage<string | null>(`${storagePrefix}:tab`, null)
     const isDrawerOpen = ref(false)
 

@@ -142,7 +142,6 @@ export function useProjectDocumentUpsertDialog(options?: ProjectDocumentUpsertDi
         isPending: isCreating || isUpdating,
         openCreate,
         openEdit,
-        close,
         submit,
     }
 }

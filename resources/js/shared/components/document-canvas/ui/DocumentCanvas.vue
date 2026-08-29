@@ -16,7 +16,6 @@ defineExpose({ scrollElement })
         <div class="gap-3 max-w-7xl min-h-0 min-w-0 flex w-full flex-1 flex-col">
             <slot name="start" />
             <slot />
-            <slot name="end" />
         </div>
     </div>
 </template>

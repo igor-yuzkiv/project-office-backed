@@ -53,9 +53,9 @@ class ProjectDocumentVersionsController
     public function updateContent(
         UpdateProjectDocumentVersionContentRequest $request,
         ProjectDocumentModel $projectDocument,
-        ProjectDocumentVersionModel $projectDocumentVersion,
+        ProjectDocumentVersionModel $version,
     ): ProjectDocumentVersionResource {
-        $version = $this->updateContentHandler->handle($request->toCommand($projectDocumentVersion))->load('author');
+        $version = $this->updateContentHandler->handle($request->toCommand($version))->load('author');
         $this->markPrimary($projectDocument, new Collection([$version]));
 
         return new ProjectDocumentVersionResource($version);

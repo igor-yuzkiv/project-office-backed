@@ -20,7 +20,7 @@ test.describe('document sidebar', () => {
 
     test('collapses to a strip, opens a tab in a drawer on click, and remembers the state', async ({ page }) => {
         const column = page.locator('aside').filter({ hasText: /Versions|Annotations/ })
-        const drawer = page.locator('.absolute.inset-y-0').filter({ hasText: /Versions|Annotations/ })
+        const drawer = page.getByTestId('side-tabs-drawer')
 
         await page.getByRole('button', { name: 'Hide sidebar' }).click()
         await expect(column).toHaveCount(0)

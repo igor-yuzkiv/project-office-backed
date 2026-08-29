@@ -23,6 +23,8 @@ const active = computed(() => {
     return tabs.some((tab) => tab.value === chosen) ? chosen : (tabs[0]?.value ?? null)
 })
 
+const activeLabel = computed(() => tabs.find((tab) => tab.value === active.value)?.label ?? 'Sidebar')
+
 const contentVisible = computed(() => !props.panel.isCollapsed.value || props.panel.isDrawerOpen.value)
 
 provide(SIDE_TABS_CONTEXT, {
@@ -57,8 +59,12 @@ const stripRef = ref<HTMLElement>()
 const drawerRef = ref<HTMLElement>()
 
 // A click anywhere else dismisses the drawer. The strip is excluded because its icons have
-// their own answer to a click — switching or closing the tab — and must not be pre-empted.
-onClickOutside(drawerRef, props.panel.closeDrawer, { ignore: [stripRef] })
+// their own answer to a click — switching or closing the tab — and must not be pre-empted. So are
+// PrimeVue's overlays: a menu, dialog, popover or select opened from the drawer is rendered on the
+// body, and a click inside it is still a click inside the drawer.
+onClickOutside(drawerRef, props.panel.closeDrawer, {
+    ignore: [stripRef, '.p-menu-overlay', '.p-dialog-mask', '.p-popover', '.p-select-overlay', '.p-confirmpopup'],
+})
 </script>
 
 <template>
@@ -123,6 +129,9 @@ onClickOutside(drawerRef, props.panel.closeDrawer, { ignore: [stripRef] })
         <div
             v-if="panel.isCollapsed.value && panel.isDrawerOpen.value"
             ref="drawerRef"
+            role="dialog"
+            :aria-label="activeLabel"
+            data-testid="side-tabs-drawer"
             class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 absolute inset-y-0 z-10 overflow-hidden shadow-lg"
             :class="side === 'left' ? 'left-11 border-r' : 'right-11 border-l'"
             :style="{ width }"

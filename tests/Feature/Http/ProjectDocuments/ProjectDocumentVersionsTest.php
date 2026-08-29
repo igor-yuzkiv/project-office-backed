@@ -179,28 +179,35 @@ describe('saving one version', function () {
     });
 
     it('records one version event and touches the document', function () {
-        $version = $this->document->versions()->create(['version_number' => 3, 'content' => 'Body']);
+        $document = ProjectDocumentModel::factory()->for($this->project, 'project')->create([
+            'updated_by' => UserModel::factory()->create()->id,
+        ]);
+        $version = $document->versions()->create(['version_number' => 3, 'content' => 'Body']);
         $this->travel(1)->minute();
 
-        $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
+        $this->putJson("/api/project-documents/{$document->id}/versions/{$version->id}", [
             'content' => 'Rewritten',
         ])->assertOk();
 
         $record = AuditRecordModel::query()->sole();
+        $touched = $document->fresh();
         expect($record->type)->toBe('project_document_version.updated')
-            ->and($record->title)->toBe("{$this->user->name} updated version 3 of «{$this->document->title}»")
+            ->and($record->title)->toBe("{$this->user->name} updated version 3 of «{$document->title}»")
             ->and($record->description)->toBe('Changed content')
-            ->and($this->document->fresh()->updated_at)->not->toEqual($this->document->updated_at);
+            ->and($touched->updated_at)->not->toEqual($document->updated_at)
+            ->and($touched->updated_by)->toBe($this->user->id);
     });
 
     it('records nothing when the content comes back unchanged', function () {
         $version = $this->document->versions()->create(['version_number' => 1, 'content' => 'Body']);
+        $this->travel(1)->minute();
 
         $this->putJson("/api/project-documents/{$this->document->id}/versions/{$version->id}", [
             'content' => 'Body',
         ])->assertOk();
 
-        expect(AuditRecordModel::query()->count())->toBe(0);
+        expect(AuditRecordModel::query()->count())->toBe(0)
+            ->and($this->document->fresh()->updated_at)->toEqual($this->document->updated_at);
     });
 });
 
@@ -240,16 +247,30 @@ describe('naming a version', function () {
         $this->putJson('/api/project-document-versions/'.((string) Str::ulid()), ['label' => 'x'])->assertNotFound();
     });
 
+    it('refuses an unauthenticated request', function () {
+        $version = $this->document->versions()->create(['version_number' => 1, 'label' => 'Stable']);
+        auth()->logout();
+
+        $this->putJson("/api/project-document-versions/{$version->id}", ['label' => 'Anything'])->assertUnauthorized();
+
+        expect($version->fresh()->label)->toBe('Stable');
+    });
+
     it('records one version event and touches the document', function () {
-        $version = $this->document->versions()->create(['version_number' => 2, 'label' => 'Old']);
+        $document = ProjectDocumentModel::factory()->for($this->project, 'project')->create([
+            'updated_by' => UserModel::factory()->create()->id,
+        ]);
+        $version = $document->versions()->create(['version_number' => 2, 'label' => 'Old']);
         $this->travel(1)->minute();
 
         $this->putJson("/api/project-document-versions/{$version->id}", ['label' => 'New'])->assertOk();
 
         $record = AuditRecordModel::query()->sole();
-        expect($record->title)->toBe("{$this->user->name} updated version 2 of «{$this->document->title}»")
+        $touched = $document->fresh();
+        expect($record->title)->toBe("{$this->user->name} updated version 2 of «{$document->title}»")
             ->and($record->description)->toBe('Changed label')
-            ->and($this->document->fresh()->updated_at)->not->toEqual($this->document->updated_at);
+            ->and($touched->updated_at)->not->toEqual($document->updated_at)
+            ->and($touched->updated_by)->toBe($this->user->id);
     });
 
     it('records nothing when the name comes back unchanged', function () {
