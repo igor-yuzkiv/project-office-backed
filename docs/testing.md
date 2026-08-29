@@ -52,3 +52,50 @@ php artisan test --filter=CliApi
 
 `php artisan test` uses `phpunit.xml`, so it always targets `task_manager_test` —
 no extra flags needed.
+
+# End-to-end tests
+
+Playwright specs live in `e2e/`, shared helpers in `e2e/support/`, and they run against a
+**third database**, `task_manager_e2e`, reseeded on every run — never the dev or the PHPUnit one.
+The specs are committed, not throwaway runs.
+
+## What one run does
+
+`npm run test:e2e` is `playwright test`; its `webServer` (see `playwright.config.ts`) builds the
+SPA in e2e mode, recreates and seeds the e2e database, and serves the app on `:8100` under
+`APP_ENV=e2e` (`.env.e2e`). Because it reseeds, run it deliberately, not as a reflex.
+
+The config calls a bare `php`. On a machine where that is not the project's PHP, run the same
+three steps by hand and let Playwright reuse the server:
+
+```bash
+npm run build -- --mode e2e
+php8.5 artisan migrate:fresh --seed --seeder=E2eSeeder --env=e2e
+php8.5 artisan serve --env=e2e --port=8100 &
+npx playwright test
+```
+
+## Fixtures
+
+`database/seeders/E2eSeeder.php` is the whole dataset: one user (`e2e@example.com` /
+`password`, mirrored by `E2E_USER_*` in `.env.e2e`), one project, and three documents:
+
+| Key | Used by |
+|---|---|
+| `DOC-E2E-1` | `annotations.spec.ts` — markdown covering every block type the anchors distinguish |
+| `DOC-E2E-2` | `autosave.spec.ts` |
+| `DOC-E2E-3` | `modes.spec.ts`, `sidebar.spec.ts` |
+
+One document **per spec file that writes**: tests run in parallel across workers, and two files
+autosaving into the same version would overwrite each other. A file whose tests write is also
+marked `test.describe.configure({ mode: 'serial' })` so its own tests do not race. Text a test
+types or creates carries a timestamp, so anything left behind by an interrupted run is never
+mistaken for the current one.
+
+## Writing a spec
+
+Sign in with `signIn(page)` and open a document with `openDocument(page, DOCUMENTS.x)` from
+`e2e/support`; `switchMode`, `editor`, `preview` and `typeAtEnd` cover the content tab. Prefer
+roles, labels and `data-testid` over CSS classes — the sidebar drawer, for example, is
+`getByTestId('side-tabs-drawer')`. A write is asserted by waiting for its response
+(`isVersionContentWrite`), not by sleeping.

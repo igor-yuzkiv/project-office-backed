@@ -1,11 +1,13 @@
 # Document annotations
 
 Block-level comments on a project document. They live on the workspace's `Content` tab, where
-the document is rendered as a sheet on a canvas: clicking a block selects it, and a chat-style
-composer docks below the document to write a comment against that selection. The sidebar on the
-right lists every annotation in document order; `Edit` scrolls to the annotated block, selects
-it, and loads the comment back into the composer. The `Annotations` switch in the canvas toolbar
-turns the whole thing off for the document in front of the reader.
+the document is rendered as a sheet on a canvas. The tab has three modes, `View`, `Edit` and
+`Annotate` (see `document-editing.md`); in `Annotate`, clicking a block selects it, and a
+chat-style composer docks below the document to write a comment against that selection. The
+`Annotations` tab of the sidebar lists every annotation in document order; `Edit` there scrolls
+to the annotated block, selects it, and loads the comment back into the composer. In `View` the
+list is the same but read-only; in `Edit` there is no rendered text to anchor to, so the tab
+shows a plain list straight from the query, without anchors or actions.
 
 An annotation belongs to one **version** of a document — its anchor is resolved against that
 version's text. Switching versions therefore shows a different set of annotations.
@@ -121,9 +123,9 @@ for any annotation the user owns, not only orphaned ones — a card marked
 | WebApi | `app/Http/WebApi/Controllers/Annotation/`, `.../ProjectDocuments/ProjectDocumentVersionAnnotationsController.php` |
 | Anchor functions | `resources/js/shared/utils/markdown-anchor.util.ts` (+ `.dom.util.ts`) |
 | Data layer | `resources/js/entities/annotation/`, `resources/js/entities/project-document/` |
-| UI | `resources/js/shared/components/document-sheet/` (the document surface), `resources/js/widgets/project-documents/annotations/` (the annotation session, composer and sidebar), `resources/js/pages/documentation/workspace/tabs/DocumentContentPage.vue` (what wires them together) |
+| UI | `resources/js/shared/components/document-sheet/` (the reader: card, preview, block picking), `resources/js/widgets/project-documents/annotations/` (the annotation session, composer and `AnnotationPanel`), `resources/js/shared/components/side-tabs/` (the sidebar the panel lives in), `resources/js/pages/documentation/workspace/tabs/DocumentContentPage.vue` (what wires them together) |
 | Unit tests | `resources/js/shared/utils/markdown-anchor.util.spec.ts` (`npx vitest run`) |
-| E2E | `e2e/project-documents/annotations.smoke.spec.ts` — **stale and failing.** It drives an `Annotation mode` menu item that the workspace redesign removed, and predates annotations moving to versions. |
+| E2E | `e2e/project-documents/annotations.spec.ts` — create in `Annotate`, survive a reload into `View`, delete. See `testing.md` for how the suite runs. |
 
 ## Limits of this version
 

@@ -5,9 +5,9 @@ filesystem-like structure. A document carries no content of its own: content
 lives in its versions, and a document may act as a container for child
 documents — there is no separate "folder" type.
 
-This document covers the data model. The WebApi, the CLI API, the documentation
-workspace and the editor are all built on top of it; annotations have their own
-document, `document-annotations.md`.
+This document covers the data model. Built on top of it: the WebApi and the CLI API
+(`cli-api-project-documents.md`), the documentation workspace with its inline editor and
+version management (`document-editing.md`), and annotations (`document-annotations.md`).
 
 ## Entities
 
