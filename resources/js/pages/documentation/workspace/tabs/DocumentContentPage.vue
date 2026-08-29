@@ -8,15 +8,15 @@ import type { IAnnotation } from '@/entities/annotation'
 import type { IProjectDocument } from '@/entities/project-document/types'
 import { DocumentCanvas } from '@/shared/components/document-canvas'
 import { DocumentSheet } from '@/shared/components/document-sheet'
-import { AnnotationComposer, AnnotationSidebar, useAnnotationSession } from '@/widgets/project-documents/annotations'
+import { AnnotationComposer, AnnotationPanel, useAnnotationSession } from '@/widgets/project-documents/annotations'
 import {
     DocumentVersionIndicator,
     DocumentVersionSwitcher,
     useOpenDocumentVersion,
 } from '@/widgets/project-documents/versions'
 import { useAuthStore } from '@/app/stores/use.auth.store'
-import { SidePanel } from '@/shared/components/side-panel'
-import { useCollapsibleSidePanel } from '@/shared/composables'
+import { SideTab, SideTabs } from '@/shared/components/side-tabs'
+import { useTabbedSidePanel } from '@/shared/composables'
 import { EMPTY_DOM_BLOCKS, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 
 const props = defineProps<{
@@ -73,11 +73,9 @@ const {
 
 const currentUserId = computed(() => authStore.user?.id ?? null)
 
-const sidebarPanel = useCollapsibleSidePanel('docs:annotations-collapsed')
+const sidebar = useTabbedSidePanel('docs:sidebar')
 
-// The same sidebar is rendered in two places — a column when there is room, a drawer when
-// there is not — and its bindings are described once so the two cannot drift apart.
-const sidebarProps = computed(() => ({
+const annotationPanelProps = computed(() => ({
     anchors: orderedAnchors.value,
     isPending: isPending.value,
     isError: isError.value,
@@ -93,7 +91,7 @@ function openEditor() {
     })
 }
 
-const sidebarHandlers = {
+const annotationPanelHandlers = {
     select: selectAnnotation,
     edit: editAnnotation,
     delete: (annotation: IAnnotation) => removeAnnotation(annotation.id),
@@ -159,18 +157,11 @@ const sidebarHandlers = {
             />
         </div>
 
-        <SidePanel
-            v-if="annotationsEnabled"
-            :panel="sidebarPanel"
-            side="right"
-            width="24rem"
-            icon="heroicons:bars-3-bottom-right"
-            show-label="Show annotations"
-        >
-            <template #default="{ collapse }">
-                <AnnotationSidebar v-bind="sidebarProps" v-on="{ ...sidebarHandlers, collapse }" />
-            </template>
-        </SidePanel>
+        <SideTabs v-if="annotationsEnabled" :panel="sidebar" side="right" width="24rem">
+            <SideTab value="annotations" icon="heroicons:chat-bubble-left" label="Annotations">
+                <AnnotationPanel v-bind="annotationPanelProps" v-on="annotationPanelHandlers" />
+            </SideTab>
+        </SideTabs>
     </div>
 
     <div v-else class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center">

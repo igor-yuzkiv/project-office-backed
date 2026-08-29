@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
-import { Icon } from '@iconify/vue'
 import type { IAnnotation } from '@/entities/annotation'
 import { DataPanel, type DataPanelState } from '@/shared/components/data-panel'
 import { formatDateTime } from '@/shared/utils/date.util'
@@ -18,7 +17,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'collapse'): void
     (e: 'select', annotation: IAnnotation): void
     (e: 'edit', annotation: IAnnotation): void
     (e: 'delete', annotation: IAnnotation): void
@@ -52,8 +50,8 @@ function isOwn(annotation: IAnnotation): boolean {
 </script>
 
 <template>
-    <!-- No width, border or surface of its own: the host renders this either as a column
-         beside the document or as the body of a drawer over it. -->
+    <!-- No width, border or surface of its own, and nothing that hides it: the host decides where
+         this list lives and how it goes away. -->
     <div class="flex h-full flex-col">
         <DataPanel
             title="Annotations"
@@ -64,22 +62,6 @@ function isOwn(annotation: IAnnotation): boolean {
             class="min-h-0 flex flex-1 flex-col"
             @retry="emit('retry')"
         >
-            <template #action>
-                <Button
-                    severity="secondary"
-                    text
-                    rounded
-                    size="small"
-                    aria-label="Hide annotations"
-                    title="Hide annotations"
-                    @click="emit('collapse')"
-                >
-                    <template #icon>
-                        <Icon icon="heroicons:bars-3-bottom-right" class="text-base" />
-                    </template>
-                </Button>
-            </template>
-
             <div class="min-h-0 flex-1 overflow-y-auto">
                 <!-- Rows rather than cards, like the activity stream and the document tree: the
                      sidebar is a list inside the workspace, not a stack of surfaces on top of it.
