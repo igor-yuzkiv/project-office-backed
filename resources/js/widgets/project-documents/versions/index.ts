@@ -5,3 +5,4 @@ export { default as DocumentVersionCreateDialog } from './ui/DocumentVersionCrea
 export { default as DocumentVersionRenameDialog } from './ui/DocumentVersionRenameDialog.vue'
 export { useOpenDocumentVersion } from './composables/use.open-document-version'
 export { useDocumentVersionEditor } from './composables/use.document-version-editor'
+export { useDocumentVersionActions } from './composables/use.document-version-actions'

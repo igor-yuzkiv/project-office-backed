@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import { Icon } from '@iconify/vue'
@@ -11,20 +11,24 @@ import {
     ProjectDocumentQueryKey,
     ProjectDocumentVersionQueryKey,
     useProjectDocumentVersionAnnotationsQuery,
+    useProjectDocumentVersionsQuery,
 } from '@/entities/project-document'
-import type { IProjectDocument } from '@/entities/project-document/types'
+import type { IProjectDocument, IProjectDocumentVersion } from '@/entities/project-document/types'
 import { DocumentCanvas } from '@/shared/components/document-canvas'
 import { DocumentSheet } from '@/shared/components/document-sheet'
 import { AnnotationComposer, AnnotationPanel, useAnnotationSession } from '@/widgets/project-documents/annotations'
 import { DocumentContentEditor, useDocumentContentAutosave } from '@/widgets/project-documents/content-editor'
 import {
+    DocumentVersionCreateDialog,
     DocumentVersionIndicator,
-    DocumentVersionSwitcher,
+    DocumentVersionPanel,
+    useDocumentVersionActions,
     useOpenDocumentVersion,
 } from '@/widgets/project-documents/versions'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { SideTab, SideTabs } from '@/shared/components/side-tabs'
-import { useTabbedSidePanel } from '@/shared/composables'
+import { useConfirmDialog, useTabbedSidePanel, useToast } from '@/shared/composables'
+import { ApiError } from '@/shared/api'
 import { EMPTY_DOM_BLOCKS, type DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 import { formatDate } from '@/shared/utils/date.util'
 
@@ -34,11 +38,14 @@ const props = defineProps<{
     document: IProjectDocument
 }>()
 
-const router = useRouter()
 const queryClient = useQueryClient()
 const authStore = useAuthStore()
+const toast = useToast()
+const confirm = useConfirmDialog()
 
 const { versions, openVersionId, openVersion, selectVersion } = useOpenDocumentVersion(() => props.document.id)
+const versionActions = useDocumentVersionActions(() => props.document.id)
+const { isPending: isVersionsPending } = useProjectDocumentVersionsQuery(() => props.document.id)
 
 // Local to the page: reading is the default, and a document opened fresh is opened to read.
 const mode = ref<Mode>('view')
@@ -149,12 +156,73 @@ const annotationPanelHandlers = computed(() =>
           }
 )
 
-function openEditor() {
-    router.push({
-        name: 'project-documentation.document.edit',
-        params: { projectId: props.document.project_id, documentId: props.document.id },
-    })
+// --- Versions ------------------------------------------------------------------------------
+
+const showVersionCreateDialog = ref(false)
+// A document with no versions is created into straight away: the dialog was opened to start
+// writing, not to look at an empty sheet.
+let editAfterCreate = false
+
+function reportError(error: unknown, fallback: string) {
+    toast.error(error instanceof ApiError ? error.displayMessage : fallback)
 }
+
+function openCreateDialog(thenEdit = false) {
+    editAfterCreate = thenEdit
+    showVersionCreateDialog.value = true
+}
+
+async function createVersion(input: { label: string | null; copyContentFromVersionId: string | null }) {
+    // Copying reads the source on the server, so whatever is still in the buffer goes first.
+    await autosave.flush()
+
+    try {
+        const created = await versionActions.create({
+            label: input.label,
+            copy_content_from_version_id: input.copyContentFromVersionId,
+        })
+        showVersionCreateDialog.value = false
+        selectVersion(created)
+        if (editAfterCreate) mode.value = 'edit'
+    } catch (error) {
+        reportError(error, 'The version could not be created.')
+    }
+}
+
+async function removeVersion(version: IProjectDocumentVersion) {
+    const confirmed = await confirm.requireAsync({
+        header: 'Delete version',
+        message: `Version ${version.version_number} will be deleted permanently, together with anything unsaved in it. This cannot be undone.`,
+        acceptLabel: 'Delete',
+        rejectLabel: 'Cancel',
+    })
+
+    if (!confirmed) return
+
+    // A draft for the version being deleted has nowhere to go, and flushing it would write to
+    // an id that is about to be gone.
+    if (version.id === openVersion.value?.id) autosave.cancel()
+
+    try {
+        await versionActions.remove(version)
+    } catch (error) {
+        reportError(error, 'The version could not be deleted.')
+    }
+}
+
+async function setPrimary(versionId: string | null) {
+    try {
+        await versionActions.setPrimary(versionId)
+    } catch (error) {
+        reportError(error, 'The primary version could not be changed.')
+    }
+}
+
+// The open version is chosen by useOpenDocumentVersion once the list settles; when nothing is
+// left there is nothing to edit either.
+watch(openVersion, (version) => {
+    if (version === null) mode.value = 'view'
+})
 
 // --- Leaving the editor -------------------------------------------------------------------
 
@@ -238,35 +306,36 @@ onBeforeUnmount(() => {
             <DocumentCanvas ref="canvasRef">
                 <template #start>
                     <div class="gap-2 flex flex-wrap items-center">
-                        <DocumentVersionSwitcher
-                            :versions="versions"
-                            :open-version-id="openVersionId"
-                            @open="selectVersion"
-                        />
-
-                        <SelectButton
-                            v-model="mode"
-                            :options="MODE_OPTIONS"
-                            option-label="label"
-                            option-value="value"
-                            :allow-empty="false"
-                            size="small"
-                            aria-label="Mode"
-                        />
+                        <DocumentVersionIndicator :version="openVersion" />
 
                         <!-- Wrapping rather than clipping: the column is narrow whenever the tree and a
                              side panel are both open, and the toolbar has to survive that. -->
-                        <div v-if="isEditing" class="gap-2 ml-auto flex items-center">
-                            <span class="text-xs" :class="autosave.status.value === 'error' ? 'text-red-500' : 'text-surface-500'">
-                                {{ saveStatusLabel }}
-                            </span>
-                            <Button
-                                label="Save"
+                        <div class="gap-2 ml-auto flex flex-wrap items-center justify-end">
+                            <template v-if="isEditing">
+                                <span
+                                    class="text-xs"
+                                    :class="autosave.status.value === 'error' ? 'text-red-500' : 'text-surface-500'"
+                                >
+                                    {{ saveStatusLabel }}
+                                </span>
+                                <Button
+                                    label="Save"
+                                    size="small"
+                                    severity="secondary"
+                                    outlined
+                                    :loading="autosave.status.value === 'saving'"
+                                    @click="autosave.flush()"
+                                />
+                            </template>
+
+                            <SelectButton
+                                v-model="mode"
+                                :options="MODE_OPTIONS"
+                                option-label="label"
+                                option-value="value"
+                                :allow-empty="false"
                                 size="small"
-                                severity="secondary"
-                                outlined
-                                :loading="autosave.status.value === 'saving'"
-                                @click="autosave.flush()"
+                                aria-label="Mode"
                             />
                         </div>
                     </div>
@@ -280,8 +349,6 @@ onBeforeUnmount(() => {
                         </span>
                         <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
                     </div>
-
-                    <DocumentVersionIndicator v-else :version="openVersion" />
                 </template>
 
                 <DocumentContentEditor
@@ -315,6 +382,21 @@ onBeforeUnmount(() => {
         </div>
 
         <SideTabs :panel="sidebar" side="right" width="24rem">
+            <SideTab value="versions" icon="heroicons:clock" label="Versions">
+                <DocumentVersionPanel
+                    :versions="versions"
+                    :open-version-id="openVersionId"
+                    :has-pinned-version="document.primary_version_id !== null"
+                    :is-busy="versionActions.isBusy.value"
+                    :is-pending="isVersionsPending"
+                    @open="selectVersion"
+                    @create="openCreateDialog()"
+                    @delete="removeVersion"
+                    @set-primary="setPrimary($event.id)"
+                    @use-latest-as-primary="setPrimary(null)"
+                />
+            </SideTab>
+
             <SideTab value="annotations" icon="heroicons:chat-bubble-left" label="Annotations">
                 <AnnotationPanel v-bind="annotationPanelProps" v-on="annotationPanelHandlers" />
             </SideTab>
@@ -327,6 +409,13 @@ onBeforeUnmount(() => {
         <p class="text-surface-500 max-w-sm text-xs">
             It can stay a section that only holds nested documents, or you can write a first version of it.
         </p>
-        <Button label="Create a version" size="small" outlined @click="openEditor()" />
+        <Button label="Create a version" size="small" outlined @click="openCreateDialog(true)" />
     </div>
+
+    <DocumentVersionCreateDialog
+        v-model:visible="showVersionCreateDialog"
+        :versions="versions"
+        :is-pending="versionActions.isBusy.value"
+        @submit="createVersion"
+    />
 </template>

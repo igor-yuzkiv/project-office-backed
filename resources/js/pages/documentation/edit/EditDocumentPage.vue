@@ -20,7 +20,6 @@ import type { ITag } from '@/entities/tag/types'
 import {
     DocumentVersionCreateDialog,
     DocumentVersionPanel,
-    DocumentVersionRenameDialog,
     useDocumentVersionEditor,
 } from '@/widgets/project-documents/versions'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
@@ -61,7 +60,6 @@ const formData = ref<DocumentEditFormData>({ title: '', status: 'draft', tags: [
 
 const versionEditor = useDocumentVersionEditor(documentId)
 const showVersionCreateDialog = ref(false)
-const renamingVersion = ref<IProjectDocumentVersion | null>(null)
 
 // Starts out of the way: most editing sessions never touch more than the version already open.
 const versionsPanel = useCollapsibleSidePanel('docs:versions-collapsed', true)
@@ -141,19 +139,6 @@ async function createVersion(input: { label: string | null; copyContentFromVersi
         showVersionCreateDialog.value = false
     } catch (error) {
         handleError(error)
-    }
-}
-
-async function renameVersion(label: string | null) {
-    const version = renamingVersion.value
-
-    if (!version) return
-
-    try {
-        await versionEditor.rename(version, label)
-        renamingVersion.value = null
-    } catch (error) {
-        handleError(error, 'The version could not be renamed.')
     }
 }
 
@@ -298,14 +283,6 @@ useBreadcrumbs(() => [
                 <Button label="New version" size="small" outlined @click="showVersionCreateDialog = true" />
             </div>
 
-            <DocumentVersionRenameDialog
-                :visible="renamingVersion !== null"
-                :version="renamingVersion"
-                :is-pending="versionEditor.isBusy.value"
-                @update:visible="(open: boolean) => !open && (renamingVersion = null)"
-                @submit="renameVersion"
-            />
-
             <DocumentVersionCreateDialog
                 v-model:visible="showVersionCreateDialog"
                 :versions="versionEditor.versions.value"
@@ -317,18 +294,15 @@ useBreadcrumbs(() => [
         </div>
 
         <SidePanel :panel="versionsPanel" side="right" width="20rem" icon="heroicons:clock" show-label="Show versions">
-            <template #default="{ collapse }">
+            <template #default>
                 <DocumentVersionPanel
                     :versions="versionEditor.versions.value"
                     :open-version-id="versionEditor.openVersionId.value"
-                    :dirty-ids="versionEditor.dirtyIds.value"
                     :has-pinned-version="Boolean(openedDocument.primary_version_id)"
                     :is-busy="versionEditor.isBusy.value"
                     :is-pending="versionEditor.isPending.value"
-                    @collapse="collapse"
                     @open="versionEditor.selectVersion"
                     @create="showVersionCreateDialog = true"
-                    @rename="renamingVersion = $event"
                     @delete="removeVersion"
                     @set-primary="setPrimary($event.id)"
                     @use-latest-as-primary="setPrimary(null)"
