@@ -5,6 +5,7 @@ import type {
     IProjectDocumentVersionResponse,
     IProjectDocumentVersionsResponse,
     ISetProjectDocumentPrimaryVersionInput,
+    IUpdateProjectDocumentVersionContentInput,
     IUpdateProjectDocumentVersionsInput,
 } from '../types'
 
@@ -31,6 +32,16 @@ export async function updateProjectDocumentVersionsRequest(
 ): Promise<IProjectDocumentVersionsResponse> {
     return httpClient
         .put<IProjectDocumentVersionsResponse>(`/project-documents/${documentId}/versions`, data)
+        .then((res) => res.data)
+}
+
+export async function updateProjectDocumentVersionContentRequest(
+    documentId: string,
+    versionId: string,
+    data: IUpdateProjectDocumentVersionContentInput
+): Promise<IProjectDocumentVersionResponse> {
+    return httpClient
+        .put<IProjectDocumentVersionResponse>(`/project-documents/${documentId}/versions/${versionId}`, data)
         .then((res) => res.data)
 }
 

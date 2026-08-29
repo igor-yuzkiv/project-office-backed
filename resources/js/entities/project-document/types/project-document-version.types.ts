@@ -28,6 +28,10 @@ export interface IUpdateProjectDocumentVersionsInput {
     versions: Array<{ id: string; content: string | null; label: string | null }>
 }
 
+export interface IUpdateProjectDocumentVersionContentInput {
+    content: string | null
+}
+
 export interface ISetProjectDocumentPrimaryVersionInput {
     /** Null returns the document to following its newest version. */
     version_id: string | null

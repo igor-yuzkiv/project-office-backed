@@ -14,6 +14,8 @@ const props = defineProps<{
     editingId: string | null
     reanchoringId: string | null
     currentUserId: string | null
+    /** A list to read, not to act on: no selecting, no editing, and nothing said about anchors. */
+    readonly?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -57,7 +59,11 @@ function isOwn(annotation: IAnnotation): boolean {
             title="Annotations"
             appearance="plain"
             :state="state"
-            empty-message="No annotations yet. Click a block of the document, then write a comment below."
+            :empty-message="
+                readonly
+                    ? 'No annotations yet.'
+                    : 'No annotations yet. Click a block of the document, then write a comment below.'
+            "
             error-message="Failed to load annotations."
             class="min-h-0 flex flex-1 flex-col"
             @retry="emit('retry')"
@@ -70,13 +76,14 @@ function isOwn(annotation: IAnnotation): boolean {
                 <article
                     v-for="anchor in anchors"
                     :key="anchor.annotation.id"
-                    class="border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/60 gap-2 px-4 py-3 flex cursor-pointer flex-col border-t border-l-2 border-l-transparent transition-colors first:border-t-0"
+                    class="border-surface-100 dark:border-surface-800 gap-2 px-4 py-3 flex flex-col border-t border-l-2 border-l-transparent transition-colors first:border-t-0"
                     :class="{
+                        'hover:bg-surface-50 dark:hover:bg-surface-800/60 cursor-pointer': !readonly,
                         'border-l-primary-500 bg-primary-50 dark:bg-primary-950/40': anchor.annotation.id === editingId,
                         'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40': anchor.annotation.id === reanchoringId,
-                        'opacity-60': anchor.block === null,
+                        'opacity-60': !readonly && anchor.block === null,
                     }"
-                    @click="emit('select', anchor.annotation)"
+                    @click="readonly || emit('select', anchor.annotation)"
                 >
                     <div class="gap-2 flex items-center justify-between">
                         <div class="gap-2 min-w-0 flex items-center">
@@ -121,11 +128,13 @@ function isOwn(annotation: IAnnotation): boolean {
                         @click.stop="toggleExpanded(anchor.annotation.id)"
                     />
 
-                    <p v-if="anchor.block === null" class="text-xs text-amber-600">Block not found</p>
-                    <p v-else-if="anchor.kind === 'position'" class="text-xs text-surface-400">Block content changed</p>
+                    <template v-if="!readonly">
+                        <p v-if="anchor.block === null" class="text-xs text-amber-600">Block not found</p>
+                        <p v-else-if="anchor.kind === 'position'" class="text-xs text-surface-400">Block content changed</p>
+                    </template>
 
                     <!-- Re-anchoring rewrites the annotation, so it follows the same rule as Edit and Delete. -->
-                    <div v-if="isOwn(anchor.annotation)" class="gap-2 flex flex-wrap">
+                    <div v-if="!readonly && isOwn(anchor.annotation)" class="gap-2 flex flex-wrap">
                         <Button
                             label="Re-anchor"
                             severity="secondary"
