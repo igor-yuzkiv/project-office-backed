@@ -1,7 +1,7 @@
 import { computed, ref, type MaybeRefOrGetter, toValue } from 'vue'
 import { useDeleteProjectDocumentMutation } from '@/entities/project-document'
 import type { IProjectDocument, ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
-import { useProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
+import { useProjectDocumentUpsertDialog } from '@/widgets/project-documents/upsert-dialog'
 import { PROJECT_DOCUMENT_TREE_ROOT_KEY, useProjectDocumentTree } from '@/widgets/project-documents/views/tree-table'
 
 export interface DocumentationTreeNodeRow {
@@ -35,7 +35,7 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
     const isPending = ref(true)
     const isError = ref(false)
 
-    const createDialog = useProjectDocumentCreateDialog({
+    const documentDialog = useProjectDocumentUpsertDialog({
         onCreated: async (document) => {
             if (document.parent_id) {
                 await tree.expandNode(document.parent_id)
@@ -44,6 +44,8 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
             callbacks.onCreated?.(document)
             await reload()
         },
+        // The title in the tree comes from this list, not from the document query.
+        onUpdated: () => reload(),
     })
 
     const rows = computed<DocumentationTreeRow[]>(() => {
@@ -131,11 +133,11 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
     }
 
     function createRootDocument() {
-        createDialog.open(toValue(projectId))
+        documentDialog.openCreate(toValue(projectId))
     }
 
     function createChildDocument(document: ProjectDocumentTreeNodeDto) {
-        createDialog.open(toValue(projectId), { id: document.id, key: document.key, title: document.title })
+        documentDialog.openCreate(toValue(projectId), { id: document.id, key: document.key, title: document.title })
     }
 
     // The one way a document is deleted here. The tree's own context menu and the
@@ -153,7 +155,7 @@ export function useDocumentationTree(projectId: MaybeRefOrGetter<string>, callba
         rows,
         isPending,
         isError,
-        createDialog,
+        documentDialog,
         load,
         reload,
         toggleNode,

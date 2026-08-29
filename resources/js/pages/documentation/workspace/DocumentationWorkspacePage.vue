@@ -10,7 +10,7 @@ import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectDocumentQuery } from '@/entities/project-document'
-import { ProjectDocumentCreateDialog } from '@/widgets/project-documents/create-dialog'
+import { ProjectDocumentUpsertDialog } from '@/widgets/project-documents/upsert-dialog'
 import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/project-documents/move-dialog'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
 import { useBreadcrumbs } from '@/app/shell'
@@ -118,11 +118,9 @@ function openDocument(id: string) {
     })
 }
 
-function openEditor() {
-    router.push({
-        name: 'project-documentation.document.edit',
-        params: { projectId: projectId.value, documentId: documentId.value },
-    })
+// The same dialog the tree creates documents with; the document's own fields live nowhere else.
+function editDocument() {
+    if (openedDocument.value) tree.documentDialog.openEdit(openedDocument.value)
 }
 
 function openDocumentationRoot() {
@@ -219,7 +217,7 @@ watch(
                         </div>
 
                         <div class="gap-1 ml-auto flex shrink-0 items-center">
-                            <Button label="Edit" size="small" text severity="secondary" @click="openEditor">
+                            <Button label="Edit" size="small" text severity="secondary" @click="editDocument">
                                 <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
                             </Button>
 
@@ -264,13 +262,14 @@ watch(
             @select="moveDialog.handleSelect"
         />
 
-        <ProjectDocumentCreateDialog
-            v-model:visible="tree.createDialog.visible.value"
-            v-model:form-data="tree.createDialog.formData.value"
-            :validation-errors="tree.createDialog.validationErrors.value"
-            :is-pending="tree.createDialog.isPending.value"
-            :parent-document="tree.createDialog.parentDocument.value"
-            @submit="tree.createDialog.submit"
+        <ProjectDocumentUpsertDialog
+            v-model:visible="tree.documentDialog.visible.value"
+            v-model:form-data="tree.documentDialog.formData.value"
+            :mode="tree.documentDialog.mode.value"
+            :validation-errors="tree.documentDialog.validationErrors.value"
+            :is-pending="tree.documentDialog.isPending.value"
+            :parent-document="tree.documentDialog.parentDocument.value"
+            @submit="tree.documentDialog.submit"
         />
     </div>
 </template>

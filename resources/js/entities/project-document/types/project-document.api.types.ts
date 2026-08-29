@@ -34,6 +34,8 @@ export interface ICreateProjectDocumentInput {
     project_id: string
     title: string
     parent_id?: string
+    /** Left out, the backend gives the document its default status. */
+    status?: ProjectDocumentStatusValue
     tag_ids?: string[]
 }
 
