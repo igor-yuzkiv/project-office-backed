@@ -35,6 +35,7 @@ class TaskViewRegistry
             new TaskView('all_closed', 'All Closed', [
                 self::statusFilter([
                     TaskStatus::Closed,
+                    TaskStatus::Declined,
                 ]),
             ]),
             new TaskView('all_backlogged', 'All Backlogged', [

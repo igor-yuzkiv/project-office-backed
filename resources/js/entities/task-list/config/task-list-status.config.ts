@@ -9,6 +9,7 @@ export const TaskListStatusMap: TaskListStatusMetadataMap = {
     ready_to_test: { label: 'Ready to test', value: 'ready_to_test', color: '#06b6d4' },
     completed: { label: 'Completed', value: 'completed', color: '#22c55e' },
     closed: { label: 'Closed', value: 'closed', color: '#6b7280' },
+    declined: { label: 'Declined', value: 'declined', color: '#ef4444' },
 }
 
 export function taskListStatusOptions(): TaskListStatusMetadata[] {

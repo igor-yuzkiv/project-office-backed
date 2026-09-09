@@ -12,6 +12,7 @@ export type TaskListStatusValue =
     | 'ready_to_test'
     | 'completed'
     | 'closed'
+    | 'declined'
 
 export type TaskListStatusMetadata = {
     label: string

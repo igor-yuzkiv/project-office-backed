@@ -6,6 +6,7 @@ export type TaskStatusValue =
     | 'ready_to_test'
     | 'completed'
     | 'closed'
+    | 'declined'
 
 import type { HexColor } from '@/shared/types'
 

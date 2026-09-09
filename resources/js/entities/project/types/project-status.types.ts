@@ -1,6 +1,6 @@
 import type { HexColor } from '@/shared/types'
 
-export type ProjectStatusValue = 'draft' | 'active' | 'on_hold' | 'completed' | 'archived'
+export type ProjectStatusValue = 'draft' | 'active' | 'on_hold' | 'completed' | 'archived' | 'declined'
 
 export type ProjectStatusMetadata = {
     label: string

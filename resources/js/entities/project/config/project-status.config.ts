@@ -6,6 +6,7 @@ export const ProjectStatusMap: ProjectStatusMetadataMap = {
     on_hold: { label: 'On Hold', value: 'on_hold', color: '#f59e0b' },
     completed: { label: 'Completed', value: 'completed', color: '#22c55e' },
     archived: { label: 'Archived', value: 'archived', color: '#475569' },
+    declined: { label: 'Declined', value: 'declined', color: '#ef4444' },
 }
 
 export function projectStatusOptions(): ProjectStatusMetadata[] {

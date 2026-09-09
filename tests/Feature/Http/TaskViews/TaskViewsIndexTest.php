@@ -61,6 +61,13 @@ it('keeps a status filter value as a list rather than flattening it', function (
         ]);
 });
 
+it('counts declined among the closed', function () {
+    $this->getJson('/api/task-views')
+        ->assertOk()
+        ->assertJsonPath('data.3.key', 'all_closed')
+        ->assertJsonPath('data.3.filters.0.value', ['closed', 'declined']);
+});
+
 it('gives an unfiltered view an empty filter list, not null', function () {
     $view = $this->getJson('/api/task-views')->assertOk()->json('data.0');
 

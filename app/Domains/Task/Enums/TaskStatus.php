@@ -11,6 +11,7 @@ enum TaskStatus: string
     case ReadyToTest = 'ready_to_test';
     case Completed = 'completed';
     case Closed = 'closed';
+    case Declined = 'declined';
 
     public function label(): string
     {
