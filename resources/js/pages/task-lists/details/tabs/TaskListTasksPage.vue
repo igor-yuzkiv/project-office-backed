@@ -40,6 +40,8 @@ const search = useTaskSearch({
     // Keyed by tab rather than by path, otherwise every task list gets its own stored state.
     persistKey: 'task-list-details.tasks',
     defaultTaskViewKey: 'all',
+    // Names carry the plan's numbering, so a list reads in name order, not by last touch.
+    defaultSort: { field: 'name', order: 'asc' },
 })
 
 // The page is one task list, so its own column would repeat the header.

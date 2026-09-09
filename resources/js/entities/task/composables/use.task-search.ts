@@ -5,6 +5,7 @@ import { DEFAULT_TASK_VIEW_KEY, useTaskViewsQuery, useTaskViewSwitcher } from '@
 import { usePersistedListState } from '@/shared/composables'
 import { useFilterSidebar, type FilterPayloadItem } from '@/shared/filters'
 import { useSortDialog } from '@/shared/sort'
+import type { SortDirection } from '@/shared/sort'
 import { createDefaultTaskFiltersDefMap, taskSortFieldDefs } from '../config'
 import { useTasksSearchQuery } from '../queries'
 import type { TaskInclude, TaskOverviewDto, TaskSearchParams } from '../types'
@@ -25,6 +26,8 @@ interface UseTaskSearchOptions {
      */
     persistKey?: string
     defaultTaskViewKey?: string
+    /** Sorting a fresh visit starts with; a choice the browser remembered still wins over it. */
+    defaultSort?: { field: string; order: SortDirection }
 }
 
 export function useTaskSearch(options: UseTaskSearchOptions = {}) {
@@ -41,7 +44,11 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
     const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
     const viewSwitcher = useTaskViewSwitcher(taskViews, options?.defaultTaskViewKey ?? DEFAULT_TASK_VIEW_KEY)
 
-    const sort = useSortDialog(taskSortFieldDefs, 'updated_at', 'desc')
+    const sort = useSortDialog(
+        taskSortFieldDefs,
+        options.defaultSort?.field ?? 'updated_at',
+        options.defaultSort?.order ?? 'desc'
+    )
 
     usePersistedListState(
         {
