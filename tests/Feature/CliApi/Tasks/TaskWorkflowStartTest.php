@@ -4,6 +4,7 @@ use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -85,4 +86,40 @@ it('records exactly one task.started event even when a comment is supplied', fun
         ->and($record->description)->toBe($task->name)
         ->and($record->subject_type)->toBe(TaskModel::class)
         ->and($record->subject_id)->toBe($task->id);
+});
+
+it('returns the tasks of the task list in plan order, the started task among them', function () {
+    $taskList = TaskListModel::factory()->create(['project_id' => $this->project->id]);
+    $tasks = [];
+    // Names run against sequence numbers and statuses, so the assertion fails if the order
+    // ever falls back to either. "10." must land after "2." — the column's collation, not the code.
+    foreach ([
+        ['name' => '10. Ship it', 'sequence_number' => 1, 'status' => TaskStatus::Closed],
+        ['name' => '1. Data model', 'sequence_number' => 3, 'status' => TaskStatus::Backlog],
+        ['name' => '2. Endpoint', 'sequence_number' => 2, 'status' => TaskStatus::Open],
+    ] as $index => $attributes) {
+        $tasks[] = TaskModel::factory()->create([
+            'project_id'      => $this->project->id,
+            'task_list_id'    => $taskList->id,
+            'key'             => 'MTM-'.($index + 1),
+            'name'            => $attributes['name'],
+            'sequence_number' => $attributes['sequence_number'],
+            'status'          => $attributes['status']->value,
+        ]);
+    }
+
+    $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$tasks[2]->id}/workflow/start");
+
+    $response->assertOk()
+        ->assertJsonPath('task.task_list_tasks.*.key', ['MTM-2', 'MTM-3', 'MTM-1'])
+        ->assertJsonPath('task.task_list_tasks.*.name', ['1. Data model', '2. Endpoint', '10. Ship it'])
+        ->assertJsonPath('task.task_list_tasks.*.status', [TaskStatus::Backlog->value, TaskStatus::InProgress->value, TaskStatus::Closed->value]);
+});
+
+it('returns an empty task list section for a task outside any list', function () {
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'task_list_id' => null]);
+
+    $response = $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/start");
+
+    $response->assertOk()->assertJsonPath('task.task_list_tasks', []);
 });

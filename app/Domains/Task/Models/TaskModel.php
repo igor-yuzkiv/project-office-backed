@@ -41,6 +41,7 @@ use Laravel\Scout\Searchable;
  * @property Carbon|null $due_date
  * @property Collection<int, TagModel> $tags
  * @property-read Collection<int, ProjectDocumentModel> $projectDocuments
+ * @property-read Collection<int, TaskModel> $taskListTasks
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -95,6 +96,18 @@ class TaskModel extends Model implements Commentable
     public function taskList(): BelongsTo
     {
         return $this->belongsTo(TaskListModel::class, 'task_list_id');
+    }
+
+    /**
+     * Every task of the same task list, this one included, in plan order — names carry the
+     * plan's numbering and the column's natural_sort collation keeps "10." after "2.". A task
+     * outside any list has no siblings.
+     */
+    public function taskListTasks(): HasMany
+    {
+        return $this->hasMany(TaskModel::class, 'task_list_id', 'task_list_id')
+            ->orderBy('name')
+            ->orderBy('sequence_number');
     }
 
     public function createdBy(): BelongsTo

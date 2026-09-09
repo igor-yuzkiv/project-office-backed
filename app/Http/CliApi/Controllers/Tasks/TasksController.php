@@ -63,7 +63,7 @@ class TasksController extends ResourceController
 
     public function show(ProjectModel $project, TaskModel $task): JsonResource
     {
-        $task->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'taskList', 'tags'], requested: $this->parseRequestedIncludes()));
+        $task->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'taskList', 'taskListTasks', 'tags'], requested: $this->parseRequestedIncludes()));
 
         return new TaskResource($task);
     }

@@ -26,6 +26,8 @@ it('creates a handoff resolution comment and sets the status to ready_to_test', 
 
     $response->assertOk();
     expect($response->json('data.status'))->toBe(TaskStatus::ReadyToTest->value);
+    // The sibling list travels with task:start and task:view only.
+    $response->assertJsonMissingPath('data.task_list_tasks');
 
     $comment = CommentModel::query()->where('commentable_id', $task->id)->sole();
     expect($comment->content)->toContain('# Handoff')->toContain('Implemented and covered with tests.');

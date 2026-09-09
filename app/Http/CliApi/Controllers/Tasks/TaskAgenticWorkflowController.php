@@ -27,7 +27,8 @@ class TaskAgenticWorkflowController
     public function start(ProjectModel $project, TaskModel $task, StartTaskRequest $request): JsonResponse
     {
         $task = $this->startHandler->handle($request->toCommand($task));
-        $task->load(['createdBy', 'updatedBy', 'project', 'taskList', 'tags']);
+        // Loaded after the handler, so the task's own row among its siblings already reads in_progress.
+        $task->load(['createdBy', 'updatedBy', 'project', 'taskList', 'taskListTasks', 'tags']);
 
         return response()->json([
             'task'     => new TaskResource($task),
