@@ -27,6 +27,7 @@ agent-facing public contract whose consumers live outside this repository.
   `user.email`, no co-author trailer for someone who did not write the change.
 - A commit message describes the change, in English. That work was done by an agent is recorded in
   Project Office (`task:checkpoint`, `task:handoff`), not in git history.
+- The agent commits; the user pushes. Never run `git push` or anything that publishes a branch.
 
 ## External systems
 
@@ -34,8 +35,3 @@ agent-facing public contract whose consumers live outside this repository.
 changes to it are review-worthy by default.
 - **Project Office** — the task board. When a request is attached to a task, read
 `.project-office/AGENTS.md` and use its CLI for task context, checkpoints, and handoff.
-
-## Project Office
-
-When a request is attached to a Project Office task, read `.project-office/AGENTS.md` and use its
-CLI workflow for task context, durable checkpoints, and handoff.

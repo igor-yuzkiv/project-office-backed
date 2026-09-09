@@ -40,6 +40,7 @@ artifacts:
   progress_update: project-office   # `project-office task:checkpoint --task MTM-<n>`
   workflow_record: project-office    # `project-office task:comment-add --task MTM-<n>`
   client_update: none               # this project has no audience outside the team
+  test_plan: project-office         # test matrix lives on the task, next to the spec
 
 # ---------------------------------------------------------------------------
 # Language per surface.
@@ -103,11 +104,12 @@ exemplars:
 verification:
   # Run on the host, not in a container: docker compose here only provides Postgres, Redis and MinIO.
   # Backend tests need the task_manager_test database — see docs/testing.md.
-  tests: php artisan test
-  tests_filtered: php artisan test --filter=<Name>   # or: php artisan test tests/Feature/<Path>Test.php
+  # vendor/ is built for PHP >= 8.4; the default `php` on this machine may resolve lower, so name the binary.
+  tests: php8.5 artisan test && npm run test:unit
+  tests_filtered: php8.5 artisan test --filter=<Name>   # or: php8.5 artisan test tests/Feature/<Path>Test.php; frontend: npx vitest run <path>
   lint: ./vendor/bin/pint --test && npm run lint:check
-  types: ./vendor/bin/phpstan analyse && npm run types:check
+  types: php8.5 ./vendor/bin/phpstan analyse && npm run types:check
   build: npm run build
   # Filtered frontend checks: npx eslint <path>, npx vue-tsc -p tsconfig.app.json --noEmit
-  # Filtered phpstan: ./vendor/bin/phpstan analyse <path>
+  # Filtered phpstan: php8.5 ./vendor/bin/phpstan analyse <path>
   # E2E (npm run test:e2e) reseeds the e2e database — run only when the user asks for it.

@@ -70,7 +70,7 @@ Business operations live under `app/Domains/{Entity}/Actions/{Verb}{Entity}/` an
   that surface rather than changing the shared contract for the other consumer.
 
 Treat the CLI API as a public automation contract. Changes to its task workflow, payloads, route
-semantics, or status transitions require the Controlled pipeline and focused compatibility tests.
+semantics, or status transitions are review-worthy by default and need focused compatibility tests.
 
 ## Cross-cutting entities
 
@@ -86,7 +86,7 @@ Universal entities such as Comment, Tag, and Attachment do not reference their c
 
 - Eloquent models live under the owning domain's `Models` directory and use the `Model` suffix.
 - Create a new migration for every schema change. Existing migrations are append-only.
-- Schema and data changes use the Controlled pipeline.
+- Schema and data changes are review-worthy by default.
 - Bind interfaces, storage implementations, policies, listeners, and commands through the owning
   service provider.
 - Register application providers in `bootstrap/providers.php`.
@@ -104,8 +104,8 @@ Treat these as explicit contracts:
 - database schemas and stored representations;
 - events, queued payloads, and storage interfaces.
 
-Analyze all known consumers before changing a contract. Contract changes normally require the
-Controlled pipeline and focused tests for each affected surface.
+Analyze all known consumers before changing a contract. Contract changes are review-worthy by
+default and need focused tests for each affected surface.
 
 ## What counts as an architecture decision
 

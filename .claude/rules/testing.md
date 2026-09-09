@@ -43,20 +43,16 @@ The backend suite uses Pest with Laravel's testing helpers and a dedicated Postg
 
 ## Frontend verification
 
-There is no integrated frontend unit-test suite yet. Use proportional static verification:
-
-1. `npm run format:check` for formatting-sensitive changes.
-2. `npm run lint:check` for changed TypeScript, Vue, or E2E source.
-3. `npm run types:check` for TypeScript, Vue contracts, props, emits, queries, and mutations.
-4. `npm run build` for routing, Vite, application composition, or bundling-sensitive changes, or
-   when narrower checks do not provide enough confidence.
+Frontend unit tests run on vitest (`npm run test:unit`); specs sit next to the code as `*.spec.ts`
+under `resources/js/`. Static checks and the exact commands are in the project profile.
 
 Do not use `npm run format` or `npm run lint` as a broad automatic fix over unrelated files. Apply
 focused corrections and preserve user changes.
 
 ## Playwright and visual verification
 
-Playwright is installed but is not yet integrated into the normal development pipeline.
+Playwright specs are part of the repository (`e2e/`, see `docs/testing.md`), but a run reseeds the
+e2e database.
 
 - Do not run Playwright or browser automation unless the user explicitly requests it.
 - Do not claim visual verification from static checks.
@@ -68,27 +64,20 @@ Playwright is installed but is not yet integrated into the normal development pi
 
 Treat existing `phpunit.xml`, base `*TestCase.php` files, and migrations as protected shared
 infrastructure. Do not rewrite or weaken them to force a passing result. A genuinely required
-shared change must be proposed through the Controlled pipeline; these files remain mechanically
-blocked until protection is deliberately changed or the user makes the edit. New leaf tests and
+shared change is review-worthy by default; these files remain mechanically blocked until protection
+is deliberately changed or the user makes the edit. New leaf tests and
 new migration files remain allowed.
 
-## Backend verification ladder
+## Backend verification
 
-Use the narrowest sequence that provides adequate confidence:
-
-1. `php -l <changed-file>` for a fast PHP syntax check when useful.
-2. `php artisan test <test-file>` or `php artisan test --filter=<TestName>` for targeted behavior.
-3. `./vendor/bin/phpstan analyse` for affected backend work.
-4. A broader related suite when shared behavior or risk makes targeted checks insufficient.
-5. `php artisan test` when the change is broad or foundational, targeted verification is
-   insufficient, or the user explicitly requests the full suite.
+The exact commands are in the project profile; run backend tooling through `php8.5`, because
+`vendor/` is built for PHP >= 8.4 and the default `php` may resolve lower.
 
 The test database contract is documented in `docs/testing.md`. Recreating it through
 `./scripts/init_testing_pg_databases.sh` is a destructive testing-infrastructure action and requires
 permission. Running migrations remains blocked, including for the testing environment.
 
-Pint runs automatically on edited PHP files under `app/` through the PostToolUse hook; do not run a
-redundant full-project formatting pass.
+Run Pint on the files you touched, not as a full-project formatting pass.
 
 ## Handling failures
 
