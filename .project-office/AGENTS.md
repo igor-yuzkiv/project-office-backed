@@ -30,8 +30,10 @@ project-office task:start --task PREFIX-1
 ```
 
 This is the pickup command: it claims the task for implementation and returns the full task
-context with recent comments. Read that returned context before changing code. Do not run a
-separate `task:view` first unless the user only asked to inspect the task without starting work.
+context with recent comments and, when the task belongs to a task list, every task of that list in
+plan order with its status (`task:view` shows the same section). Read that returned context before
+changing code. Do not run a separate `task:view` first unless the user only asked to inspect the
+task without starting work.
 
 ### 2. Record a plan when useful
 
@@ -115,6 +117,10 @@ Notes:
 `task:handoff` records the resolution and moves the task to the handoff status. Outside the
 workflow commands, change a task's status only when the user explicitly asks.
 
+After the handoff, look at the task list section from `task:start` and offer the user the next
+task: the first one after the current task in that order whose status is `open`. If there is none,
+say so. Do not start it yourself — the user decides.
+
 ### 5. Blocked work
 
 Leave the task in its current workflow state, add a checkpoint with subject `Blocked` describing
@@ -128,7 +134,8 @@ the plan for a scope of work, addressed by a key of the form `PREFIX-TL-<number>
 its list in `task_list_key`; the plan itself is not copied into the task.
 
 * `project-office task-list:view --task-list PREFIX-TL-1` — read the plan and every task in it with
-  its status, when the work depends on the wider scope.
+  its status. Read it before applying a change from the user that affects other tasks in the list:
+  the plan and the shared decisions live there, not in the task.
 * Put a task into a list with `--task-list` on `task:create` / `task:update`. A task cannot be taken
   out of a list, and a list cannot be deleted, through the CLI.
 * Comment on the **list** for a decision or artifact that affects the whole scope; keep progress and
