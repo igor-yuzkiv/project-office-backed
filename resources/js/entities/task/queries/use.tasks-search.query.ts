@@ -4,10 +4,7 @@ import type { TaskSearchParams } from '../types'
 import { searchTasksRequest } from '../api'
 import { TaskQueryKey } from '../config'
 
-export function useTasksSearchQuery(
-    params: MaybeRef<TaskSearchParams>,
-    options?: { enabled?: MaybeRef<boolean> }
-) {
+export function useTasksSearchQuery(params: MaybeRef<TaskSearchParams>, options?: { enabled?: MaybeRef<boolean> }) {
     const { data, isPending, isError } = useQuery({
         queryKey: TaskQueryKey.search(params),
         queryFn: () => searchTasksRequest(toValue(params)),
