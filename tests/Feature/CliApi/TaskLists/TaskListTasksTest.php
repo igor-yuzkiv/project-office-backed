@@ -19,17 +19,20 @@ beforeEach(function () {
     ]);
 });
 
-it('returns the tasks of the list in sequence order, every status included', function () {
+it('returns the tasks of the list in name order, every status included', function () {
+    // Names run against sequence numbers, so the assertion fails if the order ever falls back
+    // to sequence; "10." after "2." is the column's natural_sort collation at work.
     foreach ([
-        ['sequence_number' => 3, 'status' => TaskStatus::Closed, 'key' => 'MTM-3'],
-        ['sequence_number' => 1, 'status' => TaskStatus::Backlog, 'key' => 'MTM-1'],
-        ['sequence_number' => 2, 'status' => TaskStatus::Open, 'key' => 'MTM-2'],
+        ['sequence_number' => 1, 'status' => TaskStatus::Closed, 'key' => 'MTM-3', 'name' => '10. Ship it'],
+        ['sequence_number' => 3, 'status' => TaskStatus::Backlog, 'key' => 'MTM-1', 'name' => '1. Data model'],
+        ['sequence_number' => 2, 'status' => TaskStatus::Open, 'key' => 'MTM-2', 'name' => '2. Endpoint'],
     ] as $task) {
         TaskModel::factory()->create([
             'project_id'      => $this->project->id,
             'task_list_id'    => $this->taskList->id,
             'sequence_number' => $task['sequence_number'],
             'key'             => $task['key'],
+            'name'            => $task['name'],
             'status'          => $task['status']->value,
         ]);
     }
@@ -66,6 +69,7 @@ it('paginates the tasks', function () {
             'task_list_id'    => $this->taskList->id,
             'sequence_number' => $i,
             'key'             => "MTM-{$i}",
+            'name'            => "{$i}. Step",
         ]);
     }
 

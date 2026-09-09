@@ -18,8 +18,9 @@ class TaskListTasksController extends ResourceController
 
     /**
      * A task list is a plan document, so its tasks come back whole — every status, including
-     * Backlog and Closed, in plan order. That is the same rule the task list show endpoint
-     * follows, and it is deliberately not the project task index rule.
+     * Backlog and Closed, in plan order: by name, because names carry the plan's numbering, with
+     * `sequence_number` breaking ties so pagination stays stable. That is the same rule the task
+     * list show endpoint follows, and it is deliberately not the project task index rule.
      */
     public function index(ProjectModel $project, TaskListModel $taskList): AnonymousResourceCollection
     {
@@ -27,6 +28,7 @@ class TaskListTasksController extends ResourceController
 
         $tasks = $taskList->tasks()
             ->with(['createdBy', 'updatedBy', 'tags'])
+            ->orderBy('name')
             ->orderBy('sequence_number')
             ->paginate($pagination->perPage, page: $pagination->page);
 
