@@ -15,9 +15,6 @@ version management (`document-editing.md`), and annotations (`document-annotatio
 - `App\Domains\ProjectDocument\Models\ProjectDocumentVersionModel` (table
   `project_document_versions`) — the content of a document, numbered per document.
 - `App\Domains\ProjectDocument\Enums\ProjectDocumentStatus`
-- Pivot table `project_document_task` — many-to-many between documents and tasks
-  (both must belong to the same project; not enforced at the DB level, see
-  Constraints below).
 - Tags — reuses the existing polymorphic `taggables` mechanism, same as
   `ProjectModel`/`TaskModel` (`tags(): MorphToMany`).
 

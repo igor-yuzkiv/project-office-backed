@@ -5,7 +5,6 @@ namespace App\Http\Shared\Resources\ProjectDocuments;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
 use App\Http\Shared\Resources\Tags\TagResource;
-use App\Http\Shared\Resources\Tasks\TaskOverviewResource;
 use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,7 +25,6 @@ class ProjectDocumentOverviewResource extends JsonResource
 
             'project'    => $this->whenLoaded('project', fn () => new ProjectOverviewResource($this->project)),
             'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
-            'tasks'      => $this->whenLoaded('tasks', fn () => TaskOverviewResource::collection($this->tasks)),
             'created_by' => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
             'updated_by' => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),
 

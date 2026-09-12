@@ -3,7 +3,7 @@ import type { FilterPayloadItem } from '@/shared/filters'
 import type { SortParams } from '@/shared/sort'
 import type { IProjectDocument, ProjectDocumentOverviewDto, ProjectDocumentStatusValue } from './project-document.types'
 
-export type ProjectDocumentInclude = 'project' | 'tags' | 'tasks' | 'createdBy' | 'updatedBy'
+export type ProjectDocumentInclude = 'project' | 'tags' | 'createdBy' | 'updatedBy'
 
 export type ProjectDocumentSearchParams = PagingParams &
     SortParams & {

@@ -3,7 +3,6 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
-use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -62,23 +61,6 @@ it('includes tags and updated_by, and paginates root documents', function () {
         ->assertJsonPath('data.0.tags.0.id', $tag->id)
         ->assertJsonPath('data.0.updated_by.id', $document->updated_by)
         ->assertJsonPath('meta.per_page', 1);
-});
-
-it('filters documents linked to a given task', function () {
-    $linked = ProjectDocumentModel::factory()->for($this->project, 'project')->create();
-    ProjectDocumentModel::factory()->for($this->project, 'project')->create();
-    $task = TaskModel::factory()->for($this->project, 'project')->create();
-    $linked->tasks()->attach($task);
-
-    $response = $this->getJson(
-        "/api/projects/{$this->project->id}/project-documents/tree?".http_build_query([
-            'filters' => [['filter_key' => 'tasks', 'value' => [$task->id]]],
-        ])
-    );
-
-    $response->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.id', $linked->id);
 });
 
 it('rejects a non-existent project', function () {

@@ -10,7 +10,6 @@ use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
 use App\Domains\Tag\Models\TagModel;
-use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasArchivableColumns;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
@@ -20,7 +19,6 @@ use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\LookupFilter;
 use App\Libs\EloquentFilters\Filters\TagFilter;
-use App\Libs\EloquentFilters\Filters\TaskFilter;
 use Database\Factories\ProjectDocumentModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,7 +27,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -54,7 +51,6 @@ use Laravel\Scout\Searchable;
  * @property-read ProjectModel $project
  * @property-read ProjectDocumentModel|null $parent
  * @property-read Collection<int, ProjectDocumentModel> $children
- * @property-read Collection<int, TaskModel> $tasks
  * @property-read Collection<int, TagModel> $tags
  * @property-read Collection<int, CommentModel> $comments
  * @property-read Collection<int, AttachmentModel> $attachments
@@ -193,12 +189,6 @@ class ProjectDocumentModel extends Model implements Archivable, Commentable
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function tasks(): BelongsToMany
-    {
-        return $this->belongsToMany(TaskModel::class, 'project_document_task', 'project_document_id', 'task_id')
-            ->withTimestamps();
-    }
-
     public function tags(): MorphToMany
     {
         return $this->morphToMany(TagModel::class, 'taggable', relatedPivotKey: 'tag_id')->withPivot('created_at');
@@ -261,7 +251,6 @@ class ProjectDocumentModel extends Model implements Archivable, Commentable
     {
         return [
             new FilterDefinition(TagFilter::class, []),
-            new FilterDefinition(TaskFilter::class, []),
             new FilterDefinition(LookupFilter::class, ['project_id']),
         ];
     }

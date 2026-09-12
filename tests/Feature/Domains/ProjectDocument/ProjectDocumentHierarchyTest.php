@@ -6,7 +6,6 @@ use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
-use App\Domains\Task\Models\TaskModel;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -93,16 +92,6 @@ it('enforces unique titles among siblings including root level', function () {
     ProjectDocumentModel::factory()->for($project, 'project')->create(['title' => 'Duplicate']);
     ProjectDocumentModel::factory()->for($project, 'project')->create(['title' => 'Duplicate']);
 })->throws(QueryException::class);
-
-it('links a document to tasks of the same project', function () {
-    $project = ProjectModel::factory()->create();
-    $document = ProjectDocumentModel::factory()->for($project, 'project')->create();
-    $task = TaskModel::factory()->for($project, 'project')->create();
-
-    $document->tasks()->attach($task);
-
-    expect($document->tasks()->pluck('tasks.id'))->toEqual(collect([$task->id]));
-});
 
 it('takes the nesting limit from configuration', function () {
     config(['domains.project-document.max_depth' => 3]);

@@ -33,12 +33,12 @@ class ProjectDocumentsController extends ResourceController
 
     private const array FULL_RELATIONS = ['tags', 'project', 'createdBy', 'updatedBy'];
 
-    /** Tab badges read these off the document itself, so every single-document response carries them. */
-    private const array COUNTED_RELATIONS = ['comments', 'tasks'];
+    /** The comments tab badge reads this off the document itself, so every single-document response carries it. */
+    private const array COUNTED_RELATIONS = ['comments'];
 
     protected function getAllowedIncludes(): array
     {
-        return [...self::FULL_RELATIONS, 'tasks'];
+        return self::FULL_RELATIONS;
     }
 
     public function index(ProjectModel $project): AnonymousResourceCollection

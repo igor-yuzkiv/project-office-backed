@@ -140,7 +140,7 @@ The backend handles both formats through `parseRequestedIncludes()`.
 | **Project** | `createdBy`, `updatedBy`, `tags`, `tasks`, `taskLists` |
 | **Task** | `project`, `taskList`, `createdBy`, `updatedBy`, `tags` |
 | **TaskList** | `tasks`, `project`, `createdBy`, `updatedBy` |
-| **ProjectDocument** | `project`, `tags`, `tasks`, `createdBy`, `updatedBy` |
+| **ProjectDocument** | `project`, `tags`, `createdBy`, `updatedBy` |
 | **Attachment** | `createdBy`, `updatedBy` |
 
 ### Required includes by action
@@ -155,7 +155,7 @@ action-specific `$required` list:
 | **Task** | `show` | `createdBy`, `updatedBy`, `tags`, `project`, `taskList` |
 | **TaskList** | `index`, `search`, `show` | `createdBy`, `updatedBy` |
 | **ProjectDocument** | `index` | `tags` |
-| **ProjectDocument** | `show`, `store`, `update` | `project`, `tags`, `tasks`, `createdBy`, `updatedBy` |
+| **ProjectDocument** | `show`, `store`, `update` | `project`, `tags`, `createdBy`, `updatedBy` |
 | **Attachment** | `search` | `createdBy`, `updatedBy` |
 
 ---

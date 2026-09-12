@@ -4,7 +4,6 @@ namespace App\Http\Shared\Resources\Tasks;
 
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\ValueObjects\TaskPriorityData;
-use App\Http\Shared\Resources\ProjectDocuments\ProjectDocumentOverviewResource;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
 use App\Http\Shared\Resources\Tags\TagResource;
 use App\Http\Shared\Resources\TaskLists\TaskListOverviewResource;
@@ -40,8 +39,6 @@ class TaskResource extends JsonResource
             'task_list_tasks' => $this->whenLoaded('taskListTasks', fn () => TaskOverviewResource::collection($this->taskListTasks)),
 
             'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
-
-            'project_documents' => $this->whenLoaded('projectDocuments', fn () => ProjectDocumentOverviewResource::collection($this->projectDocuments)),
 
             'comments_count' => $this->whenCounted('comments', fn () => $this->comments_count),
         ];

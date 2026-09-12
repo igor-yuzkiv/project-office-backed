@@ -9,7 +9,6 @@ use App\Http\WebApi\Controllers\Dashboard\DashboardController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentAttachmentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentCommentsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentsController;
-use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTasksController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentTreeController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentVersionAnnotationsController;
 use App\Http\WebApi\Controllers\ProjectDocuments\ProjectDocumentVersionsController;
@@ -22,7 +21,6 @@ use App\Http\WebApi\Controllers\TaskLists\TaskListsController;
 use App\Http\WebApi\Controllers\TaskLists\TaskListTasksController;
 use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
-use App\Http\WebApi\Controllers\Tasks\TaskProjectDocumentsController;
 use App\Http\WebApi\Controllers\Tasks\TasksController;
 use App\Http\WebApi\Controllers\TaskViews\TaskViewsController;
 use App\Http\WebApi\Controllers\Users\ApiTokensController;
@@ -194,19 +192,6 @@ Route::group([
 });
 
 /**
- * Project Document Tasks
- */
-Route::group([
-    'prefix'     => 'project-documents/{project_document}/tasks',
-    'as'         => 'project-documents.tasks.',
-    'middleware' => ['auth:sanctum'],
-    'controller' => ProjectDocumentTasksController::class,
-], function () {
-    Route::get('/', 'index')->name('index');
-    Route::put('/', 'sync')->name('sync');
-});
-
-/**
  * Tags
  */
 Route::group([
@@ -255,19 +240,6 @@ Route::group([
 ], function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
-});
-
-/**
- * Task Project Documents
- */
-Route::group([
-    'prefix'     => 'tasks/{task}/project-documents',
-    'as'         => 'tasks.project-documents.',
-    'middleware' => ['auth:sanctum'],
-    'controller' => TaskProjectDocumentsController::class,
-], function () {
-    Route::get('/', 'index')->name('index');
-    Route::put('/', 'sync')->name('sync');
 });
 
 /**

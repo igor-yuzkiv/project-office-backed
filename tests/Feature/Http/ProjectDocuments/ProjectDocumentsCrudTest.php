@@ -6,7 +6,6 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Enums\ProjectDocumentStatus;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Tag\Models\TagModel;
-use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use App\Libs\AuditTrail\Models\AuditRecordModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -198,16 +197,13 @@ it('rejects listing documents for a non-existent project', function () {
     $response->assertNotFound();
 });
 
-it('includes project and tasks in the list when explicitly requested via include', function () {
-    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
-    $task = TaskModel::factory()->for($this->project, 'project')->create();
-    $document->tasks()->attach($task);
+it('includes the project in the list when explicitly requested via include', function () {
+    ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->getJson("/api/projects/{$this->project->id}/project-documents?include=project,tasks");
+    $response = $this->getJson("/api/projects/{$this->project->id}/project-documents?include=project");
 
     $response->assertOk()
         ->assertJsonPath('data.0.project.id', $this->project->id)
-        ->assertJsonPath('data.0.tasks.0.id', $task->id)
         ->assertJsonMissingPath('data.0.content');
 });
 
@@ -228,23 +224,11 @@ it('shows a single project document including its content and project', function
     $response->assertOk()
         ->assertJsonPath('data.id', $document->id)
         ->assertJsonPath('data.title', 'Shown Document')
-        ->assertJsonPath('data.project.id', $this->project->id)
-        ->assertJsonMissingPath('data.tasks');
+        ->assertJsonPath('data.project.id', $this->project->id);
 });
 
-it('includes linked tasks when explicitly requested via include', function () {
+it('counts comments on a shown document', function () {
     $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
-    $task = TaskModel::factory()->for($this->project, 'project')->create();
-    $document->tasks()->attach($task);
-
-    $response = $this->getJson('/api/project-documents/'.$document->id.'?include=tasks');
-
-    $response->assertOk()->assertJsonPath('data.tasks.0.id', $task->id);
-});
-
-it('counts linked tasks and comments on a shown document', function () {
-    $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
-    $document->tasks()->attach(TaskModel::factory()->count(2)->for($this->project, 'project')->create());
     CommentModel::factory()->count(3)->create([
         'commentable_id'   => $document->id,
         'commentable_type' => $document->getMorphClass(),
@@ -253,24 +237,19 @@ it('counts linked tasks and comments on a shown document', function () {
 
     $response = $this->getJson('/api/project-documents/'.$document->id);
 
-    $response->assertOk()
-        ->assertJsonPath('data.tasks_count', 2)
-        ->assertJsonPath('data.comments_count', 3);
+    $response->assertOk()->assertJsonPath('data.comments_count', 3);
 });
 
-it('counts an unlinked document as zero rather than omitting the counts', function () {
+it('counts an uncommented document as zero rather than omitting the count', function () {
     $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->getJson('/api/project-documents/'.$document->id);
 
-    $response->assertOk()
-        ->assertJsonPath('data.tasks_count', 0)
-        ->assertJsonPath('data.comments_count', 0);
+    $response->assertOk()->assertJsonPath('data.comments_count', 0);
 });
 
-// The two counts feed two tab badges side by side, so a response carrying one and not the
-// other leaves a badge silently blank.
-it('carries both counts on every response that returns a single document', function () {
+// The count feeds a tab badge, so a response without it leaves the badge silently blank.
+it('carries the comment count on every response that returns a single document', function () {
     $parent = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id, 'title' => 'Parent']);
     $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
 
@@ -289,7 +268,6 @@ it('carries both counts on every response that returns a single document', funct
 
         // None of these documents has a link, so a missing count and a wrong one both
         // read as something other than 0.
-        expect($response->json('data.tasks_count'))->toBe(0, "{$endpoint} did not count tasks");
         expect($response->json('data.comments_count'))->toBe(0, "{$endpoint} did not count comments");
     }
 });
@@ -412,12 +390,10 @@ it('leaves sibling documents intact when a document is deleted', function () {
     expect(ProjectDocumentModel::find($sibling->id))->not->toBeNull();
 });
 
-it('cleans up task links, tag pivots and comments when a document is deleted', function () {
+it('cleans up tag pivots and comments when a document is deleted', function () {
     $tag = TagModel::create(['name' => 'cleanup', 'color' => '#555555']);
-    $task = TaskModel::factory()->for($this->project, 'project')->create();
     $document = ProjectDocumentModel::factory()->create(['project_id' => $this->project->id]);
     $document->tags()->attach($tag->id);
-    $document->tasks()->attach($task->id);
     $comment = CommentModel::factory()->create([
         'commentable_id'   => $document->id,
         'commentable_type' => $document->getMorphClass(),
@@ -426,8 +402,6 @@ it('cleans up task links, tag pivots and comments when a document is deleted', f
 
     $this->deleteJson('/api/project-documents/'.$document->id)->assertOk();
 
-    expect(TaskModel::find($task->id))->not->toBeNull();
-    expect(DB::table('project_document_task')->where('project_document_id', $document->id)->exists())->toBeFalse();
     expect(DB::table('taggables')->where('taggable_id', $document->id)->exists())->toBeFalse();
     expect(CommentModel::find($comment->id))->toBeNull();
     expect(TagModel::find($tag->id))->not->toBeNull();
