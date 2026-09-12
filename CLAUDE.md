@@ -28,6 +28,9 @@ agent-facing public contract whose consumers live outside this repository.
 - A commit message describes the change, in English. That work was done by an agent is recorded in
   Project Office (`task:checkpoint`, `task:handoff`), not in git history.
 - The agent commits; the user pushes. Never run `git push` or anything that publishes a branch.
+- Task and document keys of the board, checkpoint text, session names, and local paths stay in
+  Project Office and the chat. They do not appear in commit messages, code comments, repository
+  documents, or mockups.
 
 ## External systems
 

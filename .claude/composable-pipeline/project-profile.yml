@@ -41,6 +41,10 @@ artifacts:
   workflow_record: project-office    # `project-office task:comment-add --task MTM-<n>`
   client_update: none               # this project has no audience outside the team
   test_plan: project-office         # test matrix lives on the task, next to the spec
+  list_flow: project-office         # the flow of a task list, as a comment on the list itself
+  coverage_pass: project-office     # what the coverage lenses found absent
+  options: project-office           # compared options and the recommendation
+  architecture: project-office      # the chosen shape
 
 # ---------------------------------------------------------------------------
 # Language per surface.
@@ -57,8 +61,11 @@ language:
   code: English            # identifiers and comments
   git: English             # commit messages, branch names, PR title and body
   repo_docs: English       # README, ADR, docs/ — anything committed goes to git in English
+  office_docs: Ukrainian   # documents kept on the board, not in git
   tasks: Ukrainian         # task descriptions, specs and board comments; paths, identifiers and commands stay as-is
-  client:                  # not applicable: artifacts.client_update is none
+  client:                  # superseded by client_docs / client_messages; kept until removed by hand
+  client_docs:             # not applicable: artifacts.client_update is none
+  client_messages:         # not applicable: artifacts.client_update is none
   local_notes: Ukrainian   # anything not committed
 
 # ---------------------------------------------------------------------------
@@ -93,7 +100,18 @@ exemplars:
   store: resources/js/app/stores/use.auth.store.ts
   api_client: resources/js/entities/task/api/task.api.ts
   e2e_spec: e2e/project-documents/autosave.spec.ts
+  # Documents — read whole, matched for presentation rather than content.
+  doc_task: project-office:MTM-197
+  doc_task_list: project-office:MTM-TL-23
+  doc_concept:        # this project agrees nothing with a client
+  doc_status_update:  # status lives in checkpoints; no standalone exemplar
   # job: no ShouldQueue class exists yet — fill this in when the first one is written.
+
+# ---------------------------------------------------------------------------
+# Task labels — the layers a task name carries, as `N. [BE] …`.
+# Empty: this project's task lists number tasks without labels (see MTM-TL-23).
+# ---------------------------------------------------------------------------
+task_labels:
 
 # ---------------------------------------------------------------------------
 # Verification — the exact commands, as this project runs them.

@@ -103,15 +103,26 @@ Once implemented and verified:
 project-office task:handoff --task PREFIX-1 --resolution "..."
 ```
 
+The resolution is read twice: once to close the task, and later by someone assembling the record
+of the whole task list from resolutions like it. Write for the second reader, who never saw the
+diff:
+
 ```text
-Changed:
-- What was implemented.
+Done:
+- What it was and what it is now — as behaviour, not as a list of files. A before/after
+  example when the change shows from the outside.
+
+Decisions:
+- What was decided along the way and why; where the work departed from the task or the
+  exemplar, and why.
 
 Verified:
-- Tests, checks, or manual verification performed.
+- Tests, checks, or manual verification performed, and what they showed. For a defect: the
+  reproduction seen failing without the fix and passing with it.
 
-Notes:
-- Known limitations or follow-up work, when relevant.
+Remaining:
+- Unmet criteria, deferred items, findings left unfixed — each with where it went
+  (a task, a comment, a note).
 ```
 
 `task:handoff` records the resolution and moves the task to the handoff status. Outside the
@@ -208,7 +219,3 @@ same words it was sent — for example, why orientation ran as one scope instead
 **This replaces the generic `Implementation plan` checkpoint** for pipeline-executed work. Do not
 write both: the assembled workflow already states the steps and the sequencing. Add a separate plan
 checkpoint only when the task carries decisions the workflow block list does not express.
-
-### Task descriptions
-
-When creating or substantially rewriting a task, follow `./task-description-pattern.md`.
