@@ -131,11 +131,6 @@ const router = createRouter({
                     name: 'task-details.related-docs',
                     component: () => import('@/pages/tasks/details/tabs/TaskRelatedDocsPage.vue'),
                 },
-                {
-                    path: 'owners',
-                    name: 'task-details.owners',
-                    component: () => import('@/pages/tasks/details/tabs/TaskOwnersPage.vue'),
-                },
             ],
         },
         {
