@@ -22,7 +22,6 @@ use App\Http\WebApi\Controllers\TaskLists\TaskListsController;
 use App\Http\WebApi\Controllers\TaskLists\TaskListTasksController;
 use App\Http\WebApi\Controllers\Tasks\TaskAttachmentsController;
 use App\Http\WebApi\Controllers\Tasks\TaskCommentsController;
-use App\Http\WebApi\Controllers\Tasks\TaskOwnersController;
 use App\Http\WebApi\Controllers\Tasks\TaskProjectDocumentsController;
 use App\Http\WebApi\Controllers\Tasks\TasksController;
 use App\Http\WebApi\Controllers\TaskViews\TaskViewsController;
@@ -284,19 +283,6 @@ Route::group([
     Route::get('{attachment}/content', 'content')->name('content');
     Route::get('{attachment}/download', 'download')->name('download');
     Route::get('{attachment}/temporary-url', 'temporaryUrl')->name('temporaryUrl');
-});
-
-/**
- * Task Owners
- */
-Route::group([
-    'prefix'     => 'tasks/{task}/owners',
-    'as'         => 'tasks.owners.',
-    'middleware' => ['auth:sanctum'],
-    'controller' => TaskOwnersController::class,
-], function () {
-    Route::get('/', 'index')->name('index');
-    Route::put('/', 'sync')->name('sync');
 });
 
 /**

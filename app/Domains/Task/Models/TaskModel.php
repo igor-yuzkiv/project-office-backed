@@ -135,11 +135,6 @@ class TaskModel extends Model implements Commentable
         return $this->morphMany(AttachmentModel::class, 'attachable');
     }
 
-    public function taskOwners(): HasMany
-    {
-        return $this->hasMany(TaskOwnerModel::class, 'task_id');
-    }
-
     public function projectDocuments(): BelongsToMany
     {
         return $this->belongsToMany(ProjectDocumentModel::class, 'project_document_task', 'task_id', 'project_document_id')

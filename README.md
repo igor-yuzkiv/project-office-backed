@@ -139,7 +139,6 @@ It is protected with Sanctum where required and includes endpoints for:
 - Tags
 - Attachments
 - Task comments
-- Task owners
 - Users
 - API tokens
 - Generic comments

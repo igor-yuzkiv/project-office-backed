@@ -4,7 +4,6 @@ use App\Domains\Attachment\Exceptions\AttachmentStorageFailedException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentCyclicParentException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentMaxDepthExceededException;
 use App\Domains\ProjectDocument\Exceptions\ProjectDocumentParentProjectMismatchException;
-use App\Domains\Task\Exceptions\InvalidTaskOwnerAssignmentException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -31,10 +30,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
-
-        $exceptions->render(function (InvalidTaskOwnerAssignmentException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
-        });
 
         $exceptions->render(function (ProjectDocumentCyclicParentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
