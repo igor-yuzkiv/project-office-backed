@@ -5,7 +5,6 @@ import type { TaskPriorityDto } from './task-priority.types'
 import type { TaskStatusValue } from './task-status.types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
-import type { ProjectDocumentOverviewDto } from '@/entities/project-document/types'
 
 export interface ITask extends IEntity {
     project_id: string
@@ -27,7 +26,6 @@ export interface ITask extends IEntity {
     tags?: ITag[]
     project?: ProjectOverviewDto
     task_list?: ITaskListOverview
-    project_documents?: ProjectDocumentOverviewDto[]
 
     comments_count?: number
 }

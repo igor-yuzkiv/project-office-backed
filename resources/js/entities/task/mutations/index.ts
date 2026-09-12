@@ -4,4 +4,3 @@ export { useBulkUpdateTaskStatusMutation } from './use.bulk-update-task-status.m
 export { useDeleteTaskMutation } from './use.delete-task.mutation'
 export { useCreateTaskCommentMutation } from './use.create-task-comment.mutation'
 export { useUploadTaskAttachmentMutation } from './use.upload-task-attachment.mutation'
-export { useSyncTaskProjectDocumentsMutation } from './use.sync-task-project-documents.mutation'

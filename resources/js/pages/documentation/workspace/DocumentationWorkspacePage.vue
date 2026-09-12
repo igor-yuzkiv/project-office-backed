@@ -86,12 +86,6 @@ const tabs = computed(() => [
         route: 'project-documentation.document.comments',
         count: openedDocument.value?.comments_count,
     },
-    {
-        value: 'tasks',
-        label: 'Related tasks',
-        route: 'project-documentation.document.tasks',
-        count: openedDocument.value?.tasks_count,
-    },
 ])
 
 const activeTab = computed(

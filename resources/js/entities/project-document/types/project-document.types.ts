@@ -2,7 +2,6 @@ import type { IEntity } from '@/shared/types'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
-import type { TaskOverviewDto } from '@/entities/task/types'
 
 export type ProjectDocumentStatusValue = 'draft' | 'in_review' | 'active' | 'deprecated' | 'archived'
 
@@ -36,13 +35,11 @@ export interface IProjectDocument extends IEntity {
 
     project?: ProjectOverviewDto
     tags?: ITag[]
-    tasks?: TaskOverviewDto[]
     path?: ProjectDocumentPathNodeDto[]
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
 
     comments_count?: number
-    tasks_count?: number
 }
 
 export type ProjectDocumentOverviewDto = Pick<
@@ -58,7 +55,6 @@ export type ProjectDocumentOverviewDto = Pick<
     | 'updated_at'
     | 'project'
     | 'tags'
-    | 'tasks'
     | 'created_by'
     | 'updated_by'
 >

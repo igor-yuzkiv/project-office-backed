@@ -4,5 +4,4 @@ export { useMoveProjectDocumentMutation } from './use.move-project-document.muta
 export { useDeleteProjectDocumentMutation } from './use.delete-project-document.mutation'
 export { useCreateProjectDocumentCommentMutation } from './use.create-project-document-comment.mutation'
 export { useCreateProjectDocumentVersionAnnotationMutation } from './use.create-project-document-version-annotation.mutation'
-export { useSyncProjectDocumentTasksMutation } from './use.sync-project-document-tasks.mutation'
 export * from './use.project-document-version.mutations'

@@ -20,9 +20,3 @@ export const TaskAttachmentQueryKey = {
     taskAttachmentsPaginated: (taskId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
         [...TaskAttachmentQueryKey.taskAttachments(taskId), pagination] as const,
 }
-
-export const TaskProjectDocumentQueryKey = {
-    taskProjectDocuments: (taskId: MaybeRefOrGetter<string>) => ['project-documents', 'tasks', taskId] as const,
-    taskProjectDocumentsPaginated: (taskId: MaybeRefOrGetter<string>, pagination?: MaybeRefOrGetter<PagingParams>) =>
-        [...TaskProjectDocumentQueryKey.taskProjectDocuments(taskId), pagination] as const,
-}

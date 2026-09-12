@@ -86,11 +86,6 @@ const router = createRouter({
                     name: 'project-documentation.document.comments',
                     component: () => import('@/pages/documentation/workspace/tabs/DocumentCommentsPage.vue'),
                 },
-                {
-                    path: ':documentId/tasks',
-                    name: 'project-documentation.document.tasks',
-                    component: () => import('@/pages/documentation/workspace/tabs/DocumentTasksPage.vue'),
-                },
             ],
         },
         {
@@ -125,11 +120,6 @@ const router = createRouter({
                     path: 'attachments',
                     name: 'task-details.attachments',
                     component: () => import('@/pages/tasks/details/tabs/TaskAttachmentsPage.vue'),
-                },
-                {
-                    path: 'related-docs',
-                    name: 'task-details.related-docs',
-                    component: () => import('@/pages/tasks/details/tabs/TaskRelatedDocsPage.vue'),
                 },
             ],
         },
