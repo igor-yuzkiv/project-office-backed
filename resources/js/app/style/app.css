@@ -43,7 +43,6 @@
 }
 
 @utility type-prose {
-    max-width: 66ch;
     font-size: 15px;
     line-height: 1.65;
 }
@@ -85,4 +84,15 @@
 
 .chip-set {
     @apply bg-canvas text-ink border-solid;
+}
+
+/* One content width for every page that centres its content — documents and tables alike. */
+@utility page-container {
+    width: 100%;
+    max-width: 1600px;
+    margin-inline: auto;
+    padding: 44px 40px 96px;
+    @media (max-width: 768px) {
+        padding: 24px 16px 64px;
+    }
 }

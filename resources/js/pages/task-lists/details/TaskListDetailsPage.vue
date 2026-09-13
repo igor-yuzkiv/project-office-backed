@@ -152,7 +152,7 @@ useBreadcrumbs(() => [
 
 <template>
     <div v-if="taskList" class="min-h-0 flex-1 overflow-auto">
-        <article class="px-10 pt-11 pb-24 max-md:px-4 max-md:pt-6 mx-auto max-w-[760px]">
+        <article class="page-container">
             <PageHead :title="taskList.name" mode="document">
                 <template #key>
                     <CopyableKey :value="taskList.key" size="md" />

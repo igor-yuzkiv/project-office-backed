@@ -152,7 +152,7 @@ useBreadcrumbs(() => [
 
 <template>
     <div v-if="taskList" class="min-h-0 flex-1 overflow-auto">
-        <form class="px-10 pt-11 max-md:px-4 max-md:pt-6 mx-auto max-w-[760px]" @submit.prevent="submit">
+        <form class="page-container pb-0" @submit.prevent="submit">
             <div class="type-meta gap-1 flex items-center">
                 <CopyableKey :value="taskList.key" />
                 <span class="text-ink-3">· editing</span>
