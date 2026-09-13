@@ -23,7 +23,7 @@ const previewTheme = computed<'dark' | 'light'>(() => (themeStore.isDark ? 'dark
         v-model:visible="visible"
         modal
         dismissable-mask
-        :pt="{ root: { class: 'max-w-[820px] w-[90vw] h-[85vh]' } }"
+        :pt="{ root: { class: 'max-w-[1280px] w-[92vw] h-[92vh]' } }"
     >
         <template #header>
             <div class="gap-3 flex items-center">
