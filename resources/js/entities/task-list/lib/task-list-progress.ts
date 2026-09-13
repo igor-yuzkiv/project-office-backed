@@ -1,8 +1,13 @@
-import type { TaskStatusCounts } from '@/entities/task/types'
+import type { TaskStatusCounts, TaskStatusValue } from '@/entities/task/types'
 
 export type TaskListProgress = { done: number; inProgress: number; total: number }
 
 const DONE_STATUSES = ['ready_to_test', 'completed', 'closed'] as const
+
+/** A step the plan no longer waits on: handed off for testing counts, declined does not. */
+export function isDoneTaskStatus(status: TaskStatusValue): boolean {
+    return (DONE_STATUSES as readonly TaskStatusValue[]).includes(status)
+}
 
 /** Declined tasks leave the list, so they count neither as done nor towards the total. */
 export function taskListProgress(counts: Partial<TaskStatusCounts> | undefined): TaskListProgress {

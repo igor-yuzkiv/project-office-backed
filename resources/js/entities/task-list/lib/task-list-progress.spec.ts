@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { taskListProgress } from './task-list-progress'
+import { isDoneTaskStatus, taskListProgress } from './task-list-progress'
 
 describe('taskListProgress', () => {
     it('is empty without counts or with zeros', () => {
@@ -24,5 +24,15 @@ describe('taskListProgress', () => {
                 declined: 8,
             })
         ).toEqual({ done: 18, inProgress: 4, total: 28 })
+    })
+})
+
+describe('isDoneTaskStatus', () => {
+    it('treats handed-off and finished steps as done, everything else as pending', () => {
+        expect(isDoneTaskStatus('ready_to_test')).toBe(true)
+        expect(isDoneTaskStatus('completed')).toBe(true)
+        expect(isDoneTaskStatus('closed')).toBe(true)
+        expect(isDoneTaskStatus('in_progress')).toBe(false)
+        expect(isDoneTaskStatus('declined')).toBe(false)
     })
 })

@@ -67,7 +67,7 @@ export function useTaskListCreateDialog(options: TaskListCreateDialogOptions = {
                         return
                     }
 
-                    router.push({ name: 'task-list-details.tasks', params: { id: response.data.id } })
+                    router.push({ name: 'task-list-details', params: { id: response.data.id } })
                 },
                 onError: handleError,
             }
