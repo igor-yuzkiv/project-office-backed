@@ -1,6 +1,7 @@
-import { computed, ref, watch } from 'vue'
+import { computed, type MaybeRef, ref, toValue, watch } from 'vue'
 import { useAuditRecordsQuery } from '../queries'
-import type { AuditRecordDto } from '../types'
+import { auditRecordFiltersToPayload } from '../lib'
+import type { AuditRecordDto, AuditRecordFilters } from '../types'
 
 /** The screen holds roughly fifteen rows, so a page of twenty always fills it. */
 const FEED_PAGE_SIZE = 20
@@ -10,11 +11,15 @@ const FEED_PAGE_SIZE = 20
  * here rather than in the query cache: the cache keeps pages apart on purpose, and stitching them
  * inside it would mean a custom select over every key.
  */
-export function useAuditRecordFeed() {
+export function useAuditRecordFeed(filters: MaybeRef<AuditRecordFilters> = {}, options?: { perPage?: number }) {
     const page = ref(1)
     const records = ref<AuditRecordDto[]>([])
 
-    const params = computed(() => ({ page: page.value, per_page: FEED_PAGE_SIZE }))
+    const params = computed(() => ({
+        page: page.value,
+        per_page: options?.perPage ?? FEED_PAGE_SIZE,
+        filters: auditRecordFiltersToPayload(toValue(filters)),
+    }))
     const {
         records: pageRecords,
         paginationMeta,
@@ -23,6 +28,17 @@ export function useAuditRecordFeed() {
         isFetching,
         refetch,
     } = useAuditRecordsQuery(params)
+
+    // A different narrowing is a different list: what was accumulated belongs to the old one.
+    // Compared by content: a parent that rebuilds an equal filters object on each render must not
+    // wipe the feed.
+    watch(
+        () => JSON.stringify(toValue(filters)),
+        () => {
+            page.value = 1
+            records.value = []
+        }
+    )
 
     // immediate: a page already in the query cache is there before the watcher is registered
     // (staleTime is five minutes), and without this the feed would render empty on a warm cache.
@@ -44,6 +60,8 @@ export function useAuditRecordFeed() {
         },
         { immediate: true }
     )
+
+    const total = computed(() => paginationMeta.value?.total ?? 0)
 
     const hasMore = computed(() => {
         // A failed page leaves no meta behind, which would otherwise read as the end of the feed.
@@ -77,5 +95,5 @@ export function useAuditRecordFeed() {
         page.value += 1
     }
 
-    return { records, hasMore, loadMore, isPending, isFetching, isError, refetch }
+    return { records, total, hasMore, loadMore, isPending, isFetching, isError, refetch }
 }

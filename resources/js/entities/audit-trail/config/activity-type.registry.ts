@@ -47,6 +47,32 @@ export const ACTIVITY_TYPE_REGISTRY: Record<string, ActivityTypeDef> = {
     'attachment.uploaded': { icon: 'heroicons:paper-clip', accent: 'create', linkable: true },
 }
 
+/** Sentence-case labels for the Type filter, one per registry key; the single list a chip offers. */
+export const ACTIVITY_TYPE_LABELS: Record<string, string> = {
+    'task.created': 'Task created',
+    'task.updated': 'Task updated',
+    'task.status_changed': 'Task status changed',
+    'task.deleted': 'Task deleted',
+    'task.bulk_status_changed': 'Tasks status changed',
+    'task.started': 'Task started',
+    'task.checkpoint': 'Checkpoint',
+    'task.handoff': 'Handoff',
+    'comment.created': 'Comment',
+    'task_list.created': 'Task list created',
+    'task_list.updated': 'Task list updated',
+    'task_list.tasks_added': 'Tasks added to list',
+    'project.created': 'Project created',
+    'project.updated': 'Project updated',
+    'project.deleted': 'Project deleted',
+    'project_document.created': 'Document created',
+    'project_document.updated': 'Document updated',
+    'project_document_version.created': 'Document version created',
+    'project_document_version.updated': 'Document version updated',
+    'project_document_version.deleted': 'Document version deleted',
+    'project_document_version.primary_changed': 'Primary version changed',
+    'attachment.uploaded': 'Attachment uploaded',
+}
+
 export const UNKNOWN_ACTIVITY_TYPE: ActivityTypeDef = {
     icon: 'heroicons:question-mark-circle',
     accent: 'none',
