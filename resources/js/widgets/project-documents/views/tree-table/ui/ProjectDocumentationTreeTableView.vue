@@ -105,7 +105,7 @@ function onSelectNode(row: ProjectDocumentTreeNodeDto) {
         </template>
 
         <template #column:status="{ row }">
-            <ProjectDocumentStatusTag :status="row.status" variant="light" />
+            <ProjectDocumentStatusTag :status="row.status" />
         </template>
 
         <template #column:tags="{ row }">

@@ -8,12 +8,12 @@ export type TaskStatusValue =
     | 'closed'
     | 'declined'
 
-import type { HexColor } from '@/shared/types'
+import type { ThemedStatusColors } from '@/shared/types'
 
 export type TaskStatusMetadata = {
     label: string
     value: TaskStatusValue
-    color: HexColor
+    colors: ThemedStatusColors
 }
 
 export type TaskStatusMetadataMap = Record<TaskStatusValue, TaskStatusMetadata>

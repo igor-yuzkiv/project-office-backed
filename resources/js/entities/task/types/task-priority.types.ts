@@ -1,4 +1,4 @@
-import type { HexColor } from '@/shared/types'
+import type { ThemedStatusColors } from '@/shared/types'
 
 export type TaskPriorityName = 'None' | 'Low' | 'Medium' | 'High' | 'Urgent'
 
@@ -9,7 +9,7 @@ export type TaskPriorityDto = {
 
 export type TaskPriorityMetadata = TaskPriorityDto & {
     label: string
-    color: HexColor
+    colors: ThemedStatusColors
     icon: string
 }
 

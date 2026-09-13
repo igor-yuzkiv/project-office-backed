@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import Panel from 'primevue/panel'
 import type { IProjectDocument } from '@/entities/project-document/types'
-import { CopyToClipboard, DisplayFields } from '@/shared/components/display'
+import { CopyableKey, DisplayFields } from '@/shared/components/display'
 import type { DisplayFieldConfig } from '@/shared/components/display'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { TagList } from '@/widgets/tags/metadata'
@@ -40,10 +40,10 @@ const parent = computed(() => {
         <Panel header="General" :toggleable="true">
             <DisplayFields :item="document" :fields="generalFields">
                 <template #[`field:key:value`]="{ item }">
-                    <CopyToClipboard :text="item.key" class="text-surface-700 dark:text-surface-200" />
+                    <CopyableKey :value="item.key" size="md" />
                 </template>
                 <template #[`field:status:value`]="{ item }">
-                    <ProjectDocumentStatusTag :status="item.status" variant="light" class="w-fit" />
+                    <ProjectDocumentStatusTag :status="item.status" class="w-fit" />
                 </template>
                 <template #[`field:parent:value`]="{ item }">
                     <RouterLink

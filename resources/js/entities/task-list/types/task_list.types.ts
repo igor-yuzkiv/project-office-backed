@@ -1,4 +1,4 @@
-import type { HexColor, IEntity } from '@/shared/types'
+import type { IEntity, ThemedStatusColors } from '@/shared/types'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
@@ -17,7 +17,7 @@ export type TaskListStatusValue =
 export type TaskListStatusMetadata = {
     label: string
     value: TaskListStatusValue
-    color: HexColor
+    colors: ThemedStatusColors
 }
 
 export type TaskListStatusMetadataMap = Record<TaskListStatusValue, TaskListStatusMetadata>

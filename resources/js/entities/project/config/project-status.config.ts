@@ -1,12 +1,13 @@
+import { STATUS_COLORS } from '@/shared/components/status-pill'
 import type { ProjectStatusMetadata, ProjectStatusMetadataMap } from '../types/project-status.types'
 
 export const ProjectStatusMap: ProjectStatusMetadataMap = {
-    draft: { label: 'Draft', value: 'draft', color: '#6b7280' },
-    active: { label: 'Active', value: 'active', color: '#3b82f6' },
-    on_hold: { label: 'On Hold', value: 'on_hold', color: '#f59e0b' },
-    completed: { label: 'Completed', value: 'completed', color: '#22c55e' },
-    archived: { label: 'Archived', value: 'archived', color: '#475569' },
-    declined: { label: 'Declined', value: 'declined', color: '#ef4444' },
+    draft: { label: 'Draft', value: 'draft', colors: STATUS_COLORS.open },
+    active: { label: 'Active', value: 'active', colors: STATUS_COLORS.progress },
+    on_hold: { label: 'On Hold', value: 'on_hold', colors: STATUS_COLORS.test },
+    completed: { label: 'Completed', value: 'completed', colors: STATUS_COLORS.done },
+    archived: { label: 'Archived', value: 'archived', colors: STATUS_COLORS.closed },
+    declined: { label: 'Declined', value: 'declined', colors: STATUS_COLORS.declined },
 }
 
 export function projectStatusOptions(): ProjectStatusMetadata[] {

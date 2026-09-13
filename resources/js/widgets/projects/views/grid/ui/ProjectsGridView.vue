@@ -99,7 +99,7 @@ function onPageChange(event: { page: number }) {
                             </RouterLink>
                         </div>
 
-                        <ProjectStatusTag :status="project.status" variant="light" class="w-fit" />
+                        <ProjectStatusTag :status="project.status" class="w-fit" />
                     </div>
 
                     <slot name="actions" :project="project" />
