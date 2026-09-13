@@ -17,7 +17,6 @@ import { IconButton } from '@/shared/components/button'
 import { CopyableKey } from '@/shared/components/display'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { ProjectStatusTag } from '@/widgets/projects/status-tag'
-import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,7 +28,6 @@ const { project, isError } = useProjectQuery(projectId)
 const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 const pinMutation = usePinProjectMutation()
 const unpinMutation = useUnpinProjectMutation()
-const taskCreateDialog = useTaskCreateDialog()
 
 const moreMenu = ref<InstanceType<typeof Menu>>()
 
@@ -123,7 +121,6 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                         outlined
                         @click="openEditor"
                     />
-                    <Button label="New task" icon="pi pi-plus" size="small" @click="taskCreateDialog.open(project)" />
                     <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
                 </div>
             </div>
@@ -149,13 +146,5 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
         </div>
 
         <Menu ref="moreMenu" :model="moreMenuItems" popup />
-
-        <TaskCreateDialog
-            v-model:visible="taskCreateDialog.visible.value"
-            v-model:form-data="taskCreateDialog.formData.value"
-            :validation-errors="taskCreateDialog.validationErrors.value"
-            :is-pending="taskCreateDialog.isPending.value"
-            @submit="taskCreateDialog.submit"
-        />
     </div>
 </template>

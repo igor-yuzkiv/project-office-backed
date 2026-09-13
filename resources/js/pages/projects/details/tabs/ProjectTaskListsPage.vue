@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
@@ -14,7 +14,14 @@ import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
-import { taskListTableColumnsExcluding } from '@/entities/task-list/config'
+import {
+    createDefaultTaskListFiltersDefMap,
+    taskListSortFieldDefs,
+    taskListTableColumnsExcluding,
+} from '@/entities/task-list/config'
+import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
+import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
+import { usePersistedListState } from '@/shared/composables'
 import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 
@@ -22,6 +29,26 @@ const router = useRouter()
 const projectId = useRouteParams<string>('id')
 
 const { project } = useProjectQuery(projectId)
+
+// The project is the page's scope, so its filter field is not offered.
+const filtersDefMap = createDefaultTaskListFiltersDefMap()
+delete filtersDefMap.project_id
+const filterSidebar = useFilterSidebar(filtersDefMap)
+const sort = useSortDialog(taskListSortFieldDefs, 'updated_at', 'desc')
+
+usePersistedListState(
+    {
+        filters: filterSidebar.filtersSnapshot,
+        sortBy: sort.sortBy,
+        sortOrder: sort.sortOrder,
+    },
+    {
+        key: 'project-task-lists',
+        validate: (data) =>
+            taskListSortFieldDefs.some((f) => f.field === data.sortBy) &&
+            (data.sortOrder === 'asc' || data.sortOrder === 'desc'),
+    }
+)
 
 const searchInput = ref('')
 const searchQuery = ref('')
@@ -40,9 +67,11 @@ const searchParams = computed<TaskListSearchParams>(() => {
     }
     return {
         query: searchQuery.value,
-        filters: [projectFilter],
+        filters: [projectFilter, ...filterSidebar.resolvedFilters.value],
         page: page.value,
         per_page: PAGE_SIZE,
+        sort_by: sort.sortBy.value,
+        sort_order: sort.sortOrder.value,
         include: ['tags', 'updatedBy'],
     }
 })
@@ -112,6 +141,15 @@ function onSearchSubmit() {
 function onPageChange(newPage: number) {
     page.value = newPage
 }
+
+function onSortApply() {
+    sort.apply()
+    sort.close()
+}
+
+watch([sort.sortBy, sort.sortOrder], () => {
+    page.value = 1
+})
 </script>
 
 <template>
@@ -119,6 +157,8 @@ function onPageChange(newPage: number) {
         <div class="gap-2 mb-3 flex flex-wrap items-center">
             <SearchInput v-model="searchInput" placeholder="Search lists" @submit="onSearchSubmit" />
             <span class="flex-1" />
+            <FilterButton v-bind="filterSidebar.buttonProps.value" />
+            <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
             <Button
                 label="New task list"
                 icon="pi pi-plus"
@@ -142,6 +182,19 @@ function onPageChange(newPage: number) {
                 <IconButton severity="secondary" icon="pepicons-pop:dots-y" @click.stop="openRowMenu($event, row)" />
             </template>
         </TaskListsTableView>
+
+        <SortDialog
+            :visible="sort.visible.value"
+            :fields="taskListSortFieldDefs"
+            :sort-by="sort.draftSortBy.value"
+            :sort-order="sort.draftSortOrder.value"
+            @update:visible="sort.visible.value = $event"
+            @update:sort-by="sort.setDraftField"
+            @update:sort-order="sort.setDraftOrder"
+            @apply="onSortApply"
+        />
+
+        <FilterSidebar v-bind="filterSidebar.sidebarProps.value" @apply="page = 1" />
 
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
 
