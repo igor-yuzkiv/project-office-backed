@@ -44,6 +44,7 @@ const navItems: SidebarNavItem[] = [
         routeName: 'task-lists',
         activeWhen: '/task-lists',
     },
+    { key: 'activity', label: 'Activity', icon: 'heroicons:bolt', routeName: 'activity', activeWhen: '/activity' },
 ]
 </script>
 
