@@ -24,7 +24,7 @@ import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-li
 import type { ITaskList } from '@/entities/task-list/types'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
-import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
+import { TaskPriorityBars, TaskStatusTag } from '@/widgets/tasks/metadata'
 
 interface TaskEditFormData {
     name: string
@@ -285,10 +285,10 @@ useBreadcrumbs(() => [
                         :invalid="!!validationErrors.priority"
                     >
                         <template #value>
-                            <TaskPriorityTag :priority="selectedPriority" />
+                            <TaskPriorityBars :priority="selectedPriority" />
                         </template>
                         <template #option="{ option }">
-                            <TaskPriorityTag :priority="option" />
+                            <TaskPriorityBars :priority="option" />
                         </template>
                     </Select>
                     <span v-if="validationErrors.priority" class="text-red-500 basis-full text-[12.5px]">
