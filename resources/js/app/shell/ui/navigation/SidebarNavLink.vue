@@ -22,15 +22,16 @@ function isActive(): boolean {
 
 <template>
     <RouterLink
+        v-tooltip.right="{ value: item.label, disabled: !collapsed }"
         :to="{ name: item.routeName }"
-        class="rounded-md text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
+        class="hover:bg-hover hover:text-ink flex min-h-[26px] items-center rounded-[5px] text-[13px] transition-colors"
         :class="[
-            isActive() ? 'bg-surface-800 text-surface-0' : '',
-            collapsed ? 'p-2 justify-center' : 'gap-3 px-3 py-2',
+            isActive() ? 'bg-hover text-ink font-medium' : 'text-ink-2',
+            collapsed ? 'p-1.5 justify-center' : 'gap-2 px-2 py-1',
         ]"
-        :title="collapsed ? item.label : undefined"
+        :aria-label="collapsed ? item.label : undefined"
     >
-        <Icon :icon="item.icon" class="h-5 w-5 shrink-0" />
-        <span v-if="!collapsed">{{ item.label }}</span>
+        <Icon :icon="item.icon" class="h-4 w-4 shrink-0" />
+        <span v-if="!collapsed" class="truncate">{{ item.label }}</span>
     </RouterLink>
 </template>

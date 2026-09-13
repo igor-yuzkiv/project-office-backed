@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import type { SidebarNavItem } from '../../types'
 import { APP_NAME } from '@/app/config'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
+import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
+import { useAuthStore } from '@/app/stores/use.auth.store'
+import { UserAvatar } from '@/widgets/user/user-avatar'
+import { UserProfilePopover } from '@/widgets/user/profile'
 import SidebarNavLink from './SidebarNavLink.vue'
 
 defineProps<{
@@ -11,22 +16,53 @@ defineProps<{
 }>()
 
 const layoutStore = useAppLayoutStore()
+const themeStore = useAppThemeStore()
+const authStore = useAuthStore()
+const router = useRouter()
+
+const profilePopover = ref<InstanceType<typeof UserProfilePopover>>()
+
+async function handleLogout() {
+    await authStore.logout()
+    await router.push({ name: 'login' })
+}
 </script>
 
 <template>
     <aside
-        class="bg-surface-900 text-surface-0 flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300"
-        :class="layoutStore.sidebarCollapsed ? 'w-14' : 'w-60'"
+        class="bg-canvas border-line flex h-full shrink-0 flex-col overflow-hidden border-r text-[13.5px] transition-[width] duration-150"
+        :class="layoutStore.sidebarCollapsed ? 'w-[52px]' : 'w-[224px]'"
     >
         <div
-            class="h-14 flex shrink-0 items-center"
-            :class="layoutStore.sidebarCollapsed ? 'px-0 justify-center' : 'gap-2.5 px-4'"
+            class="flex shrink-0 items-center"
+            :class="layoutStore.sidebarCollapsed ? 'gap-1.5 px-0 pt-2.5 pb-1.5 flex-col' : 'gap-1 px-2.5 pt-2.5 pb-1.5'"
         >
-            <img src="/logo.png" alt="Logo" class="h-7 w-auto shrink-0" />
-            <span v-if="!layoutStore.sidebarCollapsed" class="text-sm font-semibold truncate">{{ APP_NAME }}</span>
+            <div class="gap-2 px-1.5 py-1 min-w-0 flex items-center">
+                <img src="/logo.png" alt="Logo" class="h-5 w-auto shrink-0" />
+                <span v-if="!layoutStore.sidebarCollapsed" class="text-ink font-semibold truncate">{{ APP_NAME }}</span>
+            </div>
+            <button
+                v-tooltip.right="{
+                    value: layoutStore.sidebarCollapsed ? 'Expand sidebar (⌘\\)' : 'Collapse sidebar (⌘\\)',
+                }"
+                type="button"
+                class="rounded-md text-ink-3 hover:bg-hover hover:text-ink grid h-[26px] w-[26px] shrink-0 place-items-center transition-colors"
+                :class="{ 'ml-auto': !layoutStore.sidebarCollapsed }"
+                :aria-label="layoutStore.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                @click="layoutStore.toggleSidebar"
+            >
+                <Icon
+                    :icon="
+                        layoutStore.sidebarCollapsed
+                            ? 'heroicons:chevron-double-right'
+                            : 'heroicons:chevron-double-left'
+                    "
+                    class="h-[15px] w-[15px]"
+                />
+            </button>
         </div>
 
-        <nav class="gap-1 px-2 flex flex-col">
+        <nav class="gap-0.5 px-2 flex flex-col">
             <SidebarNavLink
                 v-for="item in items"
                 :key="item.key"
@@ -35,24 +71,47 @@ const layoutStore = useAppLayoutStore()
             />
         </nav>
 
-        <div class="gap-0.5 border-surface-700 px-2 py-2 mt-auto flex flex-col border-t">
+        <div class="px-2 pt-1 pb-3 flex-1 overflow-auto">
+            <slot name="pinned" />
+        </div>
+
+        <div
+            class="border-line text-ink-2 flex shrink-0 items-center border-t"
+            :class="layoutStore.sidebarCollapsed ? 'gap-1.5 px-0 py-2 flex-col' : 'gap-2.5 px-3 py-2'"
+        >
             <button
-                class="rounded-md text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
-                :class="layoutStore.sidebarCollapsed ? 'p-2 justify-center' : 'gap-3 px-3 py-2'"
-                :title="layoutStore.sidebarCollapsed ? 'Settings' : undefined"
+                v-tooltip.right="{ value: authStore.user?.name ?? '', disabled: !layoutStore.sidebarCollapsed }"
+                type="button"
+                class="gap-2 rounded-md min-w-0 flex items-center"
+                :class="layoutStore.sidebarCollapsed ? 'p-0.5' : 'hover:text-ink flex-1'"
+                aria-label="Account menu"
+                @click="profilePopover?.toggle($event)"
             >
-                <Icon icon="heroicons:cog-6-tooth" class="h-4 w-4 shrink-0" />
-                <span v-if="!layoutStore.sidebarCollapsed">Settings</span>
+                <UserAvatar
+                    :initials="authStore.user?.initials ?? ''"
+                    :avatar-url="authStore.user?.avatar_url"
+                    size="small"
+                />
+                <span v-if="!layoutStore.sidebarCollapsed" class="truncate">{{ authStore.user?.name }}</span>
             </button>
-            <RouterLink
-                :to="{ name: 'profile' }"
-                class="rounded-md text-sm text-surface-300 hover:bg-surface-800 hover:text-surface-0 flex items-center transition-colors"
-                :class="layoutStore.sidebarCollapsed ? 'p-2 justify-center' : 'gap-3 px-3 py-2'"
-                :title="layoutStore.sidebarCollapsed ? 'Profile' : undefined"
+
+            <button
+                v-tooltip.right="{ value: 'Switch theme', disabled: !layoutStore.sidebarCollapsed }"
+                type="button"
+                class="rounded-md text-ink-3 hover:bg-hover hover:text-ink grid h-[26px] w-[26px] shrink-0 place-items-center transition-colors"
+                :class="{ 'ml-auto': !layoutStore.sidebarCollapsed }"
+                aria-label="Switch theme"
+                @click="themeStore.toggle"
             >
-                <Icon icon="heroicons:user-circle" class="h-4 w-4 shrink-0" />
-                <span v-if="!layoutStore.sidebarCollapsed">Profile</span>
-            </RouterLink>
+                <Icon :icon="themeStore.isDark ? 'heroicons:sun' : 'heroicons:moon'" class="h-[15px] w-[15px]" />
+            </button>
+
+            <UserProfilePopover
+                ref="profilePopover"
+                :name="authStore.user?.name ?? ''"
+                :email="authStore.user?.email ?? ''"
+                @logout="handleLogout"
+            />
         </div>
     </aside>
 </template>

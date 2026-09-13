@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { onKeyStroke } from '@vueuse/core'
 import { useIsFetching } from '@tanstack/vue-query'
 import ProgressBar from 'primevue/progressbar'
 import AppHeader from '../header/AppHeader.vue'
@@ -14,6 +15,17 @@ const loadingStore = useLoadingStateStore()
 
 const isFetching = useIsFetching()
 const showProgressBar = computed(() => isFetching.value > 0 || loadingStore.progressLoading)
+
+function isEditableTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false
+    return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+}
+
+onKeyStroke('\\', (event) => {
+    if (!(event.metaKey || event.ctrlKey) || isEditableTarget(event.target)) return
+    event.preventDefault()
+    store.toggleSidebar()
+})
 
 const navItems: SidebarNavItem[] = [
     { key: 'home', label: 'Home', icon: 'heroicons:home', routeName: 'home', activeWhen: '/' },
@@ -40,11 +52,11 @@ const navItems: SidebarNavItem[] = [
         <AppLeftNavigationSidebar :items="navItems" />
 
         <div class="bg-page relative flex flex-1 flex-col overflow-hidden">
-            <AppHeader :title="store.pageTitle" :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
+            <AppHeader :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
             <ProgressBar
                 v-show="showProgressBar"
                 mode="indeterminate"
-                class="left-0 right-0 top-14 !h-0.5 !absolute z-10 !rounded-none !border-none"
+                class="left-0 right-0 top-11 !h-0.5 !absolute z-10 !rounded-none !border-none"
             />
             <slot />
             <LoadingOverlay
