@@ -99,29 +99,6 @@ const router = createRouter({
             name: 'task-details',
             component: () => import('@/pages/tasks/details/TaskDetailsPage.vue'),
             meta: { requiresAuth: true, layout: 'default', title: 'Task' },
-            redirect: (to) => ({ name: 'task-details.description', params: to.params }),
-            children: [
-                {
-                    path: 'details',
-                    name: 'task-details.details',
-                    component: () => import('@/pages/tasks/details/tabs/TaskOverviewPage.vue'),
-                },
-                {
-                    path: 'description',
-                    name: 'task-details.description',
-                    component: () => import('@/pages/tasks/details/tabs/TaskDescriptionPage.vue'),
-                },
-                {
-                    path: 'comments',
-                    name: 'task-details.comments',
-                    component: () => import('@/pages/tasks/details/tabs/TaskCommentsPage.vue'),
-                },
-                {
-                    path: 'attachments',
-                    name: 'task-details.attachments',
-                    component: () => import('@/pages/tasks/details/tabs/TaskAttachmentsPage.vue'),
-                },
-            ],
         },
         {
             path: '/projects/:id/edit',

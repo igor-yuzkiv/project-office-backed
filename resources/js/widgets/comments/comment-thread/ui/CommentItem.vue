@@ -37,8 +37,16 @@ function handleDelete() {
 
         <div class="gap-2 min-w-0 flex flex-1 flex-col">
             <div class="gap-4 flex items-center justify-between">
-                <span class="text-sm font-semibold text-surface-900 dark:text-surface-0">
-                    {{ comment.author.name }}
+                <span class="gap-2 min-w-0 flex items-baseline">
+                    <span class="text-sm font-semibold text-surface-900 dark:text-surface-0 truncate">
+                        {{ comment.author.name }}
+                    </span>
+                    <span
+                        v-if="comment.kind === 'checkpoint'"
+                        class="bg-code-bg text-ink-2 text-xs shrink-0 rounded-[4px] px-[7px] py-px"
+                    >
+                        Checkpoint
+                    </span>
                 </span>
                 <div class="gap-1 flex shrink-0 items-center">
                     <DisplayDate :date="comment.created_at" class="text-xs text-surface-400 dark:text-surface-500" />
