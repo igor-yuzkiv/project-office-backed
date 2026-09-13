@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
-import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
+import Menu from 'primevue/menu'
+import type { MenuItem } from 'primevue/menuitem'
 import Skeleton from 'primevue/skeleton'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
@@ -13,11 +14,15 @@ import { useProjectDocumentQuery } from '@/entities/project-document'
 import { ProjectDocumentUpsertDialog } from '@/widgets/project-documents/upsert-dialog'
 import { ProjectDocumentMoveDialog, useProjectDocumentMove } from '@/widgets/project-documents/move-dialog'
 import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-documents/documentation-tree'
+import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { SidePanel } from '@/shared/components/side-panel'
+import { IconButton } from '@/shared/components/button'
 import { CopyableKey } from '@/shared/components/display'
+import { PageHead } from '@/shared/components/page-head'
 import { useCollapsibleSidePanel } from '@/shared/composables'
+import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 
 const router = useRouter()
 const layoutStore = useAppLayoutStore()
@@ -57,6 +62,7 @@ const treePanelProps = computed(() => ({
     isPending: tree.isPending.value,
     isError: tree.isError.value,
     selectedDocumentId: documentId.value || null,
+    projectName: project.value?.name,
 }))
 
 const treePanelHandlers = {
@@ -76,6 +82,18 @@ function removeDocument() {
     const document = openedDocument.value
 
     if (document) tree.deleteDocument(document)
+}
+
+const moreMenu = ref<InstanceType<typeof Menu>>()
+
+const moreMenuItems = computed<MenuItem[]>(() => [
+    { label: 'Move', icon: 'pi pi-arrow-right-arrow-left', command: () => moveDialog.open() },
+    { separator: true },
+    { label: 'Delete', icon: 'pi pi-trash', command: removeDocument },
+])
+
+function openMoreMenu(event: MouseEvent) {
+    moreMenu.value?.toggle(event)
 }
 
 const tabs = computed(() => [
@@ -149,104 +167,103 @@ watch(
 </script>
 
 <template>
-    <div class="gap-2 p-2 flex flex-1 overflow-hidden">
-        <div
-            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded-xl flex flex-1 overflow-hidden border"
+    <div class="flex flex-1 overflow-hidden">
+        <SidePanel
+            :panel="treePanel"
+            side="left"
+            width="288px"
+            icon="heroicons:bars-3"
+            show-label="Show the document list"
         >
-            <SidePanel
-                :panel="treePanel"
-                side="left"
-                width="25rem"
-                icon="heroicons:bars-3"
-                show-label="Show the document list"
+            <template #default="{ collapse }">
+                <DocumentationTreePanel v-bind="treePanelProps" v-on="{ ...treePanelHandlers, collapse }" />
+            </template>
+        </SidePanel>
+
+        <div class="bg-page min-w-0 flex flex-1 flex-col overflow-hidden">
+            <RouterView v-if="!documentId" @create-document="tree.createRootDocument" />
+
+            <div
+                v-else-if="documentFromAnotherProject"
+                class="gap-3 p-10 flex flex-1 flex-col items-center justify-center"
             >
-                <template #default="{ collapse }">
-                    <DocumentationTreePanel v-bind="treePanelProps" v-on="{ ...treePanelHandlers, collapse }" />
-                </template>
-            </SidePanel>
+                <p class="type-meta max-w-sm text-center">
+                    Document not found — it was deleted or moved to another project.
+                </p>
+                <Button
+                    label="Back to documentation root"
+                    size="small"
+                    severity="secondary"
+                    @click="openDocumentationRoot"
+                />
+            </div>
 
-            <div class="min-w-0 flex flex-1 flex-col overflow-hidden">
-                <RouterView v-if="!documentId" @create-document="tree.createRootDocument" />
+            <div v-else-if="isError" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
+                <p class="type-meta max-w-sm text-center">Could not load the document.</p>
+                <Button label="Try again" size="small" severity="secondary" @click="refetch()" />
+            </div>
 
-                <div
-                    v-else-if="documentFromAnotherProject"
-                    class="gap-3 p-10 flex flex-1 flex-col items-center justify-center"
-                >
-                    <Icon icon="heroicons:document-magnifying-glass" class="text-surface-300 text-4xl" />
-                    <p class="text-surface-700 dark:text-surface-200 text-base font-medium">Document not found</p>
-                    <p class="text-surface-500 max-w-sm text-sm text-center">
-                        It was deleted or moved to another project. Pick another document on the left, or go back to the
-                        documentation root.
-                    </p>
-                    <Button
-                        label="Back to documentation root"
-                        size="small"
-                        severity="secondary"
-                        @click="openDocumentationRoot"
-                    />
-                </div>
+            <div v-else-if="!openedDocument && isFetching" class="gap-3 px-6 pt-5 flex flex-col">
+                <Skeleton height="1rem" width="12rem" />
+                <Skeleton height="1.75rem" width="24rem" />
+                <Skeleton v-for="n in 5" :key="n" height="1rem" />
+            </div>
 
-                <div v-else-if="isError" class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
-                    <Icon icon="heroicons:exclamation-triangle" class="text-2xl text-red-500" />
-                    <p class="text-surface-700 dark:text-surface-200 text-base font-medium">
-                        Could not load the document
-                    </p>
-                    <p class="text-surface-500 max-w-sm text-sm text-center">
-                        Check your connection and try again. The document tree stays available.
-                    </p>
-                    <Button label="Try again" size="small" severity="secondary" @click="refetch()" />
-                </div>
-
-                <div v-else-if="!openedDocument && isFetching" class="gap-3 p-8 flex flex-col">
-                    <Skeleton height="2rem" width="20rem" />
-                    <Skeleton v-for="n in 6" :key="n" height="1rem" />
-                </div>
-
-                <template v-else-if="openedDocument">
-                    <div class="gap-2 px-4 pt-2 flex items-center" style="min-height: 2.75rem">
-                        <div class="gap-2 min-w-0 flex items-baseline">
+            <template v-else-if="openedDocument">
+                <div class="px-6 pt-5">
+                    <PageHead :title="openedDocument.title" mode="document">
+                        <template #key>
                             <CopyableKey :value="openedDocument.key" size="md" />
-                            <h1 class="text-surface-900 dark:text-surface-0 text-xl font-semibold truncate">
-                                {{ openedDocument.title }}
-                            </h1>
-                        </div>
+                            <template v-if="openedDocument.version">
+                                <span class="text-ink-3 mx-2">·</span>
+                                <span>v{{ openedDocument.version.version_number }}</span>
+                            </template>
+                            <span class="text-ink-3 mx-2">·</span>
+                            <ProjectDocumentStatusTag :status="openedDocument.status" />
+                        </template>
+                        <template v-if="openedDocument.updated_by" #meta>
+                            <template v-if="openedDocument.version">
+                                v{{ openedDocument.version.version_number }} ·
+                            </template>
+                            edited {{ formatRelativeTime(openedDocument.updated_at) }} by
+                            {{ openedDocument.updated_by.name }}
+                        </template>
+                        <template #actions>
+                            <Button
+                                label="Edit"
+                                icon="pi pi-pencil"
+                                size="small"
+                                severity="secondary"
+                                outlined
+                                @click="editDocument"
+                            />
+                            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
+                        </template>
+                    </PageHead>
 
-                        <div class="gap-1 ml-auto flex shrink-0 items-center">
-                            <Button label="Edit" size="small" text severity="secondary" @click="editDocument">
-                                <template #icon><Icon icon="heroicons:pencil" class="mr-1 text-base" /></template>
-                            </Button>
-
-                            <Button label="Move" size="small" text severity="secondary" @click="moveDialog.open">
-                                <template #icon
-                                    ><Icon icon="heroicons:arrows-right-left" class="mr-1 text-base"
-                                /></template>
-                            </Button>
-
-                            <Button label="Delete" size="small" text severity="secondary" @click="removeDocument">
-                                <template #icon><Icon icon="heroicons:trash" class="mr-1 text-base" /></template>
-                            </Button>
-                        </div>
-                    </div>
-
-                    <Tabs :value="activeTab" @update:value="openTab(String($event))">
+                    <Tabs :value="activeTab" class="mt-3" @update:value="openTab(String($event))">
                         <TabList>
-                            <Tab v-for="tab in tabs" :key="tab.value" :value="tab.value" class="px-4 py-2">
+                            <Tab v-for="tab in tabs" :key="tab.value" :value="tab.value" class="px-2.5 py-2">
                                 {{ tab.label }}
-                                <span v-if="tab.count" class="text-surface-400 ml-1 text-xs">{{ tab.count }}</span>
+                                <span v-if="tab.count !== undefined" class="type-meta-3 ml-1 tabular-nums">
+                                    {{ tab.count }}
+                                </span>
                             </Tab>
                         </TabList>
                     </Tabs>
+                </div>
 
-                    <!-- Each tab scrolls itself: the annotation sheet keeps its own canvas and its
-                         sidebar has to reach full height. -->
-                    <div class="min-h-0 flex flex-1 flex-col overflow-hidden">
-                        <RouterView v-slot="{ Component }">
-                            <component :is="Component" :document="openedDocument" />
-                        </RouterView>
-                    </div>
-                </template>
-            </div>
+                <!-- Each tab scrolls itself: the annotation sheet keeps its own canvas and its
+                     sidebar has to reach full height. -->
+                <div class="min-h-0 flex flex-1 flex-col overflow-hidden">
+                    <RouterView v-slot="{ Component }">
+                        <component :is="Component" :document="openedDocument" />
+                    </RouterView>
+                </div>
+            </template>
         </div>
+
+        <Menu ref="moreMenu" :model="moreMenuItems" popup />
 
         <ProjectDocumentMoveDialog
             v-if="openedDocument"

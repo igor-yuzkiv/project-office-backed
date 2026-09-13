@@ -5,7 +5,11 @@ import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import Skeleton from 'primevue/skeleton'
 import type { MenuItem } from 'primevue/menuitem'
+import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
 import type { ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
+import { ProjectDocumentStatusMap } from '@/entities/project-document/config'
+import { IconButton } from '@/shared/components/button'
+import { pickStatusColors, STATUS_COLORS_FALLBACK } from '@/shared/components/status-pill'
 import type { DocumentationTreeRow } from '../composables/use.documentation-tree'
 
 // State is owned by the page, which survives the remounts this panel goes through
@@ -15,6 +19,7 @@ const props = defineProps<{
     isPending: boolean
     isError: boolean
     selectedDocumentId?: string | null
+    projectName?: string
 }>()
 
 const emit = defineEmits<{
@@ -28,6 +33,8 @@ const emit = defineEmits<{
     (e: 'delete', document: ProjectDocumentTreeNodeDto): void
     (e: 'retry'): void
 }>()
+
+const theme = useAppThemeStore()
 
 const isEmpty = computed(() => props.rows.length === 0)
 
@@ -54,6 +61,11 @@ const menuItems = computed<MenuItem[]>(() => {
     ]
 })
 
+function dotColor(document: ProjectDocumentTreeNodeDto): string {
+    return pickStatusColors(ProjectDocumentStatusMap[document.status]?.colors ?? STATUS_COLORS_FALLBACK, theme.isDark)
+        .fg
+}
+
 function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
     menuDocument.value = document
     nodeMenu.value?.toggle(event)
@@ -61,120 +73,92 @@ function openNodeMenu(event: MouseEvent, document: ProjectDocumentTreeNodeDto) {
 </script>
 
 <template>
-    <section class="flex h-full flex-col overflow-hidden">
-        <!-- Same height as the document toolbar across the way, so the two rows line up. -->
-        <header class="gap-1 px-3 py-1.5 flex items-center" style="min-height: 2.75rem">
-            <Button
-                severity="secondary"
-                text
-                rounded
-                size="small"
-                class="shrink-0"
+    <section class="bg-canvas flex h-full flex-col overflow-hidden">
+        <header class="gap-1 px-2 pt-3 pb-1 flex items-center">
+            <IconButton
+                icon="heroicons:bars-3-bottom-left"
                 aria-label="Hide the document list"
                 title="Hide the document list"
                 @click="emit('collapse')"
-            >
-                <template #icon>
-                    <Icon icon="heroicons:bars-3-bottom-left" class="text-base" />
-                </template>
-            </Button>
+            />
 
-            <h2 class="text-surface-600 dark:text-surface-300 text-xs font-semibold tracking-wide uppercase">
-                Documents
-            </h2>
+            <h2 class="type-meta min-w-0 font-medium flex-1 truncate">{{ projectName ?? 'Project' }} docs</h2>
 
-            <Button
+            <IconButton
                 v-if="!isPending && !isError && !isEmpty"
-                severity="secondary"
-                text
-                rounded
-                size="small"
-                class="ml-auto"
+                icon="heroicons:bars-arrow-down"
                 aria-label="Expand all"
                 title="Expand all"
                 @click="emit('expand-all')"
-            >
-                <template #icon>
-                    <Icon icon="heroicons:bars-arrow-down" class="text-base" />
-                </template>
-            </Button>
+            />
+            <IconButton
+                icon="heroicons:plus"
+                aria-label="New document"
+                title="New document"
+                @click="emit('create-root')"
+            />
         </header>
 
-        <div v-if="isPending" class="gap-2 p-3 flex flex-col">
+        <div v-if="isPending" class="gap-2 p-2 flex flex-col">
             <Skeleton v-for="n in 6" :key="n" height="1.5rem" />
         </div>
 
-        <div v-else-if="isError" class="gap-3 p-6 flex flex-col items-center text-center">
-            <Icon icon="heroicons:exclamation-triangle" class="text-2xl text-red-500" />
-            <p class="text-surface-500 text-sm">Could not load the document tree.</p>
+        <div v-else-if="isError" class="gap-2 px-4 py-6 flex flex-col items-center text-center">
+            <p class="type-meta">Could not load the document tree.</p>
             <Button label="Try again" size="small" severity="secondary" @click="emit('retry')" />
         </div>
 
-        <div v-else-if="isEmpty" class="gap-3 p-6 flex flex-col items-center text-center">
-            <Icon icon="heroicons:document-plus" class="text-surface-300 text-3xl" />
-            <p class="text-surface-700 dark:text-surface-200 text-sm font-medium">No documents yet</p>
-            <p class="text-surface-500 text-xs">Create the first document — it becomes a tree root.</p>
-            <Button label="Create document" size="small" @click="emit('create-root')" />
+        <div v-else-if="isEmpty" class="gap-2 px-4 py-6 flex flex-col items-center text-center">
+            <p class="type-meta">No documents yet.</p>
+            <Button label="New document" size="small" @click="emit('create-root')" />
         </div>
 
-        <div v-else class="p-2 flex-1 overflow-auto">
+        <div v-else class="px-2 pb-3 flex-1 overflow-auto">
             <template v-for="row in rows" :key="row.key">
                 <div
                     v-if="row.kind === 'node'"
-                    class="group hover:bg-surface-100 dark:hover:bg-surface-800 gap-1 pr-1 rounded-md flex items-center"
-                    :class="{
-                        'bg-primary-50 dark:bg-primary-900/30': row.document.id === props.selectedDocumentId,
-                    }"
-                    :style="{ paddingLeft: `${row.depth * 0.75}rem` }"
+                    class="group hover:bg-hover text-ink gap-1 pr-1 rounded flex min-h-[26px] items-center text-[13.5px] transition-colors"
+                    :class="{ 'bg-hover font-medium': row.document.id === props.selectedDocumentId }"
+                    :style="{ paddingLeft: `${row.depth}rem` }"
                 >
                     <button
                         v-if="row.document.has_children"
                         type="button"
-                        class="text-surface-400 hover:text-surface-600 p-1 shrink-0"
+                        class="text-ink-3 hover:text-ink p-1 shrink-0"
                         :aria-label="row.isExpanded ? 'Collapse' : 'Expand'"
                         @click="emit('toggle-node', row.document)"
                     >
                         <Icon
                             :icon="row.isExpanded ? 'heroicons:chevron-down' : 'heroicons:chevron-right'"
-                            class="text-sm"
+                            class="h-3 w-3"
                         />
                     </button>
-                    <span v-else class="w-6 shrink-0" />
+                    <span v-else class="w-5 shrink-0" />
 
                     <button
                         type="button"
-                        class="gap-2 py-1.5 min-w-0 text-sm flex flex-1 items-center text-left"
-                        :class="
-                            row.document.id === props.selectedDocumentId
-                                ? 'text-primary-700 dark:text-primary-300 font-medium'
-                                : 'text-surface-700 dark:text-surface-200'
-                        "
+                        class="gap-2 py-1 pr-1 min-w-0 flex flex-1 items-center text-left"
                         :title="row.document.title"
+                        :aria-current="row.document.id === props.selectedDocumentId ? 'page' : undefined"
                         @click="emit('select', row.document.id)"
                     >
-                        <Icon
-                            :icon="row.document.has_children ? 'heroicons:folder' : 'heroicons:document-text'"
-                            class="text-surface-400 text-base shrink-0"
-                        />
                         <span class="truncate">{{ row.document.title }}</span>
+                        <span
+                            class="size-1.5 ml-auto shrink-0 rounded-full"
+                            :title="ProjectDocumentStatusMap[row.document.status]?.label"
+                            :style="{ backgroundColor: dotColor(row.document) }"
+                        />
                     </button>
 
-                    <Button
-                        severity="secondary"
-                        text
-                        rounded
-                        size="small"
-                        class="opacity-0 group-hover:opacity-100"
+                    <IconButton
+                        icon="heroicons:ellipsis-horizontal"
+                        class="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                         :aria-label="`Actions for ${row.document.title}`"
                         @click="openNodeMenu($event, row.document)"
-                    >
-                        <template #icon>
-                            <Icon icon="heroicons:ellipsis-horizontal" class="text-base" />
-                        </template>
-                    </Button>
+                    />
                 </div>
 
-                <div v-else class="py-1" :style="{ paddingLeft: `${row.depth * 0.75 + 1.5}rem` }">
+                <div v-else class="py-0.5" :style="{ paddingLeft: `${row.depth + 1.25}rem` }">
                     <Button
                         text
                         size="small"

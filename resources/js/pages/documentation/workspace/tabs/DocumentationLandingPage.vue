@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParams } from '@vueuse/router'
-import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import { useProjectDocumentsSearchQuery } from '@/entities/project-document/queries'
 import type { FilterPayloadItem } from '@/shared/filters'
-import { DisplayDate } from '@/shared/components/display'
+import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 
 const RECENT_DOCUMENTS_COUNT = 5
 
@@ -36,24 +35,16 @@ const { projectDocuments: recentDocuments } = useProjectDocumentsSearchQuery(sea
 </script>
 
 <template>
-    <div class="gap-6 p-10 flex flex-1 flex-col items-center justify-center">
-        <Icon icon="heroicons:book-open" class="text-surface-200 dark:text-surface-800 text-8xl" />
-
-        <div class="gap-1.5 flex flex-col items-center text-center">
-            <p class="text-surface-700 dark:text-surface-200 text-lg font-medium">Project documentation</p>
-            <p class="text-surface-500 max-w-sm text-sm">
-                Pick a document in the tree on the left to read it here, or start a new one.
-            </p>
+    <div class="gap-6 px-6 py-10 flex flex-1 flex-col items-center justify-center">
+        <div class="gap-1 flex flex-col items-center text-center">
+            <p class="type-section">Project documentation</p>
+            <p class="type-meta">Pick a document in the tree, or start a new one.</p>
         </div>
 
-        <Button label="New document" size="small" @click="emit('create-document')">
-            <template #icon>
-                <Icon icon="material-symbols:add" class="text-base" />
-            </template>
-        </Button>
+        <Button label="New document" size="small" @click="emit('create-document')" />
 
-        <div v-if="recentDocuments.length" class="gap-2 max-w-md flex w-full flex-col">
-            <p class="text-surface-400 text-xs font-semibold tracking-wide uppercase">Recently updated</p>
+        <div v-if="recentDocuments.length" class="max-w-md flex w-full flex-col">
+            <p class="type-meta pb-1 font-medium">Recently updated</p>
 
             <RouterLink
                 v-for="document in recentDocuments"
@@ -62,11 +53,11 @@ const { projectDocuments: recentDocuments } = useProjectDocumentsSearchQuery(sea
                     name: 'project-documentation.document',
                     params: { projectId, documentId: document.id },
                 }"
-                class="hover:bg-surface-100 dark:hover:bg-surface-800 gap-3 px-2 py-1.5 rounded-md flex items-baseline"
+                class="hairline hover:bg-hover text-ink gap-3 px-2 py-1.5 flex items-baseline text-[13.5px] transition-colors"
             >
-                <span class="text-surface-700 dark:text-surface-200 text-sm truncate">{{ document.title }}</span>
-                <span class="text-surface-400 text-xs ml-auto shrink-0">
-                    <DisplayDate :date="document.updated_at" />
+                <span class="truncate">{{ document.title }}</span>
+                <span class="type-meta-3 ml-auto shrink-0 whitespace-nowrap">
+                    {{ formatRelativeTime(document.updated_at) }}
                 </span>
             </RouterLink>
         </div>
