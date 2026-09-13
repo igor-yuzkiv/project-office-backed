@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { MarkdownEditor } from '@/shared/components/md-editor'
-import { InputContainer } from '@/shared/components/input'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import Button from 'primevue/button'
 import { taskListStatusOptions, TaskListAttachmentRoles } from '@/entities/task-list/config'
 import { uploadTaskListAttachmentRequest } from '@/entities/task-list/api'
 import { useTaskListQuery } from '@/entities/task-list/queries'
@@ -15,10 +15,11 @@ import { ApiError } from '@/shared/api/api.error'
 import type { LaravelValidationErrors } from '@/shared/types'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
-import { useHeaderActions, useBreadcrumbs } from '@/app/shell'
+import { useBreadcrumbs } from '@/app/shell'
+import { CopyableKey, PropertiesGrid } from '@/shared/components/display'
 import { TagList } from '@/widgets/tags/metadata'
 import { ManageRecordTagsDialog } from '@/widgets/tags/manage-dialog'
-import { IconButton } from '@/shared/components/button'
+import { TaskListStatusTag } from '@/widgets/task-list/metadata'
 
 interface TaskListEditFormData {
     name: string
@@ -33,7 +34,7 @@ const layoutStore = useAppLayoutStore()
 const toast = useToast()
 const taskListId = route.params.id as string
 const { taskList, isError } = useTaskListQuery(taskListId)
-const { mutate: updateTaskList } = useUpdateTaskListMutation()
+const { mutate: updateTaskList, isPending: isSaving } = useUpdateTaskListMutation()
 
 const formData = ref<TaskListEditFormData>({
     name: '',
@@ -41,9 +42,30 @@ const formData = ref<TaskListEditFormData>({
     status: 'open',
     tags: [],
 })
-const isFormInitialized = ref(false)
+const savedSnapshot = ref<string | null>(null)
 const validationErrors = ref<LaravelValidationErrors>({})
 const showManageTagsDialog = ref(false)
+
+const isDirty = computed(() => savedSnapshot.value !== null && snapshot(formData.value) !== savedSnapshot.value)
+
+// The title reads as a heading, not a field: no chrome until it is focused.
+const titleInputPt = {
+    root: {
+        class: [
+            '!type-title text-ink placeholder:text-ink-3 mt-1.5 mb-3 w-full !rounded-none !border-0 !bg-transparent !px-0 !py-1 !shadow-none',
+            'focus:!shadow-[inset_0_-2px_0_var(--color-accent)]',
+        ].join(' '),
+    },
+}
+
+function snapshot(data: TaskListEditFormData): string {
+    return JSON.stringify({
+        name: data.name,
+        description: data.description,
+        status: data.status,
+        tagIds: data.tags.map((tag) => tag.id).sort(),
+    })
+}
 
 function handleError(error: unknown) {
     if (error instanceof ApiError && error.isValidationError) {
@@ -96,27 +118,22 @@ watch(isError, (error) => {
 watch(
     taskList,
     (list) => {
-        if (list && !isFormInitialized.value) {
+        if (list && savedSnapshot.value === null) {
             formData.value = {
                 name: list.name,
                 description: list.description ?? '',
                 status: list.status,
                 tags: list.tags ?? [],
             }
-            isFormInitialized.value = true
+            savedSnapshot.value = snapshot(formData.value)
             layoutStore.setPageTitle(`${list.key} | ${list.name}`)
         }
     },
     { immediate: true }
 )
 
-useHeaderActions([
-    { key: 'save-task-list', title: 'Save', action: submit, is_primary: true },
-    { key: 'cancel-task-list', title: 'Cancel', action: navigateBack },
-])
-
 useBreadcrumbs(() => [
-    { label: 'Task Lists', to: { name: 'task-lists' } },
+    { label: 'Task lists', to: { name: 'task-lists' } },
     ...(taskList.value?.project
         ? [
               {
@@ -126,7 +143,7 @@ useBreadcrumbs(() => [
           ]
         : []),
     {
-        label: taskList.value?.key ?? 'Task List',
+        label: taskList.value?.key ?? 'Task list',
         to: { name: 'task-list-details', params: { id: taskListId } },
     },
     { label: 'Edit' },
@@ -134,49 +151,92 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div v-if="taskList" class="p-2 flex flex-1 flex-col overflow-hidden">
-        <div class="p-3 gap-3 flex flex-col">
-            <div class="md:grid-cols-2 gap-3 grid grid-cols-1">
-                <InputContainer label="Name" :error="validationErrors.name" required>
-                    <InputText
-                        v-model="formData.name"
-                        placeholder="Task list name..."
-                        :invalid="!!validationErrors.name"
-                    />
-                </InputContainer>
+    <div v-if="taskList" class="min-h-0 flex-1 overflow-auto">
+        <form class="px-10 pt-11 max-md:px-4 max-md:pt-6 mx-auto max-w-[760px]" @submit.prevent="submit">
+            <div class="type-meta gap-1 flex items-center">
+                <CopyableKey :value="taskList.key" />
+                <span class="text-ink-3">· editing</span>
+            </div>
 
-                <InputContainer label="Status" :error="validationErrors.status">
+            <InputText
+                v-model="formData.name"
+                placeholder="Task list name"
+                aria-label="Task list name"
+                :invalid="!!validationErrors.name"
+                :pt="titleInputPt"
+            />
+            <p v-if="validationErrors.name" class="text-red-500 -mt-2 mb-3 text-[12.5px]">
+                {{ validationErrors.name }}
+            </p>
+
+            <PropertiesGrid>
+                <span>Project</span>
+                <div>
+                    <span v-if="taskList.project" class="text-ink-2 gap-1.5 inline-flex items-center text-[13px]">
+                        <span
+                            class="bg-code-bg h-5 w-5 font-semibold grid shrink-0 place-items-center rounded-[5px] text-[10.5px] tracking-[0.02em]"
+                        >
+                            {{ taskList.project.prefix }}
+                        </span>
+                        {{ taskList.project.name }}
+                    </span>
+                    <span class="type-meta-3">A task list stays in its project.</span>
+                </div>
+
+                <span>Status</span>
+                <div>
                     <Select
                         v-model="formData.status"
                         :options="taskListStatusOptions()"
                         option-label="label"
                         option-value="value"
+                        size="small"
+                        class="min-w-[180px]"
                         :invalid="!!validationErrors.status"
-                    />
-                </InputContainer>
-            </div>
+                    >
+                        <template #value="{ value }">
+                            <TaskListStatusTag :status="value" />
+                        </template>
+                        <template #option="{ option }">
+                            <TaskListStatusTag :status="option.value" />
+                        </template>
+                    </Select>
+                    <span v-if="validationErrors.status" class="text-red-500 basis-full text-[12.5px]">
+                        {{ validationErrors.status }}
+                    </span>
+                </div>
 
-            <InputContainer label="Tags" :error="validationErrors.tag_ids">
-                <div class="gap-2 p-1 flex items-center">
-                    <IconButton
-                        size="medium"
-                        severity="success"
-                        icon="mdi:tag-edit"
+                <span>Tags</span>
+                <div>
+                    <TagList :tags="formData.tags" inline />
+                    <Button
+                        label="Manage tags"
+                        size="small"
+                        severity="secondary"
+                        outlined
+                        type="button"
                         @click="showManageTagsDialog = true"
                     />
-                    <TagList :tags="formData.tags" />
+                    <span v-if="validationErrors.tag_ids" class="text-red-500 basis-full text-[12.5px]">
+                        {{ validationErrors.tag_ids }}
+                    </span>
                 </div>
-            </InputContainer>
-        </div>
+            </PropertiesGrid>
 
-        <div class="flex-1 overflow-auto">
-            <MarkdownEditor
-                v-model="formData.description"
-                preview
-                style="height: 100%"
-                :handle-image-upload="handleImageUpload"
-            />
-        </div>
+            <hr class="border-line mt-5 mb-7" />
+
+            <h2 class="type-section mb-2.5">Description</h2>
+            <MarkdownEditor v-model="formData.description" preview :handle-image-upload="handleImageUpload" />
+            <p v-if="validationErrors.description" class="text-red-500 mt-1 text-[12.5px]">
+                {{ validationErrors.description }}
+            </p>
+
+            <div class="bg-page border-line gap-2 py-3 mt-7 bottom-0 sticky flex items-center border-t">
+                <Button label="Save changes" size="small" type="submit" :loading="isSaving" />
+                <Button label="Cancel" size="small" severity="secondary" outlined type="button" @click="navigateBack" />
+                <span v-if="isDirty" class="type-meta-3 ml-auto">Unsaved changes</span>
+            </div>
+        </form>
 
         <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />
     </div>
