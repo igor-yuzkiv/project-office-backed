@@ -37,7 +37,7 @@ function counters(project: ProjectOverviewDto) {
             to: { name: 'project-documentation', params: { projectId: project.id } },
         },
         {
-            label: 'Task Lists',
+            label: 'Task lists',
             icon: 'tabler:list-details',
             count: project.task_lists_count ?? 0,
             to: { name: 'project-details.task-lists', params: { id: project.id } },

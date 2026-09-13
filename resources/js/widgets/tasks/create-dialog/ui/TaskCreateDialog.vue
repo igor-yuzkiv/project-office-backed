@@ -64,7 +64,7 @@ const taskListCreateDialog = useTaskListCreateDialog({
                 />
             </InputContainer>
 
-            <InputContainer v-if="formData.project" label="Task List" :error="validationErrors.task_list_id">
+            <InputContainer v-if="formData.project" label="Task list" :error="validationErrors.task_list_id">
                 <div class="gap-2 flex items-center">
                     <TaskListLookupField
                         :model-value="formData.taskList"

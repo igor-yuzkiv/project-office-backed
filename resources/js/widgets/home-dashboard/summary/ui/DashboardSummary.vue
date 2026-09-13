@@ -40,7 +40,7 @@ const banners = computed<SummaryBanner[]>(() => {
         {
             ...resolveSummaryBanner('task_lists'),
             key: 'task_lists',
-            label: 'Task Lists',
+            label: 'Task lists',
             count: props.summary.task_lists_count,
             to: { name: 'task-lists' },
         },

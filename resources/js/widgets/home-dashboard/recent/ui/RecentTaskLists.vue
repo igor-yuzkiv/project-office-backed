@@ -44,7 +44,7 @@ function openTaskList(taskList: DashboardTaskListDto) {
 
 <template>
     <DataPanel
-        title="Recent Task Lists"
+        title="Recent task lists"
         :state="state"
         empty-message="No recent task lists"
         error-message="Could not load recent task lists."

@@ -44,7 +44,7 @@ function openTask(task: TaskOverviewDto) {
 
 <template>
     <DataPanel
-        title="Recent Tasks"
+        title="Recent tasks"
         :state="state"
         empty-message="No recent tasks"
         error-message="Could not load recent tasks."

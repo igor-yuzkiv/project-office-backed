@@ -104,19 +104,19 @@ const router = createRouter({
             path: '/projects/:id/edit',
             name: 'project-edit',
             component: () => import('@/pages/projects/edit/ProjectEditPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Edit Project' },
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit project' },
         },
         {
             path: '/tasks/:id/edit',
             name: 'task-edit',
             component: () => import('@/pages/tasks/edit/TaskEditPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Edit Task' },
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit task' },
         },
         {
             path: '/task-lists',
             name: 'task-lists',
             component: () => import('@/pages/task-lists/list/TaskListsPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Task Lists' },
+            meta: { requiresAuth: true, layout: 'default', title: 'Task lists' },
         },
         {
             path: '/activity',
@@ -128,13 +128,13 @@ const router = createRouter({
             path: '/task-lists/:id/edit',
             name: 'task-list-edit',
             component: () => import('@/pages/task-lists/edit/TaskListEditPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Edit Task List' },
+            meta: { requiresAuth: true, layout: 'default', title: 'Edit task list' },
         },
         {
             path: '/task-lists/:id',
             name: 'task-list-details',
             component: () => import('@/pages/task-lists/details/TaskListDetailsPage.vue'),
-            meta: { requiresAuth: true, layout: 'default', title: 'Task List' },
+            meta: { requiresAuth: true, layout: 'default', title: 'Task list' },
         },
         {
             // Not a page: it resolves a document to its project and hands it to the
