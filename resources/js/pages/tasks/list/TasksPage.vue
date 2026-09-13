@@ -2,7 +2,6 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import { useTaskSearch } from '@/entities/task/composables'
 import { useBulkUpdateTaskStatusMutation, useDeleteTaskMutation } from '@/entities/task/mutations'
 import type { TaskOverviewDto, TaskStatusValue } from '@/entities/task/types'
@@ -15,7 +14,7 @@ import { IconButton } from '@/shared/components/button'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskBulkActionsBar } from '@/widgets/tasks/bulk-actions'
-import { useToast } from '@/shared/composables'
+import { useRowMenu, useToast } from '@/shared/composables'
 import { useBreadcrumbs } from '@/app/shell'
 import { taskSortFieldDefs } from '@/entities/task/config'
 
@@ -50,27 +49,18 @@ function applyBulkStatus(status: TaskStatusValue) {
     )
 }
 
-const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedTask = ref<TaskOverviewDto>()
-
-const rowMenuItems: MenuItem[] = [
+const { items: rowMenuItems, open: openRowMenu } = useRowMenu<TaskOverviewDto>((task) => [
     {
         label: 'Edit',
         icon: 'pi pi-pencil',
-        command: () => router.push({ name: 'task-edit', params: { id: selectedTask.value!.id } }),
+        command: () => router.push({ name: 'task-edit', params: { id: task.id } }),
     },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () =>
-            deleteTask(selectedTask.value!.id, `Are you sure you want to delete "${selectedTask.value!.name}"?`),
+        command: () => deleteTask(task.id, `Are you sure you want to delete "${task.name}"?`),
     },
-]
-
-function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
-    selectedTask.value = task
-    rowMenu.value?.toggle(event)
-}
+])
 
 // The selection only ever covers the rows currently on screen, so anything that changes them drops it.
 watch(search.searchParams, clearSelection)

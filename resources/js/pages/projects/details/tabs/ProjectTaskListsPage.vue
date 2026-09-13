@@ -3,7 +3,6 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import { PAGE_SIZE } from '@/app/config'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
@@ -21,7 +20,7 @@ import {
 } from '@/entities/task-list/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
-import { usePersistedListState } from '@/shared/composables'
+import { usePersistedListState, useRowMenu } from '@/shared/composables'
 import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 
@@ -82,43 +81,27 @@ const createDialog = useTaskListCreateDialog()
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 const taskCreateDialog = useTaskCreateDialog()
 
-const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedTaskList = ref<ITaskList>()
-
-const rowMenuItems: MenuItem[] = [
+const { items: rowMenuItems, open: openRowMenu } = useRowMenu<ITaskList>((taskList) => [
     {
         label: 'New task',
         icon: 'pi pi-plus',
         command: () => {
-            if (project.value && selectedTaskList.value) {
-                taskCreateDialog.open(project.value, selectedTaskList.value)
+            if (project.value) {
+                taskCreateDialog.open(project.value, taskList)
             }
         },
     },
     {
         label: 'Edit',
         icon: 'pi pi-pencil',
-        command: () => {
-            if (selectedTaskList.value) {
-                router.push({ name: 'task-list-edit', params: { id: selectedTaskList.value.id } })
-            }
-        },
+        command: () => router.push({ name: 'task-list-edit', params: { id: taskList.id } }),
     },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () =>
-            deleteTaskList(
-                selectedTaskList.value!.id,
-                `Are you sure you want to delete "${selectedTaskList.value!.name}"?`
-            ),
+        command: () => deleteTaskList(taskList.id, `Are you sure you want to delete "${taskList.name}"?`),
     },
-]
-
-function openRowMenu(event: MouseEvent, taskList: ITaskList) {
-    selectedTaskList.value = taskList
-    rowMenu.value?.toggle(event)
-}
+])
 
 function openCreateDialog() {
     if (!project.value) return

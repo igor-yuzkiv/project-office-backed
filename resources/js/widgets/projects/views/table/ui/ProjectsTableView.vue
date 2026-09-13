@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { RouterLink, type RouteLocationRaw } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
@@ -9,6 +8,7 @@ import { PROJECT_COUNT_VIEWS, projectTaskCounts } from '@/entities/project/lib'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { IconButton } from '@/shared/components/button'
+import { useRowMenu } from '@/shared/composables'
 import { STATUS_COLORS, useStatusColors } from '@/shared/components/status-pill'
 import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -43,17 +43,11 @@ const openColors = useStatusColors(STATUS_COLORS.open)
 const progressColors = useStatusColors(STATUS_COLORS.progress)
 const testColors = useStatusColors(STATUS_COLORS.test)
 
-const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedProject = ref<ProjectOverviewDto>()
+const { selected: selectedProject, open: openRowMenu } = useRowMenu<ProjectOverviewDto>()
 const { items: rowMenuItems } = useProjectCardMenu(selectedProject, {
     onEdit: (project) => emit('edit', project),
     onDelete: (project) => emit('delete', project),
 })
-
-function openRowMenu(event: MouseEvent, project: ProjectOverviewDto) {
-    selectedProject.value = project
-    rowMenu.value?.toggle(event)
-}
 
 function projectRoute(project: ProjectOverviewDto): RouteLocationRaw {
     return { name: 'project-details', params: { id: project.id } }

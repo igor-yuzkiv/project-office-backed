@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, toValue, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useLocalStorage } from '@vueuse/core'
 import { useRouteParams } from '@vueuse/router'
-import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
@@ -26,6 +24,7 @@ import { PageHead } from '@/shared/components/page-head'
 import { ProgressBar } from '@/shared/components/progress-bar'
 import { STATUS_COLORS, useStatusColors } from '@/shared/components/status-pill'
 import { MarkdownPreview } from '@/shared/components/md-editor'
+import { CollapsibleSection } from '@/shared/components/section'
 import { AttachmentsDialog } from '@/widgets/attachments/attachments-dialog'
 import { CommentThread } from '@/widgets/comments/comment-thread'
 import { TagList } from '@/widgets/tags/metadata'
@@ -64,8 +63,6 @@ const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 const showAttachmentsDialog = ref(false)
 const moreMenu = ref<InstanceType<typeof Menu>>()
-const planCollapsed = useLocalStorage('app:task-list:plan-collapsed', false)
-const descriptionCollapsed = useLocalStorage('app:task-list:description-collapsed', false)
 
 const doneColors = useStatusColors(STATUS_COLORS.done)
 const inProgressColors = useStatusColors(STATUS_COLORS.progress)
@@ -154,7 +151,7 @@ useBreadcrumbs(() => [
 <template>
     <div v-if="taskList" class="min-h-0 flex-1 overflow-auto">
         <article class="page-container">
-            <PageHead :title="taskList.name" mode="document">
+            <PageHead :title="taskList.name">
                 <template #key>
                     <CopyableKey :value="taskList.key" size="md" />
                 </template>
@@ -234,50 +231,26 @@ useBreadcrumbs(() => [
 
             <hr class="border-line mt-5 mb-7" />
 
-            <h2 class="type-section gap-2 mb-2.5 flex items-baseline">
-                <button
-                    type="button"
-                    class="gap-1.5 hover:text-ink-2 inline-flex cursor-pointer items-center"
-                    :aria-expanded="!planCollapsed"
-                    aria-controls="task-list-plan"
-                    @click="planCollapsed = !planCollapsed"
-                >
-                    <Icon
-                        :icon="planCollapsed ? 'heroicons:chevron-right' : 'heroicons:chevron-down'"
-                        class="text-ink-3 text-[12px]"
-                    />
-                    Plan
-                </button>
-                <span class="type-meta-3">{{ tasks.length }} {{ tasks.length === 1 ? 'task' : 'tasks' }}</span>
-            </h2>
-            <TaskListPlan
-                v-show="!planCollapsed"
-                id="task-list-plan"
-                :tasks="tasks"
-                :is-pending="isTasksPending"
-                @add="addTasksDialog.open"
-                @create="openTaskCreateDialog"
-            />
+            <CollapsibleSection title="Plan" storage-key="app:task-list:plan-collapsed">
+                <template #aside>
+                    <span class="type-meta-3">{{ tasks.length }} {{ tasks.length === 1 ? 'task' : 'tasks' }}</span>
+                </template>
+                <TaskListPlan
+                    :tasks="tasks"
+                    :is-pending="isTasksPending"
+                    @add="addTasksDialog.open"
+                    @create="openTaskCreateDialog"
+                />
+            </CollapsibleSection>
 
-            <h2 class="type-section mt-9 mb-2.5 flex items-baseline">
-                <button
-                    type="button"
-                    class="gap-1.5 hover:text-ink-2 inline-flex cursor-pointer items-center"
-                    :aria-expanded="!descriptionCollapsed"
-                    aria-controls="task-list-description"
-                    @click="descriptionCollapsed = !descriptionCollapsed"
-                >
-                    <Icon
-                        :icon="descriptionCollapsed ? 'heroicons:chevron-right' : 'heroicons:chevron-down'"
-                        class="text-ink-3 text-[12px]"
-                    />
-                    Description
-                </button>
-            </h2>
-            <div v-show="!descriptionCollapsed" id="task-list-description">
+            <CollapsibleSection
+                title="Description"
+                storage-key="app:task-list:description-collapsed"
+                heading-class="mt-9 mb-2.5"
+            >
                 <MarkdownPreview v-if="taskList.description" :model-value="taskList.description" class="type-prose" />
                 <p v-else class="type-meta-3">No description yet.</p>
-            </div>
+            </CollapsibleSection>
 
             <h2 class="type-section gap-2 mt-12 mb-2 flex items-baseline">
                 Comments

@@ -42,7 +42,7 @@ class TaskListsController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
-        $this->countTasksPerStatus->attach(collect($taskLists->items()));
+        $this->countTasksPerStatus->attach($taskLists->items());
 
         return TaskListResource::collection($taskLists);
     }
@@ -62,7 +62,7 @@ class TaskListsController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
-        $this->countTasksPerStatus->attach(collect($taskLists->items()));
+        $this->countTasksPerStatus->attach($taskLists->items());
 
         return TaskListResource::collection($taskLists);
     }
@@ -70,7 +70,7 @@ class TaskListsController extends ResourceController
     public function show(TaskListModel $taskList): TaskListResource
     {
         $taskList->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'tags'], requested: $this->parseRequestedIncludes()));
-        $this->countTasksPerStatus->attach(collect([$taskList]));
+        $this->countTasksPerStatus->attach([$taskList]);
 
         return new TaskListResource($taskList);
     }
@@ -79,7 +79,7 @@ class TaskListsController extends ResourceController
     {
         $taskList = $this->createHandler->handle($request->toCommand());
         $taskList->load(['createdBy', 'updatedBy', 'tags']);
-        $this->countTasksPerStatus->attach(collect([$taskList]));
+        $this->countTasksPerStatus->attach([$taskList]);
 
         return (new TaskListResource($taskList))
             ->response()
@@ -90,7 +90,7 @@ class TaskListsController extends ResourceController
     {
         $taskList = $this->updateHandler->handle($request->toCommand($taskList));
         $taskList->load(['createdBy', 'updatedBy', 'tags']);
-        $this->countTasksPerStatus->attach(collect([$taskList]));
+        $this->countTasksPerStatus->attach([$taskList]);
 
         return new TaskListResource($taskList);
     }

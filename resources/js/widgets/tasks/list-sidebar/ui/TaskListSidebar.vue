@@ -6,9 +6,9 @@ import { useTaskListQuery, useTaskListTasksQuery } from '@/entities/task-list/qu
 import { taskListProgress } from '@/entities/task-list/lib'
 import { IconButton } from '@/shared/components/button'
 import { taskNeighbours } from '../lib/task-neighbours'
-import TaskRailList from './TaskRailList.vue'
+import TaskListSidebarList from './TaskListSidebarList.vue'
 
-// The rail belongs to the task's list, so it loads the list and its tasks itself and hands the
+// The sidebar belongs to the task's list, so it loads the list and its tasks itself and hands the
 // tasks down; the page only says which list and which task is open.
 const props = defineProps<{
     taskListId: string
@@ -59,7 +59,7 @@ function goTo(taskId: string) {
             <p v-if="isPending" class="type-meta-3 px-2 py-1.5">Loading tasks…</p>
             <p v-else-if="isError" class="type-meta-3 px-2 py-1.5">Failed to load the tasks of this list.</p>
             <p v-else-if="tasks.length === 0" class="type-meta-3 px-2 py-1.5">No tasks yet.</p>
-            <TaskRailList v-else :tasks="tasks" :current-task-id="currentTaskId" />
+            <TaskListSidebarList v-else :tasks="tasks" :current-task-id="currentTaskId" />
         </nav>
 
         <div class="gap-1 p-2 border-line flex shrink-0 border-t">

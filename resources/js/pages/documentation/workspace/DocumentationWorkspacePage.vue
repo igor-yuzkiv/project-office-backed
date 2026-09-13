@@ -211,7 +211,7 @@ watch(
 
             <template v-else-if="openedDocument">
                 <div class="px-6 pt-5">
-                    <PageHead :title="openedDocument.title" mode="document">
+                    <PageHead :title="openedDocument.title">
                         <template #key>
                             <CopyableKey :value="openedDocument.key" size="md" />
                             <template v-if="openedDocument.version">

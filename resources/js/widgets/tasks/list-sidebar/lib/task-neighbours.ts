@@ -4,7 +4,7 @@ export type TaskNeighbours = { previous: TaskOverviewDto | null; next: TaskOverv
 
 /**
  * Neighbours in the order the tasks arrived. A task that is not among them has none — guessing
- * at rows nobody fetched would send the reader somewhere the rail does not show.
+ * at rows nobody fetched would send the reader somewhere the sidebar does not show.
  */
 export function taskNeighbours(tasks: TaskOverviewDto[], currentTaskId: string): TaskNeighbours {
     const index = tasks.findIndex((task) => task.id === currentTaskId)

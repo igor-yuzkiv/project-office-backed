@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { useLocalStorage } from '@vueuse/core'
-import { Icon } from '@iconify/vue'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useProjectAttachmentsDialog } from '@/entities/project/composables'
 import { PROJECT_COUNT_VIEWS, projectTaskCounts } from '@/entities/project/lib'
@@ -16,6 +14,7 @@ import { useTaskViewsQuery } from '@/entities/task-view'
 import type { FilterPayloadItem } from '@/shared/filters'
 import { PropertiesGrid } from '@/shared/components/display'
 import { MarkdownPreview } from '@/shared/components/md-editor'
+import { CollapsibleSection } from '@/shared/components/section'
 import { formatDate } from '@/shared/utils/date.util'
 import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 import { AttachmentsDialog } from '@/widgets/attachments/attachments-dialog'
@@ -33,7 +32,6 @@ const attachmentsDialog = useProjectAttachmentsDialog(projectId)
 const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
 
 const showAttachmentsDialog = ref(false)
-const descriptionCollapsed = useLocalStorage('app:project:description-collapsed', false)
 
 const counts = computed(() => projectTaskCounts(project.value?.task_status_counts))
 
@@ -236,29 +234,14 @@ function taskDetailsRoute(task: TaskOverviewDto) {
             </template>
         </PropertiesGrid>
 
-        <template v-if="project.description">
-            <h2 class="type-section mt-8 mb-2.5 flex items-baseline">
-                <button
-                    type="button"
-                    class="gap-1.5 hover:text-ink-2 inline-flex cursor-pointer items-center"
-                    :aria-expanded="!descriptionCollapsed"
-                    aria-controls="project-description"
-                    @click="descriptionCollapsed = !descriptionCollapsed"
-                >
-                    <Icon
-                        :icon="descriptionCollapsed ? 'heroicons:chevron-right' : 'heroicons:chevron-down'"
-                        class="text-ink-3 text-[12px]"
-                    />
-                    Description
-                </button>
-            </h2>
-            <MarkdownPreview
-                v-show="!descriptionCollapsed"
-                id="project-description"
-                :model-value="project.description"
-                class="type-prose"
-            />
-        </template>
+        <CollapsibleSection
+            v-if="project.description"
+            title="Description"
+            storage-key="app:project:description-collapsed"
+            heading-class="mt-8 mb-2.5"
+        >
+            <MarkdownPreview :model-value="project.description" class="type-prose" />
+        </CollapsibleSection>
 
         <AttachmentsDialog
             v-model:visible="showAttachmentsDialog"

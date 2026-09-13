@@ -2,7 +2,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types'
@@ -10,7 +9,7 @@ import { createDefaultTaskListFiltersDefMap, taskListSortFieldDefs } from '@/ent
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
-import { usePersistedListState } from '@/shared/composables'
+import { usePersistedListState, useRowMenu } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
 import Button from 'primevue/button'
 import { IconButton } from '@/shared/components/button'
@@ -25,30 +24,18 @@ useBreadcrumbs([{ label: 'Task lists' }])
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 const createDialog = useTaskListCreateDialog()
 
-const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedTaskList = ref<ITaskList>()
-
-const rowMenuItems: MenuItem[] = [
+const { items: rowMenuItems, open: openRowMenu } = useRowMenu<ITaskList>((taskList) => [
     {
         label: 'Edit',
         icon: 'pi pi-pencil',
-        command: () => router.push({ name: 'task-list-edit', params: { id: selectedTaskList.value!.id } }),
+        command: () => router.push({ name: 'task-list-edit', params: { id: taskList.id } }),
     },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () =>
-            deleteTaskList(
-                selectedTaskList.value!.id,
-                `Are you sure you want to delete "${selectedTaskList.value!.name}"?`
-            ),
+        command: () => deleteTaskList(taskList.id, `Are you sure you want to delete "${taskList.name}"?`),
     },
-]
-
-function openRowMenu(event: MouseEvent, taskList: ITaskList) {
-    selectedTaskList.value = taskList
-    rowMenu.value?.toggle(event)
-}
+])
 
 const filterSidebar = useFilterSidebar(createDefaultTaskListFiltersDefMap())
 const sort = useSortDialog(taskListSortFieldDefs, 'updated_at', 'desc')

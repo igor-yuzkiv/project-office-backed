@@ -3,7 +3,6 @@ import { computed, ref, toValue, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
 import { useRouteParams } from '@vueuse/router'
-import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
@@ -23,11 +22,12 @@ import { IconButton } from '@/shared/components/button'
 import { CopyableKey, PropertiesGrid } from '@/shared/components/display'
 import { PageHead } from '@/shared/components/page-head'
 import { MarkdownPreview } from '@/shared/components/md-editor'
+import { CollapsibleSection } from '@/shared/components/section'
 import { AttachmentsDialog } from '@/widgets/attachments/attachments-dialog'
 import { CommentThread, type CommentKindFilter } from '@/widgets/comments/comment-thread'
 import { TagList } from '@/widgets/tags/metadata'
 import { TaskPriorityBars, TaskStatusTag } from '@/widgets/tasks/metadata'
-import { TaskRail } from '@/widgets/tasks/task-rail'
+import { TaskListSidebar } from '@/widgets/tasks/list-sidebar'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 
 const router = useRouter()
@@ -53,11 +53,9 @@ const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 const showAttachmentsDialog = ref(false)
 const moreMenu = ref<InstanceType<typeof Menu>>()
 const commentsKind = ref<CommentKindFilter>('all')
-const railCollapsed = useLocalStorage('app:task:rail-collapsed', false)
-const descriptionCollapsed = useLocalStorage('app:task:description-collapsed', false)
-const commentsCollapsed = useLocalStorage('app:task:comments-collapsed', false)
+const listSidebarCollapsed = useLocalStorage('app:task:list-sidebar-collapsed', false)
 
-const showRail = computed(() => Boolean(task.value?.task_list_id) && !railCollapsed.value)
+const showListSidebar = computed(() => Boolean(task.value?.task_list_id) && !listSidebarCollapsed.value)
 
 const attachmentsLabel = computed(() =>
     attachmentsDialog.count.value === 1 ? '1 file' : `${attachmentsDialog.count.value} files`
@@ -131,11 +129,11 @@ useBreadcrumbs(() => [
     <div
         v-if="task"
         class="min-h-0 grid flex-1"
-        :class="showRail ? 'grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-[minmax(0,1fr)]'"
+        :class="showListSidebar ? 'grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-[minmax(0,1fr)]'"
     >
         <div class="min-h-0 overflow-auto">
             <article class="page-container">
-                <PageHead :title="task.name" mode="document">
+                <PageHead :title="task.name">
                     <template #key>
                         <CopyableKey :value="task.key" size="md" />
                     </template>
@@ -153,11 +151,11 @@ useBreadcrumbs(() => [
                         />
                         <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
                         <IconButton
-                            v-if="task.task_list_id && railCollapsed"
+                            v-if="task.task_list_id && listSidebarCollapsed"
                             icon="tabler:layout-sidebar-right-expand"
                             aria-label="Show list"
                             title="Show list"
-                            @click="railCollapsed = false"
+                            @click="listSidebarCollapsed = false"
                         />
                     </template>
                 </PageHead>
@@ -238,65 +236,41 @@ useBreadcrumbs(() => [
 
                 <hr class="border-line mt-5 mb-7" />
 
-                <h2 class="type-section mb-2.5 flex items-baseline">
-                    <button
-                        type="button"
-                        class="gap-1.5 hover:text-ink-2 inline-flex cursor-pointer items-center"
-                        :aria-expanded="!descriptionCollapsed"
-                        aria-controls="task-description"
-                        @click="descriptionCollapsed = !descriptionCollapsed"
-                    >
-                        <Icon
-                            :icon="descriptionCollapsed ? 'heroicons:chevron-right' : 'heroicons:chevron-down'"
-                            class="text-ink-3 text-[12px]"
-                        />
-                        Description
-                    </button>
-                </h2>
-                <div v-show="!descriptionCollapsed" id="task-description">
+                <CollapsibleSection title="Description" storage-key="app:task:description-collapsed">
                     <MarkdownPreview v-if="task.description" :model-value="task.description" class="type-prose" />
                     <p v-else class="type-meta-3">No description yet.</p>
-                </div>
+                </CollapsibleSection>
 
-                <h2 class="type-section gap-2 mt-12 mb-2 flex items-baseline">
-                    <button
-                        type="button"
-                        class="gap-1.5 hover:text-ink-2 inline-flex cursor-pointer items-center"
-                        :aria-expanded="!commentsCollapsed"
-                        aria-controls="task-comments"
-                        @click="commentsCollapsed = !commentsCollapsed"
-                    >
-                        <Icon
-                            :icon="commentsCollapsed ? 'heroicons:chevron-right' : 'heroicons:chevron-down'"
-                            class="text-ink-3 text-[12px]"
-                        />
-                        Comments
-                    </button>
-                    <span v-if="commentsMeta" class="type-meta-3">{{ commentsMeta.total }}</span>
-                </h2>
-                <CommentThread
-                    v-show="!commentsCollapsed"
-                    id="task-comments"
-                    v-model:page="commentsPage"
-                    v-model:kind="commentsKind"
-                    :comments="comments"
-                    :pagination-meta="commentsMeta"
-                    :is-pending="isCommentsPending"
-                    :handle-image-upload="handleCommentImageUpload"
-                    composer-placement="bottom"
-                    class="-mx-4"
-                    @create="handleCreateComment"
-                    @update="handleUpdateComment"
-                    @delete="deleteComment"
-                />
+                <CollapsibleSection
+                    title="Comments"
+                    storage-key="app:task:comments-collapsed"
+                    heading-class="mt-12 mb-2"
+                >
+                    <template #aside>
+                        <span v-if="commentsMeta" class="type-meta-3">{{ commentsMeta.total }}</span>
+                    </template>
+                    <CommentThread
+                        v-model:page="commentsPage"
+                        v-model:kind="commentsKind"
+                        :comments="comments"
+                        :pagination-meta="commentsMeta"
+                        :is-pending="isCommentsPending"
+                        :handle-image-upload="handleCommentImageUpload"
+                        composer-placement="bottom"
+                        class="-mx-4"
+                        @create="handleCreateComment"
+                        @update="handleUpdateComment"
+                        @delete="deleteComment"
+                    />
+                </CollapsibleSection>
             </article>
         </div>
 
-        <TaskRail
-            v-if="showRail && task.task_list_id"
+        <TaskListSidebar
+            v-if="showListSidebar && task.task_list_id"
             :task-list-id="task.task_list_id"
             :current-task-id="taskId"
-            @hide="railCollapsed = true"
+            @hide="listSidebarCollapsed = true"
         />
 
         <Menu ref="moreMenu" :model="moreMenuItems" popup />

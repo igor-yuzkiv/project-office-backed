@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import type { IProjectDocumentVersion } from '@/entities/project-document/types'
+import { useRowMenu } from '@/shared/composables'
 import { formatDate } from '@/shared/utils/date.util'
 
 // The rows and their actions, with no surface of its own: the host puts this in a side panel.
@@ -24,25 +23,10 @@ const emit = defineEmits<{
     (e: 'use-latest-as-primary'): void
 }>()
 
-// One menu for every row; which row it speaks for is set as it opens.
-const rowMenu = useTemplateRef<InstanceType<typeof Menu>>('rowMenu')
-const menuVersion = ref<IProjectDocumentVersion | null>(null)
-
-const menuItems = computed<MenuItem[]>(() => {
-    const version = menuVersion.value
-
-    if (!version) return []
-
-    return [
-        { label: 'Edit', icon: 'pi pi-pencil', command: () => emit('edit', version) },
-        { label: 'Delete', icon: 'pi pi-trash', command: () => emit('delete', version) },
-    ]
-})
-
-function openRowMenu(event: MouseEvent, version: IProjectDocumentVersion) {
-    menuVersion.value = version
-    rowMenu.value?.toggle(event)
-}
+const { items: menuItems, open: openRowMenu } = useRowMenu<IProjectDocumentVersion>((version) => [
+    { label: 'Edit', icon: 'pi pi-pencil', command: () => emit('edit', version) },
+    { label: 'Delete', icon: 'pi pi-trash', command: () => emit('delete', version) },
+])
 
 function subline(version: IProjectDocumentVersion): string {
     const date = formatDate(version.created_at, 'MMM d') ?? ''

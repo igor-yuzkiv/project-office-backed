@@ -38,7 +38,7 @@ const layoutComponent = computed(() => {
 })
 
 // A record that declares it (project details) mounts a fresh page for another id, because the
-// page reads its id once; the rest keep their instance across params (the task rail relies on it).
+// page reads its id once; the rest keep their instance across params (the task list sidebar relies on it).
 const pageKey = computed(() => {
     const record = route.matched[0]
     if (!record?.meta.remountOnParams) return record?.path ?? ''

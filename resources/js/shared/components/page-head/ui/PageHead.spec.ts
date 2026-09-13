@@ -1,34 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import { createSSRApp, h, type VNode } from 'vue'
+import { createSSRApp, h } from 'vue'
 import { renderToString } from '@vue/server-renderer'
-import PageHead, { type PageHeadMode } from './PageHead.vue'
-
-function render(props: { title: string; mode?: PageHeadMode }, slots: Record<string, () => VNode | string>) {
-    return renderToString(createSSRApp({ render: () => h(PageHead, props, slots) }))
-}
+import PageHead from './PageHead.vue'
 
 describe('PageHead', () => {
-    it('renders the list mode with the title, lede and actions', async () => {
-        const html = await render(
-            { title: 'Tasks' },
-            { lede: () => 'Everything open', actions: () => h('button', 'New task') }
-        )
-
-        expect(html).toContain('type-page')
-        expect(html).toContain('Tasks')
-        expect(html).toContain('Everything open')
-        expect(html).toContain('<button>New task</button>')
-        expect(html).not.toContain('type-title')
-    })
-
-    it('renders the document mode with the key, meta, actions and title', async () => {
-        const html = await render(
-            { title: 'Reconcile ledger rows', mode: 'document' },
-            {
-                key: () => h('span', 'HBR-214'),
-                meta: () => 'Edited 2 hours ago by Claude',
-                actions: () => h('button', 'Edit'),
-            }
+    it('renders the key, meta and actions on the first row and the title below', async () => {
+        const html = await renderToString(
+            createSSRApp({
+                render: () =>
+                    h(
+                        PageHead,
+                        { title: 'Reconcile ledger rows' },
+                        {
+                            key: () => h('span', 'HBR-214'),
+                            meta: () => 'Edited 2 hours ago by Claude',
+                            actions: () => h('button', 'Edit'),
+                        }
+                    ),
+            })
         )
 
         expect(html).toContain('type-title')
@@ -36,6 +25,5 @@ describe('PageHead', () => {
         expect(html).toContain('<span>HBR-214</span>')
         expect(html).toContain('Edited 2 hours ago by Claude')
         expect(html).toContain('<button>Edit</button>')
-        expect(html).not.toContain('type-page')
     })
 })

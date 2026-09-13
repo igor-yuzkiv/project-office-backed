@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useTaskSearch } from '@/entities/task/composables'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
@@ -14,6 +12,7 @@ import { SortButton, SortDialog } from '@/shared/sort'
 import { TaskViewsBar } from '@/widgets/tasks/view-switcher'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
+import { useRowMenu } from '@/shared/composables'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 
@@ -40,27 +39,18 @@ const tableColumnsDef = taskTableColumnsExcluding('project', 'updated_at')
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 
-const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedTask = ref<TaskOverviewDto>()
-
-const rowMenuItems: MenuItem[] = [
+const { items: rowMenuItems, open: openRowMenu } = useRowMenu<TaskOverviewDto>((task) => [
     {
         label: 'Edit',
         icon: 'pi pi-pencil',
-        command: () => router.push({ name: 'task-edit', params: { id: selectedTask.value!.id } }),
+        command: () => router.push({ name: 'task-edit', params: { id: task.id } }),
     },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () =>
-            deleteTask(selectedTask.value!.id, `Are you sure you want to delete "${selectedTask.value!.name}"?`),
+        command: () => deleteTask(task.id, `Are you sure you want to delete "${task.name}"?`),
     },
-]
-
-function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
-    selectedTask.value = task
-    rowMenu.value?.toggle(event)
-}
+])
 
 function openTaskCreateDialog() {
     if (!project.value) return
