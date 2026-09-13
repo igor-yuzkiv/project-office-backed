@@ -32,12 +32,21 @@ const router = createRouter({
                 layout: 'default',
                 title: 'Project',
             },
-            redirect: (to) => ({ name: 'project-details.details', params: to.params }),
+            redirect: (to) => ({ name: 'project-details.overview', params: to.params }),
             children: [
                 {
-                    path: 'details',
-                    name: 'project-details.details',
+                    path: 'overview',
+                    name: 'project-details.overview',
                     component: () => import('@/pages/projects/details/tabs/ProjectOverviewPage.vue'),
+                },
+                // Old URLs bookmarks may still carry.
+                {
+                    path: 'details',
+                    redirect: (to) => ({ name: 'project-details.overview', params: to.params }),
+                },
+                {
+                    path: 'attachments',
+                    redirect: (to) => ({ name: 'project-details.overview', params: to.params }),
                 },
                 {
                     path: 'task-lists',
@@ -53,11 +62,6 @@ const router = createRouter({
                     path: 'issues',
                     name: 'project-details.issues',
                     component: () => import('@/pages/projects/details/tabs/ProjectIssuesPage.vue'),
-                },
-                {
-                    path: 'attachments',
-                    name: 'project-details.attachments',
-                    component: () => import('@/pages/projects/details/tabs/ProjectAttachmentsPage.vue'),
                 },
             ],
         },

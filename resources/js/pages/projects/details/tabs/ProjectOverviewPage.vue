@@ -1,106 +1,254 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import Panel from 'primevue/panel'
+import { computed, ref } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import { useLocalStorage } from '@vueuse/core'
+import { Icon } from '@iconify/vue'
 import { useProjectQuery } from '@/entities/project/queries'
-import { DisplayFields } from '@/shared/components/display'
-import type { DisplayFieldConfig } from '@/shared/components/display'
+import { useProjectAttachmentsDialog } from '@/entities/project/composables'
+import { PROJECT_COUNT_VIEWS, projectTaskCounts } from '@/entities/project/lib'
+import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
+import { taskListTableColumnsExcluding } from '@/entities/task-list/config'
+import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types'
+import { useTasksSearchQuery } from '@/entities/task/queries'
+import { taskTableColumnsExcluding } from '@/entities/task/config'
+import type { TaskOverviewDto, TaskSearchParams } from '@/entities/task/types'
+import { useTaskViewsQuery } from '@/entities/task-view'
+import type { FilterPayloadItem } from '@/shared/filters'
+import { PropertiesGrid } from '@/shared/components/display'
 import { MarkdownPreview } from '@/shared/components/md-editor'
-import { UserAvatar } from '@/widgets/user/user-avatar'
-import { ProjectStatusTag } from '@/widgets/projects/status-tag'
+import { formatDate } from '@/shared/utils/date.util'
+import { formatRelativeTime } from '@/shared/utils/relative-time.util'
+import { AttachmentsDialog } from '@/widgets/attachments/attachments-dialog'
 import { TagList } from '@/widgets/tags/metadata'
-import { formatDate, formatDateTime } from '@/shared/utils/date.util'
-import type { IProject } from '@/entities/project/types'
+import { TaskListsTableView } from '@/widgets/task-list/views/table'
+import { TasksTableView } from '@/widgets/tasks/views/table'
+import { UserAvatar } from '@/widgets/user/user-avatar'
 
 const route = useRoute()
 const projectId = route.params.id as string
 
 const { project } = useProjectQuery(projectId)
+const attachmentsDialog = useProjectAttachmentsDialog(projectId)
+const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
 
-const generalFields: DisplayFieldConfig<IProject>[] = [
-    { name: 'name', label: 'Name' },
-    { name: 'prefix', label: 'Prefix' },
-    { name: 'status', label: 'Status' },
-    { name: 'tags', label: 'Tags' },
-]
+const showAttachmentsDialog = ref(false)
+const descriptionCollapsed = useLocalStorage('app:project:description-collapsed', false)
 
-const dateFields: DisplayFieldConfig<IProject>[] = [
-    { name: 'start_date', label: 'Start Date', value: (p) => formatDate(p.start_date) },
-    { name: 'end_date', label: 'End Date', value: (p) => formatDate(p.end_date) },
-]
+const counts = computed(() => projectTaskCounts(project.value?.task_status_counts))
 
-const systemFields = computed<DisplayFieldConfig<IProject>[]>(() => {
-    const fields: DisplayFieldConfig<IProject>[] = [
-        { name: 'created_by', label: 'Created By' },
-        { name: 'created_at', label: 'Created At', value: (p) => formatDateTime(p.created_at) },
-        { name: 'updated_by', label: 'Updated By' },
-        { name: 'updated_at', label: 'Updated At', value: (p) => formatDateTime(p.updated_at) },
-    ]
-    if (project.value?.archived_at) {
-        fields.push({ name: 'archived_at', label: 'Archived At', value: (p) => formatDateTime(p.archived_at) })
-    }
-    if (project.value?.archived_by) {
-        fields.push({ name: 'archived_by', label: 'Archived By' })
-    }
-    return fields
+const tasksTabRoute = (view: string) => ({
+    name: 'project-details.tasks',
+    params: { id: projectId },
+    query: { view },
 })
+
+const stats = computed(() => [
+    { label: 'In progress', value: counts.value.inProgress, accent: true },
+    { label: 'Ready to test', value: counts.value.toTest },
+    { label: 'All open', value: counts.value.open, to: tasksTabRoute(PROJECT_COUNT_VIEWS.open) },
+    { label: 'Backlog', value: counts.value.backlog, to: tasksTabRoute(PROJECT_COUNT_VIEWS.backlog) },
+    { label: 'Closed', value: counts.value.closed, to: tasksTabRoute(PROJECT_COUNT_VIEWS.closed) },
+    { label: 'Attachments', value: attachmentsDialog.count.value, onClick: () => (showAttachmentsDialog.value = true) },
+])
+
+const projectFilter: FilterPayloadItem = {
+    filter_key: 'text',
+    field_name: 'project_id',
+    value: projectId,
+    matchMode: 'equals',
+    params: {},
+}
+
+const taskListColumns = taskListTableColumnsExcluding('project')
+const taskListsParams: TaskListSearchParams = {
+    filters: [projectFilter],
+    sort_by: 'updated_at',
+    sort_order: 'desc',
+    page: 1,
+    per_page: 3,
+    include: ['updatedBy'],
+}
+const { taskLists, isPending: isTaskListsPending } = useTaskListsSearchQuery(taskListsParams)
+
+// The open statuses are whatever the "all open" view says they are, so the two never drift apart.
+const openView = computed(() => taskViews.value.find((view) => view.key === PROJECT_COUNT_VIEWS.open))
+
+const taskColumns = taskTableColumnsExcluding('project', 'tags')
+const recentTasksParams = computed<TaskSearchParams>(() => ({
+    filters: [projectFilter, ...(openView.value?.filters ?? [])],
+    sort_by: 'updated_at',
+    sort_order: 'desc',
+    page: 1,
+    per_page: 5,
+    include: ['taskList', 'updatedBy'],
+}))
+const { tasks: recentTasks, isPending: isRecentTasksPending } = useTasksSearchQuery(recentTasksParams, {
+    enabled: computed(() => !isTaskViewsPending.value),
+})
+
+const dates = computed(() => {
+    const p = project.value
+    if (!p?.start_date && !p?.end_date) return null
+    return `${formatDate(p.start_date) ?? '—'} → ${formatDate(p.end_date) ?? '—'}`
+})
+
+function taskListDetailsRoute(taskList: ITaskList) {
+    return { name: 'task-list-details', params: { id: taskList.id } }
+}
+
+function taskDetailsRoute(task: TaskOverviewDto) {
+    return { name: 'task-details', params: { id: task.id } }
+}
 </script>
 
 <template>
-    <div v-if="project" class="gap-4 p-2 flex flex-col">
-        <Panel header="General" :toggleable="true">
-            <DisplayFields :item="project" :fields="generalFields">
-                <template #[`field:status:value`]="{ item }">
-                    <ProjectStatusTag :status="item.status" class="w-fit" />
-                </template>
-                <template #[`field:tags:value`]="{ item }">
-                    <TagList :tags="item.tags ?? []" />
-                </template>
-            </DisplayFields>
-        </Panel>
+    <div v-if="project">
+        <div class="border-line divide-line rounded-lg sm:grid-cols-6 grid grid-cols-3 divide-x overflow-hidden border">
+            <component
+                :is="stat.to ? RouterLink : stat.onClick ? 'button' : 'div'"
+                v-for="stat in stats"
+                :key="stat.label"
+                :to="stat.to"
+                :type="stat.onClick ? 'button' : undefined"
+                class="gap-0.5 px-4 py-3.5 flex flex-col text-left"
+                :class="stat.to || stat.onClick ? 'hover:bg-hover cursor-pointer' : ''"
+                @click="stat.onClick"
+            >
+                <b
+                    class="leading-tight font-semibold tracking-tight text-[22px] tabular-nums"
+                    :class="stat.accent ? 'text-accent' : 'text-ink'"
+                >
+                    {{ stat.value }}
+                </b>
+                <span class="type-meta">{{ stat.label }}</span>
+            </component>
+        </div>
 
-        <Panel header="Dates" :toggleable="true">
-            <DisplayFields :item="project" :fields="dateFields" />
-        </Panel>
+        <h2 class="type-section gap-2 mt-8 mb-2.5 flex items-baseline">
+            Task lists
+            <RouterLink
+                :to="{ name: 'project-details.task-lists', params: { id: projectId } }"
+                class="text-ink-2 hover:text-accent font-normal ml-auto text-[13px]"
+            >
+                All {{ project.task_lists_count ?? 0 }}
+            </RouterLink>
+        </h2>
+        <TaskListsTableView
+            :task-lists="taskLists"
+            :is-pending="isTaskListsPending"
+            :page="1"
+            :columns="taskListColumns"
+            :to="taskListDetailsRoute"
+        />
 
-        <Panel header="System" :toggleable="true">
-            <DisplayFields :item="project" :fields="systemFields">
-                <template #[`field:created_by:value`]="{ item }">
-                    <div v-if="item.created_by" class="gap-2 flex items-center">
-                        <UserAvatar
-                            :initials="item.created_by.initials"
-                            :avatar-url="item.created_by.avatar_url"
-                            size="small"
-                        />
-                        <span class="text-surface-700 dark:text-surface-300">{{ item.created_by.name }}</span>
-                    </div>
-                </template>
-                <template #[`field:updated_by:value`]="{ item }">
-                    <div v-if="item.updated_by" class="gap-2 flex items-center">
-                        <UserAvatar
-                            :initials="item.updated_by.initials"
-                            :avatar-url="item.updated_by.avatar_url"
-                            size="small"
-                        />
-                        <span class="text-surface-700 dark:text-surface-300">{{ item.updated_by.name }}</span>
-                    </div>
-                </template>
-                <template #[`field:archived_by:value`]="{ item }">
-                    <div v-if="item.archived_by" class="gap-2 flex items-center">
-                        <UserAvatar
-                            :initials="item.archived_by.initials"
-                            :avatar-url="item.archived_by.avatar_url"
-                            size="small"
-                        />
-                        <span class="text-surface-700 dark:text-surface-300">{{ item.archived_by.name }}</span>
-                    </div>
-                </template>
-            </DisplayFields>
-        </Panel>
+        <h2 class="type-section gap-2 mt-8 mb-2.5 flex items-baseline">
+            Recent tasks
+            <RouterLink
+                :to="tasksTabRoute(PROJECT_COUNT_VIEWS.open)"
+                class="text-ink-2 hover:text-accent font-normal ml-auto text-[13px]"
+            >
+                All {{ counts.open }} open
+            </RouterLink>
+        </h2>
+        <TasksTableView
+            :tasks="recentTasks"
+            :is-pending="isRecentTasksPending"
+            :page="1"
+            :columns="taskColumns"
+            :to="taskDetailsRoute"
+        />
 
-        <Panel header="Description" :toggleable="true">
-            <MarkdownPreview v-if="project.description" :model-value="project.description" />
-            <p v-else class="text-sm text-surface-400 italic">No description available.</p>
-        </Panel>
+        <h2 class="type-section mt-8 mb-2.5">About</h2>
+        <PropertiesGrid>
+            <span>Dates</span>
+            <div>
+                <span class="text-ink-2 text-[13px]">{{ dates ?? '—' }}</span>
+            </div>
+
+            <span>Tags</span>
+            <div>
+                <TagList v-if="project.tags?.length" :tags="project.tags" inline />
+                <span v-else class="type-meta-3">No tags</span>
+            </div>
+
+            <span>Created</span>
+            <div>
+                <UserAvatar
+                    v-if="project.created_by"
+                    :initials="project.created_by.initials"
+                    :avatar-url="project.created_by.avatar_url"
+                    size="xsmall"
+                />
+                <span class="text-ink-2 text-[13px]">
+                    {{ project.created_by?.name ?? 'Unknown' }}
+                    <span class="text-ink-3">· {{ formatRelativeTime(project.created_at) }}</span>
+                </span>
+            </div>
+
+            <span>Updated</span>
+            <div>
+                <UserAvatar
+                    v-if="project.updated_by"
+                    :initials="project.updated_by.initials"
+                    :avatar-url="project.updated_by.avatar_url"
+                    size="xsmall"
+                />
+                <span class="text-ink-2 text-[13px]">
+                    {{ project.updated_by?.name ?? 'Unknown' }}
+                    <span class="text-ink-3">· {{ formatRelativeTime(project.updated_at) }}</span>
+                </span>
+            </div>
+
+            <template v-if="project.archived_at">
+                <span>Archived</span>
+                <div>
+                    <UserAvatar
+                        v-if="project.archived_by"
+                        :initials="project.archived_by.initials"
+                        :avatar-url="project.archived_by.avatar_url"
+                        size="xsmall"
+                    />
+                    <span class="text-ink-2 text-[13px]">
+                        {{ project.archived_by?.name ?? 'Unknown' }}
+                        <span class="text-ink-3">· {{ formatRelativeTime(project.archived_at) }}</span>
+                    </span>
+                </div>
+            </template>
+        </PropertiesGrid>
+
+        <template v-if="project.description">
+            <h2 class="type-section mt-8 mb-2.5 flex items-baseline">
+                <button
+                    type="button"
+                    class="gap-1.5 hover:text-ink-2 inline-flex cursor-pointer items-center"
+                    :aria-expanded="!descriptionCollapsed"
+                    aria-controls="project-description"
+                    @click="descriptionCollapsed = !descriptionCollapsed"
+                >
+                    <Icon
+                        :icon="descriptionCollapsed ? 'heroicons:chevron-right' : 'heroicons:chevron-down'"
+                        class="text-ink-3 text-[12px]"
+                    />
+                    Description
+                </button>
+            </h2>
+            <MarkdownPreview
+                v-show="!descriptionCollapsed"
+                id="project-description"
+                :model-value="project.description"
+                class="type-prose"
+            />
+        </template>
+
+        <AttachmentsDialog
+            v-model:visible="showAttachmentsDialog"
+            :attachments="attachmentsDialog.attachments.value"
+            :is-pending="attachmentsDialog.isPending.value"
+            :is-uploading="attachmentsDialog.isUploading.value"
+            :upload="attachmentsDialog.upload"
+            :subtitle="project.prefix"
+            @download="attachmentsDialog.download"
+            @delete="attachmentsDialog.remove"
+        />
     </div>
 </template>

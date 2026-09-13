@@ -17,7 +17,6 @@ import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { taskListTableColumnsExcluding } from '@/entities/task-list/config'
 import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
-import { Icon } from '@iconify/vue'
 
 const router = useRouter()
 const projectId = useRouteParams<string>('id')
@@ -59,7 +58,7 @@ const selectedTaskList = ref<ITaskList>()
 
 const rowMenuItems: MenuItem[] = [
     {
-        label: 'New Task',
+        label: 'New task',
         icon: 'pi pi-plus',
         command: () => {
             if (project.value && selectedTaskList.value) {
@@ -116,36 +115,33 @@ function onPageChange(newPage: number) {
 </script>
 
 <template>
-    <div class="flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <div class="gap-2 p-1 flex items-center justify-between">
-                <SearchInput v-model="searchInput" placeholder="Search task lists..." @submit="onSearchSubmit" />
-                <Button severity="info" text label="New Task List" :disabled="!project" @click="openCreateDialog">
-                    <template #icon>
-                        <Icon icon="material-symbols:add" class="text-lg" />
-                    </template>
-                </Button>
-            </div>
-            <div class="flex h-full w-full flex-col overflow-hidden">
-                <TaskListsTableView
-                    :task-lists="taskLists"
-                    :is-pending="isPending"
-                    :pagination-meta="paginationMeta"
-                    :page="page"
-                    :columns="tableColumnsDef"
-                    :to="taskListDetailsRoute"
-                    @page-change="onPageChange"
-                >
-                    <template #actions="{ row }">
-                        <IconButton
-                            severity="secondary"
-                            icon="pepicons-pop:dots-y"
-                            @click.stop="openRowMenu($event, row)"
-                        />
-                    </template>
-                </TaskListsTableView>
-            </div>
+    <div class="flex flex-1 flex-col">
+        <div class="gap-2 mb-3 flex flex-wrap items-center">
+            <SearchInput v-model="searchInput" placeholder="Search lists" @submit="onSearchSubmit" />
+            <span class="flex-1" />
+            <Button
+                label="New task list"
+                icon="pi pi-plus"
+                size="small"
+                class="!h-7"
+                :disabled="!project"
+                @click="openCreateDialog"
+            />
         </div>
+
+        <TaskListsTableView
+            :task-lists="taskLists"
+            :is-pending="isPending"
+            :pagination-meta="paginationMeta"
+            :page="page"
+            :columns="tableColumnsDef"
+            :to="taskListDetailsRoute"
+            @page-change="onPageChange"
+        >
+            <template #actions="{ row }">
+                <IconButton severity="secondary" icon="pepicons-pop:dots-y" @click.stop="openRowMenu($event, row)" />
+            </template>
+        </TaskListsTableView>
 
         <Menu ref="rowMenu" :model="rowMenuItems" popup />
 

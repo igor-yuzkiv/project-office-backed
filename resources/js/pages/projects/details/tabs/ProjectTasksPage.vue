@@ -11,12 +11,11 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 import { taskSortFieldDefs, taskTableColumnsExcluding } from '@/entities/task/config'
 import { FilterSidebar, FilterButton } from '@/shared/filters'
 import { SortButton, SortDialog } from '@/shared/sort'
-import { TaskViewSelect } from '@/widgets/tasks/view-switcher'
+import { TaskViewsBar } from '@/widgets/tasks/view-switcher'
 import { SearchInput } from '@/shared/components/input'
 import { IconButton } from '@/shared/components/button'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
-import { Icon } from '@iconify/vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -74,49 +73,42 @@ function openTaskCreateDialog() {
 </script>
 
 <template>
-    <div class="flex flex-1 flex-col overflow-hidden">
-        <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <div class="gap-2 p-1 flex items-center justify-between">
-                <SearchInput
-                    v-model="search.searchInput.value"
-                    placeholder="Search tasks..."
-                    @submit="search.submitSearch"
-                />
-                <div class="gap-2 flex items-center">
-                    <TaskViewSelect
-                        :model-value="search.viewSwitcher.activeViewKey.value"
-                        :options="search.taskViews.value"
-                        @update:model-value="search.selectView"
-                    />
-                    <FilterButton v-bind="search.filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${search.sort.activeSortLabel.value}`" @click="search.sort.open()" />
-                    <Button severity="info" text label="New Task" :disabled="!project" @click="openTaskCreateDialog">
-                        <template #icon>
-                            <Icon icon="material-symbols:add" class="text-lg" />
-                        </template>
-                    </Button>
-                </div>
-            </div>
-            <div class="flex h-full w-full flex-col overflow-hidden">
-                <TasksTableView
-                    :tasks="search.tasks.value"
-                    :is-pending="search.isPending.value"
-                    :pagination-meta="search.paginationMeta.value"
-                    :page="search.page.value"
-                    :to="search.taskDetailsRoute"
-                    :columns="tableColumnsDef"
-                    @page-change="search.goToPage"
-                >
-                    <template #actions="{ row }">
-                        <IconButton
-                            severity="secondary"
-                            icon="pepicons-pop:dots-y"
-                            @click.stop="openRowMenu($event, row)"
-                        />
-                    </template>
-                </TasksTableView>
-            </div>
+    <div class="flex flex-1 flex-col">
+        <div class="gap-2 mb-2 flex flex-wrap items-center">
+            <SearchInput v-model="search.searchInput.value" placeholder="Search tasks" @submit="search.submitSearch" />
+            <span class="flex-1" />
+            <FilterButton v-bind="search.filterSidebar.buttonProps.value" />
+            <SortButton :label="`Sort: ${search.sort.activeSortLabel.value}`" @click="search.sort.open()" />
+            <Button
+                label="New task"
+                icon="pi pi-plus"
+                size="small"
+                class="!h-7"
+                :disabled="!project"
+                @click="openTaskCreateDialog"
+            />
         </div>
+
+        <TaskViewsBar
+            :model-value="search.viewSwitcher.activeViewKey.value"
+            :options="search.taskViews.value"
+            class="mb-3"
+            @update:model-value="search.selectView"
+        />
+
+        <TasksTableView
+            :tasks="search.tasks.value"
+            :is-pending="search.isPending.value"
+            :pagination-meta="search.paginationMeta.value"
+            :page="search.page.value"
+            :to="search.taskDetailsRoute"
+            :columns="tableColumnsDef"
+            @page-change="search.goToPage"
+        >
+            <template #actions="{ row }">
+                <IconButton severity="secondary" icon="pepicons-pop:dots-y" @click.stop="openRowMenu($event, row)" />
+            </template>
+        </TasksTableView>
 
         <SortDialog
             :visible="search.sort.visible.value"
