@@ -34,7 +34,7 @@ function handleSubmit() {
         <div class="gap-2 flex justify-end">
             <Button v-if="mode === 'edit'" label="Cancel" severity="secondary" size="small" @click="emit('cancel')" />
             <Button
-                :label="mode === 'create' ? 'Add Comment' : 'Save'"
+                :label="mode === 'create' ? 'Add comment' : 'Save'"
                 size="small"
                 :disabled="!content.trim()"
                 @click="handleSubmit"
