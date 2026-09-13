@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { deleteTaskRequest } from '../api'
 import { TaskQueryKey } from '../config'
 import { TaskListQueryKey } from '@/entities/task-list/config'
+import { TaskViewQueryKey } from '@/entities/task-view/config'
 import { useConfirmDialog } from '@/shared/composables/use.confirm-dialog'
 
 export function useDeleteTaskMutation() {
@@ -13,6 +14,7 @@ export function useDeleteTaskMutation() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: TaskQueryKey.all })
             queryClient.invalidateQueries({ queryKey: TaskListQueryKey.all })
+            queryClient.invalidateQueries({ queryKey: TaskViewQueryKey.all })
         },
     })
 

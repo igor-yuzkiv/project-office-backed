@@ -5,6 +5,7 @@ import { MarkdownPreview } from '@/shared/components/md-editor'
 import { DisplayDate } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
 import type { IComment } from '@/entities/comment'
+import { checkpointBody, checkpointSubject } from '@/entities/comment'
 import CommentInputForm from './CommentInputForm.vue'
 
 const props = defineProps<{ comment: IComment }>()
@@ -80,7 +81,10 @@ function handleDelete() {
                 @cancel="isEditing = false"
             />
 
-            <MarkdownPreview v-else :model-value="comment.content" />
+            <template v-else>
+                <p v-if="checkpointSubject(comment)" class="type-section mb-1">{{ checkpointSubject(comment) }}</p>
+                <MarkdownPreview :model-value="checkpointBody(comment)" />
+            </template>
         </div>
     </div>
 </template>
