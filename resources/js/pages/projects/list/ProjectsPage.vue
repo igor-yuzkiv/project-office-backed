@@ -1,24 +1,37 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import Menu from 'primevue/menu'
-import type { MenuItem } from 'primevue/menuitem'
-import { useProjectsSearchQuery } from '@/entities/project/queries'
+import { useLocalStorage } from '@vueuse/core'
+import { Icon } from '@iconify/vue'
+import Button from 'primevue/button'
+import Paginator from 'primevue/paginator'
+import Skeleton from 'primevue/skeleton'
+import { usePinnedProjectsQuery, useProjectsSearchQuery } from '@/entities/project/queries'
 import { useDeleteProjectMutation } from '@/entities/project/mutations'
-import { useHeaderActions } from '@/app/shell'
+import { useBreadcrumbs } from '@/app/shell'
 import { PAGE_SIZE } from '@/app/config'
 import type { ProjectOverviewDto, ProjectSearchParams } from '@/entities/project/types'
 import { projectStatusOptions } from '@/entities/project/config'
 import { ProjectCreateDialog, useProjectCreateDialog } from '@/widgets/projects/create-dialog'
-import { ProjectsGridView } from '@/widgets/projects/views/grid'
+import { ProjectCard } from '@/widgets/projects/project-card'
+import { ProjectsTableView } from '@/widgets/projects/views/table'
 import { FilterSidebar, FilterButton, createFilterDefMap, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog, type SortFieldDef } from '@/shared/sort'
 import { usePersistedListState } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
-import { IconButton } from '@/shared/components/button'
+
+type ProjectsView = 'cards' | 'list'
+
+const VIEW_OPTIONS: { value: ProjectsView; icon: string; label: string }[] = [
+    { value: 'cards', icon: 'tabler:layout-grid', label: 'Cards' },
+    { value: 'list', icon: 'tabler:list', label: 'List' },
+]
+
+useBreadcrumbs([{ label: 'Projects' }])
 
 const router = useRouter()
 const createDialog = useProjectCreateDialog()
+const view = useLocalStorage<ProjectsView>('app:projects:view', 'list')
 
 const filterSidebar = useFilterSidebar(
     createFilterDefMap((map) =>
@@ -64,25 +77,6 @@ const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 const searchInput = ref('')
 const searchQuery = ref('')
 const page = ref(1)
-const rowMenu = ref<InstanceType<typeof Menu>>()
-const selectedProject = ref<ProjectOverviewDto>()
-
-const rowMenuItems: MenuItem[] = [
-    {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => router.push({ name: 'project-edit', params: { id: selectedProject.value!.id } }),
-    },
-    {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () =>
-            deleteProject(
-                selectedProject.value!.id,
-                `Are you sure you want to delete "${selectedProject.value!.name}"?`
-            ),
-    },
-]
 
 const searchParams = computed<ProjectSearchParams>(() => ({
     query: searchQuery.value,
@@ -94,8 +88,17 @@ const searchParams = computed<ProjectSearchParams>(() => ({
 }))
 
 const { projects, paginationMeta, isPending } = useProjectsSearchQuery(searchParams)
+const { projects: pinnedProjects } = usePinnedProjectsQuery()
 
-const isFiltered = computed(() => Boolean(searchQuery.value) || filterSidebar.resolvedFilters.value.length > 0)
+const hasPages = computed(() => !!paginationMeta.value && paginationMeta.value.last_page > 1)
+
+function onEdit(project: ProjectOverviewDto) {
+    router.push({ name: 'project-edit', params: { id: project.id } })
+}
+
+function onDelete(project: ProjectOverviewDto) {
+    deleteProject(project.id, `Are you sure you want to delete "${project.name}"?`)
+}
 
 function onSortApply() {
     sort.apply()
@@ -107,11 +110,6 @@ function onSearchSubmit() {
     page.value = 1
 }
 
-function openRowMenu(event: MouseEvent, project: ProjectOverviewDto) {
-    selectedProject.value = project
-    rowMenu.value?.toggle(event)
-}
-
 function onPageChange(newPage: number) {
     page.value = newPage
 }
@@ -119,42 +117,89 @@ function onPageChange(newPage: number) {
 watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
-
-useHeaderActions([{ key: 'new-project', title: 'New Project', is_primary: true, action: () => createDialog.open() }])
 </script>
 
 <template>
-    <div class="flex flex-1 flex-col overflow-hidden">
-        <div class="page-container gap-2 !py-3 flex flex-1 flex-col overflow-hidden">
-            <div class="gap-2 p-1 flex items-center justify-between">
-                <SearchInput v-model="searchInput" placeholder="Search projects..." @submit="onSearchSubmit" />
-                <div class="gap-2 flex items-center">
-                    <FilterButton v-bind="filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open" />
-                </div>
+    <div class="min-h-0 flex-1 overflow-auto">
+        <div class="page-container">
+            <div class="gap-2 mb-6 flex flex-wrap items-center">
+                <SearchInput v-model="searchInput" placeholder="Search projects" @submit="onSearchSubmit" />
+                <span class="flex-1" />
+                <FilterButton v-bind="filterSidebar.buttonProps.value" />
+                <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                <span class="border-line-2 h-7 rounded-md inline-flex overflow-hidden border" role="group">
+                    <button
+                        v-for="option in VIEW_OPTIONS"
+                        :key="option.value"
+                        type="button"
+                        class="grid w-[30px] cursor-pointer place-items-center transition-colors"
+                        :class="view === option.value ? 'bg-hover text-ink' : 'text-ink-3 hover:text-ink-2'"
+                        :aria-label="option.label"
+                        :aria-pressed="view === option.value"
+                        :title="option.label"
+                        @click="view = option.value"
+                    >
+                        <Icon :icon="option.icon" class="text-[15px]" />
+                    </button>
+                </span>
+                <Button label="New project" icon="pi pi-plus" size="small" class="!h-7" @click="createDialog.open()" />
             </div>
 
-            <div class="flex h-full w-full flex-col overflow-hidden">
-                <ProjectsGridView
+            <section v-if="pinnedProjects.length" class="mb-8">
+                <h2 class="type-section mb-2.5">Pinned</h2>
+                <div class="gap-3 lg:grid-cols-2 grid grid-cols-1">
+                    <ProjectCard
+                        v-for="project in pinnedProjects"
+                        :key="project.id"
+                        :project="project"
+                        @edit="onEdit"
+                        @delete="onDelete"
+                    />
+                </div>
+            </section>
+
+            <section>
+                <h2 class="type-section gap-2 mb-2.5 flex items-baseline">
+                    All projects
+                    <span v-if="paginationMeta" class="type-meta-3">{{ paginationMeta.total }}</span>
+                </h2>
+
+                <ProjectsTableView
+                    v-if="view === 'list'"
                     :projects="projects"
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    :is-filtered="isFiltered"
+                    @edit="onEdit"
+                    @delete="onDelete"
                     @page-change="onPageChange"
-                >
-                    <template #actions="{ project }">
-                        <IconButton
-                            severity="secondary"
-                            icon="pepicons-pop:dots-y"
-                            @click.stop="openRowMenu($event, project)"
-                        />
-                    </template>
-                </ProjectsGridView>
-            </div>
-        </div>
+                />
 
-        <Menu ref="rowMenu" :model="rowMenuItems" popup />
+                <template v-else>
+                    <div v-if="isPending" class="gap-3 lg:grid-cols-2 grid grid-cols-1">
+                        <Skeleton v-for="n in 4" :key="n" height="10rem" />
+                    </div>
+                    <div v-else-if="!projects.length" class="type-meta-3 py-6 text-center">No projects found.</div>
+                    <div v-else class="gap-3 lg:grid-cols-2 grid grid-cols-1">
+                        <ProjectCard
+                            v-for="project in projects"
+                            :key="project.id"
+                            :project="project"
+                            @edit="onEdit"
+                            @delete="onDelete"
+                        />
+                    </div>
+                    <Paginator
+                        v-if="hasPages"
+                        :rows="PAGE_SIZE"
+                        :total-records="paginationMeta?.total ?? 0"
+                        :first="(page - 1) * PAGE_SIZE"
+                        class="mt-2"
+                        @page="onPageChange($event.page + 1)"
+                    />
+                </template>
+            </section>
+        </div>
 
         <SortDialog
             :visible="sort.visible.value"
