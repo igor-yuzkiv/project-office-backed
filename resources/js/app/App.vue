@@ -37,12 +37,13 @@ const layoutComponent = computed(() => {
     return AppLayoutComponentMap.default
 })
 
-// Pages read their record id once on setup, so moving between two records of the same route
-// (pinned projects in the sidebar) must mount a fresh page; moving between its child routes must not.
+// A record that declares it (project details) mounts a fresh page for another id, because the
+// page reads its id once; the rest keep their instance across params (the task rail relies on it).
 const pageKey = computed(() => {
-    const path = route.matched[0]?.path ?? ''
-    const ownParams = [...path.matchAll(/:(\w+)/g)].map(([, name]) => String(route.params[name] ?? ''))
-    return [path, ...ownParams].join('/')
+    const record = route.matched[0]
+    if (!record?.meta.remountOnParams) return record?.path ?? ''
+    const ownParams = [...record.path.matchAll(/:(\w+)/g)].map(([, name]) => String(route.params[name] ?? ''))
+    return [record.path, ...ownParams].join('/')
 })
 </script>
 

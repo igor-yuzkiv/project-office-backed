@@ -27,7 +27,7 @@ export interface IProject extends IEntity {
     docs_count?: number
     task_lists_count?: number
     tasks_count?: number
-    // Present only on endpoints that compute them: is_pinned on list/show/pinned, task_status_counts on pinned.
+    // Present only on WebApi endpoints; CliApi responses leave them out.
     is_pinned?: boolean
     task_status_counts?: TaskStatusCounts
 }

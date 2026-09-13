@@ -19,18 +19,17 @@ export const PROJECT_COUNT_VIEWS = {
 
 /**
  * The same grouping as the backend task views: open is everything being worked or waiting to be,
- * closed folds declined in, and declined tasks left the project so they are not counted at all.
+ * closed folds declined in, and tasks is everything — the same figure as the Tasks tab and the
+ * `all` view it opens.
  */
 export function projectTaskCounts(counts: Partial<TaskStatusCounts> | undefined): ProjectTaskCounts {
     const count = (status: keyof TaskStatusCounts) => counts?.[status] ?? 0
-    const all = Object.values(counts ?? {}).reduce((sum, value) => sum + value, 0)
-
     return {
         open: count('open') + count('ready_for_development') + count('in_progress'),
         inProgress: count('in_progress'),
         toTest: count('ready_to_test'),
         backlog: count('backlog'),
         closed: count('closed') + count('declined'),
-        tasks: all - count('declined'),
+        tasks: Object.values(counts ?? {}).reduce((sum, value) => sum + value, 0),
     }
 }

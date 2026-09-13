@@ -14,7 +14,7 @@ describe('projectTaskCounts', () => {
                 closed: 20,
                 declined: 30,
             })
-        ).toEqual({ open: 9, inProgress: 4, toTest: 5, backlog: 1, closed: 50, tasks: 45 })
+        ).toEqual({ open: 9, inProgress: 4, toTest: 5, backlog: 1, closed: 50, tasks: 75 })
     })
 
     it('treats missing statuses as zero', () => {

@@ -31,6 +31,7 @@ const router = createRouter({
                 requiresAuth: true,
                 layout: 'default',
                 title: 'Project',
+                remountOnParams: true,
             },
             redirect: (to) => ({ name: 'project-details.overview', params: to.params }),
             children: [
