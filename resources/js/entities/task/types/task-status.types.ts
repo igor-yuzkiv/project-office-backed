@@ -17,3 +17,5 @@ export type TaskStatusMetadata = {
 }
 
 export type TaskStatusMetadataMap = Record<TaskStatusValue, TaskStatusMetadata>
+
+export type TaskStatusCounts = Record<TaskStatusValue, number>

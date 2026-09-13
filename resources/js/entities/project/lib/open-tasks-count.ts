@@ -1,5 +1,4 @@
-import type { TaskStatusValue } from '@/entities/task/types'
-import type { TaskStatusCounts } from '../types'
+import type { TaskStatusCounts, TaskStatusValue } from '@/entities/task/types'
 
 const CLOSED_TASK_STATUSES: readonly TaskStatusValue[] = ['completed', 'closed', 'declined']
 

@@ -2,6 +2,7 @@ import type { IEntity, ThemedStatusColors } from '@/shared/types'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ITag } from '@/entities/tag/types'
+import type { TaskStatusCounts } from '@/entities/task/types'
 
 // Mirrors TaskStatusValue: a list moves through the same states as the tasks in it.
 export type TaskListStatusValue =
@@ -36,10 +37,11 @@ export interface ITaskList extends IEntity {
     project?: ProjectOverviewDto
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
+    task_status_counts?: TaskStatusCounts
 }
 
 /** Compact form nested inside task and project payloads. */
 export type ITaskListOverview = Pick<
     ITaskList,
-    'id' | 'project_id' | 'key' | 'name' | 'status' | 'created_at' | 'updated_at'
+    'id' | 'project_id' | 'key' | 'name' | 'status' | 'created_at' | 'updated_at' | 'task_status_counts'
 >
