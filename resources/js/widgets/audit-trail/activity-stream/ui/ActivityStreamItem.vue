@@ -27,6 +27,12 @@ const subjectRoute = computed(() => {
     return name === null ? null : { name, params: { id: subject.id } }
 })
 
+// A creation event describes itself with the subject's name, which the row already shows.
+const description = computed(() => {
+    const text = props.record.description
+    return text && text !== props.record.subject?.name ? text : null
+})
+
 const titleSegments = computed(() => splitTitleByKey(props.record.title, props.record.subject?.key ?? null))
 
 /** The subject's name is already the title's second half in some events; then it is not repeated. */
@@ -70,14 +76,14 @@ const subjectName = computed(() => {
             </span>
 
             <button
-                v-if="record.description"
+                v-if="description"
                 type="button"
                 class="type-meta mt-0.5 block w-full cursor-pointer text-left"
                 :class="expanded ? 'whitespace-pre-wrap' : 'line-clamp-1'"
                 :aria-expanded="expanded"
                 @click="$emit('toggle')"
             >
-                {{ record.description }}
+                {{ description }}
             </button>
         </span>
 

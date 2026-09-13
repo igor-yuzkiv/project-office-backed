@@ -115,7 +115,7 @@ function countLabel(total: number | undefined) {
                     :avatar-url="row.updated_by.avatar_url"
                     size="small"
                 />
-                <span :title="row.updated_at">Updated {{ formatRelativeTime(row.updated_at) }}</span>
+                <span :title="row.updated_at">Updated {{ formatRelativeTime(row.updated_at).toLowerCase() }}</span>
             </div>
         </template>
 
