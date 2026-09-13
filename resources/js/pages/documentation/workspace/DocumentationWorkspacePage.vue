@@ -16,6 +16,7 @@ import { DocumentationTreePanel, useDocumentationTree } from '@/widgets/project-
 import { useBreadcrumbs } from '@/app/shell'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { SidePanel } from '@/shared/components/side-panel'
+import { CopyableKey } from '@/shared/components/display'
 import { useCollapsibleSidePanel } from '@/shared/composables'
 
 const router = useRouter()
@@ -204,7 +205,7 @@ watch(
                 <template v-else-if="openedDocument">
                     <div class="gap-2 px-4 pt-2 flex items-center" style="min-height: 2.75rem">
                         <div class="gap-2 min-w-0 flex items-baseline">
-                            <span class="text-surface-400 text-sm shrink-0">{{ openedDocument.key }}</span>
+                            <CopyableKey :value="openedDocument.key" size="md" />
                             <h1 class="text-surface-900 dark:text-surface-0 text-xl font-semibold truncate">
                                 {{ openedDocument.title }}
                             </h1>

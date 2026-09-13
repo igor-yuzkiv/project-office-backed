@@ -4,7 +4,7 @@ import type { ITaskList } from '@/entities/task-list/types'
 import { taskListTableColumnDefs } from '@/entities/task-list/config'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
-import { CopyToClipboard } from '@/shared/components/display'
+import { CopyableKey } from '@/shared/components/display'
 import { TaskListStatusTag } from '@/widgets/task-list/metadata'
 import { TagList } from '@/widgets/tags/metadata'
 
@@ -41,7 +41,7 @@ defineEmits<{
         </template>
 
         <template #column:key="{ row }">
-            <CopyToClipboard :text="row.key" class="text-surface-500" />
+            <CopyableKey :value="row.key" />
         </template>
 
         <template #column:status="{ row }">

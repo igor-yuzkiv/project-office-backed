@@ -9,7 +9,7 @@ import Tabs from 'primevue/tabs'
 import { useTaskQuery } from '@/entities/task/queries'
 import { useDeleteTaskMutation } from '@/entities/task/mutations'
 import { Icon } from '@iconify/vue'
-import { DisplayField, CopyToClipboard } from '@/shared/components/display'
+import { DisplayField, CopyableKey } from '@/shared/components/display'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast } from '@/shared/composables'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
@@ -100,7 +100,7 @@ useBreadcrumbs(() => [
 
                 <div class="gap-2 flex items-center">
                     <div class="gap-x-2 text-2xl font-semibold min-w-0 flex items-center truncate">
-                        <CopyToClipboard class="text-surface-400" :text="task.key" hide-copy-icon />
+                        <CopyableKey :value="task.key" size="md" />
                         <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ task.name }}</h1>
                     </div>
 

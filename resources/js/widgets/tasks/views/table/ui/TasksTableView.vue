@@ -4,7 +4,7 @@ import type { TaskOverviewDto } from '@/entities/task/types'
 import { taskTableColumnDefs } from '@/entities/task/config'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
-import { CopyToClipboard, DisplayDate } from '@/shared/components/display'
+import { CopyableKey, DisplayDate } from '@/shared/components/display'
 import { TaskPriorityTag, TaskStatusTag } from '@/widgets/tasks/metadata'
 import { computed } from 'vue'
 import { TagList } from '@/widgets/tags/metadata'
@@ -49,7 +49,7 @@ const columns = computed<EntityTableColumnDef[]>(() => props.columns ?? taskTabl
         </template>
 
         <template #column:key="{ row }">
-            <CopyToClipboard :text="row.key" class="text-surface-500" />
+            <CopyableKey :value="row.key" />
         </template>
 
         <template #column:project="{ row }">

@@ -8,7 +8,7 @@ import Tabs from 'primevue/tabs'
 import { useTaskListQuery } from '@/entities/task-list/queries'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import { Icon } from '@iconify/vue'
-import { DisplayField, CopyToClipboard } from '@/shared/components/display'
+import { DisplayField, CopyableKey } from '@/shared/components/display'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
 import { useToast, useCollapsibleSidePanel } from '@/shared/composables'
 import { SidePanel } from '@/shared/components/side-panel'
@@ -89,7 +89,7 @@ useBreadcrumbs(() => [
 
                 <div class="gap-2 flex items-center">
                     <div class="gap-x-2 text-2xl font-semibold min-w-0 flex items-center truncate">
-                        <CopyToClipboard class="text-surface-400" :text="taskList.key" hide-copy-icon />
+                        <CopyableKey :value="taskList.key" size="md" />
                         <h1 class="text-surface-900 dark:text-surface-0 truncate">{{ taskList.name }}</h1>
                     </div>
 
