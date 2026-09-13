@@ -1,11 +1,12 @@
 import type { ComponentSize } from '@/shared/types'
 
 export const PROJECT_ICON_SIZE_MAP: Record<ComponentSize, { root: string; label: string; glyph: string }> = {
-    xsmall: { root: 'h-6 w-6', label: 'text-[9px]', glyph: 'text-xs' },
-    small: { root: 'h-7 w-7', label: 'text-[10px]', glyph: 'text-sm' },
-    medium: { root: 'h-9 w-9', label: 'text-xs', glyph: 'text-lg' },
-    large: { root: 'h-11 w-11', label: 'text-sm', glyph: 'text-xl' },
-    xlarge: { root: 'h-13 w-13', label: 'text-base', glyph: 'text-2xl' },
+    // The plate is square for an icon and grows sideways for a prefix, which runs up to five letters.
+    xsmall: { root: 'h-6 min-w-6 px-1', label: 'text-[9px]', glyph: 'text-xs' },
+    small: { root: 'h-7 min-w-7 px-1', label: 'text-[10px]', glyph: 'text-sm' },
+    medium: { root: 'h-9 min-w-9 px-1.5', label: 'text-xs', glyph: 'text-lg' },
+    large: { root: 'h-11 min-w-11 px-2', label: 'text-sm', glyph: 'text-xl' },
+    xlarge: { root: 'h-13 min-w-13 px-2', label: 'text-base', glyph: 'text-2xl' },
 }
 
 /**

@@ -67,7 +67,7 @@ function isActive(project: ProjectOverviewDto): boolean {
             :aria-label="collapsed ? project.name : undefined"
         >
             <span
-                class="bg-code-bg text-ink-2 h-5 w-5 font-semibold grid shrink-0 place-items-center rounded-[5px] text-[10.5px] tracking-[0.02em]"
+                class="bg-code-bg text-ink-2 h-5 min-w-5 px-1 font-semibold grid shrink-0 place-items-center rounded-[5px] text-[10.5px] tracking-[0.02em] whitespace-nowrap"
             >
                 {{ project.prefix }}
             </span>

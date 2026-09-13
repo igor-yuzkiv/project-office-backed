@@ -59,11 +59,6 @@ const router = createRouter({
                     name: 'project-details.tasks',
                     component: () => import('@/pages/projects/details/tabs/ProjectTasksPage.vue'),
                 },
-                {
-                    path: 'issues',
-                    name: 'project-details.issues',
-                    component: () => import('@/pages/projects/details/tabs/ProjectIssuesPage.vue'),
-                },
             ],
         },
         {

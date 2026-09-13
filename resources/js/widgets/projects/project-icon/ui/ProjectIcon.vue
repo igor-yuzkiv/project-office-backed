@@ -40,7 +40,10 @@ watch(
 </script>
 
 <template>
-    <span class="rounded-lg flex items-center justify-center" :class="[sizeClasses.root, tintClass]">
+    <span
+        class="rounded-lg flex shrink-0 items-center justify-center whitespace-nowrap"
+        :class="[sizeClasses.root, tintClass]"
+    >
         <Icon v-if="icon && isIconResolved" :icon="icon" :class="sizeClasses.glyph" />
         <span v-else class="font-semibold" :class="sizeClasses.label">{{ prefix }}</span>
     </span>
