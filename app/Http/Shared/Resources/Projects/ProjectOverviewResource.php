@@ -23,6 +23,7 @@ class ProjectOverviewResource extends JsonResource
             'status'     => $this->status->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'is_pinned'  => $this->whenHas('is_pinned', fn () => (bool) $this->is_pinned),
 
             'created_by'  => $this->whenLoaded('createdBy', fn () => new UserOverviewResource($this->createdBy)),
             'updated_by'  => $this->whenLoaded('updatedBy', fn () => new UserOverviewResource($this->updatedBy)),

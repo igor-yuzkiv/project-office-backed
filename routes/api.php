@@ -54,6 +54,8 @@ Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['aut
  * Projects
  */
 Route::post('projects/search', [ProjectsController::class, 'search'])->middleware(['auth:sanctum'])->name('projects.search');
+Route::post('projects/{project}/pin', [ProjectsController::class, 'pin'])->middleware(['auth:sanctum'])->name('projects.pin');
+Route::delete('projects/{project}/pin', [ProjectsController::class, 'unpin'])->middleware(['auth:sanctum'])->name('projects.unpin');
 Route::apiResource('projects', ProjectsController::class)->middleware(['auth:sanctum']);
 
 /**

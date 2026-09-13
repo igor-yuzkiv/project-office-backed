@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -43,6 +44,8 @@ use Laravel\Scout\Searchable;
  * @property Collection<int, TaskModel> $tasks
  * @property Collection<int, TaskListModel> $taskLists
  * @property Collection<int, ProjectDocumentModel> $documents
+ * @property Collection<int, UserModel> $pinnedBy
+ * @property bool|null $is_pinned
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
@@ -115,6 +118,11 @@ class ProjectModel extends Model implements Archivable
     public function attachments(): MorphMany
     {
         return $this->morphMany(AttachmentModel::class, 'attachable');
+    }
+
+    public function pinnedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(UserModel::class, 'user_pinned_projects', 'project_id', 'user_id')->withPivot('created_at');
     }
 
     public function tags(): MorphToMany

@@ -4,12 +4,15 @@ namespace App\Domains\User\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Domains\Attachment\Models\AttachmentModel;
+use App\Domains\Project\Models\ProjectModel;
 use Database\Factories\UserModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -17,6 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property string|null $current_avatar_attachment_id
  * @property-read AttachmentModel|null $currentAvatar
+ * @property-read Collection<int, ProjectModel> $pinnedProjects
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -45,6 +49,11 @@ class UserModel extends Authenticatable
     public function currentAvatar(): BelongsTo
     {
         return $this->belongsTo(AttachmentModel::class, 'current_avatar_attachment_id');
+    }
+
+    public function pinnedProjects(): BelongsToMany
+    {
+        return $this->belongsToMany(ProjectModel::class, 'user_pinned_projects', 'user_id', 'project_id')->withPivot('created_at');
     }
 
     public function initials(): string

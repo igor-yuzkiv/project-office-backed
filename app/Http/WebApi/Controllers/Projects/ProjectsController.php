@@ -5,6 +5,10 @@ namespace App\Http\WebApi\Controllers\Projects;
 use App\Domains\Project\Actions\CreateProject\CreateProjectHandler;
 use App\Domains\Project\Actions\DeleteProject\DeleteProjectCommand;
 use App\Domains\Project\Actions\DeleteProject\DeleteProjectHandler;
+use App\Domains\Project\Actions\PinProject\PinProjectCommand;
+use App\Domains\Project\Actions\PinProject\PinProjectHandler;
+use App\Domains\Project\Actions\UnpinProject\UnpinProjectCommand;
+use App\Domains\Project\Actions\UnpinProject\UnpinProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
@@ -15,7 +19,9 @@ use App\Http\WebApi\Requests\Projects\UpdateProjectRequest;
 use App\Http\WebApi\Requests\Shared\SearchRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class ProjectsController extends ResourceController
 {
@@ -23,10 +29,18 @@ class ProjectsController extends ResourceController
         private readonly CreateProjectHandler $createHandler,
         private readonly UpdateProjectHandler $updateHandler,
         private readonly DeleteProjectHandler $deleteHandler,
+        private readonly PinProjectHandler $pinHandler,
+        private readonly UnpinProjectHandler $unpinHandler,
     ) {}
 
     /** The project card counts what a project holds, so every list response carries these. */
     private const array COUNTED_RELATIONS = ['documents', 'taskLists', 'tasks'];
+
+    /** Whether the current user pinned the project; the pin state lives per user, not on the project. */
+    private function pinnedByCurrentUser(): array
+    {
+        return ['pinnedBy as is_pinned' => fn (Builder $q) => $q->where('user_id', auth()->id())];
+    }
 
     protected function getAllowedIncludes(): array
     {
@@ -42,6 +56,7 @@ class ProjectsController extends ResourceController
 
         $projects = ProjectModel::with($includes)
             ->withCount(self::COUNTED_RELATIONS)
+            ->withExists($this->pinnedByCurrentUser())
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
@@ -62,6 +77,7 @@ class ProjectsController extends ResourceController
                 return $q
                     ->with($includes)
                     ->withCount(self::COUNTED_RELATIONS)
+                    ->withExists($this->pinnedByCurrentUser())
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
@@ -72,6 +88,7 @@ class ProjectsController extends ResourceController
     public function show(ProjectModel $project): ProjectResource
     {
         $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'archivedBy', 'tags'], requested: $this->parseRequestedIncludes()));
+        $project->loadExists($this->pinnedByCurrentUser());
 
         return new ProjectResource($project);
     }
@@ -99,5 +116,19 @@ class ProjectsController extends ResourceController
         $this->deleteHandler->handle(new DeleteProjectCommand($project));
 
         return response()->json(['message' => 'Project deleted.']);
+    }
+
+    public function pin(Request $request, ProjectModel $project): Response
+    {
+        $this->pinHandler->handle(new PinProjectCommand($request->user(), $project));
+
+        return response()->noContent();
+    }
+
+    public function unpin(Request $request, ProjectModel $project): Response
+    {
+        $this->unpinHandler->handle(new UnpinProjectCommand($request->user(), $project));
+
+        return response()->noContent();
     }
 }
