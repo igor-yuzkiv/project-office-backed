@@ -19,7 +19,7 @@ export function formatRelativeTime(value: string): string {
     const elapsed = Date.now() - date.getTime()
 
     if (elapsed < MINUTE) {
-        return 'Just now'
+        return 'just now'
     }
 
     if (elapsed < HOUR) {

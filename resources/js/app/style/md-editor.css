@@ -3,11 +3,12 @@
 /*
  * md-editor-v3 paints itself from its own `--md-*` variables; pointing them at the app tokens
  * makes the editor a flat region of the page (no box, hairline under the toolbar) in both
- * schemes instead of the library's white / black panels.
+ * schemes instead of the library's white / black panels. Doubled classes: the library's own
+ * rules land after this file in the bundle, so the override has to win on specificity.
  */
-.md-editor,
-.md-editor-dark,
-.md-editor-modal-container,
+.md-editor.md-editor,
+.md-editor.md-editor-dark,
+.md-editor-modal-container.md-editor-modal-container,
 .md-editor-modal-container[data-theme='dark'] {
     --md-color: var(--color-ink);
     --md-hover-color: var(--color-ink);
@@ -53,10 +54,10 @@
     display: none;
 }
 
-/* The rendered pane reads like prose elsewhere in the app (`type-prose` in app.css). Two
-   selectors so the override outranks the library's `.md-editor-dark .md-editor-preview`. */
-.md-editor .md-editor-preview,
-.md-editor-dark .md-editor-preview {
+/* The rendered pane reads like prose elsewhere in the app (`type-prose` in app.css). Doubled
+   classes so the override outranks the library's `.md-editor-dark .md-editor-preview`. */
+.md-editor.md-editor .md-editor-preview,
+.md-editor.md-editor-dark .md-editor-preview {
     --md-theme-bg-color: var(--color-page);
     --md-theme-bg-color-inset: var(--color-canvas);
     --md-theme-border-color: var(--color-line);
