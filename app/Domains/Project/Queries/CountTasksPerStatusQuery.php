@@ -2,6 +2,7 @@
 
 namespace App\Domains\Project\Queries;
 
+use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use Illuminate\Support\Facades\DB;
@@ -36,5 +37,21 @@ class CountTasksPerStatusQuery
         }
 
         return $counts;
+    }
+
+    /**
+     * Sets `task_status_counts` on every given project from one query, so a page of projects
+     * never counts per row.
+     *
+     * @param  iterable<ProjectModel>  $projects
+     */
+    public function attach(iterable $projects): void
+    {
+        $projects = collect($projects);
+        $counts = $this->handle($projects->map(fn (ProjectModel $project) => $project->id)->all());
+
+        foreach ($projects as $project) {
+            $project->setAttribute('task_status_counts', $counts[$project->id]);
+        }
     }
 }

@@ -79,6 +79,7 @@ class ProjectsController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
+        $this->countTasksPerStatus->attach($projects->items());
         $this->attachTaskListStatusCounts($projects->items());
 
         return ProjectOverviewResource::collection($projects);
@@ -103,6 +104,7 @@ class ProjectsController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
+        $this->countTasksPerStatus->attach($projects->items());
         $this->attachTaskListStatusCounts($projects->items());
 
         return ProjectOverviewResource::collection($projects);
@@ -119,12 +121,10 @@ class ProjectsController extends ResourceController
             ->orderBy('projects.id')
             ->get();
 
-        $counts = $this->countTasksPerStatus->handle($projects->modelKeys());
-
         foreach ($projects as $project) {
             $project->setAttribute('is_pinned', true);
-            $project->setAttribute('task_status_counts', $counts[$project->id]);
         }
+        $this->countTasksPerStatus->attach($projects);
         $this->attachTaskListStatusCounts($projects);
 
         return ProjectOverviewResource::collection($projects);
@@ -134,6 +134,7 @@ class ProjectsController extends ResourceController
     {
         $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'archivedBy', 'tags'], requested: $this->parseRequestedIncludes()));
         $project->loadExists($this->pinnedByCurrentUser());
+        $this->countTasksPerStatus->attach([$project]);
         $this->attachTaskListStatusCounts([$project]);
 
         return new ProjectResource($project);

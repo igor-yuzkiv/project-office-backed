@@ -216,6 +216,7 @@ Route::group([
     'middleware' => ['auth:sanctum'],
     'controller' => ProjectAttachmentsController::class,
 ], function () {
+    Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
 });
 

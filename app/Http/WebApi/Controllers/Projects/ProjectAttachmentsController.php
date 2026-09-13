@@ -8,12 +8,23 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Http\Shared\Resources\Attachments\AttachmentResource;
 use App\Http\WebApi\Requests\Projects\StoreProjectAttachmentRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProjectAttachmentsController
 {
     public function __construct(
         private readonly UploadAttachmentHandler $uploadHandler,
     ) {}
+
+    public function index(ProjectModel $project): AnonymousResourceCollection
+    {
+        $attachments = $project->attachments()
+            ->with(['createdBy', 'updatedBy'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(50);
+
+        return AttachmentResource::collection($attachments);
+    }
 
     public function store(StoreProjectAttachmentRequest $request, ProjectModel $project): JsonResponse
     {

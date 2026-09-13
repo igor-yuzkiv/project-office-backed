@@ -96,18 +96,6 @@ it('keeps pinned lists private to each user', function () {
         ->assertJsonPath('data.0.id', $mine->id);
 });
 
-it('leaves task_status_counts out of the project list and show payloads', function () {
-    $project = ProjectModel::factory()->create();
-
-    $this->actingAs($this->user)
-        ->getJson('/api/projects')
-        ->assertOk()
-        ->assertJsonMissingPath('data.0.task_status_counts');
-    $this->getJson("/api/projects/{$project->id}")
-        ->assertOk()
-        ->assertJsonMissingPath('data.task_status_counts');
-});
-
 it('rejects unauthenticated requests', function () {
     $this->getJson('/api/projects/pinned')->assertUnauthorized();
 });
