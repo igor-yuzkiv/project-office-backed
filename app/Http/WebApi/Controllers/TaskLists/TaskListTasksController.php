@@ -34,6 +34,7 @@ class TaskListTasksController extends ResourceController
         $pagination = $this->getPaginationParams();
 
         $tasks = $taskList->tasks()
+            ->with('updatedBy')
             ->orderBy('name')
             ->orderBy('sequence_number')
             ->paginate($pagination->perPage, page: $pagination->page);
