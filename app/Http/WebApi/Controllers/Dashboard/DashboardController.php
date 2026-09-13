@@ -7,10 +7,9 @@ use App\Domains\TaskList\Queries\CountTasksPerStatusQuery;
 use App\Domains\TaskList\Queries\GetRecentTaskListsQuery;
 use App\Http\Shared\Resources\TaskLists\TaskListResource;
 use App\Http\Shared\Resources\Tasks\TaskOverviewResource;
-use App\Http\WebApi\Controllers\ResourceController;
 use Illuminate\Http\JsonResponse;
 
-class DashboardController extends ResourceController
+class DashboardController
 {
     private const RECENT_TASKS_LIMIT = 6;
 
@@ -21,11 +20,6 @@ class DashboardController extends ResourceController
         private readonly GetRecentTaskListsQuery $getRecentTaskLists,
         private readonly CountTasksPerStatusQuery $countTasksPerStatus,
     ) {}
-
-    protected function getAllowedIncludes(): array
-    {
-        return [];
-    }
 
     public function index(): JsonResponse
     {

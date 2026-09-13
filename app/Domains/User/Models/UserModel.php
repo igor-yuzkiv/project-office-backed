@@ -2,7 +2,6 @@
 
 namespace App\Domains\User\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Domains\Attachment\Models\AttachmentModel;
 use App\Domains\Project\Models\ProjectModel;
 use Database\Factories\UserModelFactory;
@@ -33,11 +32,6 @@ class UserModel extends Authenticatable
 
     public $incrementing = false;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [

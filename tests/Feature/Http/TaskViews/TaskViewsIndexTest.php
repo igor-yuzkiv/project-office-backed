@@ -37,8 +37,8 @@ it('returns every registry view, in registry order', function () {
 
 // The keys are spelled out rather than derived from FilterPayload: deriving them would make the
 // test agree with whatever the mapping currently emits, which is the one thing it must not do.
-// The frontend replays this exact payload into POST /api/tasks/search, and the dashboard counts
-// the same way, so a renamed key puts different numbers on Home and on the Tasks page.
+// The frontend replays this exact payload into POST /api/tasks/search, so a renamed key would put
+// a count on a view that its own list does not match.
 it('describes every filter with the five keys the search endpoint reads', function () {
     $data = $this->getJson('/api/task-views')->assertOk()->json('data');
 
