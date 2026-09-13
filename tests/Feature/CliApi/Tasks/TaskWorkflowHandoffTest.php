@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Comment\Actions\CreateComment\CreateCommentHandler;
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
@@ -30,7 +31,8 @@ it('creates a handoff resolution comment and sets the status to ready_to_test', 
     $response->assertJsonMissingPath('data.task_list_tasks');
 
     $comment = CommentModel::query()->where('commentable_id', $task->id)->sole();
-    expect($comment->content)->toContain('# Handoff')->toContain('Implemented and covered with tests.');
+    expect($comment->content)->toContain('# Handoff')->toContain('Implemented and covered with tests.')
+        ->and($comment->kind)->toBe(CommentKind::Handoff);
 
     expect($task->fresh()->status)->toBe(TaskStatus::ReadyToTest);
 });

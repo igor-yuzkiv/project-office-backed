@@ -11,4 +11,6 @@ final class CheckpointComment
     public const PREFIX = '# Checkpoint: ';
 
     public const HANDOFF_PREFIX = '# Handoff';
+
+    public const START_PREFIX = '# Start';
 }

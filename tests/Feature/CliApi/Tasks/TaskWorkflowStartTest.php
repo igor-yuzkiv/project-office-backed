@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
@@ -51,7 +52,8 @@ it('creates a comment with the start marker when a comment is given', function (
     expect($response->json('comments'))->toHaveCount(1);
 
     $comment = CommentModel::query()->where('commentable_id', $task->id)->sole();
-    expect($comment->content)->toContain('# Start')->toContain('Picking this up now.');
+    expect($comment->content)->toContain('# Start')->toContain('Picking this up now.')
+        ->and($comment->kind)->toBe(CommentKind::Start);
 });
 
 it('does not create a comment when none is given', function () {
