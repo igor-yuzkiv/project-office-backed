@@ -18,6 +18,7 @@ class AuditRecorder
         $type = null;
         $subjectType = null;
         $subjectId = null;
+        $projectId = null;
 
         try {
             $type = $record->type();
@@ -29,13 +30,14 @@ class AuditRecorder
             if ($subjectId !== null && $subjectId !== '') {
                 $subjectType = $subject->getMorphClass();
                 $subjectId = (string) $subjectId;
+                $projectId = SubjectType::projectIdOf($subject);
             } else {
                 $subjectId = null;
             }
 
             // Nested transaction: inside an open outer transaction this becomes a savepoint, so a
             // failed audit write rolls back to it instead of leaving the caller's transaction aborted.
-            DB::transaction(function () use ($record, $type, $subjectType, $subjectId): void {
+            DB::transaction(function () use ($record, $type, $subjectType, $subjectId, $projectId): void {
                 AuditRecordModel::query()->create([
                     'id'           => (string) Str::ulid(),
                     'type'         => $type,
@@ -43,6 +45,7 @@ class AuditRecorder
                     'description'  => $record->description(),
                     'subject_type' => $subjectType,
                     'subject_id'   => $subjectId,
+                    'project_id'   => $projectId,
                     'created_by'   => auth()->id(),
                     'created_at'   => now(),
                 ]);

@@ -3,6 +3,7 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use App\Http\Shared\Resources\AuditTrail\AuditRecordResource;
 use App\Libs\AuditTrail\Models\AuditRecordModel;
@@ -39,7 +40,7 @@ it('returns a paginated envelope', function () {
     $this->getJson('/api/audit-records')
         ->assertOk()
         ->assertJsonStructure([
-            'data' => [['id', 'type', 'title', 'description', 'created_at', 'subject', 'actor']],
+            'data' => [['id', 'type', 'title', 'description', 'created_at', 'subject', 'project', 'actor']],
             'meta',
             'links',
         ]);
@@ -81,9 +82,10 @@ it('keeps actor and subject present as null rather than dropping the keys', func
 
     // assertJsonPath(..., null) cannot tell a null value from a missing key, and a missing key is
     // a different contract for whoever reads this.
-    expect($record)->toHaveKeys(['actor', 'subject'])
+    expect($record)->toHaveKeys(['actor', 'subject', 'project'])
         ->and($record['actor'])->toBeNull()
-        ->and($record['subject'])->toBeNull();
+        ->and($record['subject'])->toBeNull()
+        ->and($record['project'])->toBeNull();
 });
 
 it('keeps actor present even when the relation was never loaded', function () {
@@ -156,4 +158,116 @@ it('keeps the query count flat as the page grows', function () {
     // has no identity map, so twenty rows sharing one author would still be twenty queries.
     expect($twentyRows)->toBe($oneRow)
         ->and($twentyRows)->toBeLessThanOrEqual(5);
+});
+
+function feedFilter(string $field, mixed $value, ?string $matchMode = null, string $filterKey = 'text'): array
+{
+    return ['filters' => [array_filter([
+        'filter_key' => $filterKey,
+        'field_name' => $field,
+        'value'      => $value,
+        'matchMode'  => $matchMode,
+    ], fn ($v) => $v !== null)]];
+}
+
+function feedUrl(array $query): string
+{
+    return '/api/audit-records?'.http_build_query($query);
+}
+
+it('returns the subject key and name with the project', function () {
+    $task = taskForFeed();
+    AuditRecordModel::factory()->forSubject($task)->create();
+
+    $this->getJson('/api/audit-records')
+        ->assertOk()
+        ->assertJsonPath('data.0.subject', ['type' => 'task', 'id' => $task->id, 'key' => $task->key, 'name' => $task->name])
+        ->assertJsonPath('data.0.project', ['id' => $task->project->id, 'name' => $task->project->name, 'prefix' => $task->project->prefix]);
+});
+
+it('names a document by its title and a project by its prefix', function () {
+    $project = ProjectModel::factory()->create();
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $project->id]);
+    AuditRecordModel::factory()->forSubject($document)->create();
+    AuditRecordModel::factory()->forSubject($project)->create();
+
+    $this->getJson('/api/audit-records')
+        ->assertOk()
+        ->assertJsonPath('data.0.subject.key', $project->prefix)
+        ->assertJsonPath('data.0.subject.name', $project->name)
+        ->assertJsonPath('data.1.subject.name', $document->title);
+});
+
+it('keeps type and id of a deleted subject and drops its key and name', function () {
+    $task = taskForFeed();
+    AuditRecordModel::factory()->forSubject($task)->create();
+    $task->forceDelete();
+
+    $this->getJson('/api/audit-records')
+        ->assertOk()
+        ->assertJsonPath('data.0.subject', ['type' => 'task', 'id' => $task->id, 'key' => null, 'name' => null]);
+});
+
+it('filters by project_id', function () {
+    $mine = taskForFeed();
+    AuditRecordModel::factory()->forSubject($mine)->create();
+    AuditRecordModel::factory()->forSubject(taskForFeed())->create();
+
+    $this->getJson(feedUrl(feedFilter('project_id', $mine->project_id, filterKey: 'lookup')))
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.project.id', $mine->project_id);
+});
+
+it('filters by type', function () {
+    AuditRecordModel::factory()->create(['type' => 'task.created']);
+    AuditRecordModel::factory()->create(['type' => 'task.updated']);
+    AuditRecordModel::factory()->create(['type' => 'task_list.created']);
+
+    $this->getJson(feedUrl(feedFilter('type', ['task.created', 'task_list.created'], 'in')))
+        ->assertOk()
+        ->assertJsonCount(2, 'data');
+
+    $this->getJson(feedUrl(feedFilter('type', 'task.updated', 'equals')))
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.type', 'task.updated');
+});
+
+it('filters by subject_type using the short key', function () {
+    $task = taskForFeed();
+    $list = TaskListModel::factory()->create(['project_id' => $task->project_id]);
+    AuditRecordModel::factory()->forSubject($task)->create();
+    AuditRecordModel::factory()->forSubject($list)->create();
+    AuditRecordModel::factory()->forSubject($task->project)->create();
+
+    $this->getJson(feedUrl(feedFilter('subject_type', 'task_list', 'equals')))
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.subject.type', 'task_list');
+
+    $this->getJson(feedUrl(feedFilter('subject_type', ['task', 'project'], 'in')))
+        ->assertOk()
+        ->assertJsonCount(2, 'data');
+});
+
+it('combines filters', function () {
+    $task = taskForFeed();
+    AuditRecordModel::factory()->forSubject($task)->create(['type' => 'task.created']);
+    AuditRecordModel::factory()->forSubject($task)->create(['type' => 'task.updated']);
+    AuditRecordModel::factory()->forSubject(taskForFeed())->create(['type' => 'task.created']);
+
+    $this->getJson(feedUrl(['filters' => [
+        ['filter_key' => 'lookup', 'field_name' => 'project_id', 'value' => $task->project_id],
+        ['filter_key' => 'text', 'field_name' => 'type', 'value' => 'task.created', 'matchMode' => 'equals'],
+        ['filter_key' => 'text', 'field_name' => 'subject_type', 'value' => ['task'], 'matchMode' => 'in'],
+    ]]))
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.type', 'task.created')
+        ->assertJsonPath('data.0.project.id', $task->project_id);
+});
+
+it('rejects a filter on a field the feed does not expose', function () {
+    $this->getJson(feedUrl(feedFilter('title', 'x')))->assertStatus(400);
 });

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Domains\User\Models\UserModel;
 use App\Libs\AuditTrail\Models\AuditRecordModel;
+use App\Libs\AuditTrail\SubjectType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +23,7 @@ class AuditRecordModelFactory extends Factory
         return $this->state([
             'subject_type' => $subject->getMorphClass(),
             'subject_id'   => (string) $subject->getKey(),
+            'project_id'   => SubjectType::projectIdOf($subject),
         ]);
     }
 
@@ -33,6 +35,7 @@ class AuditRecordModelFactory extends Factory
             'description'  => fake()->optional()->paragraph(),
             'subject_type' => null,
             'subject_id'   => null,
+            'project_id'   => null,
             'created_by'   => UserModel::factory(),
             'created_at'   => now(),
         ];

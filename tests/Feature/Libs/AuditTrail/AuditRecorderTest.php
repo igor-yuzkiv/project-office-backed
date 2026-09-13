@@ -1,7 +1,9 @@
 <?php
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\ProjectDocument\Models\ProjectDocumentModel;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use App\Libs\AuditTrail\Contracts\AuditRecord;
 use App\Libs\AuditTrail\Facades\AuditTrail;
@@ -155,4 +157,31 @@ it('can be spied on in a test', function () {
     AuditTrail::capture($record);
 
     AuditTrail::shouldHaveReceived('capture')->once()->with($record);
+});
+
+it('stores the project of a task, a task list and a document subject', function () {
+    $project = ProjectModel::factory()->create();
+    $task = TaskModel::factory()->create(['project_id' => $project->id]);
+    $list = TaskListModel::factory()->create(['project_id' => $project->id]);
+    $document = ProjectDocumentModel::factory()->create(['project_id' => $project->id]);
+
+    AuditTrail::capture(auditRecord($task));
+    AuditTrail::capture(auditRecord($list));
+    AuditTrail::capture(auditRecord($document));
+
+    expect(AuditRecordModel::query()->pluck('project_id')->all())->toBe([$project->id, $project->id, $project->id]);
+});
+
+it('stores a project subject as its own project', function () {
+    $project = ProjectModel::factory()->create();
+
+    AuditTrail::capture(auditRecord($project));
+
+    expect(AuditRecordModel::query()->sole()->project_id)->toBe($project->id);
+});
+
+it('stores no project without a subject', function () {
+    AuditTrail::capture(auditRecord(null));
+
+    expect(AuditRecordModel::query()->sole()->project_id)->toBeNull();
 });
