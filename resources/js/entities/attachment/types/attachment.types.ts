@@ -12,6 +12,8 @@ export interface IAttachment extends IEntity {
     storage_provider: string
     storage_key: string
     role: AttachmentRole | null
+    created_at: string
+    updated_at: string
 
     created_by?: UserOverviewDto
     updated_by?: UserOverviewDto
