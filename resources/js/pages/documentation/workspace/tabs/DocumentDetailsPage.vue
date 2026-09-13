@@ -1,31 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Panel from 'primevue/panel'
 import type { IProjectDocument } from '@/entities/project-document/types'
-import { CopyableKey, DisplayFields } from '@/shared/components/display'
-import type { DisplayFieldConfig } from '@/shared/components/display'
+import { PropertiesGrid } from '@/shared/components/display'
+import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 import { ProjectDocumentStatusTag } from '@/widgets/project-documents/status-tag'
 import { TagList } from '@/widgets/tags/metadata'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import { formatDateTime } from '@/shared/utils/date.util'
 
 const props = defineProps<{
     document: IProjectDocument
 }>()
-
-const generalFields: DisplayFieldConfig<IProjectDocument>[] = [
-    { name: 'key', label: 'Key' },
-    { name: 'status', label: 'Status' },
-    { name: 'parent', label: 'Parent' },
-    { name: 'tags', label: 'Tags' },
-]
-
-const systemFields: DisplayFieldConfig<IProjectDocument>[] = [
-    { name: 'created_by', label: 'Created By' },
-    { name: 'created_at', label: 'Created At', value: (document) => formatDateTime(document.created_at) },
-    { name: 'updated_by', label: 'Updated By' },
-    { name: 'updated_at', label: 'Updated At', value: (document) => formatDateTime(document.updated_at) },
-]
 
 // The document's path ends with the document itself, so its parent is the node before it.
 const parent = computed(() => {
@@ -36,58 +20,61 @@ const parent = computed(() => {
 </script>
 
 <template>
-    <div class="gap-4 p-2 flex flex-col overflow-auto">
-        <Panel header="General" :toggleable="true">
-            <DisplayFields :item="document" :fields="generalFields">
-                <template #[`field:key:value`]="{ item }">
-                    <CopyableKey :value="item.key" size="md" />
-                </template>
-                <template #[`field:status:value`]="{ item }">
-                    <ProjectDocumentStatusTag :status="item.status" class="w-fit" />
-                </template>
-                <template #[`field:parent:value`]="{ item }">
+    <div class="min-h-0 overflow-auto">
+        <div class="page-container">
+            <PropertiesGrid>
+                <span>Status</span>
+                <div><ProjectDocumentStatusTag :status="document.status" /></div>
+
+                <span>Parent</span>
+                <div>
                     <RouterLink
                         v-if="parent"
                         :to="{
                             name: 'project-documentation.document',
-                            params: { projectId: item.project_id, documentId: parent.id },
+                            params: { projectId: document.project_id, documentId: parent.id },
                         }"
-                        class="app-link truncate"
+                        class="text-accent text-[13px] hover:underline"
                     >
                         {{ parent.title }}
                     </RouterLink>
-                    <span v-else class="text-surface-400 text-sm">Root document</span>
-                </template>
-                <template #[`field:tags:value`]="{ item }">
-                    <TagList v-if="item.tags?.length" :tags="item.tags" />
-                    <span v-else class="text-surface-400 text-sm">No tags yet.</span>
-                </template>
-            </DisplayFields>
-        </Panel>
+                    <span v-else class="text-ink-2 text-[13px]">Root document</span>
+                </div>
 
-        <Panel header="System" :toggleable="true">
-            <DisplayFields :item="document" :fields="systemFields">
-                <template #[`field:created_by:value`]="{ item }">
-                    <div v-if="item.created_by" class="gap-2 flex items-center">
-                        <UserAvatar
-                            :initials="item.created_by.initials"
-                            :avatar-url="item.created_by.avatar_url"
-                            size="small"
-                        />
-                        <span class="text-surface-700 dark:text-surface-300">{{ item.created_by.name }}</span>
-                    </div>
-                </template>
-                <template #[`field:updated_by:value`]="{ item }">
-                    <div v-if="item.updated_by" class="gap-2 flex items-center">
-                        <UserAvatar
-                            :initials="item.updated_by.initials"
-                            :avatar-url="item.updated_by.avatar_url"
-                            size="small"
-                        />
-                        <span class="text-surface-700 dark:text-surface-300">{{ item.updated_by.name }}</span>
-                    </div>
-                </template>
-            </DisplayFields>
-        </Panel>
+                <span>Tags</span>
+                <div>
+                    <TagList v-if="document.tags?.length" :tags="document.tags" inline />
+                    <span v-else class="text-ink-2 text-[13px]">—</span>
+                </div>
+
+                <span>Created</span>
+                <div>
+                    <UserAvatar
+                        v-if="document.created_by"
+                        :initials="document.created_by.initials"
+                        :avatar-url="document.created_by.avatar_url"
+                        size="xsmall"
+                    />
+                    <span class="text-ink-2 text-[13px]">
+                        {{ document.created_by?.name ?? 'Unknown' }}
+                        <span class="text-ink-3">· {{ formatRelativeTime(document.created_at) }}</span>
+                    </span>
+                </div>
+
+                <span>Updated</span>
+                <div>
+                    <UserAvatar
+                        v-if="document.updated_by"
+                        :initials="document.updated_by.initials"
+                        :avatar-url="document.updated_by.avatar_url"
+                        size="xsmall"
+                    />
+                    <span class="text-ink-2 text-[13px]">
+                        {{ document.updated_by?.name ?? 'Unknown' }}
+                        <span class="text-ink-3">· {{ formatRelativeTime(document.updated_at) }}</span>
+                    </span>
+                </div>
+            </PropertiesGrid>
+        </div>
     </div>
 </template>

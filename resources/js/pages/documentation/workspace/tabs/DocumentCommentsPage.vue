@@ -25,7 +25,7 @@ const { upsert } = useUpsertProjectDocumentComment(documentId)
 const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 function handleCreateComment(content: string) {
-    upsert({ mode: 'create', content: content })
+    upsert({ mode: 'create', content })
 }
 
 function handleUpdateComment(value: { commentId: string; content: string }) {
@@ -43,15 +43,18 @@ async function handleCommentImageUpload(files: File[], callback: (urls: string[]
 </script>
 
 <template>
-    <CommentThread
-        v-model:page="page"
-        :comments="comments"
-        :pagination-meta="paginationMeta"
-        :is-pending="isPending"
-        :handle-image-upload="handleCommentImageUpload"
-        class="overflow-auto"
-        @create="handleCreateComment"
-        @update="handleUpdateComment"
-        @delete="deleteComment"
-    />
+    <div class="min-h-0 overflow-auto">
+        <CommentThread
+            v-model:page="page"
+            :comments="comments"
+            :pagination-meta="paginationMeta"
+            :is-pending="isPending"
+            :handle-image-upload="handleCommentImageUpload"
+            composer-placement="bottom"
+            class="page-container max-w-[960px]"
+            @create="handleCreateComment"
+            @update="handleUpdateComment"
+            @delete="deleteComment"
+        />
+    </div>
 </template>
