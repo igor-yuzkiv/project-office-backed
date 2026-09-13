@@ -18,6 +18,7 @@ const showProgressBar = computed(() => isFetching.value > 0 || loadingStore.prog
 
 const navItems: SidebarNavItem[] = [
     { key: 'home', label: 'Home', icon: 'heroicons:home', routeName: 'home', activeWhen: '/' },
+    { key: 'activity', label: 'Activity', icon: 'heroicons:bolt', routeName: 'activity', activeWhen: '/activity' },
     {
         key: 'projects',
         label: 'Projects',
@@ -33,7 +34,6 @@ const navItems: SidebarNavItem[] = [
         routeName: 'task-lists',
         activeWhen: '/task-lists',
     },
-    { key: 'activity', label: 'Activity', icon: 'heroicons:bolt', routeName: 'activity', activeWhen: '/activity' },
 ]
 </script>
 

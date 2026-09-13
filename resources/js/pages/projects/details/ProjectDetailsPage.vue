@@ -42,6 +42,7 @@ const tabs = computed(() => [
     { value: 'overview', label: 'Overview' },
     { value: 'task-lists', label: 'Task lists', count: project.value?.task_lists_count },
     { value: 'tasks', label: 'Tasks', count: project.value?.tasks_count },
+    { value: 'activity', label: 'Activity' },
 ])
 
 const moreMenuItems = computed<MenuItem[]>(() => [

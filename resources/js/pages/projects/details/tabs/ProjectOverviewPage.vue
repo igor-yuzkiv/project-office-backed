@@ -19,6 +19,7 @@ import { MarkdownPreview } from '@/shared/components/md-editor'
 import { formatDate } from '@/shared/utils/date.util'
 import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 import { AttachmentsDialog } from '@/widgets/attachments/attachments-dialog'
+import { ActivityStream } from '@/widgets/audit-trail/activity-stream'
 import { TagList } from '@/widgets/tags/metadata'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { TasksTableView } from '@/widgets/tasks/views/table'
@@ -165,6 +166,17 @@ function taskDetailsRoute(task: TaskOverviewDto) {
             :columns="taskColumns"
             :to="taskDetailsRoute"
         />
+
+        <h2 class="type-section gap-2 mt-8 mb-2.5 flex items-baseline">
+            Activity
+            <RouterLink
+                :to="{ name: 'project-details.activity', params: { id: projectId } }"
+                class="text-ink-2 hover:text-accent font-normal ml-auto text-[13px]"
+            >
+                All activity
+            </RouterLink>
+        </h2>
+        <ActivityStream :limit="5" :filters="{ project_id: [projectId] }" :show-project="false" />
 
         <h2 class="type-section mt-8 mb-2.5">About</h2>
         <PropertiesGrid>

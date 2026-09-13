@@ -16,6 +16,9 @@ export function auditRecordFiltersToPayload(filters: AuditRecordFilters): Filter
             return []
         }
 
-        return [{ ...FILTER_KEYS[field], field_name: field, value, params: {} }]
+        // The lookup filter matches one id and ignores an array, so the project goes as a scalar.
+        const payloadValue = field === 'project_id' ? value[0] : value
+
+        return [{ ...FILTER_KEYS[field], field_name: field, value: payloadValue, params: {} }]
     })
 }

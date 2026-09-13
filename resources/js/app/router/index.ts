@@ -59,6 +59,11 @@ const router = createRouter({
                     name: 'project-details.tasks',
                     component: () => import('@/pages/projects/details/tabs/ProjectTasksPage.vue'),
                 },
+                {
+                    path: 'activity',
+                    name: 'project-details.activity',
+                    component: () => import('@/pages/projects/details/tabs/ProjectActivityPage.vue'),
+                },
             ],
         },
         {
