@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { onKeyStroke } from '@vueuse/core'
 import { useIsFetching } from '@tanstack/vue-query'
 import ProgressBar from 'primevue/progressbar'
 import AppHeader from '../header/AppHeader.vue'
@@ -15,17 +14,6 @@ const loadingStore = useLoadingStateStore()
 
 const isFetching = useIsFetching()
 const showProgressBar = computed(() => isFetching.value > 0 || loadingStore.progressLoading)
-
-function isEditableTarget(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) return false
-    return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
-}
-
-onKeyStroke('\\', (event) => {
-    if (!(event.metaKey || event.ctrlKey) || isEditableTarget(event.target)) return
-    event.preventDefault()
-    store.toggleSidebar()
-})
 
 const navItems: SidebarNavItem[] = [
     { key: 'home', label: 'Home', icon: 'heroicons:home', routeName: 'home', activeWhen: '/' },

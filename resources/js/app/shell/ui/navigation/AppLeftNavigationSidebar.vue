@@ -43,7 +43,7 @@ async function handleLogout() {
             </div>
             <button
                 v-tooltip.right="{
-                    value: layoutStore.sidebarCollapsed ? 'Expand sidebar (⌘\\)' : 'Collapse sidebar (⌘\\)',
+                    value: layoutStore.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
                 }"
                 type="button"
                 class="rounded-md text-ink-3 hover:bg-hover hover:text-ink grid h-[26px] w-[26px] shrink-0 place-items-center transition-colors"
