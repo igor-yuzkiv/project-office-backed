@@ -7,11 +7,51 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Design tokens for Tailwind utilities (bg-page, text-ink-2, border-line, …). Every value is
+ * derived from the PrimeVue preset in app/plugins/prime-vue.plugin.ts — the preset is the source,
+ * these are aliases. The four `--app-*` variables switch a surface step per scheme where no
+ * PrimeVue semantic token carries that meaning.
+ */
+@theme inline {
+    --color-page: var(--app-page);
+    --color-canvas: var(--app-canvas);
+    --color-ink: var(--p-text-color);
+    --color-ink-2: var(--p-text-muted-color);
+    --color-ink-3: var(--app-ink-3);
+    --color-line: var(--p-content-border-color);
+    --color-line-2: var(--p-form-field-border-color);
+    --color-hover: var(--p-content-hover-background);
+    --color-selected: var(--app-selected);
+    --color-accent: var(--p-primary-color);
+    --color-accent-ink: var(--p-primary-contrast-color);
+    --color-accent-soft: var(--p-highlight-background);
+    --color-code-bg: var(--app-code-bg);
+}
+
+:root {
+    --app-page: var(--p-surface-0);
+    --app-canvas: var(--p-surface-50);
+    --app-ink-3: var(--p-surface-400);
+    --app-selected: var(--p-surface-0);
+    --app-code-bg: #f1f4f8;
+}
+
+.dark {
+    --app-page: var(--p-surface-900);
+    --app-canvas: var(--p-surface-950);
+    --app-ink-3: var(--p-surface-500);
+    --app-selected: var(--p-surface-700);
+    --app-code-bg: #1b222b;
+}
+
 @layer base {
     html {
         font-family: 'Inter', sans-serif;
         font-optical-sizing: auto;
         font-style: normal;
+        color: var(--color-ink);
+        background: var(--color-page);
     }
 }
 
@@ -23,7 +63,7 @@
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #454545;
+    background: var(--color-line-2);
 }
 
 *::-webkit-scrollbar-track {

@@ -39,7 +39,7 @@ const navItems: SidebarNavItem[] = [
     <div class="flex h-screen w-full overflow-hidden">
         <AppLeftNavigationSidebar :items="navItems" />
 
-        <div class="bg-white dark:bg-surface-950 relative flex flex-1 flex-col overflow-hidden">
+        <div class="bg-page relative flex flex-1 flex-col overflow-hidden">
             <AppHeader :title="store.pageTitle" :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
             <ProgressBar
                 v-show="showProgressBar"
