@@ -1,5 +1,75 @@
 @import 'md-editor-v3/lib/style.css';
 
+/*
+ * md-editor-v3 paints itself from its own `--md-*` variables; pointing them at the app tokens
+ * makes the editor a flat region of the page (no box, hairline under the toolbar) in both
+ * schemes instead of the library's white / black panels.
+ */
+.md-editor,
+.md-editor-dark,
+.md-editor-modal-container,
+.md-editor-modal-container[data-theme='dark'] {
+    --md-color: var(--color-ink);
+    --md-hover-color: var(--color-ink);
+    --md-bk-color: var(--color-page);
+    --md-bk-color-outstand: var(--color-canvas);
+    --md-bk-hover-color: var(--color-hover);
+    --md-border-color: var(--color-line);
+    --md-border-hover-color: var(--color-line-2);
+    --md-border-active-color: var(--color-line-2);
+    --md-scrollbar-bg-color: transparent;
+    --md-scrollbar-thumb-color: var(--color-line-2);
+    --md-scrollbar-thumb-hover-color: var(--color-line-2);
+    --md-scrollbar-thumb-active-color: var(--color-line-2);
+}
+
+.md-editor {
+    border: 0;
+    border-radius: 0;
+    font-family: inherit;
+}
+
+.md-editor-toolbar-wrapper {
+    padding: 6px 8px;
+}
+
+.md-editor-toolbar-wrapper .md-editor-toolbar-item {
+    color: var(--color-ink-2);
+    border-radius: 5px;
+}
+
+.md-editor-toolbar-wrapper .md-editor-toolbar-item:hover,
+.md-editor-toolbar-wrapper .md-editor-toolbar-active {
+    color: var(--color-ink);
+    background-color: var(--color-hover);
+}
+
+.md-editor-toolbar-wrapper .md-editor-toolbar-divider {
+    background-color: var(--color-line-2);
+}
+
+/* The character count says nothing the writer needs. */
+.md-editor-footer {
+    display: none;
+}
+
+/* The rendered pane reads like prose elsewhere in the app (`type-prose` in app.css). Two
+   selectors so the override outranks the library's `.md-editor-dark .md-editor-preview`. */
+.md-editor .md-editor-preview,
+.md-editor-dark .md-editor-preview {
+    --md-theme-bg-color: var(--color-page);
+    --md-theme-bg-color-inset: var(--color-canvas);
+    --md-theme-border-color: var(--color-line);
+    --md-theme-border-color-inset: var(--color-line-2);
+    --md-theme-link-color: var(--color-accent);
+    --md-theme-table-stripe-color: var(--color-canvas);
+    font-size: 15px;
+    line-height: 1.65;
+    /* The library's word-break: break-all snaps words mid-syllable; long tokens still wrap. */
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
 .md-editor-preview h1,
 .md-editor-preview h2,
 .md-editor-preview h3,
@@ -7,7 +77,6 @@
 .md-editor-preview h5,
 .md-editor-preview h6 {
     position: relative;
-    word-break: break-all;
     margin: 0.5em 0 0.3em 0;
     font-weight: bold;
 }

@@ -1,6 +1,6 @@
 import type { ToolbarNames } from 'md-editor-v3'
 
-// The full toolbar; a host embedding the editor in a narrow sheet passes MarkdownEditor a shorter one.
+// Write / Preview / Split is not here — MarkdownEditor appends its own segment for that.
 export const DEFAULT_TOOLBARS: ToolbarNames[] = [
     'bold',
     'underline',
@@ -24,9 +24,6 @@ export const DEFAULT_TOOLBARS: ToolbarNames[] = [
     'revoke',
     'next',
     '=',
-    'catalog',
-    'preview',
-    'previewOnly',
     'pageFullscreen',
     'fullscreen',
 ]
