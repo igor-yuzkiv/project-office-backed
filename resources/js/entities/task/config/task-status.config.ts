@@ -1,5 +1,5 @@
 import { STATUS_COLORS } from '@/shared/components/status-pill'
-import type { TaskStatusMetadata, TaskStatusMetadataMap, TaskStatusValue } from '../types'
+import type { TaskStatusMetadata, TaskStatusMetadataMap } from '../types'
 
 export const TaskStatusMap: TaskStatusMetadataMap = {
     backlog: { label: 'Backlog', value: 'backlog', colors: STATUS_COLORS.backlog },
@@ -18,11 +18,4 @@ export const TaskStatusMap: TaskStatusMetadataMap = {
 
 export function taskStatusOptions(): TaskStatusMetadata[] {
     return Object.values(TaskStatusMap)
-}
-
-/** Statuses that mean the work is behind us — what "done" counts as when tasks are tallied. */
-export const TASK_DONE_STATUSES: TaskStatusValue[] = ['completed', 'closed', 'declined']
-
-export function isTaskDone(status: TaskStatusValue): boolean {
-    return TASK_DONE_STATUSES.includes(status)
 }

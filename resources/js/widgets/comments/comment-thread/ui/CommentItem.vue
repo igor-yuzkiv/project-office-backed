@@ -29,10 +29,6 @@ function handleEditSubmit(content: string) {
     emit('update', { commentId: props.comment.id, content })
     isEditing.value = false
 }
-
-function handleDelete() {
-    emit('delete', props.comment.id)
-}
 </script>
 
 <template>
@@ -72,7 +68,7 @@ function handleDelete() {
                         rounded
                         size="small"
                         severity="danger"
-                        @click="handleDelete"
+                        @click="emit('delete', comment.id)"
                     />
                 </div>
             </div>

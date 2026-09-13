@@ -63,10 +63,7 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
 }
 
 function openTaskCreateDialog() {
-    if (!project.value) {
-        console.warn('Cannot create a task: the project is not loaded.')
-        return
-    }
+    if (!project.value) return
 
     taskCreateDialog.open(project.value)
 }

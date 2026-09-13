@@ -42,7 +42,7 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
     const filterSidebar = useFilterSidebar(filtersDefMap)
 
     const { views: taskViews, isPending: isTaskViewsPending } = useTaskViewsQuery()
-    const viewSwitcher = useTaskViewSwitcher(taskViews, options?.defaultTaskViewKey ?? DEFAULT_TASK_VIEW_KEY)
+    const viewSwitcher = useTaskViewSwitcher(taskViews, options.defaultTaskViewKey ?? DEFAULT_TASK_VIEW_KEY)
 
     const sort = useSortDialog(
         taskSortFieldDefs,

@@ -1,4 +1,4 @@
-import type { RouteLocationNormalizedLoaded, RouteLocationRaw } from 'vue-router'
+import type { RouteLocationRaw } from 'vue-router'
 
 export type AppLayoutName = 'default' | 'auth'
 
@@ -7,7 +7,7 @@ export interface SidebarNavItem {
     label: string
     icon: string
     routeName: string
-    activeWhen?: string | ((item: SidebarNavItem, route: RouteLocationNormalizedLoaded) => boolean)
+    activeWhen: string
 }
 
 export interface BreadcrumbItem {

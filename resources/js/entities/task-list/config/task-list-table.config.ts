@@ -8,8 +8,6 @@ export const taskListSortFieldDefs: SortFieldDef[] = [
     { field: 'updated_at', label: 'Updated' },
 ]
 
-// All available task list table columns. Pages render the full set or drop the ones that
-// don't apply to their context via taskListTableColumnsExcluding().
 export const taskListTableColumnDefs: EntityTableColumnDef[] = [
     { field: 'key', header: 'Key', style: 'width: 8rem' },
     { field: 'name', header: 'List', style: 'min-width: 20rem' },

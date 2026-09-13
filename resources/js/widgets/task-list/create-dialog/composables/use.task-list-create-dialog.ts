@@ -11,10 +11,6 @@ export interface TaskListCreateFormData {
     project: ProjectOverviewDto | null
 }
 
-function getDefaultFormData(): TaskListCreateFormData {
-    return { name: '', project: null }
-}
-
 interface TaskListCreateDialogOptions {
     /**
      * Lets a caller pick up the freshly created list, e.g. to select it in a lookup field.
@@ -28,7 +24,7 @@ export function useTaskListCreateDialog(options: TaskListCreateDialogOptions = {
     const router = useRouter()
 
     const visible = ref(false)
-    const formData = ref<TaskListCreateFormData>(getDefaultFormData())
+    const formData = ref<TaskListCreateFormData>({ name: '', project: null })
     const validationErrors = ref<LaravelValidationErrors>({})
 
     const { mutate: create, isPending } = useCreateTaskListMutation()

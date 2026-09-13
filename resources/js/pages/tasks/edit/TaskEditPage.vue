@@ -83,10 +83,7 @@ const taskListCreateDialog = useTaskListCreateDialog({
 })
 
 function openTaskListCreateDialog() {
-    if (!task.value?.project) {
-        console.warn('Cannot create a task list: the task has no project.')
-        return
-    }
+    if (!task.value?.project) return
 
     taskListCreateDialog.open(task.value.project)
 }

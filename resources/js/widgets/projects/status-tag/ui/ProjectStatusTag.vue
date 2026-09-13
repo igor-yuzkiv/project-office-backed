@@ -4,23 +4,14 @@ import type { ProjectStatusValue } from '@/entities/project/types'
 import { ProjectStatusMap } from '@/entities/project/config'
 import { STATUS_COLORS_FALLBACK, StatusPill, useStatusColors } from '@/shared/components/status-pill'
 
-const props = withDefaults(
-    defineProps<{
-        status: ProjectStatusValue | null | undefined
-        showIcon?: boolean
-    }>(),
-    { showIcon: false }
-)
+const props = defineProps<{
+    status: ProjectStatusValue | null | undefined
+}>()
 
 const meta = computed(() => (props.status ? (ProjectStatusMap[props.status] ?? null) : null))
 const colors = useStatusColors(() => meta.value?.colors ?? STATUS_COLORS_FALLBACK)
 </script>
 
 <template>
-    <StatusPill
-        :label="meta?.label ?? 'None'"
-        :colors="colors"
-        :icon="showIcon ? 'hugeicons:status' : undefined"
-        title="Status"
-    />
+    <StatusPill :label="meta?.label ?? 'None'" :colors="colors" title="Status" />
 </template>

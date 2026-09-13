@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import type { SidebarNavItem } from '../../types'
 
@@ -9,12 +9,9 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const router = useRouter()
 
 function isActive(): boolean {
-    if (typeof props.item.activeWhen === 'function') return props.item.activeWhen(props.item, route)
-
-    const prefix = props.item.activeWhen ?? router.resolve({ name: props.item.routeName }).path
+    const prefix = props.item.activeWhen
     if (prefix === '/') return route.path === '/'
     return route.path === prefix || route.path.startsWith(prefix + '/')
 }

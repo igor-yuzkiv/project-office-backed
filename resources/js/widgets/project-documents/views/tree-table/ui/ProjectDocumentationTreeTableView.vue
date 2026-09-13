@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import type { PaginationMeta } from '@/shared/types'
 import type { ProjectDocumentTreeNodeDto } from '@/entities/project-document/types'
@@ -29,36 +28,14 @@ const emit = defineEmits<{
     (e: 'select-node', node: ProjectDocumentTreeNodeDto): void
 }>()
 
-const defaultColumns = computed<EntityTreeTableColumnDef[]>(() => {
-    if (props.columns) {
-        return props.columns
-    }
-
-    return [
-        { field: 'title', header: 'Title', expander: true },
-        { field: 'key', header: 'Key', style: 'width: 14rem' },
-        { field: 'status', header: 'Status', style: 'width: 12rem' },
-        { field: 'tags', header: 'Tags' },
-        { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
-        { field: 'updated_at', header: 'Updated At', style: 'width: 10rem' },
-    ]
-})
-
-function onNodeExpand(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
-    emit('expand-node', node.key)
-}
-
-function onNodeCollapse(node: EntityTreeNode<ProjectDocumentTreeNodeDto>) {
-    emit('collapse-node', node.key)
-}
-
-function onPageChange(page: number) {
-    emit('page-change', page)
-}
-
-function onSelectNode(row: ProjectDocumentTreeNodeDto) {
-    emit('select-node', row)
-}
+const defaultColumns: EntityTreeTableColumnDef[] = [
+    { field: 'title', header: 'Title', expander: true },
+    { field: 'key', header: 'Key', style: 'width: 14rem' },
+    { field: 'status', header: 'Status', style: 'width: 12rem' },
+    { field: 'tags', header: 'Tags' },
+    { field: 'updated_by', header: 'Updated By', style: 'width: 12rem' },
+    { field: 'updated_at', header: 'Updated At', style: 'width: 10rem' },
+]
 </script>
 
 <template>
@@ -69,9 +46,9 @@ function onSelectNode(row: ProjectDocumentTreeNodeDto) {
         :pagination-meta="paginationMeta"
         :page="page"
         :expanded-keys="expandedKeys"
-        @node-expand="onNodeExpand"
-        @node-collapse="onNodeCollapse"
-        @page-change="onPageChange"
+        @node-expand="emit('expand-node', $event.key)"
+        @node-collapse="emit('collapse-node', $event.key)"
+        @page-change="emit('page-change', $event)"
     >
         <template #column:title="{ row }">
             <button
@@ -80,7 +57,7 @@ function onSelectNode(row: ProjectDocumentTreeNodeDto) {
                 class="app-link disabled:text-surface-400 gap-2 flex items-center disabled:cursor-not-allowed"
                 :class="{ 'font-semibold text-primary-600 dark:text-primary-400': row.id === selectedId }"
                 :disabled="row.id === disabledId"
-                @click="onSelectNode(row)"
+                @click="emit('select-node', row)"
             >
                 <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
 

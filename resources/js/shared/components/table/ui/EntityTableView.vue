@@ -20,13 +20,12 @@ const props = withDefaults(
         to?: (row: T) => RouteLocationRaw
         /** Adds a checkbox column. A row body click also selects, unless the row navigates. */
         selectionMode?: 'multiple'
-        dataKey?: string
         /** Where the `actions` slot column sits. */
         actionsPlacement?: 'start' | 'end'
         /** Foot text such as "7 lists"; without it the foot only appears when there is more than one page. */
         countLabel?: string
     }>(),
-    { dataKey: 'id', actionsPlacement: 'start' }
+    { actionsPlacement: 'start' }
 )
 
 const selection = defineModel<T[]>('selection', { default: () => [] })
@@ -77,7 +76,7 @@ function onPageChange(event: { page: number }) {
         :value="props.rows"
         :loading="props.isPending"
         :selection-mode="isClickable ? undefined : props.selectionMode"
-        :data-key="props.selectionMode ? props.dataKey : undefined"
+        :data-key="props.selectionMode ? 'id' : undefined"
         lazy
         striped-rows
         class="p-0 w-full"

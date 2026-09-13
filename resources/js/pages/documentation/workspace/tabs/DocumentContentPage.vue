@@ -49,7 +49,6 @@ const {
 } = useOpenDocumentVersion(() => props.document.id)
 const versionActions = useDocumentVersionActions(() => props.document.id)
 
-// Local to the page: reading is the default, and a document opened fresh is opened to read.
 const mode = ref<Mode>('view')
 const MODE_OPTIONS: Array<{ label: string; value: Mode }> = [
     { label: 'View', value: 'view' },

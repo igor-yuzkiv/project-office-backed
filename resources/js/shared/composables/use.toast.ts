@@ -73,21 +73,11 @@ export function useToast(defaultLife: MaybeRefOrGetter<number> = 5000) {
         })
     }
 
-    function removeGroup(group: string) {
-        toast.removeGroup(group)
-    }
-
-    function removeAll() {
-        toast.removeAllGroups()
-    }
-
     return {
         add,
         success,
         error,
         warn,
         info,
-        removeGroup,
-        removeAll,
     }
 }

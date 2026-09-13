@@ -99,7 +99,7 @@ const rowMenuItems: MenuItem[] = [
         label: 'Edit',
         icon: 'pi pi-pencil',
         command: () => {
-            if (project.value && selectedTaskList.value) {
+            if (selectedTaskList.value) {
                 router.push({ name: 'task-list-edit', params: { id: selectedTaskList.value.id } })
             }
         },
@@ -121,10 +121,7 @@ function openRowMenu(event: MouseEvent, taskList: ITaskList) {
 }
 
 function openCreateDialog() {
-    if (!project.value) {
-        console.warn('Cannot create a task list: the project is not loaded.')
-        return
-    }
+    if (!project.value) return
 
     createDialog.open(project.value)
 }

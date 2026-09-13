@@ -49,10 +49,6 @@ const counters = computed(() => [
     { label: 'Tasks', count: counts.value.tasks, to: tasksRoute(PROJECT_COUNT_VIEWS.tasks) },
 ])
 
-function openMenu(event: MouseEvent) {
-    menu.value?.toggle(event)
-}
-
 // The whole card is the way in, but the name stays a real link so it can be opened in a new tab.
 function openProject() {
     router.push({ name: 'project-details', params: { id: props.project.id } })
@@ -79,7 +75,7 @@ function openProject() {
                 <ProjectStatusTag :status="project.status" class="w-fit" />
             </div>
 
-            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click.stop="openMenu" />
+            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click.stop="menu?.toggle($event)" />
         </div>
 
         <div v-if="project.last_activity" class="gap-1.5 type-meta min-w-0 flex items-center">

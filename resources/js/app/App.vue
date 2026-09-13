@@ -30,7 +30,7 @@ const toastDotClass: Record<string, string> = {
 }
 
 const layoutComponent = computed(() => {
-    const layout = route.meta?.layout as AppLayoutName | undefined
+    const layout = route.meta.layout as AppLayoutName | undefined
     if (layout && layout in AppLayoutComponentMap) {
         return AppLayoutComponentMap[layout]
     }
