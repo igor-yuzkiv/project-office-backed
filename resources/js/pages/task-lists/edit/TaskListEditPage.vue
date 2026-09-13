@@ -151,11 +151,22 @@ useBreadcrumbs(() => [
 </script>
 
 <template>
-    <div v-if="taskList" class="min-h-0 flex-1 overflow-auto">
-        <form class="page-container pb-0" @submit.prevent="submit">
+    <div v-if="taskList" class="min-h-0 flex flex-1 flex-col overflow-auto">
+        <form class="page-container min-h-0 pb-6 flex flex-1 flex-col" @submit.prevent="submit">
             <div class="type-meta gap-1 flex items-center">
                 <CopyableKey :value="taskList.key" />
-                <span class="text-ink-3">· editing</span>
+                <div class="gap-1 ml-auto flex items-center">
+                    <span v-if="isDirty" class="type-meta-3 pr-1.5 whitespace-nowrap">Unsaved changes</span>
+                    <Button
+                        label="Cancel"
+                        size="small"
+                        severity="secondary"
+                        outlined
+                        type="button"
+                        @click="navigateBack"
+                    />
+                    <Button label="Save changes" size="small" type="submit" :loading="isSaving" />
+                </div>
             </div>
 
             <InputText
@@ -170,19 +181,6 @@ useBreadcrumbs(() => [
             </p>
 
             <PropertiesGrid>
-                <span>Project</span>
-                <div>
-                    <span v-if="taskList.project" class="text-ink-2 gap-1.5 inline-flex items-center text-[13px]">
-                        <span
-                            class="bg-code-bg h-5 w-5 font-semibold grid shrink-0 place-items-center rounded-[5px] text-[10.5px] tracking-[0.02em]"
-                        >
-                            {{ taskList.project.prefix }}
-                        </span>
-                        {{ taskList.project.name }}
-                    </span>
-                    <span class="type-meta-3">A task list stays in its project.</span>
-                </div>
-
                 <span>Status</span>
                 <div>
                     <Select
@@ -226,16 +224,17 @@ useBreadcrumbs(() => [
             <hr class="border-line mt-5 mb-7" />
 
             <h2 class="type-section mb-2.5">Description</h2>
-            <MarkdownEditor v-model="formData.description" preview :handle-image-upload="handleImageUpload" />
+            <!-- The editor takes the rest of the viewport and scrolls inside; the page scrolls only when it cannot fit. -->
+            <MarkdownEditor
+                v-model="formData.description"
+                preview
+                class="min-h-[240px] flex-1"
+                min-height="0"
+                :handle-image-upload="handleImageUpload"
+            />
             <p v-if="validationErrors.description" class="text-red-500 mt-1 text-[12.5px]">
                 {{ validationErrors.description[0] }}
             </p>
-
-            <div class="bg-page border-line gap-2 py-3 mt-7 bottom-0 sticky flex items-center border-t">
-                <Button label="Save changes" size="small" type="submit" :loading="isSaving" />
-                <Button label="Cancel" size="small" severity="secondary" outlined type="button" @click="navigateBack" />
-                <span v-if="isDirty" class="type-meta-3 ml-auto">Unsaved changes</span>
-            </div>
         </form>
 
         <ManageRecordTagsDialog v-model:visible="showManageTagsDialog" v-model="formData.tags" />

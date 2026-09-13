@@ -3,9 +3,10 @@ import { computed, onMounted, ref, useId } from 'vue'
 import { MdPreview } from 'md-editor-v3'
 import type { HeadList } from 'md-editor-v3'
 import 'md-editor-v3/lib/preview.css'
-import { useClipboard } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
+import MarkdownCopyButton from './MarkdownCopyButton.vue'
+import MarkdownExpandDialog from './MarkdownExpandDialog.vue'
 
 const props = defineProps<{ modelValue: string }>()
 
@@ -23,10 +24,9 @@ const catalogHeadings = ref<HeadList[]>([])
 const previewTheme = computed<'dark' | 'light'>(() => (themeStore.isDark ? 'dark' : 'light'))
 const hasCatalogHeadings = computed(() => catalogHeadings.value.length > 0)
 
-// Every read-only markdown surface renders through this component, so one button here is
-// "copy any markdown" for the whole app. Source text, not the rendered HTML.
-const { copy: copySource, copied: sourceCopied } = useClipboard()
-const canCopySource = computed(() => props.modelValue.trim().length > 0)
+const expanded = ref(false)
+
+const hasSource = computed(() => props.modelValue.trim().length > 0)
 
 onMounted(() => {
     // MdCatalog's click-to-scroll and MdPreview's own preview-wrapper both default to
@@ -64,19 +64,24 @@ defineExpose({ getPreviewRoot, catalog })
 
 <template>
     <div ref="rootRef" class="group relative">
-        <!-- Stops the click so a host that picks blocks on click (DocumentSheet) does not treat
-             copying as picking. Stays visible once copied so the check mark is seen. -->
-        <button
-            v-if="canCopySource"
-            type="button"
-            class="right-0 top-0 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 absolute z-[1] opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-            :class="{ 'opacity-100': sourceCopied }"
-            title="Copy markdown"
-            aria-label="Copy markdown"
-            @click.stop="copySource(modelValue)"
+        <!-- Copy and Expand show on hover, like a margin note, and stay visible once copied so
+             the check mark is seen. Expand stops the click so a host that picks blocks on click
+             (DocumentSheet) does not treat it as picking. -->
+        <div
+            v-if="hasSource"
+            class="gap-2 right-0 top-0 absolute z-[1] flex items-center opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 has-[[data-copied]]:opacity-100"
         >
-            <Icon :icon="sourceCopied ? 'mdi:check' : 'tabler:copy'" class="text-base" />
-        </button>
+            <MarkdownCopyButton :source="modelValue" />
+            <button
+                type="button"
+                class="text-ink-3 hover:text-ink transition-colors"
+                title="Expand"
+                aria-label="Expand"
+                @click.stop="expanded = true"
+            >
+                <Icon icon="tabler:arrows-maximize" class="text-base" />
+            </button>
+        </div>
         <MdPreview
             :editor-id="editorId"
             :model-value="modelValue"
@@ -87,6 +92,6 @@ defineExpose({ getPreviewRoot, catalog })
             @on-get-catalog="(list) => (catalogHeadings = list)"
             @on-html-changed="() => emit('htmlChanged')"
         />
-        <!-- code-theme="github" -->
+        <MarkdownExpandDialog v-model:visible="expanded" :model-value="modelValue" />
     </div>
 </template>

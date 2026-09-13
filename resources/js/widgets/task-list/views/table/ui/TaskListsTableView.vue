@@ -2,7 +2,6 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { ITaskList } from '@/entities/task-list/types'
 import { taskListTableColumnDefs } from '@/entities/task-list/config'
-import { taskListProgress } from '@/entities/task-list/lib'
 import type { PaginationMeta } from '@/shared/types'
 import { EntityTableView, type EntityTableColumnDef } from '@/shared/components/table'
 import { CopyableKey } from '@/shared/components/display'
@@ -29,10 +28,6 @@ defineEmits<{
 function countLabel(total: number | undefined) {
     return total === undefined ? undefined : `${total} ${total === 1 ? 'list' : 'lists'}`
 }
-
-function tasksLabel(total: number) {
-    return `${total} ${total === 1 ? 'task' : 'tasks'}`
-}
 </script>
 
 <template>
@@ -58,10 +53,7 @@ function tasksLabel(total: number) {
         </template>
 
         <template #column:name="{ row }">
-            <div class="min-w-0">
-                <div class="font-medium truncate" :title="row.name">{{ row.name }}</div>
-                <div class="type-meta-3">{{ tasksLabel(taskListProgress(row.task_status_counts).total) }}</div>
-            </div>
+            <div class="font-medium min-w-0 truncate" :title="row.name">{{ row.name }}</div>
         </template>
 
         <template #column:project="{ row }">
