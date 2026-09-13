@@ -4,6 +4,7 @@ import { useIsFetching } from '@tanstack/vue-query'
 import ProgressBar from 'primevue/progressbar'
 import AppHeader from '../header/AppHeader.vue'
 import AppLeftNavigationSidebar from '../navigation/AppLeftNavigationSidebar.vue'
+import SidebarPinnedProjects from '../navigation/SidebarPinnedProjects.vue'
 import LoadingOverlay from '@/shared/components/loading/LoadingOverlay.vue'
 import type { SidebarNavItem } from '../../types'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
@@ -38,7 +39,11 @@ const navItems: SidebarNavItem[] = [
 
 <template>
     <div class="flex h-screen w-full overflow-hidden">
-        <AppLeftNavigationSidebar :items="navItems" />
+        <AppLeftNavigationSidebar :items="navItems">
+            <template #pinned>
+                <SidebarPinnedProjects :collapsed="store.sidebarCollapsed" />
+            </template>
+        </AppLeftNavigationSidebar>
 
         <div class="bg-page relative flex flex-1 flex-col overflow-hidden">
             <AppHeader :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
