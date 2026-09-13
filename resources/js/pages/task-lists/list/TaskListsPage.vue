@@ -14,7 +14,6 @@ import { usePersistedListState } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
 import Button from 'primevue/button'
 import { IconButton } from '@/shared/components/button'
-import { PageHead } from '@/shared/components/page-head'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
 import { useBreadcrumbs } from '@/app/shell'
@@ -109,17 +108,12 @@ watch([sort.sortBy, sort.sortOrder], () => {
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <PageHead title="Task lists" class="px-1">
-                <template #lede>A list is a plan: tasks in order, executed one after another.</template>
-                <template #actions>
-                    <Button label="New task list" icon="pi pi-plus" size="small" @click="createDialog.open()" />
-                </template>
-            </PageHead>
-            <div class="gap-1.5 p-1 flex flex-wrap items-center">
+            <div class="gap-2 p-1 flex flex-wrap items-center">
                 <SearchInput v-model="searchInput" placeholder="Search lists" @submit="onSearchSubmit" />
-                <FilterButton v-bind="filterSidebar.buttonProps.value" />
                 <span class="flex-1" />
+                <FilterButton v-bind="filterSidebar.buttonProps.value" />
                 <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
+                <Button label="New task list" icon="pi pi-plus" size="small" class="!h-7" @click="createDialog.open()" />
             </div>
 
             <div class="flex h-full w-full flex-col overflow-hidden">
