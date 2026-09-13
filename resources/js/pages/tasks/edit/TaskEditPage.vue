@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TITLE_INPUT_PT } from '@/shared/components/title-input'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { MarkdownEditor } from '@/shared/components/md-editor'
@@ -63,16 +64,6 @@ const isDirty = computed(() => savedSnapshot.value !== null && snapshot(formData
 
 const priorityOptions = taskPriorityOptions()
 const selectedPriority = computed(() => priorityOptions.find((option) => option.value === formData.value.priority))
-
-// The title reads as a heading, not a field: no chrome until it is focused.
-const titleInputPt = {
-    root: {
-        class: [
-            '!type-title text-ink placeholder:text-ink-3 mt-1.5 mb-3 w-full !rounded-none !border-0 !bg-transparent !px-0 !py-1 !shadow-none',
-            'focus:!shadow-[inset_0_-2px_0_var(--color-accent)]',
-        ].join(' '),
-    },
-}
 
 // A list created here belongs to the task's project and is selected right away, so the user
 // never has to leave the form to make one.
@@ -216,7 +207,7 @@ useBreadcrumbs(() => [
                 placeholder="Task name"
                 aria-label="Task name"
                 :invalid="!!validationErrors.name"
-                :pt="titleInputPt"
+                :pt="TITLE_INPUT_PT"
             />
             <p v-if="validationErrors.name" class="text-red-500 -mt-2 mb-3 text-[12.5px]">
                 {{ validationErrors.name[0] }}

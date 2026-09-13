@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteParams } from '@vueuse/router'
 import Button from 'primevue/button'
@@ -21,7 +21,7 @@ import { SidePanel } from '@/shared/components/side-panel'
 import { IconButton } from '@/shared/components/button'
 import { CopyableKey } from '@/shared/components/display'
 import { PageHead } from '@/shared/components/page-head'
-import { useCollapsibleSidePanel } from '@/shared/composables'
+import { useCollapsibleSidePanel, usePopupMenu } from '@/shared/composables'
 import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 
 const router = useRouter()
@@ -84,17 +84,13 @@ function removeDocument() {
     if (document) tree.deleteDocument(document)
 }
 
-const moreMenu = ref<InstanceType<typeof Menu>>()
+const moreMenu = usePopupMenu()
 
 const moreMenuItems = computed<MenuItem[]>(() => [
     { label: 'Move', icon: 'pi pi-arrow-right-arrow-left', command: () => moveDialog.open() },
     { separator: true },
     { label: 'Delete', icon: 'pi pi-trash', command: removeDocument },
 ])
-
-function openMoreMenu(event: MouseEvent) {
-    moreMenu.value?.toggle(event)
-}
 
 const tabs = computed(() => [
     { value: 'details', label: 'Details', route: 'project-documentation.document.details', count: undefined },
@@ -237,7 +233,7 @@ watch(
                                 outlined
                                 @click="editDocument"
                             />
-                            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
+                            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
                         </template>
                     </PageHead>
 

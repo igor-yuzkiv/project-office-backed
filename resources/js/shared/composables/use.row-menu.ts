@@ -26,3 +26,10 @@ export function useRowMenu<T>(itemsFor: (row: T) => MenuItem[] = () => []): RowM
 
     return { selected, items, open }
 }
+
+/** A single popup menu with nothing to remember: the page's `…` menu. */
+export function usePopupMenu(refName = 'moreMenu') {
+    const menu = useTemplateRef<InstanceType<typeof Menu>>(refName)
+
+    return { open: (event: Event) => menu.value?.toggle(event) }
+}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TITLE_INPUT_PT } from '@/shared/components/title-input'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { MarkdownEditor } from '@/shared/components/md-editor'
@@ -47,16 +48,6 @@ const validationErrors = ref<LaravelValidationErrors>({})
 const showManageTagsDialog = ref(false)
 
 const isDirty = computed(() => savedSnapshot.value !== null && snapshot(formData.value) !== savedSnapshot.value)
-
-// The title reads as a heading, not a field: no chrome until it is focused.
-const titleInputPt = {
-    root: {
-        class: [
-            '!type-title text-ink placeholder:text-ink-3 mt-1.5 mb-3 w-full !rounded-none !border-0 !bg-transparent !px-0 !py-1 !shadow-none',
-            'focus:!shadow-[inset_0_-2px_0_var(--color-accent)]',
-        ].join(' '),
-    },
-}
 
 function snapshot(data: TaskListEditFormData): string {
     return JSON.stringify({
@@ -174,7 +165,7 @@ useBreadcrumbs(() => [
                 placeholder="Task list name"
                 aria-label="Task list name"
                 :invalid="!!validationErrors.name"
-                :pt="titleInputPt"
+                :pt="TITLE_INPUT_PT"
             />
             <p v-if="validationErrors.name" class="text-red-500 -mt-2 mb-3 text-[12.5px]">
                 {{ validationErrors.name[0] }}

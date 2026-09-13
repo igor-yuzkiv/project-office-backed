@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
@@ -12,7 +12,7 @@ import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useBreadcrumbs } from '@/app/shell'
 import { useProjectQuery } from '@/entities/project/queries'
 import { useDeleteProjectMutation, usePinProjectMutation, useUnpinProjectMutation } from '@/entities/project/mutations'
-import { useToast } from '@/shared/composables'
+import { useToast, usePopupMenu } from '@/shared/composables'
 import { IconButton } from '@/shared/components/button'
 import { CopyableKey } from '@/shared/components/display'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -29,7 +29,7 @@ const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 const pinMutation = usePinProjectMutation()
 const unpinMutation = useUnpinProjectMutation()
 
-const moreMenu = ref<InstanceType<typeof Menu>>()
+const moreMenu = usePopupMenu()
 
 const activeTab = computed(
     () =>
@@ -59,10 +59,6 @@ function onTabChange(value: string | number) {
 
 function openEditor() {
     router.push({ name: 'project-edit', params: { id: projectId } })
-}
-
-function openMoreMenu(event: MouseEvent) {
-    moreMenu.value?.toggle(event)
 }
 
 function handleDeleteProject() {
@@ -122,7 +118,7 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                         outlined
                         @click="openEditor"
                     />
-                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
+                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
                 </div>
             </div>
 

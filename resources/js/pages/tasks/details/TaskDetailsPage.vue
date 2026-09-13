@@ -15,7 +15,7 @@ import { useTaskAttachmentsDialog, useUpsertTaskComment } from '@/entities/task/
 import { uploadTaskAttachmentRequest } from '@/entities/task/api'
 import { TaskAttachmentRoles } from '@/entities/task/config'
 import { useDeleteCommentMutation } from '@/entities/comment'
-import { useToast } from '@/shared/composables'
+import { useToast, usePopupMenu } from '@/shared/composables'
 import { formatDate } from '@/shared/utils/date.util'
 import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 import { IconButton } from '@/shared/components/button'
@@ -51,7 +51,7 @@ const { upsert: upsertComment } = useUpsertTaskComment(taskId)
 const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 const showAttachmentsDialog = ref(false)
-const moreMenu = ref<InstanceType<typeof Menu>>()
+const moreMenu = usePopupMenu()
 const commentsKind = ref<CommentKindFilter>('all')
 const listSidebarCollapsed = useLocalStorage('app:task:list-sidebar-collapsed', false)
 
@@ -71,10 +71,6 @@ function handleDeleteTask() {
     deleteTask(taskId.value, `Are you sure you want to delete "${task.value?.name}"?`, () =>
         router.push({ name: 'tasks' })
     )
-}
-
-function openMoreMenu(event: MouseEvent) {
-    moreMenu.value?.toggle(event)
 }
 
 function handleCreateComment(content: string) {
@@ -149,7 +145,7 @@ useBreadcrumbs(() => [
                             outlined
                             @click="openEditor"
                         />
-                        <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
+                        <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
                         <IconButton
                             v-if="task.task_list_id && listSidebarCollapsed"
                             icon="tabler:layout-sidebar-right-expand"

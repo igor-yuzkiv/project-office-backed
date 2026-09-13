@@ -15,7 +15,7 @@ import { uploadTaskListAttachmentRequest } from '@/entities/task-list/api'
 import { TaskListAttachmentRoles } from '@/entities/task-list/config'
 import { taskListProgress } from '@/entities/task-list/lib'
 import { useDeleteCommentMutation } from '@/entities/comment'
-import { useToast } from '@/shared/composables'
+import { useToast, usePopupMenu } from '@/shared/composables'
 import { formatDate } from '@/shared/utils/date.util'
 import { formatRelativeTime } from '@/shared/utils/relative-time.util'
 import { IconButton } from '@/shared/components/button'
@@ -62,7 +62,7 @@ const { upsert: upsertComment } = useUpsertTaskListComment(taskListId)
 const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 const showAttachmentsDialog = ref(false)
-const moreMenu = ref<InstanceType<typeof Menu>>()
+const moreMenu = usePopupMenu()
 
 const doneColors = useStatusColors(STATUS_COLORS.done)
 const inProgressColors = useStatusColors(STATUS_COLORS.progress)
@@ -99,10 +99,6 @@ function handleDeleteTaskList() {
     deleteTaskList(taskListId.value, `Are you sure you want to delete "${taskList.value?.name}"?`, () =>
         router.push({ name: 'task-lists' })
     )
-}
-
-function openMoreMenu(event: MouseEvent) {
-    moreMenu.value?.toggle(event)
 }
 
 function handleCreateComment(content: string) {
@@ -167,7 +163,7 @@ useBreadcrumbs(() => [
                         outlined
                         @click="openEditor"
                     />
-                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
+                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
                 </template>
             </PageHead>
 
