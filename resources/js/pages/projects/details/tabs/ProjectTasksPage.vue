@@ -36,7 +36,7 @@ const search = useTaskSearch({
     include: ['taskList'],
 })
 
-const tableColumnsDef = taskTableColumnsExcluding('project', 'updated_by')
+const tableColumnsDef = taskTableColumnsExcluding('project', 'updated_at')
 
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()

@@ -8,29 +8,27 @@ import { useBulkUpdateTaskStatusMutation, useDeleteTaskMutation } from '@/entiti
 import type { TaskOverviewDto, TaskStatusValue } from '@/entities/task/types'
 import { FilterSidebar, FilterButton } from '@/shared/filters'
 import { SortButton, SortDialog } from '@/shared/sort'
-import { TaskViewSelect } from '@/widgets/tasks/view-switcher'
+import { TaskViewsBar } from '@/widgets/tasks/view-switcher'
 import { SearchInput } from '@/shared/components/input'
 import Button from 'primevue/button'
 import { IconButton } from '@/shared/components/button'
-import { PageHead } from '@/shared/components/page-head'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskBulkActionsBar } from '@/widgets/tasks/bulk-actions'
 import { useToast } from '@/shared/composables'
 import { useBreadcrumbs } from '@/app/shell'
-import { taskSortFieldDefs, taskTableColumnDefs } from '@/entities/task/config'
+import { taskSortFieldDefs } from '@/entities/task/config'
 
 const router = useRouter()
 
 const toast = useToast()
 
-// The header falls back to the route title when no breadcrumb is set; PageHead already carries it.
 useBreadcrumbs([{ label: 'Tasks' }])
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 const { mutate: bulkUpdateStatus, isPending: isBulkUpdatePending } = useBulkUpdateTaskStatusMutation()
 
-const search = useTaskSearch({ include: ['project', 'taskList'] })
+const search = useTaskSearch({ include: ['project', 'taskList', 'updatedBy'] })
 
 const selectedTasks = ref<TaskOverviewDto[]>([])
 
@@ -81,27 +79,24 @@ watch(search.searchParams, clearSelection)
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <PageHead title="Tasks" class="px-1">
-                <template #actions>
-                    <Button label="New task" icon="pi pi-plus" size="small" @click="taskCreateDialog.open()" />
-                </template>
-            </PageHead>
-            <div class="gap-2 p-1 flex items-center justify-between">
+            <div class="gap-2 p-1 flex flex-wrap items-center">
                 <SearchInput
                     v-model="search.searchInput.value"
-                    placeholder="Search tasks..."
+                    placeholder="Search tasks"
                     @submit="search.submitSearch"
                 />
-                <div class="gap-2 flex items-center">
-                    <TaskViewSelect
-                        :model-value="search.viewSwitcher.activeViewKey.value"
-                        :options="search.taskViews.value"
-                        @update:model-value="search.selectView"
-                    />
-                    <FilterButton v-bind="search.filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${search.sort.activeSortLabel.value}`" @click="search.sort.open()" />
-                </div>
+                <span class="flex-1" />
+                <FilterButton v-bind="search.filterSidebar.buttonProps.value" />
+                <SortButton :label="`Sort: ${search.sort.activeSortLabel.value}`" @click="search.sort.open()" />
+                <Button label="New task" icon="pi pi-plus" size="small" class="!h-7" @click="taskCreateDialog.open()" />
             </div>
+
+            <TaskViewsBar
+                :model-value="search.viewSwitcher.activeViewKey.value"
+                :options="search.taskViews.value"
+                class="px-1"
+                @update:model-value="search.selectView"
+            />
 
             <TaskBulkActionsBar
                 v-if="selectedTasks.length"
@@ -120,7 +115,6 @@ watch(search.searchParams, clearSelection)
                     :pagination-meta="search.paginationMeta.value"
                     :page="search.page.value"
                     :to="search.taskDetailsRoute"
-                    :columns="taskTableColumnDefs"
                     @page-change="search.goToPage"
                 >
                     <template #actions="{ row }">

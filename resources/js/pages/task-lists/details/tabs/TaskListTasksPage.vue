@@ -45,7 +45,7 @@ const search = useTaskSearch({
 })
 
 // The page is one task list, so its own column would repeat the header.
-const tableColumnsDef = taskTableColumnsExcluding('task_list.name', 'updated_by')
+const tableColumnsDef = taskTableColumnsExcluding('task_list.name', 'updated_at')
 
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
