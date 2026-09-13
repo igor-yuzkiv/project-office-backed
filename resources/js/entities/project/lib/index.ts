@@ -1,1 +1,1 @@
-export { openTasksCount } from './open-tasks-count'
+export * from './project-task-counts'

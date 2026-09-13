@@ -6,7 +6,7 @@ import { Icon } from '@iconify/vue'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import { usePinnedProjectsQuery } from '@/entities/project/queries'
 import { ProjectQueryKey } from '@/entities/project/config'
-import { openTasksCount } from '@/entities/project/lib'
+import { projectTaskCounts } from '@/entities/project/lib'
 
 defineProps<{
     collapsed: boolean
@@ -25,6 +25,11 @@ const unsubscribe = queryClient.getMutationCache().subscribe((event) => {
     }
 })
 onScopeDispose(unsubscribe)
+
+// The same Open figure as the project card, so the sidebar and the card never disagree.
+function openCount(project: ProjectOverviewDto): number {
+    return projectTaskCounts(project.task_status_counts).open
+}
 
 function isActive(project: ProjectOverviewDto): boolean {
     const routeProjectId = route.params.projectId ?? route.params.id
@@ -68,8 +73,8 @@ function isActive(project: ProjectOverviewDto): boolean {
             </span>
             <template v-if="!collapsed">
                 <span class="min-w-0 flex-1 truncate">{{ project.name }}</span>
-                <span v-if="openTasksCount(project.task_status_counts)" class="text-ink-3 ml-auto text-[11.5px]">
-                    {{ openTasksCount(project.task_status_counts) }}
+                <span v-if="openCount(project)" class="text-ink-3 ml-auto text-[11.5px]">
+                    {{ openCount(project) }}
                 </span>
             </template>
         </RouterLink>

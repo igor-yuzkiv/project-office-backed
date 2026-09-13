@@ -1,7 +1,20 @@
 import { httpClient } from '@/shared/api'
+import type { PaginatedResponse, PromisePaginatedResponse } from '@/shared/types'
 import type { IAttachment, AttachmentRole } from '@/entities/attachment/types'
 
 type AttachmentResponse = { data: IAttachment }
+
+export async function fetchProjectAttachmentsRequest(
+    projectId: string,
+    page?: number,
+    perPage?: number
+): PromisePaginatedResponse<IAttachment> {
+    return httpClient
+        .get<PaginatedResponse<IAttachment>>(`/projects/${projectId}/attachments`, {
+            params: { page, per_page: perPage },
+        })
+        .then((res) => res.data)
+}
 
 export async function uploadProjectAttachmentRequest(
     projectId: string,
