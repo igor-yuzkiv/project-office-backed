@@ -87,15 +87,12 @@ const attachmentsLabel = computed(() =>
 )
 
 const moreMenuItems = computed<MenuItem[]>(() => [
-    {
-        label: 'New task',
-        icon: 'pi pi-plus',
-        disabled: !taskList.value?.project,
-        command: () => taskCreateDialog.open(taskList.value?.project, taskList.value),
-    },
-    { separator: true },
     { label: 'Delete', icon: 'pi pi-trash', command: handleDeleteTaskList },
 ])
+
+function openTaskCreateDialog() {
+    taskCreateDialog.open(taskList.value?.project, taskList.value)
+}
 
 function openEditor() {
     router.push({ name: 'task-list-edit', params: { id: taskListId.value } })
@@ -173,7 +170,6 @@ useBreadcrumbs(() => [
                         outlined
                         @click="openEditor"
                     />
-                    <Button label="Add tasks" icon="pi pi-plus" size="small" @click="addTasksDialog.open" />
                     <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="openMoreMenu" />
                 </template>
             </PageHead>
@@ -252,7 +248,7 @@ useBreadcrumbs(() => [
                     />
                     Plan
                 </button>
-                <span class="type-meta-3">{{ tasks.length }} tasks, in order</span>
+                <span class="type-meta-3">{{ tasks.length }} {{ tasks.length === 1 ? 'task' : 'tasks' }}</span>
             </h2>
             <TaskListPlan
                 v-show="!planCollapsed"
@@ -260,6 +256,7 @@ useBreadcrumbs(() => [
                 :tasks="tasks"
                 :is-pending="isTasksPending"
                 @add="addTasksDialog.open"
+                @create="openTaskCreateDialog"
             />
 
             <h2 class="type-section mt-9 mb-2.5 flex items-baseline">
@@ -279,7 +276,7 @@ useBreadcrumbs(() => [
             </h2>
             <div v-show="!descriptionCollapsed" id="task-list-description">
                 <MarkdownPreview v-if="taskList.description" :model-value="taskList.description" class="type-prose" />
-                <p v-else class="type-meta-3">No description yet. Edit the task list to describe what it covers.</p>
+                <p v-else class="type-meta-3">No description yet.</p>
             </div>
 
             <h2 class="type-section gap-2 mt-12 mb-2 flex items-baseline">

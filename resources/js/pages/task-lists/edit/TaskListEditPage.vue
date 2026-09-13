@@ -165,7 +165,7 @@ useBreadcrumbs(() => [
                         type="button"
                         @click="navigateBack"
                     />
-                    <Button label="Save changes" size="small" type="submit" :loading="isSaving" />
+                    <Button label="Save" size="small" type="submit" :loading="isSaving" />
                 </div>
             </div>
 

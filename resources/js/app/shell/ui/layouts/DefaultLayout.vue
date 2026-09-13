@@ -28,7 +28,7 @@ const navItems: SidebarNavItem[] = [
     { key: 'tasks', label: 'Tasks', icon: 'heroicons:check-circle', routeName: 'tasks', activeWhen: '/tasks' },
     {
         key: 'task-lists',
-        label: 'Task Lists',
+        label: 'Task lists',
         icon: 'heroicons:queue-list',
         routeName: 'task-lists',
         activeWhen: '/task-lists',

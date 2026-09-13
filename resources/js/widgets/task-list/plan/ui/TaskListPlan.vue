@@ -17,6 +17,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'add'): void
+    (e: 'create'): void
 }>()
 
 const theme = useAppThemeStore()
@@ -34,7 +35,7 @@ function dotColor(task: TaskOverviewDto): string {
 <template>
     <div class="-mx-2 flex flex-col">
         <p v-if="isPending" class="type-meta-3 px-2 py-2.5">Loading tasks…</p>
-        <p v-else-if="tasks.length === 0" class="type-meta-3 px-2 py-2.5">No tasks in the plan yet.</p>
+        <p v-else-if="tasks.length === 0" class="type-meta-3 px-2 py-2.5">No tasks yet.</p>
 
         <RouterLink
             v-for="(task, index) in tasks"
@@ -62,12 +63,13 @@ function dotColor(task: TaskOverviewDto): string {
             </span>
         </RouterLink>
 
-        <button
-            type="button"
-            class="border-line px-2 py-2.5 text-ink-3 hover:text-ink cursor-pointer border-t text-left text-[13px]"
-            @click="emit('add')"
-        >
-            + Add a task to the plan
-        </button>
+        <div class="border-line gap-4 px-2 py-2.5 flex items-center border-t text-[13px]">
+            <button type="button" class="text-ink-3 hover:text-ink cursor-pointer" @click="emit('add')">
+                + Add tasks
+            </button>
+            <button type="button" class="text-ink-3 hover:text-ink cursor-pointer" @click="emit('create')">
+                + New task
+            </button>
+        </div>
     </div>
 </template>

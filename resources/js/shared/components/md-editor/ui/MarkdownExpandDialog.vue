@@ -23,11 +23,11 @@ const previewTheme = computed<'dark' | 'light'>(() => (themeStore.isDark ? 'dark
         v-model:visible="visible"
         modal
         dismissable-mask
-        :pt="{ root: { class: 'max-w-[1280px] w-[92vw] h-[92vh]' } }"
+        :pt="{ root: { class: 'w-[80vw] h-[92vh]' } }"
     >
         <template #header>
             <div class="gap-3 flex items-center">
-                <span class="type-section">Markdown</span>
+                <span class="type-section">Preview</span>
                 <MarkdownCopyButton :source="modelValue" />
             </div>
         </template>

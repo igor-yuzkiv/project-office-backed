@@ -60,7 +60,7 @@ function onFileChange(event: Event) {
                 :disabled="isUploading"
                 @click="openFilePicker"
             >
-                Drop a file here or <span class="text-accent font-medium">choose from your computer</span>
+                Drop a file here or <span class="text-accent font-medium">choose one</span>
                 <span class="type-meta-3 block">Up to 25 MB</span>
             </button>
 
