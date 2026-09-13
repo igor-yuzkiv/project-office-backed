@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { onScopeDispose } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useQueryClient } from '@tanstack/vue-query'
 import { Icon } from '@iconify/vue'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import { usePinnedProjectsQuery } from '@/entities/project/queries'
+import { ProjectQueryKey } from '@/entities/project/config'
 import { openTasksCount } from '@/entities/project/lib'
 
 defineProps<{
@@ -10,8 +13,18 @@ defineProps<{
 }>()
 
 const route = useRoute()
+const queryClient = useQueryClient()
 
 const { projects } = usePinnedProjectsQuery()
+
+// The open-task counts change through task mutations, which invalidate their own slice only.
+// The sidebar is always mounted, so it refreshes itself after any successful mutation.
+const unsubscribe = queryClient.getMutationCache().subscribe((event) => {
+    if (event.type === 'updated' && event.action.type === 'success') {
+        queryClient.invalidateQueries({ queryKey: ProjectQueryKey.pinned })
+    }
+})
+onScopeDispose(unsubscribe)
 
 function isActive(project: ProjectOverviewDto): boolean {
     const routeProjectId = route.params.projectId ?? route.params.id

@@ -96,6 +96,7 @@ class ProjectsController extends ResourceController
             ->with(['createdBy', 'updatedBy', 'tags'])
             ->withCount(self::COUNTED_RELATIONS)
             ->orderBy('user_pinned_projects.created_at')
+            ->orderBy('projects.id')
             ->get();
 
         $counts = $this->countTasksPerStatus->handle($projects->modelKeys());
