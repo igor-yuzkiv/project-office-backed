@@ -10,9 +10,12 @@ export interface CommentCan {
     delete: boolean
 }
 
+export type CommentKind = 'comment' | 'checkpoint'
+
 export interface IComment {
     id: string
     content: string
+    kind: CommentKind
     author: CommentAuthor
     created_at: string
     updated_at: string

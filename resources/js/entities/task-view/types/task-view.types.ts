@@ -4,4 +4,5 @@ export type TaskViewDto = {
     key: string
     label: string
     filters: FilterPayloadItem[]
+    count?: number
 }
