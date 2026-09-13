@@ -166,7 +166,7 @@ useBreadcrumbs(() => [
                 :pt="titleInputPt"
             />
             <p v-if="validationErrors.name" class="text-red-500 -mt-2 mb-3 text-[12.5px]">
-                {{ validationErrors.name }}
+                {{ validationErrors.name[0] }}
             </p>
 
             <PropertiesGrid>
@@ -202,7 +202,7 @@ useBreadcrumbs(() => [
                         </template>
                     </Select>
                     <span v-if="validationErrors.status" class="text-red-500 basis-full text-[12.5px]">
-                        {{ validationErrors.status }}
+                        {{ validationErrors.status[0] }}
                     </span>
                 </div>
 
@@ -218,7 +218,7 @@ useBreadcrumbs(() => [
                         @click="showManageTagsDialog = true"
                     />
                     <span v-if="validationErrors.tag_ids" class="text-red-500 basis-full text-[12.5px]">
-                        {{ validationErrors.tag_ids }}
+                        {{ validationErrors.tag_ids[0] }}
                     </span>
                 </div>
             </PropertiesGrid>
@@ -228,7 +228,7 @@ useBreadcrumbs(() => [
             <h2 class="type-section mb-2.5">Description</h2>
             <MarkdownEditor v-model="formData.description" preview :handle-image-upload="handleImageUpload" />
             <p v-if="validationErrors.description" class="text-red-500 mt-1 text-[12.5px]">
-                {{ validationErrors.description }}
+                {{ validationErrors.description[0] }}
             </p>
 
             <div class="bg-page border-line gap-2 py-3 mt-7 bottom-0 sticky flex items-center border-t">
