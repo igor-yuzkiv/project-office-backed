@@ -157,7 +157,7 @@ same request. There is no autosave for these fields.
 | Version actions | `app/Domains/ProjectDocument/Actions/Version/` — `CreateProjectDocumentVersion`, `UpdateProjectDocumentVersionContent`, `UpdateProjectDocumentVersion`, `DeleteProjectDocumentVersion`, `SetProjectDocumentPrimaryVersion` |
 | WebApi | `app/Http/WebApi/Controllers/ProjectDocuments/ProjectDocumentVersionsController.php`, requests under `app/Http/WebApi/Requests/ProjectDocuments/` |
 | Data layer | `resources/js/entities/project-document/` (api, queries, mutations, types) |
-| Canvas and card | `resources/js/shared/components/document-canvas/`, `content-card/`, `document-sheet/` (the reader) |
+| Canvas and reader | `resources/js/shared/components/document-canvas/`, `document-sheet/` |
 | Editor and autosave | `resources/js/widgets/project-documents/content-editor/` |
 | Versions | `resources/js/widgets/project-documents/versions/` |
 | Sidebar | `resources/js/shared/components/side-tabs/`, `resources/js/shared/composables/use.tabbed-side-panel.ts` |

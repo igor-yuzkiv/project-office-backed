@@ -113,7 +113,13 @@ watch([sort.sortBy, sort.sortOrder], () => {
                 <span class="flex-1" />
                 <FilterButton v-bind="filterSidebar.buttonProps.value" />
                 <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
-                <Button label="New task list" icon="pi pi-plus" size="small" class="!h-7" @click="createDialog.open()" />
+                <Button
+                    label="New task list"
+                    icon="pi pi-plus"
+                    size="small"
+                    class="!h-7"
+                    @click="createDialog.open()"
+                />
             </div>
 
             <div class="flex h-full w-full flex-col overflow-hidden">

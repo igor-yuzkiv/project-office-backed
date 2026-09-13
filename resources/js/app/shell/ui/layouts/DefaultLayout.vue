@@ -46,7 +46,7 @@ const navItems: SidebarNavItem[] = [
         </AppLeftNavigationSidebar>
 
         <div class="bg-page relative flex flex-1 flex-col overflow-hidden">
-            <AppHeader :actions="store.headerActions" :breadcrumbs="store.activeBreadcrumbs" />
+            <AppHeader :breadcrumbs="store.activeBreadcrumbs" />
             <ProgressBar
                 v-show="showProgressBar"
                 mode="indeterminate"

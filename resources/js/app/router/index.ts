@@ -40,15 +40,6 @@ const router = createRouter({
                     name: 'project-details.overview',
                     component: () => import('@/pages/projects/details/tabs/ProjectOverviewPage.vue'),
                 },
-                // Old URLs bookmarks may still carry.
-                {
-                    path: 'details',
-                    redirect: (to) => ({ name: 'project-details.overview', params: to.params }),
-                },
-                {
-                    path: 'attachments',
-                    redirect: (to) => ({ name: 'project-details.overview', params: to.params }),
-                },
                 {
                     path: 'task-lists',
                     name: 'project-details.task-lists',

@@ -1,7 +1,4 @@
 export { default as DisplayDate } from './ui/DisplayDate.vue'
-export { default as DisplayField } from './ui/DisplayField.vue'
-export { default as DisplayFields } from './ui/DisplayFields.vue'
-export type { DisplayFieldConfig } from './ui/DisplayFields.vue'
 export { default as CopyToClipboard } from './ui/CopyToClipboard.vue'
 export { default as CopyableKey } from './ui/CopyableKey.vue'
 export { default as PropertiesGrid } from './ui/PropertiesGrid.vue'

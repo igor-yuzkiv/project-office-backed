@@ -3,8 +3,6 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
-use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
-use App\Domains\Task\ValueObjects\TaskViewCount;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -64,19 +62,6 @@ it('answers an empty database with empty lists', function () {
 
     expect($response->json('data.recent_tasks'))->toBe([])
         ->and($response->json('data.recent_task_lists'))->toBe([]);
-});
-
-it('counts filtered tasks without paginating them', function () {
-    dashboardTask(['status' => TaskStatus::Closed->value]);
-    dashboardTask(['status' => TaskStatus::Backlog->value]);
-
-    $counts = collect(app(CountTasksPerTaskViewQuery::class)->handle())
-        ->mapWithKeys(fn (TaskViewCount $counted): array => [$counted->view->key => $counted->count]);
-
-    expect($counts['all'])->toBe(2)
-        ->and($counts['all_closed'])->toBe(1)
-        ->and($counts['all_backlogged'])->toBe(1)
-        ->and($counts['all_in_progress'])->toBe(0);
 });
 
 it('returns at most six recent tasks, newest first, each with its project, list and editor', function () {

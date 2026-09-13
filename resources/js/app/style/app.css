@@ -2,10 +2,6 @@
     @apply bg-page rounded-lg shadow-sm;
 }
 
-.app-content-background {
-    @apply bg-page;
-}
-
 .app-link {
     @apply text-accent hover:underline;
 }

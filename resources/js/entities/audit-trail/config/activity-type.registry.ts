@@ -1,50 +1,41 @@
 import type { AuditRecordSubjectType, KnownAuditRecordSubjectType } from '../types'
 
-/**
- * Accents group by what happened, not by which domain it happened in: in a mixed feed a creation
- * and a deletion from different domains sit next to each other, and the action is what the eye
- * picks up first.
- */
-type ActivityAccent = 'create' | 'update' | 'status' | 'delete' | 'talk' | 'agent' | 'none'
-
 export type ActivityTypeDef = {
-    icon: string
-    accent: ActivityAccent
     /** Whether this kind of event points anywhere. A deletion never does. */
     linkable: boolean
 }
 
 export const ACTIVITY_TYPE_REGISTRY: Record<string, ActivityTypeDef> = {
-    'task.created': { icon: 'heroicons:plus', accent: 'create', linkable: true },
-    'task.updated': { icon: 'heroicons:pencil-square', accent: 'update', linkable: true },
-    'task.status_changed': { icon: 'heroicons:arrow-right', accent: 'status', linkable: true },
-    'task.deleted': { icon: 'heroicons:trash', accent: 'delete', linkable: false },
-    'task.bulk_status_changed': { icon: 'heroicons:arrows-right-left', accent: 'status', linkable: false },
+    'task.created': { linkable: true },
+    'task.updated': { linkable: true },
+    'task.status_changed': { linkable: true },
+    'task.deleted': { linkable: false },
+    'task.bulk_status_changed': { linkable: false },
 
-    'task.started': { icon: 'heroicons:play', accent: 'agent', linkable: true },
-    'task.checkpoint': { icon: 'heroicons:chat-bubble-bottom-center-text', accent: 'talk', linkable: true },
-    'task.handoff': { icon: 'heroicons:arrow-right-circle', accent: 'agent', linkable: true },
+    'task.started': { linkable: true },
+    'task.checkpoint': { linkable: true },
+    'task.handoff': { linkable: true },
 
-    'comment.created': { icon: 'heroicons:chat-bubble-left-right', accent: 'talk', linkable: true },
+    'comment.created': { linkable: true },
 
-    'task_list.created': { icon: 'heroicons:queue-list', accent: 'create', linkable: true },
-    'task_list.updated': { icon: 'heroicons:pencil-square', accent: 'update', linkable: true },
-    'task_list.tasks_added': { icon: 'heroicons:plus-circle', accent: 'create', linkable: true },
+    'task_list.created': { linkable: true },
+    'task_list.updated': { linkable: true },
+    'task_list.tasks_added': { linkable: true },
 
-    'project.created': { icon: 'heroicons:folder-plus', accent: 'create', linkable: true },
-    'project.updated': { icon: 'heroicons:pencil-square', accent: 'update', linkable: true },
-    'project.deleted': { icon: 'heroicons:trash', accent: 'delete', linkable: false },
+    'project.created': { linkable: true },
+    'project.updated': { linkable: true },
+    'project.deleted': { linkable: false },
 
-    'project_document.created': { icon: 'heroicons:document-plus', accent: 'create', linkable: true },
-    'project_document.updated': { icon: 'heroicons:document-text', accent: 'update', linkable: true },
+    'project_document.created': { linkable: true },
+    'project_document.updated': { linkable: true },
 
-    'project_document_version.created': { icon: 'heroicons:document-duplicate', accent: 'create', linkable: true },
-    'project_document_version.updated': { icon: 'heroicons:pencil-square', accent: 'update', linkable: true },
+    'project_document_version.created': { linkable: true },
+    'project_document_version.updated': { linkable: true },
     // Unlike the other deletions this one still links: the version is gone, the document is not.
-    'project_document_version.deleted': { icon: 'heroicons:trash', accent: 'delete', linkable: true },
-    'project_document_version.primary_changed': { icon: 'heroicons:bookmark', accent: 'status', linkable: true },
+    'project_document_version.deleted': { linkable: true },
+    'project_document_version.primary_changed': { linkable: true },
 
-    'attachment.uploaded': { icon: 'heroicons:paper-clip', accent: 'create', linkable: true },
+    'attachment.uploaded': { linkable: true },
 }
 
 /** Sentence-case labels for the Type filter, one per registry key; the single list a chip offers. */
@@ -73,24 +64,8 @@ export const ACTIVITY_TYPE_LABELS: Record<string, string> = {
     'attachment.uploaded': 'Attachment uploaded',
 }
 
-export const UNKNOWN_ACTIVITY_TYPE: ActivityTypeDef = {
-    icon: 'heroicons:question-mark-circle',
-    accent: 'none',
-    linkable: false,
-}
-
 export function resolveActivityType(type: string): ActivityTypeDef {
-    return ACTIVITY_TYPE_REGISTRY[type] ?? UNKNOWN_ACTIVITY_TYPE
-}
-
-export const ACTIVITY_ACCENT_CLASSES: Record<ActivityAccent, string> = {
-    create: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400',
-    update: 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400',
-    status: 'bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
-    delete: 'bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400',
-    talk: 'bg-violet-100 text-violet-600 dark:bg-violet-950 dark:text-violet-400',
-    agent: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-950 dark:text-cyan-400',
-    none: 'bg-surface-200 text-surface-500 dark:bg-surface-700 dark:text-surface-300',
+    return ACTIVITY_TYPE_REGISTRY[type] ?? { linkable: false }
 }
 
 const SUBJECT_ROUTE_NAMES: Record<KnownAuditRecordSubjectType, string> = {

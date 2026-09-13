@@ -10,14 +10,6 @@ export interface SidebarNavItem {
     activeWhen?: string | ((item: SidebarNavItem, route: RouteLocationNormalizedLoaded) => boolean)
 }
 
-export interface HeaderAction {
-    key: string
-    title: string
-    action?: () => void
-    to?: RouteLocationRaw
-    is_primary?: boolean
-}
-
 export interface BreadcrumbItem {
     label: string
     to?: RouteLocationRaw

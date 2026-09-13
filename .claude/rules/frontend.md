@@ -31,8 +31,9 @@ resources/js/
   way — an entity never imports a read model.
 - Shared code must be genuinely entity-agnostic, which is not the same as being a primitive.
   Opinionated components that establish a project contract live here too — `EntityTableView`
-  renders its own empty state and paginator, `DataPanel` decides that an error means a `Try again`
-  button. What keeps them in Shared is that they name no entity and reach no server.
+  renders its own empty state and paginator, so a page never draws one around it. Outside a table,
+  an empty section shows one `type-meta` line (`No tags`, `No description yet.`) rather than a
+  panel. What keeps such components in Shared is that they name no entity and reach no server.
 - Expose module APIs through `index.ts`; prefer public imports over reaching into another module's
   internals.
 

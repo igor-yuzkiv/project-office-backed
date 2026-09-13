@@ -68,7 +68,7 @@ onClickOutside(drawerRef, props.panel.closeDrawer, {
 </script>
 
 <template>
-    <div class="min-h-0 flex shrink-0 relative" :class="side === 'left' ? 'flex-row-reverse' : ''">
+    <div class="min-h-0 relative flex shrink-0" :class="side === 'left' ? 'flex-row-reverse' : ''">
         <aside
             v-if="!panel.isCollapsed.value"
             class="border-surface-200 dark:border-surface-700 min-h-0 shrink-0 overflow-hidden"
@@ -132,7 +132,7 @@ onClickOutside(drawerRef, props.panel.closeDrawer, {
             role="dialog"
             :aria-label="activeLabel"
             data-testid="side-tabs-drawer"
-            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 absolute inset-y-0 z-10 overflow-hidden shadow-lg"
+            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 inset-y-0 shadow-lg absolute z-10 overflow-hidden"
             :class="side === 'left' ? 'left-11 border-r' : 'right-11 border-l'"
             :style="{ width }"
         >

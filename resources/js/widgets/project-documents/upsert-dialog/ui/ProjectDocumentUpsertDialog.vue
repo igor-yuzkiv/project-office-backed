@@ -81,7 +81,12 @@ function handleFieldChanged<K extends keyof ProjectDocumentUpsertFormData>(
 
             <InputContainer label="Tags" :error="validationErrors.tag_ids">
                 <div class="gap-2 p-1 flex items-center">
-                    <IconButton size="medium" severity="success" icon="mdi:tag-edit" @click="showManageTagsDialog = true" />
+                    <IconButton
+                        size="medium"
+                        severity="success"
+                        icon="mdi:tag-edit"
+                        @click="showManageTagsDialog = true"
+                    />
                     <TagList :tags="formData.tags" />
                 </div>
             </InputContainer>

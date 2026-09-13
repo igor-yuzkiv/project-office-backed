@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
-import HeaderActionButton from './HeaderActionButton.vue'
-import type { BreadcrumbItem, HeaderAction } from '../../types'
+import type { BreadcrumbItem } from '../../types'
 
 defineProps<{
-    actions?: HeaderAction[]
     breadcrumbs?: BreadcrumbItem[]
 }>()
 
@@ -28,9 +26,5 @@ const route = useRoute()
         </nav>
 
         <span v-else class="px-1.5 text-ink font-medium truncate">{{ route.meta.title }}</span>
-
-        <div class="gap-1 flex shrink-0 items-center">
-            <HeaderActionButton v-if="actions?.length" :actions="actions" />
-        </div>
     </header>
 </template>

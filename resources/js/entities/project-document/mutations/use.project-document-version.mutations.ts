@@ -42,8 +42,14 @@ export function useUpdateProjectDocumentVersionMutation() {
     const invalidate = useVersionMutationInvalidation()
 
     return useMutation({
-        mutationFn: ({ versionId, data }: { documentId: string; versionId: string; data: IUpdateProjectDocumentVersionInput }) =>
-            updateProjectDocumentVersionRequest(versionId, data),
+        mutationFn: ({
+            versionId,
+            data,
+        }: {
+            documentId: string
+            versionId: string
+            data: IUpdateProjectDocumentVersionInput
+        }) => updateProjectDocumentVersionRequest(versionId, data),
         onSuccess: (_result, { documentId }) => invalidate(documentId),
     })
 }

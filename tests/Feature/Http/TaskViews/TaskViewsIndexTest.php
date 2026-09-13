@@ -3,7 +3,9 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
 use App\Domains\Task\Services\TaskViewRegistry;
+use App\Domains\Task\ValueObjects\TaskViewCount;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -93,4 +95,18 @@ it('counts the tasks of every view, independent of any search', function () {
         ->and($counts['all_in_progress'])->toBe(0)
         ->and($counts['all_closed'])->toBe(1)
         ->and($counts['all_backlogged'])->toBe(1);
+});
+
+it('counts filtered tasks without paginating them', function () {
+    $project = ProjectModel::factory()->create();
+    TaskModel::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Closed->value]);
+    TaskModel::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Backlog->value]);
+
+    $counts = collect(app(CountTasksPerTaskViewQuery::class)->handle())
+        ->mapWithKeys(fn (TaskViewCount $counted): array => [$counted->view->key => $counted->count]);
+
+    expect($counts['all'])->toBe(2)
+        ->and($counts['all_closed'])->toBe(1)
+        ->and($counts['all_backlogged'])->toBe(1)
+        ->and($counts['all_in_progress'])->toBe(0);
 });

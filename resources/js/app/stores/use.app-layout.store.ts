@@ -2,13 +2,12 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { useRoute } from 'vue-router'
-import type { BreadcrumbItem, HeaderAction } from '@/app/shell'
+import type { BreadcrumbItem } from '@/app/shell'
 import { APP_NAME } from '@/app/config'
 
 export const useAppLayoutStore = defineStore('app-layout', () => {
     const route = useRoute()
     const titleOverride = ref<string | null>(null)
-    const headerActions = ref<HeaderAction[]>([])
     const breadcrumbs = ref<BreadcrumbItem[]>([])
     const breadcrumbScope = ref<symbol | null>(null)
     const sidebarCollapsed = useLocalStorage('app:sidebar-collapsed', false)
@@ -35,14 +34,6 @@ export const useAppLayoutStore = defineStore('app-layout', () => {
         titleOverride.value = title
     }
 
-    function setHeaderActions(actions: HeaderAction[]) {
-        headerActions.value = actions
-    }
-
-    function clearHeaderActions() {
-        headerActions.value = []
-    }
-
     function setBreadcrumbs(scopeId: symbol, items: BreadcrumbItem[]) {
         breadcrumbScope.value = scopeId
         breadcrumbs.value = items
@@ -57,12 +48,9 @@ export const useAppLayoutStore = defineStore('app-layout', () => {
 
     return {
         pageTitle,
-        headerActions,
         activeBreadcrumbs,
         sidebarCollapsed,
         setPageTitle,
-        setHeaderActions,
-        clearHeaderActions,
         setBreadcrumbs,
         clearBreadcrumbs,
         toggleSidebar,
