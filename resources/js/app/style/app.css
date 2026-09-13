@@ -9,3 +9,64 @@
 .app-link {
     @apply text-accent hover:underline;
 }
+
+/*
+ * Typographic roles from the redesign mockups (_tmp/context/ui-redesign/design.css):
+ * type-title ≈ h1.title, type-page ≈ h1.page, type-section ≈ h2.sec, type-prose ≈ .prose,
+ * type-meta ≈ .m. A role carries size, weight and tracking together, so it is a class rather than
+ * a `--text-*` token.
+ */
+@utility type-title {
+    font-size: 26px;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+}
+
+@utility type-page {
+    font-size: 22px;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+}
+
+@utility type-section {
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+@utility type-body {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@utility type-prose {
+    max-width: 66ch;
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+@utility type-meta {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-ink-2);
+}
+
+@utility type-meta-3 {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-ink-3);
+}
+
+/* One hairline separates rows and sections. */
+@utility hairline {
+    border-bottom: 1px solid var(--color-line);
+}
+
+/* A selected row is a lifted surface with a 1px ring, never a filled accent. */
+@utility selected-row {
+    background: var(--color-selected);
+    box-shadow: 0 0 0 1px var(--color-line-2);
+}

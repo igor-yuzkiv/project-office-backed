@@ -34,6 +34,12 @@ const MyPreset = definePreset(Aura, {
             900: '{blue.900}',
             950: '{blue.950}',
         },
+        focusRing: {
+            width: '2px',
+            style: 'solid',
+            color: '{primary.color}',
+            offset: '2px',
+        },
         colorScheme: {
             light: {
                 surface: {
@@ -146,6 +152,15 @@ const MyPreset = definePreset(Aura, {
                     popover: { background: '{surface.900}', borderColor: '{surface.600}', color: '{text.color}' },
                     modal: { background: '{surface.900}', borderColor: '{surface.600}', color: '{text.color}' },
                 },
+            },
+        },
+    },
+    // Shadows belong to overlays only (Dialog, Popover, Toast keep theirs). Card is the one
+    // content component whose Aura tokens carry a shadow; Panel and DataTable have none to remove.
+    components: {
+        card: {
+            root: {
+                shadow: 'none',
             },
         },
     },
