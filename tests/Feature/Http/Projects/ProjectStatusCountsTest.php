@@ -3,6 +3,7 @@
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
+use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -122,4 +123,18 @@ it('keeps the counts out of the CLI project payloads', function () {
     $this->getJson("/api/cli/projects/{$project->id}")
         ->assertOk()
         ->assertJsonMissingPath('data.task_status_counts');
+});
+
+it('carries the relation counts on show so the project tabs can show them', function () {
+    $user = UserModel::factory()->create();
+    $project = ProjectModel::factory()->create();
+    TaskListModel::factory()->count(2)->create(['project_id' => $project->id]);
+    TaskModel::factory()->count(3)->create(['project_id' => $project->id]);
+
+    $this->actingAs($user)
+        ->getJson("/api/projects/{$project->id}")
+        ->assertOk()
+        ->assertJsonPath('data.task_lists_count', 2)
+        ->assertJsonPath('data.tasks_count', 3)
+        ->assertJsonPath('data.docs_count', 0);
 });

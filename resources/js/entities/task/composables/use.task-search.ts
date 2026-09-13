@@ -108,7 +108,7 @@ export function useTaskSearch(options: UseTaskSearchOptions = {}) {
     })
 
     // Gate the search until the task views are settled, otherwise it fires once with no view
-    // filters and again once the default view (All Open) loads.
+    // filters and again once the default view (All open) loads.
     const { tasks, paginationMeta, isPending } = useTasksSearchQuery(searchParams, {
         enabled: computed(() => !isTaskViewsPending.value && isUrlViewApplied.value),
     })

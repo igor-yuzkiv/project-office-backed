@@ -51,17 +51,25 @@ const stats = computed(() => [
     { label: 'Attachments', value: attachmentsDialog.count.value, onClick: () => (showAttachmentsDialog.value = true) },
 ])
 
-const projectFilter: FilterPayloadItem = {
+// Task lists and tasks register the project field under different filters.
+const taskListProjectFilter: FilterPayloadItem = {
     filter_key: 'text',
     field_name: 'project_id',
     value: projectId,
     matchMode: 'equals',
     params: {},
 }
+const taskProjectFilter: FilterPayloadItem = {
+    filter_key: 'lookup',
+    field_name: 'project_id',
+    value: projectId,
+    matchMode: null,
+    params: {},
+}
 
 const taskListColumns = taskListTableColumnsExcluding('project')
 const taskListsParams: TaskListSearchParams = {
-    filters: [projectFilter],
+    filters: [taskListProjectFilter],
     sort_by: 'updated_at',
     sort_order: 'desc',
     page: 1,
@@ -75,7 +83,7 @@ const openView = computed(() => taskViews.value.find((view) => view.key === PROJ
 
 const taskColumns = taskTableColumnsExcluding('project', 'tags')
 const recentTasksParams = computed<TaskSearchParams>(() => ({
-    filters: [projectFilter, ...(openView.value?.filters ?? [])],
+    filters: [taskProjectFilter, ...(openView.value?.filters ?? [])],
     sort_by: 'updated_at',
     sort_order: 'desc',
     page: 1,

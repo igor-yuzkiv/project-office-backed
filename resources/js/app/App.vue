@@ -36,13 +36,21 @@ const layoutComponent = computed(() => {
     }
     return AppLayoutComponentMap.default
 })
+
+// Pages read their record id once on setup, so moving between two records of the same route
+// (pinned projects in the sidebar) must mount a fresh page; moving between its child routes must not.
+const pageKey = computed(() => {
+    const path = route.matched[0]?.path ?? ''
+    const ownParams = [...path.matchAll(/:(\w+)/g)].map(([, name]) => String(route.params[name] ?? ''))
+    return [path, ...ownParams].join('/')
+})
 </script>
 
 <template>
     <component :is="layoutComponent">
         <router-view v-slot="{ Component }">
             <transition name="page" mode="out-in">
-                <component :is="Component" />
+                <component :is="Component" :key="pageKey" />
             </transition>
         </router-view>
     </component>

@@ -37,6 +37,10 @@ class ProjectResource extends JsonResource
             'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'tasks'      => $this->whenLoaded('tasks', fn () => TaskResource::collection($this->tasks)),
             'task_lists' => $this->whenLoaded('taskLists', fn () => TaskListOverviewResource::collection($this->taskLists)),
+
+            'docs_count'       => $this->whenCounted('documents', fn () => $this->documents_count),
+            'task_lists_count' => $this->whenCounted('taskLists', fn () => $this->task_lists_count),
+            'tasks_count'      => $this->whenCounted('tasks', fn () => $this->tasks_count),
         ];
     }
 }

@@ -134,6 +134,7 @@ class ProjectsController extends ResourceController
     {
         $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'archivedBy', 'tags'], requested: $this->parseRequestedIncludes()));
         $project->loadExists($this->pinnedByCurrentUser());
+        $project->loadCount(self::COUNTED_RELATIONS);
         $this->countTasksPerStatus->attach([$project]);
         $this->attachTaskListStatusCounts([$project]);
 

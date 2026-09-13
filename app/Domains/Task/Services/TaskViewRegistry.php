@@ -17,14 +17,14 @@ class TaskViewRegistry
     {
         return [
             new TaskView('all', 'All', []),
-            new TaskView('all_open', 'All Open', [
+            new TaskView('all_open', 'All open', [
                 self::statusFilter([
                     TaskStatus::Open,
                     TaskStatus::ReadyForDevelopment,
                     TaskStatus::InProgress,
                 ]),
             ]),
-            new TaskView('all_in_progress', 'All In Progress', [
+            new TaskView('all_in_progress', 'All in progress', [
                 self::statusFilter([
                     TaskStatus::ReadyForDevelopment,
                     TaskStatus::InProgress,
@@ -32,13 +32,13 @@ class TaskViewRegistry
                     TaskStatus::Completed,
                 ]),
             ]),
-            new TaskView('all_closed', 'All Closed', [
+            new TaskView('all_closed', 'All closed', [
                 self::statusFilter([
                     TaskStatus::Closed,
                     TaskStatus::Declined,
                 ]),
             ]),
-            new TaskView('all_backlogged', 'All Backlogged', [
+            new TaskView('all_backlogged', 'All backlogged', [
                 self::statusFilter([
                     TaskStatus::Backlog,
                 ]),
