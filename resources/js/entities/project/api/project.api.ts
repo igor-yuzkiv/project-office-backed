@@ -40,3 +40,15 @@ export async function updateProjectRequest(id: string, data: IUpdateProjectInput
 export async function deleteProjectRequest(id: string): Promise<{ message: string }> {
     return httpClient.delete<{ message: string }>(`/projects/${id}`).then((res) => res.data)
 }
+
+export async function fetchPinnedProjectsRequest(): Promise<{ data: ProjectOverviewDto[] }> {
+    return httpClient.get<{ data: ProjectOverviewDto[] }>('/projects/pinned').then((res) => res.data)
+}
+
+export async function pinProjectRequest(id: string): Promise<void> {
+    await httpClient.post(`/projects/${id}/pin`)
+}
+
+export async function unpinProjectRequest(id: string): Promise<void> {
+    await httpClient.delete(`/projects/${id}/pin`)
+}

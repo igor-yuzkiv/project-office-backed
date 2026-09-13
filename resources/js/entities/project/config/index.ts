@@ -7,6 +7,7 @@ export const ProjectQueryKey = {
     paginated: (params: MaybeRefOrGetter<PagingParams>) => [...ProjectQueryKey.all, 'paginated', params] as const,
     search: (params: MaybeRefOrGetter<ProjectSearchParams>) => [...ProjectQueryKey.all, 'search', params] as const,
     detail: (id: MaybeRefOrGetter<string>) => [...ProjectQueryKey.all, 'detail', id] as const,
+    pinned: ['projects', 'pinned'] as const,
 }
 
 export * from './project-attachment.config'

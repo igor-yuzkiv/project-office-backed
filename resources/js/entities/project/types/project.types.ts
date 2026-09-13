@@ -2,7 +2,7 @@ import type { IEntity } from '@/shared/types'
 import type { UserOverviewDto } from '@/entities/user/types'
 import type { ProjectStatusValue } from './project-status.types'
 import type { ITag } from '@/entities/tag/types'
-import type { ITask } from '@/entities/task/types'
+import type { ITask, TaskStatusValue } from '@/entities/task/types'
 import type { ITaskListOverview } from '@/entities/task-list/types'
 
 export interface IProject extends IEntity {
@@ -27,7 +27,12 @@ export interface IProject extends IEntity {
     docs_count?: number
     task_lists_count?: number
     tasks_count?: number
+    // Present only on endpoints that compute them: is_pinned on list/show/pinned, task_status_counts on pinned.
+    is_pinned?: boolean
+    task_status_counts?: TaskStatusCounts
 }
+
+export type TaskStatusCounts = Record<TaskStatusValue, number>
 
 export type ProjectOverviewDto = Pick<
     IProject,
@@ -47,4 +52,6 @@ export type ProjectOverviewDto = Pick<
     | 'tasks_count'
     | 'tasks'
     | 'task_lists'
+    | 'is_pinned'
+    | 'task_status_counts'
 >
