@@ -6,22 +6,22 @@ import type { MenuItem } from 'primevue/menuitem'
 import { useTaskListsSearchQuery } from '@/entities/task-list/queries'
 import { useDeleteTaskListMutation } from '@/entities/task-list/mutations'
 import type { ITaskList, TaskListSearchParams } from '@/entities/task-list/types'
-import {
-    createDefaultTaskListFiltersDefMap,
-    taskListSortFieldDefs,
-    taskListTableColumnDefs,
-} from '@/entities/task-list/config'
+import { createDefaultTaskListFiltersDefMap, taskListSortFieldDefs } from '@/entities/task-list/config'
 import { PAGE_SIZE } from '@/app/config'
 import { FilterSidebar, FilterButton, useFilterSidebar } from '@/shared/filters'
 import { useSortDialog, SortButton, SortDialog } from '@/shared/sort'
 import { usePersistedListState } from '@/shared/composables'
 import { SearchInput } from '@/shared/components/input'
+import Button from 'primevue/button'
 import { IconButton } from '@/shared/components/button'
+import { PageHead } from '@/shared/components/page-head'
 import { TaskListsTableView } from '@/widgets/task-list/views/table'
 import { TaskListCreateDialog, useTaskListCreateDialog } from '@/widgets/task-list/create-dialog'
-import { useHeaderActions } from '@/app/shell'
+import { useBreadcrumbs } from '@/app/shell'
 
 const router = useRouter()
+
+useBreadcrumbs([{ label: 'Task lists' }])
 
 const { mutateWithConfirm: deleteTaskList } = useDeleteTaskListMutation()
 const createDialog = useTaskListCreateDialog()
@@ -78,7 +78,7 @@ const searchParams = computed<TaskListSearchParams>(() => ({
     per_page: PAGE_SIZE,
     sort_by: sort.sortBy.value,
     sort_order: sort.sortOrder.value,
-    include: ['project', 'tags'],
+    include: ['project', 'tags', 'updatedBy'],
 }))
 
 const { taskLists, paginationMeta, isPending } = useTaskListsSearchQuery(searchParams)
@@ -104,21 +104,22 @@ function onPageChange(newPage: number) {
 watch([sort.sortBy, sort.sortOrder], () => {
     page.value = 1
 })
-
-useHeaderActions([
-    { key: 'new-task-list', title: 'New Task List', action: () => createDialog.open(), is_primary: true },
-])
 </script>
 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
-            <div class="gap-2 p-1 flex items-center justify-between">
-                <SearchInput v-model="searchInput" placeholder="Search task lists..." @submit="onSearchSubmit" />
-                <div class="gap-2 flex items-center">
-                    <FilterButton v-bind="filterSidebar.buttonProps.value" />
-                    <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
-                </div>
+            <PageHead title="Task lists" class="px-1">
+                <template #lede>A list is a plan: tasks in order, executed one after another.</template>
+                <template #actions>
+                    <Button label="New task list" icon="pi pi-plus" size="small" @click="createDialog.open()" />
+                </template>
+            </PageHead>
+            <div class="gap-1.5 p-1 flex flex-wrap items-center">
+                <SearchInput v-model="searchInput" placeholder="Search lists" @submit="onSearchSubmit" />
+                <FilterButton v-bind="filterSidebar.buttonProps.value" />
+                <span class="flex-1" />
+                <SortButton :label="`Sort: ${sort.activeSortLabel.value}`" @click="sort.open()" />
             </div>
 
             <div class="flex h-full w-full flex-col overflow-hidden">
@@ -127,7 +128,6 @@ useHeaderActions([
                     :is-pending="isPending"
                     :pagination-meta="paginationMeta"
                     :page="page"
-                    :columns="taskListTableColumnDefs"
                     :to="taskListDetailsRoute"
                     @page-change="onPageChange"
                 >

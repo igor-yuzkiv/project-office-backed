@@ -70,3 +70,19 @@
     background: var(--color-selected);
     box-shadow: 0 0 0 1px var(--color-line-2);
 }
+
+/*
+ * Toolbar chip (`.chip` in design.css): a dashed outline while nothing is set, solid once it
+ * carries a value. The `<b>` inside is the value.
+ */
+.chip {
+    @apply gap-1.5 h-7 px-2.5 border-line-2 text-ink-2 hover:text-ink rounded-md inline-flex cursor-pointer items-center border border-dashed text-[13px] whitespace-nowrap hover:border-solid;
+}
+
+.chip b {
+    @apply text-ink font-medium;
+}
+
+.chip-set {
+    @apply bg-canvas text-ink border-solid;
+}

@@ -21,8 +21,12 @@ const props = withDefaults(
         /** Adds a checkbox column. A row body click also selects, unless the row navigates. */
         selectionMode?: 'multiple'
         dataKey?: string
+        /** Where the `actions` slot column sits. */
+        actionsPlacement?: 'start' | 'end'
+        /** Foot text such as "7 lists"; without it the foot only appears when there is more than one page. */
+        countLabel?: string
     }>(),
-    { dataKey: 'id' }
+    { dataKey: 'id', actionsPlacement: 'start' }
 )
 
 const selection = defineModel<T[]>('selection', { default: () => [] })
@@ -35,6 +39,7 @@ const emit = defineEmits<{
 const router = useRouter()
 
 const isClickable = computed(() => props.rowClickable || !!props.to)
+const hasPages = computed(() => !!props.paginationMeta && props.paginationMeta.last_page > 1)
 
 function onRowClick(event: { data: T; originalEvent: Event }) {
     if (!isClickable.value) {
@@ -86,7 +91,7 @@ function onPageChange(event: { page: number }) {
     >
         <Column v-if="props.selectionMode" selection-mode="multiple" header-style="width: 3rem" />
 
-        <Column v-if="$slots.actions" style="width: 3rem">
+        <Column v-if="$slots.actions && props.actionsPlacement === 'start'" style="width: 3rem">
             <template #body="{ data }">
                 <slot name="actions" :row="data as T" />
             </template>
@@ -104,30 +109,32 @@ function onPageChange(event: { page: number }) {
             </template>
         </Column>
 
+        <Column v-if="$slots.actions && props.actionsPlacement === 'end'" style="width: 3rem">
+            <template #body="{ data }">
+                <slot name="actions" :row="data as T" />
+            </template>
+        </Column>
+
         <template #empty>
             <slot name="empty">
                 <div class="py-6 text-sm text-surface-400 text-center">No records found.</div>
             </slot>
         </template>
 
-        <template #footer>
-            <Paginator
-                v-if="props.paginationMeta && props.paginationMeta.last_page > 1"
-                :rows="PAGE_SIZE"
-                :total-records="props.paginationMeta.total"
-                :first="(props.page - 1) * PAGE_SIZE"
-                pt:root:class="py-0.5 px-2"
-                @page="onPageChange"
-            >
-                <template #start>
-                    <span class="text-sm text-surface-500">
-                        Page {{ props.page }} of {{ props.paginationMeta?.last_page }}
-                    </span>
-                </template>
-                <template #end>
-                    <span class="text-sm text-surface-500"> Total Records: {{ props.paginationMeta?.total }} </span>
-                </template>
-            </Paginator>
+        <template v-if="props.countLabel || hasPages" #footer>
+            <div class="gap-2 px-2.5 py-2 flex items-center justify-between">
+                <span class="type-meta-3">{{
+                    props.countLabel ?? `Total Records: ${props.paginationMeta?.total}`
+                }}</span>
+                <Paginator
+                    v-if="hasPages"
+                    :rows="PAGE_SIZE"
+                    :total-records="props.paginationMeta?.total ?? 0"
+                    :first="(props.page - 1) * PAGE_SIZE"
+                    pt:root:class="p-0"
+                    @page="onPageChange"
+                />
+            </div>
         </template>
     </DataTable>
 </template>

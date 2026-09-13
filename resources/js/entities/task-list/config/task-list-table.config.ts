@@ -11,11 +11,12 @@ export const taskListSortFieldDefs: SortFieldDef[] = [
 // All available task list table columns. Pages render the full set or drop the ones that
 // don't apply to their context via taskListTableColumnsExcluding().
 export const taskListTableColumnDefs: EntityTableColumnDef[] = [
-    { field: 'key', header: 'Key', style: 'min-width: 10rem' },
-    { field: 'name', header: 'Name', style: 'min-width: 25rem' },
+    { field: 'key', header: 'Key', style: 'width: 8rem' },
+    { field: 'name', header: 'List', style: 'min-width: 20rem' },
+    { field: 'project', header: 'Project', style: 'min-width: 12rem' },
     { field: 'status', header: 'Status', style: 'min-width: 9rem' },
-    { field: 'project', header: 'Project', style: 'min-width: 15rem' },
-    { field: 'tags', header: 'Tags', style: 'min-width: 12rem' },
+    { field: 'progress', header: 'Progress', style: 'width: 10rem' },
+    { field: 'updated_at', header: 'Updated', style: 'min-width: 10rem' },
 ]
 
 export function taskListTableColumnsExcluding(...fields: string[]): EntityTableColumnDef[] {

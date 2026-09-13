@@ -44,7 +44,7 @@ const searchParams = computed<TaskListSearchParams>(() => {
         filters: [projectFilter],
         page: page.value,
         per_page: PAGE_SIZE,
-        include: ['tags'],
+        include: ['tags', 'updatedBy'],
     }
 })
 

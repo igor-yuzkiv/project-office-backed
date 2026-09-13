@@ -5,7 +5,7 @@ const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR
 
 /**
- * Compact "last touched" time for dashboard rows: minutes and hours while the change is still
+ * Compact "last touched" time for list rows: minutes and hours while the change is still
  * fresh, day names once it is not. Falls back instead of throwing, so one bad timestamp cannot
  * take a whole panel down.
  */

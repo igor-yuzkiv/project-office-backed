@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
-
 defineProps<{
     label?: string
 }>()
@@ -11,13 +9,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <Button
-        :label="label ?? 'Sort'"
-        icon="pi pi-sort-alt"
-        severity="secondary"
-        outlined
-        @click="emit('click')"
-        text
-        size="small"
-    />
+    <button type="button" class="chip" :class="{ 'chip-set': label }" @click="emit('click')">
+        <i class="pi pi-sort-alt text-[12px]" />
+        {{ label ?? 'Sort' }}
+    </button>
 </template>
