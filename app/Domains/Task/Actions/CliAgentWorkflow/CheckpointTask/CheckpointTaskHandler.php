@@ -4,6 +4,7 @@ namespace App\Domains\Task\Actions\CliAgentWorkflow\CheckpointTask;
 
 use App\Domains\Comment\Actions\CreateComment\CreateCommentCommand;
 use App\Domains\Comment\Actions\CreateComment\CreateCommentHandler;
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Task\AuditRecords\TaskCheckpointAuditRecord;
 use App\Libs\AuditTrail\Facades\AuditTrail;
@@ -21,6 +22,7 @@ class CheckpointTaskHandler
             author: $command->author,
             content: CheckpointComment::PREFIX.$command->subject."\n\n".$command->comment,
             recordAudit: false,
+            kind: CommentKind::Checkpoint,
         ));
 
         $command->task->touch();

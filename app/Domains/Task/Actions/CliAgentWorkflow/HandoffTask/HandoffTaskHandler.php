@@ -4,6 +4,8 @@ namespace App\Domains\Task\Actions\CliAgentWorkflow\HandoffTask;
 
 use App\Domains\Comment\Actions\CreateComment\CreateCommentCommand;
 use App\Domains\Comment\Actions\CreateComment\CreateCommentHandler;
+use App\Domains\Comment\Enums\CommentKind;
+use App\Domains\Task\Actions\CliAgentWorkflow\CheckpointTask\CheckpointComment;
 use App\Domains\Task\AuditRecords\TaskHandoffAuditRecord;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
@@ -24,8 +26,9 @@ class HandoffTaskHandler
             $this->createCommentHandler->handle(new CreateCommentCommand(
                 commentable: $task,
                 author: $command->author,
-                content: "# Handoff\n\n{$command->resolution}",
+                content: CheckpointComment::HANDOFF_PREFIX."\n\n{$command->resolution}",
                 recordAudit: false,
+                kind: CommentKind::Handoff,
             ));
 
             $task->update(['status' => TaskStatus::ReadyToTest]);

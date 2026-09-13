@@ -10,7 +10,7 @@ export interface CommentCan {
     delete: boolean
 }
 
-export type CommentKind = 'comment' | 'checkpoint'
+export type CommentKind = 'comment' | 'start' | 'checkpoint' | 'handoff'
 
 export interface IComment {
     id: string

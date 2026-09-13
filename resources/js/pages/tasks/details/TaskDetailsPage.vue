@@ -131,7 +131,7 @@ useBreadcrumbs(() => [
     <div
         v-if="task"
         class="min-h-0 grid flex-1"
-        :class="showRail ? 'grid-cols-[minmax(0,1fr)_288px]' : 'grid-cols-[minmax(0,1fr)]'"
+        :class="showRail ? 'grid-cols-[minmax(0,1fr)_340px]' : 'grid-cols-[minmax(0,1fr)]'"
     >
         <div class="min-h-0 overflow-auto">
             <article class="page-container">
@@ -168,6 +168,18 @@ useBreadcrumbs(() => [
 
                     <span>Priority</span>
                     <div><TaskPriorityBars :priority="task.priority" /></div>
+
+                    <span>Task list</span>
+                    <div>
+                        <RouterLink
+                            v-if="task.task_list"
+                            :to="{ name: 'task-list-details', params: { id: task.task_list.id } }"
+                            class="text-accent text-[13px] hover:underline"
+                        >
+                            {{ task.task_list.key }} · {{ task.task_list.name }}
+                        </RouterLink>
+                        <span v-else class="text-ink-2 text-[13px]">—</span>
+                    </div>
 
                     <span>Created</span>
                     <div>

@@ -24,7 +24,7 @@ const props = withDefaults(
         /** Where the new-comment form sits; a document reads top-down, so it ends with the form. */
         composerPlacement?: 'top' | 'bottom'
         /**
-         * Bind it to show the All / Checkpoints / Comments segment. The filter narrows only the
+         * Bind it to show the All / Checkpoints / Handoffs / Comments segment. The filter narrows only the
          * comments already loaded — the pages stay as the server returned them.
          */
         kind?: CommentKindFilter
@@ -43,6 +43,7 @@ const emit = defineEmits<{
 const KIND_SEGMENTS: { value: CommentKindFilter; label: string }[] = [
     { value: 'all', label: 'All' },
     { value: 'checkpoint', label: 'Checkpoints' },
+    { value: 'handoff', label: 'Handoffs' },
     { value: 'comment', label: 'Comments' },
 ]
 
@@ -56,7 +57,9 @@ const visibleComments = computed(() =>
 
 const emptyLabel = computed(() => {
     if (props.comments.length === 0) return 'No comments yet.'
-    return props.kind === 'checkpoint' ? 'No checkpoints on this page.' : 'No comments on this page.'
+    if (props.kind === 'checkpoint') return 'No checkpoints on this page.'
+    if (props.kind === 'handoff') return 'No handoffs on this page.'
+    return 'No comments on this page.'
 })
 
 const showPaginator = computed(() => props.paginationMeta && props.paginationMeta.last_page > 1)

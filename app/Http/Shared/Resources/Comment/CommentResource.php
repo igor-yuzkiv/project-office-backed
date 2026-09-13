@@ -3,7 +3,6 @@
 namespace App\Http\Shared\Resources\Comment;
 
 use App\Domains\Comment\Models\CommentModel;
-use App\Domains\Task\Actions\CliAgentWorkflow\CheckpointTask\CheckpointComment;
 use App\Http\Shared\Resources\Users\UserOverviewResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,7 +15,7 @@ class CommentResource extends JsonResource
         return [
             'id'         => (string) $this->id,
             'content'    => $this->content,
-            'kind'       => CheckpointComment::isCheckpoint($this->content) ? 'checkpoint' : 'comment',
+            'kind'       => $this->kind->value,
             'author'     => new UserOverviewResource($this->author),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

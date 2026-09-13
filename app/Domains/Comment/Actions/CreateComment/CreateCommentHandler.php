@@ -16,6 +16,7 @@ class CreateCommentHandler
         $comment = $command->commentable->comments()->create([
             'author_id' => $command->author->id,
             'content'   => $command->content,
+            'kind'      => $command->kind,
         ]);
 
         if ($command->recordAudit) {

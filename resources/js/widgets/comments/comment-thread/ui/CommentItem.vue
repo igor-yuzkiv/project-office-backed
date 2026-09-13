@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Button from 'primevue/button'
 import { MarkdownPreview } from '@/shared/components/md-editor'
 import { DisplayDate } from '@/shared/components/display'
 import { UserAvatar } from '@/widgets/user/user-avatar'
-import type { IComment } from '@/entities/comment'
+import type { CommentKind, IComment } from '@/entities/comment'
 import { checkpointBody, checkpointSubject } from '@/entities/comment'
 import CommentInputForm from './CommentInputForm.vue'
 
@@ -15,7 +15,15 @@ const emit = defineEmits<{
     (e: 'delete', commentId: string): void
 }>()
 
+const KIND_BADGES: Partial<Record<CommentKind, string>> = {
+    start: 'Start',
+    checkpoint: 'Checkpoint',
+    handoff: 'Handoff',
+}
+
 const isEditing = ref(false)
+
+const kindBadge = computed(() => KIND_BADGES[props.comment.kind])
 
 function handleEditSubmit(content: string) {
     emit('update', { commentId: props.comment.id, content })
@@ -42,11 +50,8 @@ function handleDelete() {
                     <span class="text-sm font-semibold text-surface-900 dark:text-surface-0 truncate">
                         {{ comment.author.name }}
                     </span>
-                    <span
-                        v-if="comment.kind === 'checkpoint'"
-                        class="bg-code-bg text-ink-2 text-xs shrink-0 rounded-[4px] px-[7px] py-px"
-                    >
-                        Checkpoint
+                    <span v-if="kindBadge" class="bg-code-bg text-ink-2 text-xs shrink-0 rounded-[4px] px-[7px] py-px">
+                        {{ kindBadge }}
                     </span>
                 </span>
                 <div class="gap-1 flex shrink-0 items-center">

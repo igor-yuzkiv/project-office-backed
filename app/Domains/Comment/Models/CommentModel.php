@@ -2,6 +2,7 @@
 
 namespace App\Domains\Comment\Models;
 
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\User\Models\UserModel;
 use Database\Factories\CommentModelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,14 +18,20 @@ use Illuminate\Support\Carbon;
  * @property int $commentable_id
  * @property string $author_id
  * @property string $content
+ * @property CommentKind $kind
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read UserModel $author
  * @property-read Model $commentable
  */
-#[Fillable(['commentable_id', 'commentable_type', 'author_id', 'content'])]
+#[Fillable(['commentable_id', 'commentable_type', 'author_id', 'content', 'kind'])]
 class CommentModel extends Model
 {
+    protected function casts(): array
+    {
+        return ['kind' => CommentKind::class];
+    }
+
     /** @use HasFactory<CommentModelFactory> */
     use HasFactory;
 

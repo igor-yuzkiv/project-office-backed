@@ -2,6 +2,7 @@
 
 namespace App\Domains\Comment\Actions\CreateComment;
 
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Contracts\Commentable;
 
@@ -16,5 +17,6 @@ class CreateCommentCommand
          * one line in the feed instead of three.
          */
         public readonly bool $recordAudit = true,
+        public readonly CommentKind $kind = CommentKind::Comment,
     ) {}
 }

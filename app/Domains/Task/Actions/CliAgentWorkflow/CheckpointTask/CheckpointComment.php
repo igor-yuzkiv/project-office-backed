@@ -3,14 +3,12 @@
 namespace App\Domains\Task\Actions\CliAgentWorkflow\CheckpointTask;
 
 /**
- * A checkpoint is stored as an ordinary comment; this prefix is the only thing that tells it apart.
+ * The first line a workflow comment starts with. The kind of a comment is stored on the row
+ * (`CommentKind`); these prefixes shape the text a reader sees.
  */
 final class CheckpointComment
 {
     public const PREFIX = '# Checkpoint: ';
 
-    public static function isCheckpoint(string $content): bool
-    {
-        return str_starts_with($content, self::PREFIX);
-    }
+    public const HANDOFF_PREFIX = '# Handoff';
 }

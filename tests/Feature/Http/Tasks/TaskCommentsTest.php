@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\Comment\Models\CommentModel;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Actions\CliAgentWorkflow\CheckpointTask\CheckpointComment;
@@ -41,18 +42,20 @@ it('records exactly one comment.created event pointing at the task', function ()
 it('marks a plain comment as kind comment and a checkpoint as kind checkpoint', function () {
     $this->task->comments()->createMany([
         ['author_id' => $this->user->id, 'content' => 'Looks good.'],
-        ['author_id' => $this->user->id, 'content' => CheckpointComment::PREFIX."Investigated\n\nRoot cause found."],
+        ['author_id' => $this->user->id, 'content' => CheckpointComment::PREFIX."Investigated\n\nRoot cause found.", 'kind' => CommentKind::Checkpoint],
+        ['author_id' => $this->user->id, 'content' => CheckpointComment::HANDOFF_PREFIX."\n\nDone: shipped.", 'kind' => CommentKind::Handoff],
     ]);
 
     $kinds = collect($this->getJson("/api/tasks/{$this->task->id}/comments")->assertOk()->json('data'))
         ->pluck('kind', 'content');
 
     expect($kinds['Looks good.'])->toBe('comment')
-        ->and($kinds[CheckpointComment::PREFIX."Investigated\n\nRoot cause found."])->toBe('checkpoint');
+        ->and($kinds[CheckpointComment::PREFIX."Investigated\n\nRoot cause found."])->toBe('checkpoint')
+        ->and($kinds[CheckpointComment::HANDOFF_PREFIX."\n\nDone: shipped."])->toBe('handoff');
 });
 
-it('does not take a checkpoint mention inside the body for a checkpoint', function () {
-    $this->postJson("/api/tasks/{$this->task->id}/comments", ['content' => "See the last\n# Checkpoint: note"])
+it('stores a comment posted by a person as kind comment whatever its text', function () {
+    $this->postJson("/api/tasks/{$this->task->id}/comments", ['content' => '# Checkpoint: not really'])
         ->assertCreated()
         ->assertJsonPath('data.kind', 'comment');
 });

@@ -4,6 +4,7 @@ namespace App\Domains\Task\Actions\CliAgentWorkflow\StartTask;
 
 use App\Domains\Comment\Actions\CreateComment\CreateCommentCommand;
 use App\Domains\Comment\Actions\CreateComment\CreateCommentHandler;
+use App\Domains\Comment\Enums\CommentKind;
 use App\Domains\Task\AuditRecords\TaskStartedAuditRecord;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
@@ -33,6 +34,7 @@ class StartTaskHandler
                 author: $command->author,
                 content: "# Start\n\n{$command->comment}",
                 recordAudit: false,
+                kind: CommentKind::Start,
             ));
         }
 
