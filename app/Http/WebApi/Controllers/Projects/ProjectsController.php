@@ -11,6 +11,7 @@ use App\Domains\Project\Actions\UnpinProject\UnpinProjectCommand;
 use App\Domains\Project\Actions\UnpinProject\UnpinProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Project\Queries\CountTasksPerStatusQuery;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
 use App\Http\Shared\Resources\Projects\ProjectResource;
 use App\Http\WebApi\Controllers\ResourceController;
@@ -18,6 +19,7 @@ use App\Http\WebApi\Requests\Projects\StoreProjectRequest;
 use App\Http\WebApi\Requests\Projects\UpdateProjectRequest;
 use App\Http\WebApi\Requests\Shared\SearchRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -31,6 +33,7 @@ class ProjectsController extends ResourceController
         private readonly DeleteProjectHandler $deleteHandler,
         private readonly PinProjectHandler $pinHandler,
         private readonly UnpinProjectHandler $unpinHandler,
+        private readonly CountTasksPerStatusQuery $countTasksPerStatus,
     ) {}
 
     /** The project card counts what a project holds, so every list response carries these. */
@@ -81,6 +84,26 @@ class ProjectsController extends ResourceController
                     ->filter((array) $request->input('filters', []));
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
+
+        return ProjectOverviewResource::collection($projects);
+    }
+
+    /** The sidebar reads this: pinned projects in pin order, each with its tasks counted per status. */
+    public function pinned(Request $request): AnonymousResourceCollection
+    {
+        /** @var Collection<int, ProjectModel> $projects */
+        $projects = $request->user()->pinnedProjects()
+            ->with(['createdBy', 'updatedBy', 'tags'])
+            ->withCount(self::COUNTED_RELATIONS)
+            ->orderBy('user_pinned_projects.created_at')
+            ->get();
+
+        $counts = $this->countTasksPerStatus->handle($projects->modelKeys());
+
+        foreach ($projects as $project) {
+            $project->setAttribute('is_pinned', true);
+            $project->setAttribute('task_status_counts', $counts[$project->id]);
+        }
 
         return ProjectOverviewResource::collection($projects);
     }

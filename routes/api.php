@@ -53,6 +53,7 @@ Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['aut
 /**
  * Projects
  */
+Route::get('projects/pinned', [ProjectsController::class, 'pinned'])->middleware(['auth:sanctum'])->name('projects.pinned');
 Route::post('projects/search', [ProjectsController::class, 'search'])->middleware(['auth:sanctum'])->name('projects.search');
 Route::post('projects/{project}/pin', [ProjectsController::class, 'pin'])->middleware(['auth:sanctum'])->name('projects.pin');
 Route::delete('projects/{project}/pin', [ProjectsController::class, 'unpin'])->middleware(['auth:sanctum'])->name('projects.unpin');
