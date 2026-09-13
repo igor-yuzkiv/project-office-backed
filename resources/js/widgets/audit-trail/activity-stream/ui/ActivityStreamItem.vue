@@ -33,7 +33,9 @@ const description = computed(() => {
     return text && text !== props.record.subject?.name ? text : null
 })
 
-const titleSegments = computed(() => splitTitleByKey(props.record.title, props.record.subject?.key ?? null))
+const titleSegments = computed(() =>
+    splitTitleByKey(props.record.title, props.record.subject?.key ?? null, props.record.subject?.name ?? null)
+)
 
 /** The subject's name is already the title's second half in some events; then it is not repeated. */
 const subjectName = computed(() => {

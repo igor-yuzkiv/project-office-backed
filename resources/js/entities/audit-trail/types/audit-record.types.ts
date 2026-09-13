@@ -13,7 +13,7 @@ export type AuditRecordSubjectType = KnownAuditRecordSubjectType | (string & {})
 export type AuditRecordSubjectDto = {
     type: AuditRecordSubjectType
     id: string
-    /** Null for a subject without a key of its own, e.g. a project. */
+    /** A project's key is its prefix; null once the subject is gone. */
     key: string | null
     /** Null once the subject is gone. */
     name: string | null

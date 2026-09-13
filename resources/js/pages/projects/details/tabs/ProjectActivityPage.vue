@@ -42,7 +42,7 @@ const segment = ref<ActivitySegment>('all')
 usePersistedListState(
     { filters: filterSidebar.filtersSnapshot, segment },
     {
-        key: 'project-activity',
+        key: `project-activity:${projectId}`,
         validate: (data) => SEGMENTS.some((s) => s.value === data.segment),
     }
 )

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 class GetLastActivityPerProjectQuery
 {
     /**
-     * Finds the newest audit record of each project in one query, with its author loaded.
+     * Finds the newest audit record of each project in one grouped query, plus one for their authors.
      *
      * @param  array<string>  $projectIds
      * @return Collection<string, AuditRecordModel> keyed by project id; projects without events are absent
@@ -35,7 +35,7 @@ class GetLastActivityPerProjectQuery
     }
 
     /**
-     * Sets `last_activity` on every given project from one query: the newest audit record or null.
+     * Sets `last_activity` on every given project without a query per row: the newest audit record or null.
      *
      * @param  iterable<ProjectModel>  $projects
      */

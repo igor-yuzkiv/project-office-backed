@@ -29,3 +29,11 @@ describe('splitTitleByKey', () => {
         expect(splitTitleByKey('Project created', 'MTM-1')).toEqual([{ text: 'Project created', isKey: false }])
     })
 })
+
+it('falls back to the name in guillemets when the title carries no key', () => {
+    expect(splitTitleByKey('Igor created list «Payout export»', 'HBR-TL-1', 'Payout export')).toEqual([
+        { text: 'Igor created list «', isKey: false },
+        { text: 'Payout export', isKey: true },
+        { text: '»', isKey: false },
+    ])
+})
