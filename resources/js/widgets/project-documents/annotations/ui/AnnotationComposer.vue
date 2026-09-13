@@ -41,9 +41,10 @@ onMounted(focus)
 </script>
 
 <template>
-    <div class="p-4 border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 shrink-0 border-t">
+    <div class="py-3 border-line bg-page shrink-0 border-t">
         <!-- The actions live inside the field, so the bar stays one object rather than a form. -->
-        <div class="max-w-5xl relative mx-auto w-full">
+        <!-- The same column as the document, so the field sits under the text it comments on. -->
+        <div class="page-container !py-0 relative max-w-[960px]">
             <Textarea
                 ref="input"
                 v-model="draft"

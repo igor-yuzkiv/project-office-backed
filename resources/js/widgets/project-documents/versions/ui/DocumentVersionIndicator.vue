@@ -8,12 +8,12 @@ defineProps<{ version: IProjectDocumentVersion | null }>()
 </script>
 
 <template>
-    <p v-if="version" class="gap-1 text-xs text-surface-500 flex items-center">
+    <p v-if="version" class="gap-1 type-meta flex items-center">
         v{{ version.version_number }}
         <Icon
             v-if="version.is_primary"
             icon="heroicons:bookmark-solid"
-            class="text-primary-500 text-sm"
+            class="text-accent text-sm"
             aria-label="Primary version"
         />
         <!-- Named even when it has no name: the placeholder is what the version list shows too,

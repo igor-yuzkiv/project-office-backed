@@ -2,9 +2,7 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useEventListener } from '@vueuse/core'
-import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
-import SelectButton from 'primevue/selectbutton'
 import type { IAnnotation } from '@/entities/annotation'
 import { useProjectDocumentVersionAnnotationsQuery, useVersionMutationInvalidation } from '@/entities/project-document'
 import type {
@@ -210,7 +208,8 @@ async function updateVersion(input: IUpdateProjectDocumentVersionInput) {
         await versionActions.update(version, input)
         editingVersion.value = null
     } catch (error) {
-        if (error instanceof ApiError && error.isValidationError) versionValidationErrors.value = error.validationErrors ?? {}
+        if (error instanceof ApiError && error.isValidationError)
+            versionValidationErrors.value = error.validationErrors ?? {}
         else reportError(error, 'The version could not be saved.')
     }
 }
@@ -323,7 +322,7 @@ onBeforeUnmount(() => {
         <!-- min-w-0: without it this column is as wide as its widest child, and one unbreakable
              code block in the document would push the sidebar off the screen. -->
         <div class="min-h-0 min-w-0 flex flex-1 flex-col">
-            <DocumentCanvas ref="canvasRef">
+            <DocumentCanvas ref="canvasRef" :fill="isEditing">
                 <template #start>
                     <div class="gap-2 flex flex-wrap items-center">
                         <DocumentVersionIndicator :version="openVersion" />
@@ -333,8 +332,8 @@ onBeforeUnmount(() => {
                         <div class="gap-2 ml-auto flex flex-wrap items-center justify-end">
                             <template v-if="isEditing">
                                 <span
-                                    class="text-xs"
-                                    :class="autosave.status.value === 'error' ? 'text-red-500' : 'text-surface-500'"
+                                    class="type-meta-3"
+                                    :class="{ 'text-red-500': autosave.status.value === 'error' }"
                                 >
                                     {{ saveStatusLabel }}
                                 </span>
@@ -348,26 +347,30 @@ onBeforeUnmount(() => {
                                 />
                             </template>
 
-                            <SelectButton
-                                v-model="mode"
-                                :options="MODE_OPTIONS"
-                                option-label="label"
-                                option-value="value"
-                                :allow-empty="false"
-                                size="small"
+                            <div
+                                class="gap-0.5 text-ink-2 flex items-center text-[13px]"
+                                role="group"
                                 aria-label="Mode"
-                            />
+                                data-testid="document-mode-switch"
+                            >
+                                <button
+                                    v-for="option in MODE_OPTIONS"
+                                    :key="option.value"
+                                    type="button"
+                                    class="px-2 py-0.5 hover:text-ink cursor-pointer rounded-[5px]"
+                                    :class="{ 'bg-hover text-ink': mode === option.value }"
+                                    :aria-pressed="mode === option.value"
+                                    @click="mode = option.value"
+                                >
+                                    {{ option.label }}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div
-                        v-if="mode === 'annotate' && isReanchoring"
-                        class="gap-3 rounded-lg p-3 bg-primary-50 dark:bg-primary-950 flex items-center justify-between"
-                    >
-                        <span class="text-sm text-surface-700 dark:text-surface-200">
-                            Select the block this annotation belongs to.
-                        </span>
-                        <Button label="Cancel" severity="secondary" size="small" @click="cancelReanchoring" />
+                    <div v-if="mode === 'annotate' && isReanchoring" class="gap-3 flex items-center justify-between">
+                        <span class="type-meta">Select the block this annotation belongs to.</span>
+                        <Button label="Cancel" severity="secondary" size="small" text @click="cancelReanchoring" />
                     </div>
                 </template>
 
@@ -383,7 +386,6 @@ onBeforeUnmount(() => {
                     :selected-block="selectedBlock"
                     :content="autosave.value.value"
                     :blocks-pickable="mode === 'annotate'"
-                    show-catalog
                     @blocks-changed="handleBlocksChanged"
                     @pick-block="pickBlock"
                 />
@@ -401,7 +403,7 @@ onBeforeUnmount(() => {
             />
         </div>
 
-        <SideTabs :panel="sidebar" side="right" width="24rem">
+        <SideTabs :panel="sidebar" side="right" width="288px">
             <SideTab value="versions" icon="heroicons:clock" label="Versions">
                 <DocumentVersionPanel
                     :versions="versions"
@@ -425,12 +427,8 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-else class="gap-3 p-10 flex flex-1 flex-col items-center justify-center text-center">
-        <Icon icon="heroicons:document" class="text-surface-300 text-4xl" />
-        <p class="text-surface-700 dark:text-surface-200 text-sm font-medium">This document has no versions yet</p>
-        <p class="text-surface-500 max-w-sm text-xs">
-            It can stay a section that only holds nested documents, or you can write a first version of it.
-        </p>
-        <Button label="Create a version" size="small" outlined @click="openCreateDialog(true)" />
+        <p class="type-meta max-w-sm">This document has no versions yet.</p>
+        <Button label="Create a version" size="small" severity="secondary" @click="openCreateDialog(true)" />
     </div>
 
     <DocumentVersionUpdateDialog

@@ -3,7 +3,7 @@ import { expect, type Page } from '@playwright/test'
 type Mode = 'View' | 'Edit' | 'Annotate'
 
 export function modeSwitch(page: Page) {
-    return page.locator('.p-selectbutton')
+    return page.getByTestId('document-mode-switch')
 }
 
 export async function switchMode(page: Page, mode: Mode) {

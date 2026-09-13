@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onScopeDispose, ref, shallowRef, watch } from 'vue'
-import { ContentCard } from '@/shared/components/content-card'
-import { MarkdownCatalog, MarkdownPreview } from '@/shared/components/md-editor'
+import { MarkdownPreview } from '@/shared/components/md-editor'
 import { moveClass } from '@/shared/utils/dom-class.util'
 import type { DomBlock, DomBlocks } from '@/shared/utils/markdown-anchor.dom.util'
 import { useDocumentBlocks } from '../composables/use.document-blocks'
@@ -15,7 +14,6 @@ const BLOCK_CLASS = {
 // block is then used for belongs to whoever hosts it.
 const props = defineProps<{
     content: string
-    showCatalog?: boolean
     blocksPickable?: boolean
     selectedBlock?: DomBlock | null
 }>()
@@ -77,48 +75,31 @@ onScopeDispose(() => {
     setHovered(null)
     moveClass(BLOCK_CLASS.selected, props.selectedBlock?.element ?? null, null)
 })
-
-const catalogExpanded = ref(false)
 </script>
 
 <template>
-    <!-- The catalog is its own card above the document, folded until asked for: the document is
-         what the reader came for, and a long catalog would push it below the fold. -->
-    <ContentCard
-        v-if="showCatalog && previewRef?.catalog.hasHeadings"
-        v-model:expanded="catalogExpanded"
-        density="compact"
-        expandable
-    >
-        <template #collapsed>
-            <p class="text-surface-500 text-xs font-medium uppercase tracking-wide">Table of contents</p>
-        </template>
-
-        <p class="mb-3 text-surface-500 text-xs font-medium uppercase tracking-wide">Table of contents</p>
-        <MarkdownCatalog class="text-sm" :catalog="previewRef.catalog" />
-    </ContentCard>
-
-    <ContentCard @mouseover="handleMouseOver" @mouseleave="handleMouseLeave" @click="handleClick">
+    <!-- Prose straight on the page, no sheet of its own: the canvas is the page. -->
+    <div class="type-prose" @mouseover="handleMouseOver" @mouseleave="handleMouseLeave" @click="handleClick">
         <MarkdownPreview ref="previewRef" :model-value="content" @html-changed="refresh" />
-    </ContentCard>
+    </div>
 </template>
 
 <!-- Not scoped: the markdown is rendered through v-html, so scoped attributes never reach it. -->
 <style>
 .md-editor-preview .document-block-hovered {
-    background-color: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
     border-radius: 0.25rem;
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 10%, transparent);
     cursor: pointer;
 }
 
 /* Deliberately a different hue from the hover tint: one says "you can pick this", the
    other says "this is what the host is about to write to". */
 .md-editor-preview .document-block-selected {
-    background-color: color-mix(in srgb, #f59e0b 18%, transparent);
+    background-color: color-mix(in srgb, var(--p-amber-500) 18%, transparent);
     border-radius: 0.25rem;
-    box-shadow: 0 0 0 4px color-mix(in srgb, #f59e0b 18%, transparent);
-    outline: 2px solid #f59e0b;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--p-amber-500) 18%, transparent);
+    outline: 2px solid var(--p-amber-500);
     outline-offset: 2px;
 }
 </style>

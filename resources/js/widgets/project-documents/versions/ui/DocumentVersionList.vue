@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 import type { IProjectDocumentVersion } from '@/entities/project-document/types'
+import { formatDate } from '@/shared/utils/date.util'
 
 // The rows and their actions, with no surface of its own: the host puts this in a side panel.
 defineProps<{
@@ -42,34 +43,47 @@ function openRowMenu(event: MouseEvent, version: IProjectDocumentVersion) {
     menuVersion.value = version
     rowMenu.value?.toggle(event)
 }
+
+function subline(version: IProjectDocumentVersion): string {
+    const date = formatDate(version.created_at, 'MMM d') ?? ''
+
+    return version.author ? `${date} · ${version.author.name}` : date
+}
 </script>
 
 <template>
-    <div class="min-h-0 text-sm flex flex-1 flex-col">
+    <div class="min-h-0 flex flex-1 flex-col text-[13px]">
         <Menu ref="rowMenu" :model="menuItems" popup />
 
-        <ul class="min-h-0 flex-1 overflow-y-auto">
+        <ul class="p-2 min-h-0 flex-1 overflow-y-auto">
             <li v-for="version in versions" :key="version.id">
                 <div
-                    class="gap-2 rounded px-2 py-1.5 hover:bg-surface-100 dark:hover:bg-surface-800 flex items-center"
-                    :class="{ 'bg-surface-100 dark:bg-surface-800': version.id === openVersionId }"
+                    class="gap-x-2.5 pr-1 pl-2 hover:bg-hover text-ink rounded-md grid grid-cols-[8px_1fr_auto] items-center"
+                    :class="{ 'bg-hover': version.id === openVersionId }"
                 >
+                    <!-- The dot column is always there so labels line up; only the primary
+                         version fills it. -->
+                    <span
+                        class="size-2 rounded-full"
+                        :class="{ 'bg-accent': version.is_primary }"
+                        :aria-label="version.is_primary ? 'Primary version' : undefined"
+                        :role="version.is_primary ? 'img' : undefined"
+                    />
+
                     <button
                         type="button"
-                        class="gap-2 min-w-0 flex flex-1 items-center text-left"
+                        class="py-1.5 min-w-0 cursor-pointer text-left"
+                        :class="{ 'font-medium': version.id === openVersionId }"
                         @click="emit('open', version)"
                     >
-                        <span class="text-surface-500 w-8 text-xs shrink-0">v{{ version.version_number }}</span>
-                        <span class="min-w-0 flex-1 truncate">{{ version.label ?? 'Untitled' }}</span>
-                        <Icon
-                            v-if="version.is_primary"
-                            icon="heroicons:bookmark-solid"
-                            class="text-primary-500 text-sm shrink-0"
-                            aria-label="Primary version"
-                        />
+                        <span class="block truncate leading-[1.35]">
+                            v{{ version.version_number }} — {{ version.label ?? 'Untitled' }}
+                        </span>
+                        <small class="type-meta-3 mt-0.5 font-normal block">{{ subline(version) }}</small>
                     </button>
 
-                    <Button
+                    <div class="flex items-center">
+                        <Button
                             v-if="!version.is_primary"
                             size="small"
                             text
@@ -93,24 +107,30 @@ function openRowMenu(event: MouseEvent, version: IProjectDocumentVersion) {
                         >
                             <template #icon><Icon icon="heroicons:ellipsis-horizontal" class="text-sm" /></template>
                         </Button>
+                    </div>
                 </div>
             </li>
         </ul>
 
-        <div class="gap-2 mt-1 pt-2 border-surface-200 dark:border-surface-700 flex flex-wrap border-t">
-            <Button label="New version" size="small" text :disabled="isBusy" @click="emit('create')">
-                <template #icon><Icon icon="heroicons:plus" class="mr-1 text-sm" /></template>
-            </Button>
+        <div class="gap-1 p-2 border-line flex shrink-0 flex-wrap border-t">
+            <button
+                type="button"
+                class="type-meta px-2 py-1.5 hover:bg-hover hover:text-ink rounded-md cursor-pointer disabled:cursor-default disabled:opacity-50"
+                :disabled="isBusy"
+                @click="emit('create')"
+            >
+                New version
+            </button>
 
-            <Button
+            <button
                 v-if="hasPinnedVersion"
-                label="Use latest as primary"
-                size="small"
-                text
-                severity="secondary"
+                type="button"
+                class="type-meta px-2 py-1.5 hover:bg-hover hover:text-ink rounded-md cursor-pointer disabled:cursor-default disabled:opacity-50"
                 :disabled="isBusy"
                 @click="emit('use-latest-as-primary')"
-            />
+            >
+                Use latest as primary
+            </button>
         </div>
     </div>
 </template>
