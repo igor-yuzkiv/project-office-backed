@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { RouterLink, type RouteLocationRaw } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
+import { Icon } from '@iconify/vue'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import { PROJECT_COUNT_VIEWS, projectTaskCounts } from '@/entities/project/lib'
 import type { PaginationMeta } from '@/shared/types'
@@ -31,7 +32,7 @@ const emit = defineEmits<{
 const columns: EntityTableColumnDef[] = [
     { field: 'name', header: 'Project', style: 'min-width: 16rem' },
     { field: 'status', header: 'Status', style: 'width: 8rem' },
-    { field: 'updated_at', header: 'Updated', style: 'min-width: 10rem' },
+    { field: 'last_activity', header: 'Last activity', style: 'min-width: 14rem' },
     { field: 'open', header: 'Open', style: 'width: 5rem' },
     { field: 'in_progress', header: 'In progress', style: 'width: 7rem' },
     { field: 'to_test', header: 'To test', style: 'width: 5.5rem' },
@@ -90,15 +91,31 @@ function countLabel(total: number | undefined) {
             <ProjectStatusTag :status="row.status" class="w-fit" />
         </template>
 
-        <template #column:updated_at="{ row }">
-            <div class="gap-1.5 text-ink-2 flex items-center whitespace-nowrap">
+        <template #column:last_activity="{ row }">
+            <div v-if="row.last_activity" class="gap-1.5 text-ink-2 min-w-0 flex items-center whitespace-nowrap">
+                <UserAvatar
+                    v-if="row.last_activity.actor"
+                    :initials="row.last_activity.actor.initials"
+                    :avatar-url="row.last_activity.actor.avatar_url"
+                    size="small"
+                    class="shrink-0"
+                />
+                <span v-else class="bg-hover text-ink-3 h-6 w-6 grid shrink-0 place-items-center rounded-full">
+                    <Icon icon="tabler:bolt" class="text-[12px]" />
+                </span>
+                <span class="min-w-0 truncate" :title="row.last_activity.title">{{ row.last_activity.title }}</span>
+                <span class="text-ink-3 shrink-0" :title="row.last_activity.created_at">
+                    {{ formatRelativeTime(row.last_activity.created_at) }}
+                </span>
+            </div>
+            <div v-else class="gap-1.5 text-ink-2 flex items-center whitespace-nowrap">
                 <UserAvatar
                     v-if="row.updated_by"
                     :initials="row.updated_by.initials"
                     :avatar-url="row.updated_by.avatar_url"
                     size="small"
                 />
-                <span :title="row.updated_at">{{ formatRelativeTime(row.updated_at) }}</span>
+                <span :title="row.updated_at">Updated {{ formatRelativeTime(row.updated_at) }}</span>
             </div>
         </template>
 

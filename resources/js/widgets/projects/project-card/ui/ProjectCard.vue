@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import Menu from 'primevue/menu'
+import { Icon } from '@iconify/vue'
 import type { ProjectOverviewDto } from '@/entities/project/types'
 import { PROJECT_COUNT_VIEWS, projectTaskCounts } from '@/entities/project/lib'
 import { ProjectIcon } from '@/widgets/projects/project-icon'
@@ -81,7 +82,27 @@ function openProject() {
             <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click.stop="openMenu" />
         </div>
 
-        <div v-if="project.updated_by" class="gap-1.5 type-meta min-w-0 flex items-center">
+        <div v-if="project.last_activity" class="gap-1.5 type-meta min-w-0 flex items-center">
+            <UserAvatar
+                v-if="project.last_activity.actor"
+                :initials="project.last_activity.actor.initials"
+                :avatar-url="project.last_activity.actor.avatar_url"
+                size="xsmall"
+                class="shrink-0"
+            />
+            <span v-else class="bg-hover text-ink-3 h-5 w-5 grid shrink-0 place-items-center rounded-full">
+                <Icon icon="tabler:bolt" class="text-[11px]" />
+            </span>
+            <span class="truncate" :title="project.last_activity.title">{{ project.last_activity.title }}</span>
+            <time
+                class="text-ink-3 ml-auto shrink-0"
+                :datetime="project.last_activity.created_at"
+                :title="project.last_activity.created_at"
+            >
+                {{ formatRelativeTime(project.last_activity.created_at) }}
+            </time>
+        </div>
+        <div v-else-if="project.updated_by" class="gap-1.5 type-meta min-w-0 flex items-center">
             <UserAvatar
                 :initials="project.updated_by.initials"
                 :avatar-url="project.updated_by.avatar_url"

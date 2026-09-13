@@ -1,10 +1,13 @@
 import type { TaskOverviewDto } from '@/entities/task/types'
 import type { ITaskList } from '@/entities/task-list/types'
 
-/**
- * `key` mirrors a task view from the backend registry and stays a plain string: a view added there
- * must render with a fallback icon, not turn into a compile error here.
- */
+export type DashboardDto = {
+    recent_tasks: TaskOverviewDto[]
+    recent_task_lists: ITaskList[]
+}
+
+// The endpoint no longer returns a summary. These shapes only keep the unused
+// widgets/home-dashboard compiling until they are deleted; remove them together.
 export type DashboardTaskViewDto = {
     key: string
     label: string
@@ -17,13 +20,6 @@ export type DashboardSummaryDto = {
     task_lists_count: number
 }
 
-/** The endpoint always counts the tasks of a listed task list. */
 export type DashboardTaskListDto = ITaskList & {
     tasks_count: number
-}
-
-export type DashboardDto = {
-    summary: DashboardSummaryDto
-    recent_tasks: TaskOverviewDto[]
-    recent_task_lists: DashboardTaskListDto[]
 }

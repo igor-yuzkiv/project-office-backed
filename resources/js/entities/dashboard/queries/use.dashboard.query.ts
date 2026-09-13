@@ -9,10 +9,8 @@ export function useDashboardQuery() {
         queryFn: fetchDashboardRequest,
     })
 
-    const dashboard = computed(() => data.value?.data)
-    const summary = computed(() => dashboard.value?.summary)
-    const recentTasks = computed(() => dashboard.value?.recent_tasks ?? [])
-    const recentTaskLists = computed(() => dashboard.value?.recent_task_lists ?? [])
+    const recentTasks = computed(() => data.value?.data.recent_tasks ?? [])
+    const recentTaskLists = computed(() => data.value?.data.recent_task_lists ?? [])
 
-    return { dashboard, summary, recentTasks, recentTaskLists, isPending, isError, isFetching, refetch }
+    return { recentTasks, recentTaskLists, isPending, isError, isFetching, refetch }
 }

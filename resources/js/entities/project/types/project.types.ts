@@ -30,6 +30,14 @@ export interface IProject extends IEntity {
     // Present only on WebApi endpoints; CliApi responses leave them out.
     is_pinned?: boolean
     task_status_counts?: TaskStatusCounts
+    last_activity?: ProjectLastActivityDto | null
+}
+
+/** The newest audit event of a project; `actor` is null when the event had no user behind it. */
+export type ProjectLastActivityDto = {
+    title: string
+    actor: UserOverviewDto | null
+    created_at: string
 }
 
 export type ProjectOverviewDto = Pick<
@@ -52,4 +60,5 @@ export type ProjectOverviewDto = Pick<
     | 'task_lists'
     | 'is_pinned'
     | 'task_status_counts'
+    | 'last_activity'
 >
