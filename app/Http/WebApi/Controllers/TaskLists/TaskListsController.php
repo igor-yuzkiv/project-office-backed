@@ -7,6 +7,7 @@ use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListCommand;
 use App\Domains\TaskList\Actions\DeleteTaskList\DeleteTaskListHandler;
 use App\Domains\TaskList\Actions\UpdateTaskList\UpdateTaskListHandler;
 use App\Domains\TaskList\Models\TaskListModel;
+use App\Domains\TaskList\Queries\CountTasksPerStatusQuery;
 use App\Http\Shared\Resources\TaskLists\TaskListResource;
 use App\Http\WebApi\Controllers\ResourceController;
 use App\Http\WebApi\Requests\Shared\SearchRequest;
@@ -22,6 +23,7 @@ class TaskListsController extends ResourceController
         private readonly CreateTaskListHandler $createHandler,
         private readonly UpdateTaskListHandler $updateHandler,
         private readonly DeleteTaskListHandler $deleteHandler,
+        private readonly CountTasksPerStatusQuery $countTasksPerStatus,
     ) {}
 
     protected function getAllowedIncludes(): array
@@ -39,6 +41,8 @@ class TaskListsController extends ResourceController
         $taskLists = TaskListModel::with($includes)
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
+
+        $this->countTasksPerStatus->attach(collect($taskLists->items()));
 
         return TaskListResource::collection($taskLists);
     }
@@ -58,12 +62,15 @@ class TaskListsController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
+        $this->countTasksPerStatus->attach(collect($taskLists->items()));
+
         return TaskListResource::collection($taskLists);
     }
 
     public function show(TaskListModel $taskList): TaskListResource
     {
         $taskList->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'project', 'tags'], requested: $this->parseRequestedIncludes()));
+        $this->countTasksPerStatus->attach(collect([$taskList]));
 
         return new TaskListResource($taskList);
     }
@@ -72,6 +79,7 @@ class TaskListsController extends ResourceController
     {
         $taskList = $this->createHandler->handle($request->toCommand());
         $taskList->load(['createdBy', 'updatedBy', 'tags']);
+        $this->countTasksPerStatus->attach(collect([$taskList]));
 
         return (new TaskListResource($taskList))
             ->response()
@@ -82,6 +90,7 @@ class TaskListsController extends ResourceController
     {
         $taskList = $this->updateHandler->handle($request->toCommand($taskList));
         $taskList->load(['createdBy', 'updatedBy', 'tags']);
+        $this->countTasksPerStatus->attach(collect([$taskList]));
 
         return new TaskListResource($taskList);
     }

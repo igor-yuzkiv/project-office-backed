@@ -24,6 +24,8 @@ class TaskListResource extends JsonResource
             'status'          => $this->status->value,
             'description'     => $this->description,
 
+            'task_status_counts' => $this->whenHas('task_status_counts'),
+
             'tags'        => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'tasks'       => $this->whenLoaded('tasks', fn () => TaskOverviewResource::collection($this->tasks)),
             'tasks_count' => $this->whenCounted('tasks', fn () => $this->tasks_count),

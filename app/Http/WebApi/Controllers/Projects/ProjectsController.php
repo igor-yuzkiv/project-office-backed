@@ -12,6 +12,7 @@ use App\Domains\Project\Actions\UnpinProject\UnpinProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Project\Queries\CountTasksPerStatusQuery;
+use App\Domains\TaskList\Queries\CountTasksPerStatusQuery as CountTaskListTasksPerStatusQuery;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
 use App\Http\Shared\Resources\Projects\ProjectResource;
 use App\Http\WebApi\Controllers\ResourceController;
@@ -34,6 +35,7 @@ class ProjectsController extends ResourceController
         private readonly PinProjectHandler $pinHandler,
         private readonly UnpinProjectHandler $unpinHandler,
         private readonly CountTasksPerStatusQuery $countTasksPerStatus,
+        private readonly CountTaskListTasksPerStatusQuery $countTaskListTasksPerStatus,
     ) {}
 
     /** The project card counts what a project holds, so every list response carries these. */
@@ -43,6 +45,20 @@ class ProjectsController extends ResourceController
     private function pinnedByCurrentUser(): array
     {
         return ['pinnedBy as is_pinned' => fn (Builder $q) => $q->where('user_id', auth()->id())];
+    }
+
+    /**
+     * Nested task lists carry their status counts; the lists of the whole page are counted at once.
+     *
+     * @param  iterable<ProjectModel>  $projects
+     */
+    private function attachTaskListStatusCounts(iterable $projects): void
+    {
+        $taskLists = collect($projects)
+            ->filter(fn (ProjectModel $project) => $project->relationLoaded('taskLists'))
+            ->flatMap(fn (ProjectModel $project) => $project->taskLists);
+
+        $this->countTaskListTasksPerStatus->attach($taskLists);
     }
 
     protected function getAllowedIncludes(): array
@@ -62,6 +78,8 @@ class ProjectsController extends ResourceController
             ->withExists($this->pinnedByCurrentUser())
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
+
+        $this->attachTaskListStatusCounts($projects->items());
 
         return ProjectOverviewResource::collection($projects);
     }
@@ -85,6 +103,8 @@ class ProjectsController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
+        $this->attachTaskListStatusCounts($projects->items());
+
         return ProjectOverviewResource::collection($projects);
     }
 
@@ -105,6 +125,7 @@ class ProjectsController extends ResourceController
             $project->setAttribute('is_pinned', true);
             $project->setAttribute('task_status_counts', $counts[$project->id]);
         }
+        $this->attachTaskListStatusCounts($projects);
 
         return ProjectOverviewResource::collection($projects);
     }
@@ -113,6 +134,7 @@ class ProjectsController extends ResourceController
     {
         $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'archivedBy', 'tags'], requested: $this->parseRequestedIncludes()));
         $project->loadExists($this->pinnedByCurrentUser());
+        $this->attachTaskListStatusCounts([$project]);
 
         return new ProjectResource($project);
     }
