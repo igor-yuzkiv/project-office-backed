@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { DefaultLayout, AuthLayout } from '@/app/shell'
 import type { AppLayoutName } from '@/app/shell'
 import Toast from 'primevue/toast'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
+import type { ToastMessage } from '@/shared/composables'
 
 const route = useRoute()
 const themeStore = useAppThemeStore()
@@ -17,6 +18,15 @@ onMounted(() => {
 const AppLayoutComponentMap: Record<AppLayoutName, unknown> = {
     default: DefaultLayout,
     auth: AuthLayout,
+}
+
+const toastDotClass: Record<string, string> = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    warn: 'bg-amber-500',
+    info: 'bg-accent',
+    secondary: 'bg-ink-3',
+    contrast: 'bg-ink-3',
 }
 
 const layoutComponent = computed(() => {
@@ -36,8 +46,25 @@ const layoutComponent = computed(() => {
             </transition>
         </router-view>
     </component>
-    <Toast />
+    <!-- One dark line bottom-right: `bg-ink`/`text-page` invert with the theme on their own. -->
+    <Toast
+        position="bottom-right"
+        :pt="{
+            root: { class: 'w-auto max-w-md' },
+            message: { class: 'bg-ink text-page border-ink rounded-lg shadow-lg' },
+            messageContent: { class: 'gap-2 px-3.5 py-2.5 items-center' },
+            closeButton: { class: 'text-page hover:bg-page/15 shrink-0' },
+        }"
+    >
+        <template #message="{ message }: { message: ToastMessage }">
+            <span class="gap-2.5 min-w-0 flex items-center text-[13px]">
+                <i class="h-[7px] w-[7px] shrink-0 rounded-full" :class="toastDotClass[message.severity ?? 'info']" />
+                <span class="truncate">{{ message.detail ?? message.summary }}</span>
+                <RouterLink v-if="message.link" :to="message.link.to" class="shrink-0 underline underline-offset-2">
+                    {{ message.link.label }}
+                </RouterLink>
+            </span>
+        </template>
+    </Toast>
     <ConfirmDialog />
 </template>
-
-<style scoped></style>

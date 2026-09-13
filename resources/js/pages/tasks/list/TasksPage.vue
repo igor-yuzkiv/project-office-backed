@@ -10,8 +10,9 @@ import { FilterSidebar, FilterButton } from '@/shared/filters'
 import { SortButton, SortDialog } from '@/shared/sort'
 import { TaskViewSelect } from '@/widgets/tasks/view-switcher'
 import { SearchInput } from '@/shared/components/input'
+import Button from 'primevue/button'
 import { IconButton } from '@/shared/components/button'
-import { useHeaderActions } from '@/app/shell'
+import { PageHead } from '@/shared/components/page-head'
 import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-dialog'
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskBulkActionsBar } from '@/widgets/tasks/bulk-actions'
@@ -71,13 +72,16 @@ function openRowMenu(event: MouseEvent, task: TaskOverviewDto) {
 
 // The selection only ever covers the rows currently on screen, so anything that changes them drops it.
 watch(search.searchParams, clearSelection)
-
-useHeaderActions([{ key: 'add-task', title: 'New Task', action: () => taskCreateDialog.open(), is_primary: true }])
 </script>
 
 <template>
     <div class="flex flex-1 flex-col overflow-hidden">
         <div class="gap-2 p-3 flex flex-1 flex-col overflow-hidden">
+            <PageHead title="Tasks" class="px-1">
+                <template #actions>
+                    <Button label="New task" icon="pi pi-plus" size="small" @click="taskCreateDialog.open()" />
+                </template>
+            </PageHead>
             <div class="gap-2 p-1 flex items-center justify-between">
                 <SearchInput
                     v-model="search.searchInput.value"
