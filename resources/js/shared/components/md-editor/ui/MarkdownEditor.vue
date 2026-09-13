@@ -12,11 +12,13 @@ const props = withDefaults(
         /** Start in Split (source next to the rendered text) instead of Write. */
         preview?: boolean
         toolbars?: ToolbarNames[]
+        /** A host that shows the rendered text elsewhere (the document sheet) turns the segment off. */
+        modeSegment?: boolean
         /** CSS length. The editor grows with its content from here; `height: 100%` in `style` still bounds it. */
         minHeight?: string
         handleImageUpload?: (files: File[], callback: (urls: string[]) => void) => void
     }>(),
-    { preview: false, toolbars: () => DEFAULT_TOOLBARS, minHeight: '300px' }
+    { preview: false, toolbars: () => DEFAULT_TOOLBARS, minHeight: '300px', modeSegment: true }
 )
 
 const emit = defineEmits<{
@@ -35,7 +37,9 @@ const editorRef = ref<ExposeParam>()
 // first (and only) `defToolbars` node, which md-editor-v3 addresses by index, and always sits
 // at the right end of whatever toolbar the host passed.
 const MODE_SEGMENT = 0
-const toolbars = computed<ToolbarNames[]>(() => [...props.toolbars, MODE_SEGMENT])
+const toolbars = computed<ToolbarNames[]>(() =>
+    props.modeSegment ? [...props.toolbars, MODE_SEGMENT] : props.toolbars
+)
 
 const mode = ref<MarkdownEditorMode>(props.preview ? 'split' : 'write')
 
@@ -66,9 +70,12 @@ function applyMode(next: MarkdownEditorMode) {
     if (!editor) return
     if (next === 'preview') {
         editor.togglePreviewOnly(true)
-    } else {
-        editor.togglePreview(next === 'split')
+        return
     }
+    // Leaving preview-only has to be said explicitly: togglePreview() alone hides the source pane
+    // flag internally but never emits previewOnly=false, so the segment would stay on Preview.
+    if (sourceHidden.value) editor.togglePreviewOnly(false)
+    editor.togglePreview(next === 'split')
 }
 
 function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
@@ -92,7 +99,7 @@ function handleUploadImages(files: File[], callback: (urls: string[]) => void) {
         @on-upload-img="handleUploadImages"
         @on-save="emit('save')"
     >
-        <template #defToolbars>
+        <template v-if="modeSegment" #defToolbars>
             <MarkdownModeSegment :model-value="mode" @update:model-value="applyMode" />
         </template>
     </MdEditor>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ProjectDocumentAttachmentRoles, uploadProjectDocumentAttachmentRequest } from '@/entities/project-document'
-import { MarkdownEditor } from '@/shared/components/md-editor'
+import { DEFAULT_TOOLBARS, MarkdownEditor } from '@/shared/components/md-editor'
+
+// The page already switches View / Edit / Annotate, so the editor's own fullscreen would only double it.
+const TOOLBARS = DEFAULT_TOOLBARS.filter((name) => name !== 'fullscreen' && name !== 'pageFullscreen')
 
 const props = defineProps<{ documentId: string }>()
 
@@ -26,6 +29,8 @@ async function handleImageUpload(files: File[], callback: (urls: string[]) => vo
         v-model="content"
         class="min-h-0 flex-1"
         min-height="0"
+        :toolbars="TOOLBARS"
+        :mode-segment="false"
         :handle-image-upload="handleImageUpload"
         @save="emit('save')"
     />

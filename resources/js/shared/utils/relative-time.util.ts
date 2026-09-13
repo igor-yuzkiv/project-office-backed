@@ -13,7 +13,7 @@ export function formatRelativeTime(value: string): string {
     const date = new Date(value)
 
     if (Number.isNaN(date.getTime())) {
-        return 'Unknown'
+        return 'unknown'
     }
 
     const elapsed = Date.now() - date.getTime()
@@ -31,7 +31,7 @@ export function formatRelativeTime(value: string): string {
     }
 
     if (isYesterday(date)) {
-        return 'Yesterday'
+        return 'yesterday'
     }
 
     return formatDistanceToNowStrict(date, { addSuffix: true, unit: 'day' })
