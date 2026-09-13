@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Task\Actions\CliAgentWorkflow\CheckpointTask\CheckpointComment;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -59,4 +60,19 @@ it('does not return comments from other tasks', function () {
     $response->assertOk();
 
     expect($response->json('meta.total'))->toBe(0);
+});
+
+// `kind` is additive: CLI clients that do not know the field keep working, and the ones that do can
+// tell a checkpoint from a comment without parsing the content.
+it('exposes kind on every comment, checkpoint derived from the content prefix', function () {
+    $this->task->comments()->createMany([
+        ['author_id' => UserModel::factory()->create()->id, 'content' => 'Plain comment'],
+        ['author_id' => UserModel::factory()->create()->id, 'content' => CheckpointComment::PREFIX."Subject\n\nBody"],
+    ]);
+
+    $kinds = collect($this->getJson("/api/cli/projects/{$this->project->id}/tasks/{$this->task->id}/comments")->assertOk()->json('data'))
+        ->pluck('kind', 'content');
+
+    expect($kinds['Plain comment'])->toBe('comment')
+        ->and($kinds[CheckpointComment::PREFIX."Subject\n\nBody"])->toBe('checkpoint');
 });

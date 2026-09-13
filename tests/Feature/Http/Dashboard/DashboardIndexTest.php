@@ -5,6 +5,7 @@ use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
 use App\Domains\Task\Services\TaskViewRegistry;
+use App\Domains\Task\ValueObjects\TaskViewCount;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -108,12 +109,13 @@ it('counts filtered tasks without paginating them', function () {
     dashboardTask(['status' => TaskStatus::Closed->value]);
     dashboardTask(['status' => TaskStatus::Backlog->value]);
 
-    $counts = collect(app(CountTasksPerTaskViewQuery::class)->handle())->keyBy('key');
+    $counts = collect(app(CountTasksPerTaskViewQuery::class)->handle())
+        ->mapWithKeys(fn (TaskViewCount $counted): array => [$counted->view->key => $counted->count]);
 
-    expect($counts['all']['count'])->toBe(2)
-        ->and($counts['all_closed']['count'])->toBe(1)
-        ->and($counts['all_backlogged']['count'])->toBe(1)
-        ->and($counts['all_in_progress']['count'])->toBe(0);
+    expect($counts['all'])->toBe(2)
+        ->and($counts['all_closed'])->toBe(1)
+        ->and($counts['all_backlogged'])->toBe(1)
+        ->and($counts['all_in_progress'])->toBe(0);
 });
 
 it('returns at most eight recent tasks, newest first, each with its project', function () {

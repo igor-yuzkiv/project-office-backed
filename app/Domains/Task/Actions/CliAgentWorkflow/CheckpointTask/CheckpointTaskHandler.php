@@ -19,7 +19,7 @@ class CheckpointTaskHandler
         $comment = $this->createCommentHandler->handle(new CreateCommentCommand(
             commentable: $command->task,
             author: $command->author,
-            content: '# Checkpoint: '.$command->subject."\n\n".$command->comment,
+            content: CheckpointComment::PREFIX.$command->subject."\n\n".$command->comment,
             recordAudit: false,
         ));
 

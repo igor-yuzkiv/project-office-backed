@@ -5,6 +5,7 @@ namespace App\Http\WebApi\Controllers\Dashboard;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
 use App\Domains\Task\Queries\GetRecentTasksQuery;
+use App\Domains\Task\ValueObjects\TaskViewCount;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\TaskList\Queries\CountTasksPerStatusQuery;
 use App\Domains\TaskList\Queries\GetRecentTaskListsQuery;
@@ -39,7 +40,14 @@ class DashboardController extends ResourceController
         return response()->json([
             'data' => [
                 'summary' => [
-                    'task_views'       => $this->countTasksPerTaskView->handle(),
+                    'task_views' => array_map(
+                        static fn (TaskViewCount $counted): array => [
+                            'key'   => $counted->view->key,
+                            'label' => $counted->view->label,
+                            'count' => $counted->count,
+                        ],
+                        $this->countTasksPerTaskView->handle(),
+                    ),
                     'projects_count'   => ProjectModel::query()->count(),
                     'task_lists_count' => TaskListModel::query()->count(),
                 ],

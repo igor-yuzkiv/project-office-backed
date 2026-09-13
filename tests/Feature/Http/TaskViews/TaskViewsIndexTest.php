@@ -1,5 +1,8 @@
 <?php
 
+use App\Domains\Project\Models\ProjectModel;
+use App\Domains\Task\Enums\TaskStatus;
+use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\Services\TaskViewRegistry;
 use App\Domains\User\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -75,4 +78,19 @@ it('gives an unfiltered view an empty filter list, not null', function () {
     // spreads this value — null would throw there rather than fail here.
     expect($view['key'])->toBe('all')
         ->and($view['filters'])->toBeArray()->toBeEmpty();
+});
+
+it('counts the tasks of every view, independent of any search', function () {
+    $project = ProjectModel::factory()->create();
+    TaskModel::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Open->value]);
+    TaskModel::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Closed->value]);
+    TaskModel::factory()->create(['project_id' => $project->id, 'status' => TaskStatus::Backlog->value]);
+
+    $counts = collect($this->getJson('/api/task-views')->assertOk()->json('data'))->pluck('count', 'key');
+
+    expect($counts['all'])->toBe(3)
+        ->and($counts['all_open'])->toBe(1)
+        ->and($counts['all_in_progress'])->toBe(0)
+        ->and($counts['all_closed'])->toBe(1)
+        ->and($counts['all_backlogged'])->toBe(1);
 });

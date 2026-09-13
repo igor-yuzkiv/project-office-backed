@@ -88,3 +88,12 @@ it('cuts a long excerpt on a character boundary', function () {
         ->and(mb_strlen($excerpt))->toBe(501)
         ->and($excerpt)->toEndWith('…');
 });
+
+it('answers with the comment marked as a checkpoint', function () {
+    $task = TaskModel::factory()->create(['project_id' => $this->project->id, 'status' => TaskStatus::InProgress->value]);
+
+    $this->postJson("/api/cli/projects/{$this->project->id}/tasks/{$task->id}/workflow/checkpoint", [
+        'subject' => 'Investigated the bug',
+        'comment' => 'Root cause found in the parser.',
+    ])->assertCreated()->assertJsonPath('data.kind', 'checkpoint');
+});
