@@ -29,7 +29,7 @@ const { mutateWithConfirm: deleteProject } = useDeleteProjectMutation()
 const pinMutation = usePinProjectMutation()
 const unpinMutation = useUnpinProjectMutation()
 
-const moreMenu = usePopupMenu()
+const morePopup = usePopupMenu()
 
 const activeTab = computed(
     () =>
@@ -118,7 +118,7 @@ useBreadcrumbs(() => [{ label: 'Projects', to: { name: 'projects' } }, { label: 
                         outlined
                         @click="openEditor"
                     />
-                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
+                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="morePopup.open" />
                 </div>
             </div>
 

@@ -27,7 +27,10 @@ export function useRowMenu<T>(itemsFor: (row: T) => MenuItem[] = () => []): RowM
     return { selected, items, open }
 }
 
-/** A single popup menu with nothing to remember: the page's `…` menu. */
+/**
+ * A single popup menu with nothing to remember: the page's `…` menu. The caller's variable must
+ * not share the template ref's name, or `<script setup>` binds the ref to that object instead.
+ */
 export function usePopupMenu(refName = 'moreMenu') {
     const menu = useTemplateRef<InstanceType<typeof Menu>>(refName)
 

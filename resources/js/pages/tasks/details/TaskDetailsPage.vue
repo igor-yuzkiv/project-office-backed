@@ -51,7 +51,7 @@ const { upsert: upsertComment } = useUpsertTaskComment(taskId)
 const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 const showAttachmentsDialog = ref(false)
-const moreMenu = usePopupMenu()
+const morePopup = usePopupMenu()
 const commentsKind = ref<CommentKindFilter>('all')
 const listSidebarCollapsed = useLocalStorage('app:task:list-sidebar-collapsed', false)
 
@@ -145,7 +145,7 @@ useBreadcrumbs(() => [
                             outlined
                             @click="openEditor"
                         />
-                        <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
+                        <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="morePopup.open" />
                         <IconButton
                             v-if="task.task_list_id && listSidebarCollapsed"
                             icon="tabler:layout-sidebar-right-expand"

@@ -84,7 +84,7 @@ function removeDocument() {
     if (document) tree.deleteDocument(document)
 }
 
-const moreMenu = usePopupMenu()
+const morePopup = usePopupMenu()
 
 const moreMenuItems = computed<MenuItem[]>(() => [
     { label: 'Move', icon: 'pi pi-arrow-right-arrow-left', command: () => moveDialog.open() },
@@ -233,7 +233,7 @@ watch(
                                 outlined
                                 @click="editDocument"
                             />
-                            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
+                            <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="morePopup.open" />
                         </template>
                     </PageHead>
 

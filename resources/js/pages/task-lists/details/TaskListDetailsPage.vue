@@ -62,7 +62,7 @@ const { upsert: upsertComment } = useUpsertTaskListComment(taskListId)
 const { mutateWithConfirm: deleteComment } = useDeleteCommentMutation()
 
 const showAttachmentsDialog = ref(false)
-const moreMenu = usePopupMenu()
+const morePopup = usePopupMenu()
 
 const doneColors = useStatusColors(STATUS_COLORS.done)
 const inProgressColors = useStatusColors(STATUS_COLORS.progress)
@@ -163,7 +163,7 @@ useBreadcrumbs(() => [
                         outlined
                         @click="openEditor"
                     />
-                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="moreMenu.open" />
+                    <IconButton icon="pepicons-pop:dots-x" aria-label="More" @click="morePopup.open" />
                 </template>
             </PageHead>
 
