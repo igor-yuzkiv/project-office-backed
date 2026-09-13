@@ -13,7 +13,7 @@ class GetRecentTasksQuery
     public function handle(int $limit): Collection
     {
         return TaskModel::query()
-            ->with('project')
+            ->with(['project', 'taskList', 'updatedBy'])
             ->orderByDesc('updated_at')
             ->limit($limit)
             ->get();

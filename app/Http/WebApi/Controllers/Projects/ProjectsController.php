@@ -12,6 +12,7 @@ use App\Domains\Project\Actions\UnpinProject\UnpinProjectHandler;
 use App\Domains\Project\Actions\UpdateProject\UpdateProjectHandler;
 use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Project\Queries\CountTasksPerStatusQuery;
+use App\Domains\Project\Queries\GetLastActivityPerProjectQuery;
 use App\Domains\TaskList\Queries\CountTasksPerStatusQuery as CountTaskListTasksPerStatusQuery;
 use App\Http\Shared\Resources\Projects\ProjectOverviewResource;
 use App\Http\Shared\Resources\Projects\ProjectResource;
@@ -35,6 +36,7 @@ class ProjectsController extends ResourceController
         private readonly PinProjectHandler $pinHandler,
         private readonly UnpinProjectHandler $unpinHandler,
         private readonly CountTasksPerStatusQuery $countTasksPerStatus,
+        private readonly GetLastActivityPerProjectQuery $getLastActivityPerProject,
         private readonly CountTaskListTasksPerStatusQuery $countTaskListTasksPerStatus,
     ) {}
 
@@ -45,6 +47,14 @@ class ProjectsController extends ResourceController
     private function pinnedByCurrentUser(): array
     {
         return ['pinnedBy as is_pinned' => fn (Builder $q) => $q->where('user_id', auth()->id())];
+    }
+
+    /** Every project response carries its task counts and its newest event; the whole page is queried at once. */
+    private function attachProjectSummaries(iterable $projects): void
+    {
+        $this->countTasksPerStatus->attach($projects);
+        $this->getLastActivityPerProject->attach($projects);
+        $this->attachTaskListStatusCounts($projects);
     }
 
     /**
@@ -79,8 +89,7 @@ class ProjectsController extends ResourceController
             ->orderBy($sort->field, $sort->direction)
             ->paginate($pagination->perPage, page: $pagination->page);
 
-        $this->countTasksPerStatus->attach($projects->items());
-        $this->attachTaskListStatusCounts($projects->items());
+        $this->attachProjectSummaries($projects->items());
 
         return ProjectOverviewResource::collection($projects);
     }
@@ -104,8 +113,7 @@ class ProjectsController extends ResourceController
             })
             ->paginate($pagination->perPage, 'page', $pagination->page);
 
-        $this->countTasksPerStatus->attach($projects->items());
-        $this->attachTaskListStatusCounts($projects->items());
+        $this->attachProjectSummaries($projects->items());
 
         return ProjectOverviewResource::collection($projects);
     }
@@ -124,8 +132,7 @@ class ProjectsController extends ResourceController
         foreach ($projects as $project) {
             $project->setAttribute('is_pinned', true);
         }
-        $this->countTasksPerStatus->attach($projects);
-        $this->attachTaskListStatusCounts($projects);
+        $this->attachProjectSummaries($projects);
 
         return ProjectOverviewResource::collection($projects);
     }
@@ -135,8 +142,7 @@ class ProjectsController extends ResourceController
         $project->load($this->resolveIncludes(required: ['createdBy', 'updatedBy', 'archivedBy', 'tags'], requested: $this->parseRequestedIncludes()));
         $project->loadExists($this->pinnedByCurrentUser());
         $project->loadCount(self::COUNTED_RELATIONS);
-        $this->countTasksPerStatus->attach([$project]);
-        $this->attachTaskListStatusCounts([$project]);
+        $this->attachProjectSummaries([$project]);
 
         return new ProjectResource($project);
     }

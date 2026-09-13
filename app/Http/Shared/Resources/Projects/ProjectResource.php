@@ -33,6 +33,7 @@ class ProjectResource extends JsonResource
             'is_pinned'   => $this->whenHas('is_pinned', fn () => (bool) $this->is_pinned),
 
             'task_status_counts' => $this->whenHas('task_status_counts'),
+            'last_activity'      => $this->whenHas('last_activity', fn () => $this->last_activity === null ? null : new ProjectLastActivityResource($this->last_activity)),
 
             'tags'       => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'tasks'      => $this->whenLoaded('tasks', fn () => TaskResource::collection($this->tasks)),

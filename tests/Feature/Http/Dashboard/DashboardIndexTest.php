@@ -4,7 +4,6 @@ use App\Domains\Project\Models\ProjectModel;
 use App\Domains\Task\Enums\TaskStatus;
 use App\Domains\Task\Models\TaskModel;
 use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
-use App\Domains\Task\Services\TaskViewRegistry;
 use App\Domains\Task\ValueObjects\TaskViewCount;
 use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\User\Models\UserModel;
@@ -45,64 +44,26 @@ it('rejects an unauthenticated request', function () {
 });
 
 it('returns the full dashboard envelope', function () {
-    dashboardTask();
-    TaskListModel::factory()->create(['project_id' => ProjectModel::factory()->create()->id]);
+    $project = ProjectModel::factory()->create();
+    $list = TaskListModel::factory()->create(['project_id' => $project->id]);
+    TaskModel::factory()->create(['project_id' => $project->id, 'task_list_id' => $list->id, 'updated_by' => $this->user->id]);
 
     $this->getJson('/api/dashboard')
         ->assertOk()
+        ->assertJsonMissingPath('data.summary')
         ->assertJsonStructure([
             'data' => [
-                'summary' => [
-                    'task_views' => [['key', 'label', 'count']],
-                    'projects_count',
-                    'task_lists_count',
-                ],
-                'recent_tasks'      => [['id', 'key', 'name', 'status', 'updated_at', 'project']],
-                'recent_task_lists' => [['id', 'key', 'name', 'tasks_count']],
+                'recent_tasks'      => [['id', 'key', 'name', 'status', 'updated_at', 'project', 'task_list', 'updated_by']],
+                'recent_task_lists' => [['id', 'key', 'name', 'tasks_count', 'task_status_counts', 'project', 'updated_by']],
             ],
         ]);
 });
 
-it('answers an empty database with zeros and empty lists', function () {
+it('answers an empty database with empty lists', function () {
     $response = $this->getJson('/api/dashboard')->assertOk();
 
-    expect($response->json('data.summary.projects_count'))->toBe(0)
-        ->and($response->json('data.summary.task_lists_count'))->toBe(0)
-        ->and($response->json('data.recent_tasks'))->toBe([])
-        ->and($response->json('data.recent_task_lists'))->toBe([])
-        ->and(collect($response->json('data.summary.task_views'))->pluck('count')->all())
-        ->each->toBe(0);
-});
-
-it('takes the task views straight from the registry', function () {
-    $views = TaskViewRegistry::all();
-
-    $response = $this->getJson('/api/dashboard')->assertOk();
-
-    expect($response->json('data.summary.task_views'))->toHaveCount(count($views));
-
-    foreach ($views as $index => $view) {
-        expect($response->json("data.summary.task_views.$index.key"))->toBe($view->key)
-            ->and($response->json("data.summary.task_views.$index.label"))->toBe($view->label);
-    }
-});
-
-it('counts each view the same way the task search does', function () {
-    dashboardTask(['status' => TaskStatus::Open->value]);
-    dashboardTask(['status' => TaskStatus::InProgress->value]);
-    dashboardTask(['status' => TaskStatus::Closed->value]);
-    dashboardTask(['status' => TaskStatus::Backlog->value]);
-
-    $dashboard = $this->getJson('/api/dashboard')->assertOk();
-    // The filters travel to the search endpoint exactly as the Tasks page sends them.
-    $views = $this->getJson('/api/task-views')->assertOk()->json('data');
-
-    foreach ($views as $index => $view) {
-        $searched = $this->postJson('/api/tasks/search', ['filters' => $view['filters']])->assertOk();
-
-        expect($dashboard->json("data.summary.task_views.$index.count"))
-            ->toBe($searched->json('meta.total'));
-    }
+    expect($response->json('data.recent_tasks'))->toBe([])
+        ->and($response->json('data.recent_task_lists'))->toBe([]);
 });
 
 it('counts filtered tasks without paginating them', function () {
@@ -118,24 +79,27 @@ it('counts filtered tasks without paginating them', function () {
         ->and($counts['all_in_progress'])->toBe(0);
 });
 
-it('returns at most eight recent tasks, newest first, each with its project', function () {
-    $tasks = collect(range(1, 10))->map(fn (int $minutes) => tap(dashboardTask(), function (TaskModel $task) use ($minutes): void {
+it('returns at most six recent tasks, newest first, each with its project, list and editor', function () {
+    $list = TaskListModel::factory()->create(['project_id' => ProjectModel::factory()->create()->id]);
+    $tasks = collect(range(1, 8))->map(fn (int $minutes) => tap(dashboardTask(['project_id' => $list->project_id, 'task_list_id' => $list->id, 'updated_by' => $this->user->id]), function (TaskModel $task) use ($minutes): void {
         $task->forceFill(['updated_at' => now()->addMinutes($minutes)])->saveQuietly();
     }));
 
     $response = $this->getJson('/api/dashboard')->assertOk();
 
-    expect($response->json('data.recent_tasks'))->toHaveCount(8)
+    expect($response->json('data.recent_tasks'))->toHaveCount(6)
         ->and($response->json('data.recent_tasks.0.id'))->toBe($tasks->last()->id)
-        ->and($response->json('data.recent_tasks.0.project.id'))->toBe($tasks->last()->project_id);
+        ->and($response->json('data.recent_tasks.0.project.id'))->toBe($tasks->last()->project_id)
+        ->and($response->json('data.recent_tasks.0.task_list.id'))->toBe($list->id)
+        ->and($response->json('data.recent_tasks.0.updated_by.id'))->toBe($this->user->id);
 });
 
-it('returns at most six recent task lists, newest first, each with its task count and project', function () {
+it('returns at most three recent task lists, newest first, each with its task counts, project and editor', function () {
     $project = ProjectModel::factory()->create();
 
     // More lists than the limit, otherwise the cap is never exercised.
-    $lists = collect(range(1, 8))->map(function (int $minutes) use ($project) {
-        $list = TaskListModel::factory()->create(['project_id' => $project->id]);
+    $lists = collect(range(1, 5))->map(function (int $minutes) use ($project) {
+        $list = TaskListModel::factory()->create(['project_id' => $project->id, 'updated_by' => $this->user->id]);
         $list->forceFill(['updated_at' => now()->addMinutes($minutes)])->saveQuietly();
 
         return $list;
@@ -144,14 +108,17 @@ it('returns at most six recent task lists, newest first, each with its task coun
     TaskModel::factory()->count(2)->create([
         'project_id'   => $project->id,
         'task_list_id' => $lists->last()->id,
+        'status'       => TaskStatus::Completed,
     ]);
 
     $response = $this->getJson('/api/dashboard')->assertOk();
 
-    expect($response->json('data.recent_task_lists'))->toHaveCount(6)
+    expect($response->json('data.recent_task_lists'))->toHaveCount(3)
         ->and($response->json('data.recent_task_lists.0.id'))->toBe($lists->last()->id)
         ->and($response->json('data.recent_task_lists.0.tasks_count'))->toBe(2)
-        ->and($response->json('data.recent_task_lists.0.project.id'))->toBe($project->id);
+        ->and($response->json('data.recent_task_lists.0.task_status_counts.completed'))->toBe(2)
+        ->and($response->json('data.recent_task_lists.0.project.id'))->toBe($project->id)
+        ->and($response->json('data.recent_task_lists.0.updated_by.id'))->toBe($this->user->id);
 });
 
 it('keeps the query count flat as the data grows', function () {
@@ -166,8 +133,8 @@ it('keeps the query count flat as the data grows', function () {
 
     $large = countDashboardQueries(fn () => $this->getJson('/api/dashboard')->assertOk());
 
-    // Row count is the axis that matters: without the eager load every recent task would fetch its
-    // own project, and every recent list its own task count.
+    // Row count is the axis that matters: without the eager loads every recent task would fetch its
+    // own project, list and editor, and every recent list its own task counts.
     expect($large)->toBe($small)
         ->and($large)->toBeLessThanOrEqual(12);
 });

@@ -2,11 +2,7 @@
 
 namespace App\Http\WebApi\Controllers\Dashboard;
 
-use App\Domains\Project\Models\ProjectModel;
-use App\Domains\Task\Queries\CountTasksPerTaskViewQuery;
 use App\Domains\Task\Queries\GetRecentTasksQuery;
-use App\Domains\Task\ValueObjects\TaskViewCount;
-use App\Domains\TaskList\Models\TaskListModel;
 use App\Domains\TaskList\Queries\CountTasksPerStatusQuery;
 use App\Domains\TaskList\Queries\GetRecentTaskListsQuery;
 use App\Http\Shared\Resources\TaskLists\TaskListResource;
@@ -16,12 +12,11 @@ use Illuminate\Http\JsonResponse;
 
 class DashboardController extends ResourceController
 {
-    private const RECENT_TASKS_LIMIT = 8;
+    private const RECENT_TASKS_LIMIT = 6;
 
-    private const RECENT_TASK_LISTS_LIMIT = 6;
+    private const RECENT_TASK_LISTS_LIMIT = 3;
 
     public function __construct(
-        private readonly CountTasksPerTaskViewQuery $countTasksPerTaskView,
         private readonly GetRecentTasksQuery $getRecentTasks,
         private readonly GetRecentTaskListsQuery $getRecentTaskLists,
         private readonly CountTasksPerStatusQuery $countTasksPerStatus,
@@ -39,18 +34,6 @@ class DashboardController extends ResourceController
 
         return response()->json([
             'data' => [
-                'summary' => [
-                    'task_views' => array_map(
-                        static fn (TaskViewCount $counted): array => [
-                            'key'   => $counted->view->key,
-                            'label' => $counted->view->label,
-                            'count' => $counted->count,
-                        ],
-                        $this->countTasksPerTaskView->handle(),
-                    ),
-                    'projects_count'   => ProjectModel::query()->count(),
-                    'task_lists_count' => TaskListModel::query()->count(),
-                ],
                 // The dashboard shows the latest activity by definition, so both lists are fixed to
                 // updated_at desc. sort_by / sort_order / per_page are deliberately not read here.
                 'recent_tasks'      => TaskOverviewResource::collection($this->getRecentTasks->handle(self::RECENT_TASKS_LIMIT)),

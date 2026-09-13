@@ -12,6 +12,7 @@ use App\Domains\User\Models\UserModel;
 use App\Infrastructure\Models\Concerns\HasArchivableColumns;
 use App\Infrastructure\Models\Concerns\HasAuditableColumns;
 use App\Infrastructure\Models\Contracts\Archivable;
+use App\Libs\AuditTrail\Models\AuditRecordModel;
 use App\Libs\EloquentFilters\Concerns\HasFilters;
 use App\Libs\EloquentFilters\FilterDefinition;
 use App\Libs\EloquentFilters\Filters\TagFilter;
@@ -46,6 +47,7 @@ use Laravel\Scout\Searchable;
  * @property Collection<int, ProjectDocumentModel> $documents
  * @property Collection<int, UserModel> $pinnedBy
  * @property bool|null $is_pinned
+ * @property AuditRecordModel|null $last_activity
  *
  * @method static \Illuminate\Database\Eloquent\Builder filter(array $filters)
  */
