@@ -59,7 +59,14 @@ const layoutComponent = computed(() => {
         <template #message="{ message }: { message: ToastMessage }">
             <span class="gap-2.5 min-w-0 flex items-center text-[13px]">
                 <i class="h-[7px] w-[7px] shrink-0 rounded-full" :class="toastDotClass[message.severity ?? 'info']" />
-                <span class="truncate">{{ message.detail ?? message.summary }}</span>
+                <!-- Confirmations stay one line; an error or warning carries a server message worth reading whole. -->
+                <span
+                    :class="
+                        message.severity === 'error' || message.severity === 'warn' ? 'whitespace-normal' : 'truncate'
+                    "
+                >
+                    {{ message.detail ?? message.summary }}
+                </span>
                 <RouterLink v-if="message.link" :to="message.link.to" class="shrink-0 underline underline-offset-2">
                     {{ message.link.label }}
                 </RouterLink>

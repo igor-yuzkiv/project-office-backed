@@ -17,11 +17,15 @@ import { TaskCreateDialog, useTaskCreateDialog } from '@/widgets/tasks/create-di
 import { TasksTableView } from '@/widgets/tasks/views/table'
 import { TaskBulkActionsBar } from '@/widgets/tasks/bulk-actions'
 import { useToast } from '@/shared/composables'
+import { useBreadcrumbs } from '@/app/shell'
 import { taskSortFieldDefs, taskTableColumnDefs } from '@/entities/task/config'
 
 const router = useRouter()
 
 const toast = useToast()
+
+// The header falls back to the route title when no breadcrumb is set; PageHead already carries it.
+useBreadcrumbs([{ label: 'Tasks' }])
 const taskCreateDialog = useTaskCreateDialog()
 const { mutateWithConfirm: deleteTask } = useDeleteTaskMutation()
 const { mutate: bulkUpdateStatus, isPending: isBulkUpdatePending } = useBulkUpdateTaskStatusMutation()
