@@ -34,7 +34,7 @@ function clear() {
     <div class="group w-11 relative shrink-0">
         <button
             type="button"
-            class="border-line-2 hover:border-surface-400 h-11 w-11 rounded-lg flex items-center justify-center border transition-colors"
+            class="border-line-2 hover:border-ink-3 h-11 w-11 rounded-lg flex items-center justify-center border transition-colors"
             :aria-label="placeholder"
             @click="toggle"
         >
