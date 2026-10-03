@@ -27,6 +27,16 @@
 .md-editor {
     border: 0;
     border-radius: 0;
+}
+
+/*
+ * The library sets its own fonts on the root, the preview, code blocks and the CodeMirror input,
+ * and its stylesheet loads after this one — the doubled class outranks it. One face throughout.
+ */
+.md-editor.md-editor,
+.md-editor .md-editor-preview.md-editor-preview,
+.md-editor .md-editor-preview .md-editor-code pre code,
+.md-editor .cm-editor .cm-scroller {
     font-family: inherit;
 }
 

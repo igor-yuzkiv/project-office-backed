@@ -30,7 +30,7 @@ async function handleLogout() {
 
 <template>
     <aside
-        class="bg-canvas border-line flex h-full shrink-0 flex-col overflow-hidden border-r text-[13.5px] transition-[width] duration-150"
+        class="bg-canvas border-line rounded-md flex h-full shrink-0 flex-col overflow-hidden border text-[13.5px] transition-[width] duration-150"
         :class="layoutStore.sidebarCollapsed ? 'w-[52px]' : 'w-[224px]'"
     >
         <div

@@ -23,12 +23,12 @@ function isActive(): boolean {
         :to="{ name: item.routeName }"
         class="hover:bg-hover hover:text-ink flex min-h-[26px] items-center rounded-[5px] text-[13px] transition-colors"
         :class="[
-            isActive() ? 'bg-hover text-ink font-medium' : 'text-ink-2',
+            isActive() ? 'bg-hover text-ink font-semibold shadow-[inset_2px_0_0_var(--color-brand)]' : 'text-ink-2',
             collapsed ? 'p-1.5 justify-center' : 'gap-2 px-2 py-1',
         ]"
         :aria-label="collapsed ? item.label : undefined"
     >
-        <Icon :icon="item.icon" class="h-4 w-4 shrink-0" />
+        <Icon :icon="item.icon" class="h-4 w-4 shrink-0" :class="{ 'text-brand': isActive() }" />
         <span v-if="!collapsed" class="truncate">{{ item.label }}</span>
     </RouterLink>
 </template>

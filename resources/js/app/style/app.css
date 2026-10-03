@@ -7,50 +7,47 @@
 }
 
 /*
- * Typographic roles from the redesign mockups (_tmp/context/ui-redesign/design.css):
+ * Typographic roles, sized for JetBrains Mono (_tmp/context/ui-redesign/design.css names them):
  * type-title ≈ h1.title, type-page ≈ h1.page, type-section ≈ h2.sec, type-prose ≈ .prose,
  * type-meta ≈ .m. A role carries size, weight and tracking together, so it is a class rather than
  * a `--text-*` token.
  */
 @utility type-title {
-    font-size: 26px;
-    line-height: 1.25;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-size: 20px;
+    line-height: 1.35;
+    font-weight: 700;
 }
 
 @utility type-page {
-    font-size: 22px;
-    line-height: 1.25;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 700;
 }
 
 @utility type-section {
-    font-size: 15px;
-    line-height: 1.35;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 700;
 }
 
 @utility type-body {
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 13px;
+    line-height: 1.55;
 }
 
 @utility type-prose {
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 14px;
+    line-height: 1.7;
 }
 
 @utility type-meta {
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.4;
     color: var(--color-ink-2);
 }
 
 @utility type-meta-3 {
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.4;
     color: var(--color-ink-3);
 }
@@ -60,10 +57,10 @@
     border-bottom: 1px solid var(--color-line);
 }
 
-/* A selected row is a lifted surface with a 1px ring, never a filled accent. */
+/* A selected row is filled with the selection colour and marked by an accent bar on its left. */
 @utility selected-row {
     background: var(--color-selected);
-    box-shadow: 0 0 0 1px var(--color-line-2);
+    box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
 /*
@@ -91,4 +88,18 @@
         width: 100%;
         padding: 24px 16px 64px;
     }
+}
+
+/* Mono runs wide: table text one step smaller, and short cells (keys, dates) never wrap. */
+.p-datatable,
+.p-treetable {
+    font-size: 13px;
+}
+
+/* Table headers sit on the canvas tone with a stronger rule, so the head never merges with the rows. */
+.p-datatable-thead > tr > th,
+.p-treetable-thead > tr > th {
+    background: var(--color-canvas);
+    border-bottom: 1px solid var(--color-line-2);
+    color: var(--color-ink-2);
 }

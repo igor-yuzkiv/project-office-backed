@@ -10,10 +10,13 @@
 /*
  * Design tokens for Tailwind utilities (bg-page, text-ink-2, border-line, …). Every value is
  * derived from the PrimeVue preset in app/plugins/prime-vue.plugin.ts — the preset is the source,
- * these are aliases. The four `--app-*` variables switch a surface step per scheme where no
- * PrimeVue semantic token carries that meaning.
+ * these are aliases. The `--app-*` variables switch a surface step per scheme where no PrimeVue
+ * semantic token carries that meaning. `app` is the window behind the panels; `brand` is the
+ * Workbench orange, kept off the interactive accent.
  */
 @theme inline {
+    --color-app: var(--app-bg);
+    --color-brand: var(--app-brand);
     --color-page: var(--app-page);
     --color-canvas: var(--app-canvas);
     --color-ink: var(--p-text-color);
@@ -30,26 +33,30 @@
 }
 
 :root {
+    --app-bg: var(--p-surface-200);
+    --app-brand: #e8590c;
     --app-page: var(--p-surface-0);
     --app-canvas: var(--p-surface-50);
-    --app-ink-3: var(--p-surface-400);
-    --app-selected: var(--p-surface-0);
-    --app-code-bg: #f1f4f8;
+    --app-ink-3: var(--p-surface-500);
+    --app-selected: var(--p-primary-100);
+    --app-code-bg: var(--p-surface-50);
 }
 
 .dark {
-    --app-page: var(--p-surface-900);
-    --app-canvas: var(--p-surface-950);
-    --app-ink-3: var(--p-surface-500);
-    --app-selected: var(--p-surface-700);
-    --app-code-bg: #1b222b;
+    --app-bg: #141517;
+    --app-brand: #ff8a3d;
+    --app-page: var(--p-surface-950);
+    --app-canvas: var(--p-surface-900);
+    --app-ink-3: var(--p-surface-400);
+    --app-selected: #2e436e;
+    --app-code-bg: var(--p-surface-900);
 }
 
 @layer base {
     html {
-        font-family: 'Inter', sans-serif;
-        font-optical-sizing: auto;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
         font-style: normal;
+        font-variant-ligatures: none;
         color: var(--color-ink);
         background: var(--color-page);
     }

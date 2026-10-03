@@ -27,7 +27,7 @@ const selected = defineModel<TaskOverviewDto[]>('selected', { required: true })
 const searchQuery = defineModel<string>('searchQuery', { required: true })
 
 const columns: EntityTableColumnDef[] = [
-    { field: 'key', header: 'Key', style: 'width: 8rem' },
+    { field: 'key', header: 'Key', style: 'width: 8rem; white-space: nowrap' },
     { field: 'name', header: 'Task Name' },
     { field: 'status', header: 'Status', style: 'width: 9rem' },
 ]

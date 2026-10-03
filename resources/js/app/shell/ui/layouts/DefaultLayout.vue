@@ -38,14 +38,15 @@ const navItems: SidebarNavItem[] = [
 </script>
 
 <template>
-    <div class="flex h-screen w-full overflow-hidden">
+    <!-- The sidebar and the content are separate panels on the window tone, as IDE tool windows are. -->
+    <div class="bg-app gap-1 p-1 flex h-screen w-full overflow-hidden">
         <AppLeftNavigationSidebar :items="navItems">
             <template #pinned>
                 <SidebarPinnedProjects :collapsed="store.sidebarCollapsed" />
             </template>
         </AppLeftNavigationSidebar>
 
-        <div class="bg-page relative flex flex-1 flex-col overflow-hidden">
+        <div class="bg-page border-line rounded-md relative flex flex-1 flex-col overflow-hidden border">
             <AppHeader :breadcrumbs="store.activeBreadcrumbs" />
             <ProgressBar
                 v-show="showProgressBar"

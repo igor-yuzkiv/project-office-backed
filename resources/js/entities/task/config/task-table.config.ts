@@ -10,7 +10,7 @@ export const taskSortFieldDefs: SortFieldDef[] = [
 ]
 
 export const taskTableColumnDefs: EntityTableColumnDef[] = [
-    { field: 'key', header: 'Key', style: 'width: 7rem' },
+    { field: 'key', header: 'Key', style: 'width: 7rem; white-space: nowrap' },
     { field: 'name', header: 'Task', style: 'min-width: 24rem' },
     { field: 'project', header: 'Project', style: 'min-width: 11rem' },
     { field: 'task_list.name', header: 'Task list', style: 'min-width: 11rem' },

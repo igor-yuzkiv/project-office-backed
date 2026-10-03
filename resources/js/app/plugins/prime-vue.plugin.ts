@@ -10,29 +10,27 @@ import Tooltip from 'primevue/tooltip'
 import 'primeicons/primeicons.css'
 
 /**
- * The design tokens of the redesign (see _tmp/context/ui-redesign/design.css) expressed as the
- * PrimeVue semantic scheme. The surface scale carries the page/canvas/hover/selected/line steps so
- * that the `surface-*` Tailwind utilities from tailwindcss-primeui pick them up without any change
- * in components; the semantic aliases below point at the same steps so PrimeVue components agree.
+ * The JetBrains Islands Light / Islands Darcula palette expressed as the PrimeVue semantic scheme.
+ * The surface scale carries the page/canvas/hover/line/ink steps so the `surface-*` Tailwind
+ * utilities from tailwindcss-primeui pick them up; the semantic aliases point at the same steps.
  *
- * Light: 0 page · 50 canvas · 100 hover · 200 line · 300 line-2 · 400 ink-3 · 500 ink-2 · 900 ink.
- * Dark:  950 canvas · 900 page · 800 hover · 700 selected · 600 line-2 · 500 ink-3 · 400 ink-2 · 50 ink.
- * The dark hairline (`--line`, #1c232c) sits between 800 and 700 and is set on the aliases directly.
+ * Light: 0 page · 50 canvas · 100 hover · 300 line · 400 line-2 · 500 ink-3 · 600 ink-2 · 900 ink.
+ * Dark:  950 page · 900 canvas · 800 hover · 700 line · 600 line-2 · 400 ink-3 · 300 ink-2 · 50 ink.
  */
 const MyPreset = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '{blue.50}',
-            100: '{blue.100}',
-            200: '{blue.200}',
-            300: '{blue.300}',
-            400: '{blue.400}',
-            500: '#3b82f6',
-            600: '{blue.600}',
-            700: '{blue.700}',
-            800: '{blue.800}',
-            900: '{blue.900}',
-            950: '{blue.950}',
+            50: '#EDF3FF',
+            100: '#D4E2FF',
+            200: '#ADC8FF',
+            300: '#89AFFF',
+            400: '#548AF7',
+            500: '#3574F0',
+            600: '#2462D9',
+            700: '#1E50B8',
+            800: '#1A4192',
+            900: '#173670',
+            950: '#0F2247',
         },
         focusRing: {
             width: '2px',
@@ -43,18 +41,18 @@ const MyPreset = definePreset(Aura, {
         colorScheme: {
             light: {
                 surface: {
-                    0: '#ffffff',
-                    50: '#f8fafc',
-                    100: '#eef2f6',
-                    200: '#e8ecf1',
-                    300: '#d5dbe3',
-                    400: '#94a3b8',
-                    500: '#64748b',
-                    600: '{slate.600}',
-                    700: '{slate.700}',
-                    800: '{slate.800}',
-                    900: '#0f172a',
-                    950: '{slate.950}',
+                    0: '#FFFFFF',
+                    50: '#F7F8FA',
+                    100: '#EBECF0',
+                    200: '#DFE1E5',
+                    300: '#C9CCD6',
+                    400: '#A8ADBD',
+                    500: '#6C707E',
+                    600: '#4E5157',
+                    700: '#3B3E44',
+                    800: '#2B2D30',
+                    900: '#1E1F22',
+                    950: '#000000',
                 },
                 primary: {
                     color: '{primary.500}',
@@ -63,54 +61,54 @@ const MyPreset = definePreset(Aura, {
                     activeColor: '{primary.700}',
                 },
                 highlight: {
-                    background: '#e6efff',
-                    focusBackground: '{primary.100}',
+                    background: '{primary.100}',
+                    focusBackground: '{primary.200}',
                     color: '{primary.700}',
                     focusColor: '{primary.800}',
                 },
                 text: {
                     color: '{surface.900}',
                     hoverColor: '{surface.950}',
-                    mutedColor: '{surface.500}',
-                    hoverMutedColor: '{surface.600}',
+                    mutedColor: '{surface.600}',
+                    hoverMutedColor: '{surface.700}',
                 },
                 content: {
                     background: '{surface.0}',
                     hoverBackground: '{surface.100}',
-                    borderColor: '{surface.200}',
+                    borderColor: '{surface.300}',
                     color: '{text.color}',
                     hoverColor: '{text.hover.color}',
                 },
                 formField: {
-                    background: '{surface.100}',
-                    borderColor: '{surface.100}',
-                    hoverBorderColor: '{surface.200}',
+                    background: '{surface.0}',
+                    borderColor: '{surface.400}',
+                    hoverBorderColor: '{surface.500}',
                     focusBorderColor: '{primary.color}',
                     color: '{surface.900}',
-                    placeholderColor: '{surface.400}',
-                    iconColor: '{surface.400}',
+                    placeholderColor: '{surface.500}',
+                    iconColor: '{surface.500}',
                     shadow: 'none',
                 },
                 overlay: {
-                    select: { background: '{surface.0}', borderColor: '{surface.200}', color: '{text.color}' },
-                    popover: { background: '{surface.0}', borderColor: '{surface.200}', color: '{text.color}' },
-                    modal: { background: '{surface.0}', borderColor: '{surface.200}', color: '{text.color}' },
+                    select: { background: '{surface.0}', borderColor: '{surface.400}', color: '{text.color}' },
+                    popover: { background: '{surface.0}', borderColor: '{surface.400}', color: '{text.color}' },
+                    modal: { background: '{surface.0}', borderColor: '{surface.400}', color: '{text.color}' },
                 },
             },
             dark: {
                 surface: {
-                    0: '#ffffff',
-                    50: '#e6ebf1',
-                    100: '{slate.200}',
-                    200: '{slate.300}',
-                    300: '{slate.400}',
-                    400: '#8b97a6',
-                    500: '#5c6877',
-                    600: '#2a333e',
-                    700: '#1f2731',
-                    800: '#171d26',
-                    900: '#11171e',
-                    950: '#12181f',
+                    0: '#FFFFFF',
+                    50: '#DFE1E5',
+                    100: '#CED0D6',
+                    200: '#B4B8BF',
+                    300: '#A8ADB5',
+                    400: '#868A91',
+                    500: '#6F737A',
+                    600: '#5A5D63',
+                    700: '#43454A',
+                    800: '#393B40',
+                    900: '#2B2D30',
+                    950: '#1E1F22',
                 },
                 primary: {
                     color: '{primary.500}',
@@ -119,32 +117,32 @@ const MyPreset = definePreset(Aura, {
                     activeColor: '{primary.300}',
                 },
                 highlight: {
-                    background: '#163464',
-                    focusBackground: '#1f4380',
-                    color: '#7fb0ff',
-                    focusColor: '#a9c8ff',
+                    background: '#2E436E',
+                    focusBackground: '#35538A',
+                    color: '#A9C5FF',
+                    focusColor: '#C8DAFF',
                 },
                 text: {
                     color: '{surface.50}',
                     hoverColor: '{surface.0}',
-                    mutedColor: '{surface.400}',
-                    hoverMutedColor: '{surface.300}',
+                    mutedColor: '{surface.300}',
+                    hoverMutedColor: '{surface.200}',
                 },
                 content: {
-                    background: '{surface.900}',
+                    background: '{surface.950}',
                     hoverBackground: '{surface.800}',
-                    borderColor: '#1c232c',
+                    borderColor: '{surface.700}',
                     color: '{text.color}',
                     hoverColor: '{text.hover.color}',
                 },
                 formField: {
-                    background: '{surface.800}',
-                    borderColor: '{surface.800}',
-                    hoverBorderColor: '{surface.700}',
+                    background: '{surface.950}',
+                    borderColor: '{surface.600}',
+                    hoverBorderColor: '{surface.500}',
                     focusBorderColor: '{primary.color}',
                     color: '{surface.50}',
-                    placeholderColor: '{surface.500}',
-                    iconColor: '{surface.500}',
+                    placeholderColor: '{surface.400}',
+                    iconColor: '{surface.400}',
                     shadow: 'none',
                 },
                 overlay: {
