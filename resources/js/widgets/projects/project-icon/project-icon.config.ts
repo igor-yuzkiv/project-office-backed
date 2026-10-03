@@ -14,14 +14,14 @@ export const PROJECT_ICON_SIZE_MAP: Record<ComponentSize, { root: string; label:
  * project from another at a glance, and it must not move when a project changes status.
  */
 export const PROJECT_ICON_TINTS = [
-    'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300',
-    'bg-violet-50 text-violet-600 dark:bg-violet-950/60 dark:text-violet-300',
-    'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300',
-    'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-300',
-    'bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-300',
-    'bg-cyan-50 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-300',
-    'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300',
-    'bg-teal-50 text-teal-600 dark:bg-teal-950/60 dark:text-teal-300',
+    'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200',
+    'bg-violet-100 text-violet-800 dark:bg-violet-900/60 dark:text-violet-200',
+    'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200',
+    'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200',
+    'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200',
+    'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/60 dark:text-cyan-200',
+    'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-200',
+    'bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-200',
 ] as const
 
 /** Same prefix, same tint, on every screen and every reload. */

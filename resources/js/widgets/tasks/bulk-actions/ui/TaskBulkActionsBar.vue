@@ -25,11 +25,8 @@ function apply() {
 </script>
 
 <template>
-    <div
-        class="gap-3 px-3 py-2 rounded-border bg-surface-100 dark:bg-surface-800 flex items-center"
-        data-testid="task-bulk-actions"
-    >
-        <span class="text-sm text-surface-700 dark:text-surface-300">{{ props.selectedCount }} selected</span>
+    <div class="gap-3 px-3 py-2 rounded-border bg-hover flex items-center" data-testid="task-bulk-actions">
+        <span class="text-sm text-ink-2">{{ props.selectedCount }} selected</span>
 
         <Button label="Update Status" size="small" @click="isStatusDialogVisible = true" />
 

@@ -13,8 +13,8 @@ defineProps<{
     >
         <Icon icon="eos-icons:three-dots-loading" class="h-24 w-24 text-primary-500" />
         <div v-if="title || subtitle" class="gap-1 flex flex-col items-center text-center">
-            <p v-if="title" class="text-base font-semibold text-surface-800 dark:text-surface-200">{{ title }}</p>
-            <p v-if="subtitle" class="text-sm text-surface-500">{{ subtitle }}</p>
+            <p v-if="title" class="text-base font-semibold text-ink">{{ title }}</p>
+            <p v-if="subtitle" class="text-sm text-ink-3">{{ subtitle }}</p>
         </div>
     </div>
 </template>

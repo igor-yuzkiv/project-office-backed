@@ -71,7 +71,7 @@ onClickOutside(drawerRef, props.panel.closeDrawer, {
     <div class="min-h-0 relative flex shrink-0" :class="side === 'left' ? 'flex-row-reverse' : ''">
         <aside
             v-if="!panel.isCollapsed.value"
-            class="border-surface-200 dark:border-surface-700 min-h-0 shrink-0 overflow-hidden"
+            class="border-line min-h-0 shrink-0 overflow-hidden"
             :class="side === 'left' ? 'border-r' : 'border-l'"
             :style="{ width }"
         >
@@ -82,7 +82,7 @@ onClickOutside(drawerRef, props.panel.closeDrawer, {
              No hover behaviour: a tab opens on a click and nothing else. -->
         <div
             ref="stripRef"
-            class="border-surface-200 dark:border-surface-700 gap-1 py-1.5 w-11 flex shrink-0 flex-col items-center"
+            class="border-line gap-1 py-1.5 w-11 flex shrink-0 flex-col items-center"
             :class="side === 'left' ? 'border-r' : 'border-l'"
         >
             <Button
@@ -106,7 +106,7 @@ onClickOutside(drawerRef, props.panel.closeDrawer, {
                 text
                 rounded
                 size="small"
-                :class="{ 'bg-surface-100 dark:bg-surface-800 !text-primary': tab.value === active }"
+                :class="{ 'bg-hover !text-primary': tab.value === active }"
                 :aria-label="tab.label"
                 :title="tab.label"
                 @click="panel.openTab(tab.value)"
@@ -132,7 +132,7 @@ onClickOutside(drawerRef, props.panel.closeDrawer, {
             role="dialog"
             :aria-label="activeLabel"
             data-testid="side-tabs-drawer"
-            class="border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 inset-y-0 shadow-lg absolute z-10 overflow-hidden"
+            class="border-line bg-canvas inset-y-0 shadow-lg absolute z-10 overflow-hidden"
             :class="side === 'left' ? 'left-11 border-r' : 'right-11 border-l'"
             :style="{ width }"
         >

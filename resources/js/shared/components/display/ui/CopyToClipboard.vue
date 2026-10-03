@@ -15,10 +15,7 @@ const { copy, copied } = useClipboard()
     <div v-if="text" class="gap-2 inline-flex cursor-pointer items-center" @click.stop="copy(text)">
         <Icon
             v-if="!hideCopyIcon"
-            :class="[
-                'text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors',
-                iconClass,
-            ]"
+            :class="['text-ink-3 hover:text-ink transition-colors', iconClass]"
             :icon="copied ? 'mdi:check' : 'tabler:copy'"
         />
 

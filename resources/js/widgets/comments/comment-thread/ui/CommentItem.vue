@@ -43,7 +43,7 @@ function handleEditSubmit(content: string) {
         <div class="gap-2 min-w-0 flex flex-1 flex-col">
             <div class="gap-4 flex items-center justify-between">
                 <span class="gap-2 min-w-0 flex items-baseline">
-                    <span class="text-sm font-semibold text-surface-900 dark:text-surface-0 truncate">
+                    <span class="text-sm font-semibold text-ink truncate">
                         {{ comment.author.name }}
                     </span>
                     <span v-if="kindBadge" class="bg-code-bg text-ink-2 text-xs shrink-0 rounded-[4px] px-[7px] py-px">
@@ -51,7 +51,7 @@ function handleEditSubmit(content: string) {
                     </span>
                 </span>
                 <div class="gap-1 flex shrink-0 items-center">
-                    <DisplayDate :date="comment.created_at" class="text-xs text-surface-400 dark:text-surface-500" />
+                    <DisplayDate :date="comment.created_at" class="text-xs text-ink-3" />
                     <Button
                         v-if="comment.can.update"
                         icon="pi pi-pencil"

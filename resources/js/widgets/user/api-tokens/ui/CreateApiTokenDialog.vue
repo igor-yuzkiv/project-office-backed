@@ -105,7 +105,7 @@ watch(visible, (isVisible) => {
                 Copy this token now — it won't be shown again after you close this dialog.
             </Message>
 
-            <div class="bg-surface-100 dark:bg-surface-800 rounded p-3 break-all">
+            <div class="bg-hover rounded p-3 break-all">
                 <CopyToClipboard :text="createdPlainTextToken" />
             </div>
         </div>

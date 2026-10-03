@@ -49,10 +49,8 @@ function handleFieldChanged<K extends keyof ProjectDocumentUpsertFormData>(
         <form class="gap-4 pt-1 flex flex-col" @submit.prevent="emit('submit')">
             <!-- Where the document sits is changed by Move, not here. -->
             <InputContainer v-if="parentDocument" label="Parent">
-                <div
-                    class="gap-2 px-3 py-2 text-surface-700 dark:text-surface-300 rounded border-surface-200 dark:border-surface-700 flex items-center border"
-                >
-                    <CopyToClipboard :text="parentDocument.key" hide-copy-icon class="text-surface-500" />
+                <div class="gap-2 px-3 py-2 text-ink-2 rounded border-line flex items-center border">
+                    <CopyToClipboard :text="parentDocument.key" hide-copy-icon class="text-ink-3" />
                     <span>{{ parentDocument.title }}</span>
                 </div>
             </InputContainer>

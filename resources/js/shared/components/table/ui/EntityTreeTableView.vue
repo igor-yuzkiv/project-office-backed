@@ -68,7 +68,7 @@ function onPageChange(event: { page: number }) {
 
         <template #empty>
             <slot name="empty">
-                <div class="py-6 text-sm text-surface-400 text-center">No records found.</div>
+                <div class="py-6 text-sm text-ink-3 text-center">No records found.</div>
             </slot>
         </template>
 
@@ -82,12 +82,12 @@ function onPageChange(event: { page: number }) {
                 @page="onPageChange"
             >
                 <template #start>
-                    <span class="text-sm text-surface-500">
+                    <span class="text-sm text-ink-3">
                         Page {{ props.page }} of {{ props.paginationMeta?.last_page }}
                     </span>
                 </template>
                 <template #end>
-                    <span class="text-sm text-surface-500"> Total Records: {{ props.paginationMeta?.total }} </span>
+                    <span class="text-sm text-ink-3"> Total Records: {{ props.paginationMeta?.total }} </span>
                 </template>
             </Paginator>
         </template>

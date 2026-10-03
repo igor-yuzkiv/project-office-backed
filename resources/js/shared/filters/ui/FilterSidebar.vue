@@ -33,7 +33,7 @@ function onApply() {
                 <FilterList :def-map="props.defMap" @change="(k, patch) => emit('change', k, patch)" />
             </div>
 
-            <div class="gap-2 border-surface-200 pt-4 flex border-t">
+            <div class="gap-2 border-line pt-4 flex border-t">
                 <Button label="Apply" class="flex-1" @click="onApply" />
                 <Button label="Reset" severity="secondary" outlined class="flex-1" @click="emit('reset')" />
             </div>

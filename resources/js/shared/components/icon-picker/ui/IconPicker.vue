@@ -85,7 +85,7 @@ watch(debouncedQuery, async (current) => {
 <template>
     <div class="gap-3 p-1 w-80 flex flex-col">
         <div class="gap-2 flex flex-col">
-            <label class="text-surface-600 dark:text-surface-300 text-xs font-medium" :for="fieldId"> Icon name </label>
+            <label class="text-ink-2 text-xs font-medium" :for="fieldId"> Icon name </label>
             <div class="gap-2 flex items-center">
                 <InputText
                     :id="fieldId"
@@ -95,10 +95,8 @@ watch(debouncedQuery, async (current) => {
                     size="small"
                     class="flex-1"
                 />
-                <span
-                    class="border-surface-200 dark:border-surface-700 h-9 w-9 rounded-lg flex shrink-0 items-center justify-center border"
-                >
-                    <Icon v-if="typed" :icon="typed" class="text-surface-700 dark:text-surface-200 text-lg" />
+                <span class="border-line h-9 w-9 rounded-lg flex shrink-0 items-center justify-center border">
+                    <Icon v-if="typed" :icon="typed" class="text-ink-2 text-lg" />
                     <Icon v-else icon="tabler:square-rounded" class="text-surface-300 text-lg" />
                 </span>
             </div>
@@ -110,24 +108,24 @@ watch(debouncedQuery, async (current) => {
             <ProgressSpinner style="width: 1.75rem; height: 1.75rem" />
         </div>
 
-        <p v-else-if="hasFailed" class="text-surface-500 px-1 text-xs">
+        <p v-else-if="hasFailed" class="text-ink-3 px-1 text-xs">
             Could not reach the icon catalogue. You can still write a name above.
         </p>
 
-        <p v-else-if="isEmptyResult" class="text-surface-500 px-1 text-xs">Nothing matched “{{ debouncedQuery }}”.</p>
+        <p v-else-if="isEmptyResult" class="text-ink-3 px-1 text-xs">Nothing matched “{{ debouncedQuery }}”.</p>
 
         <div v-else class="gap-1 max-h-56 grid grid-cols-8 overflow-y-auto">
             <button
                 v-for="icon in icons"
                 :key="icon"
                 type="button"
-                class="hover:bg-surface-100 dark:hover:bg-surface-800 h-9 rounded-md flex items-center justify-center"
-                :class="{ 'bg-surface-100 dark:bg-surface-800': icon === typed }"
+                class="hover:bg-hover h-9 rounded-md flex items-center justify-center"
+                :class="{ 'bg-hover': icon === typed }"
                 :title="icon"
                 :aria-label="icon"
                 @click="emit('select', icon)"
             >
-                <Icon :icon="icon" class="text-surface-700 dark:text-surface-200 text-lg" />
+                <Icon :icon="icon" class="text-ink-2 text-lg" />
             </button>
         </div>
 

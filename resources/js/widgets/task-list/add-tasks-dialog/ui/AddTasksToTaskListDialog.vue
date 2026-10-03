@@ -36,9 +36,7 @@ const columns: EntityTableColumnDef[] = [
 <template>
     <Dialog v-model:visible="visible" modal :closable="!isSaving" :style="{ width: '50rem' }" header="Add Tasks">
         <div class="gap-3 py-1 flex flex-col">
-            <p class="text-sm text-surface-500">
-                Only tasks of this project that do not belong to a list yet can be added.
-            </p>
+            <p class="text-sm text-ink-3">Only tasks of this project that do not belong to a list yet can be added.</p>
 
             <SearchInput v-model="searchQuery" placeholder="Search tasks..." />
 
@@ -54,7 +52,7 @@ const columns: EntityTableColumnDef[] = [
                 @page-change="emit('pageChange', $event)"
             >
                 <template #column:key="{ row }">
-                    <CopyToClipboard :text="row.key" hide-copy-icon class="text-surface-500" />
+                    <CopyToClipboard :text="row.key" hide-copy-icon class="text-ink-3" />
                 </template>
 
                 <template #column:status="{ row }">
@@ -62,7 +60,7 @@ const columns: EntityTableColumnDef[] = [
                 </template>
 
                 <template #empty>
-                    <div class="py-6 text-sm text-surface-400 text-center">No tasks available to add.</div>
+                    <div class="py-6 text-sm text-ink-3 text-center">No tasks available to add.</div>
                 </template>
             </EntityTableView>
         </div>

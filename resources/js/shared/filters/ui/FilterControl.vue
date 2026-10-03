@@ -39,7 +39,7 @@ function onValueChange(value: unknown) {
 }
 
 const panelPt = {
-    root: { class: '!rounded-none !shadow-none !border-0 !border-b !border-surface-200 dark:!border-surface-700' },
+    root: { class: '!rounded-none !shadow-none !border-0 !border-b !border-line' },
     header: { class: '!px-0 !py-2.5' },
     content: { class: '!px-0 !pt-0 !pb-3' },
 }

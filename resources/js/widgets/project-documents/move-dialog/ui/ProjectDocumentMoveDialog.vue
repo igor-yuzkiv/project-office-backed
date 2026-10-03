@@ -81,7 +81,7 @@ watch(visible, (isVisible) => {
                 :class="
                     selectedParentId === null
                         ? 'border-primary-500 text-primary-600 dark:text-primary-400 font-semibold'
-                        : 'border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-300'
+                        : 'border-line text-ink-2'
                 "
                 @click="selectRoot"
             >

@@ -11,8 +11,8 @@ const router = useRouter()
         <Icon icon="heroicons:exclamation-triangle" class="text-surface-200 dark:text-surface-800 text-8xl" />
 
         <div class="gap-1.5 flex flex-col items-center text-center">
-            <p class="text-surface-700 dark:text-surface-200 text-lg font-medium">Page not found</p>
-            <p class="text-surface-500 max-w-sm text-sm">This address does not lead anywhere in the application.</p>
+            <p class="text-ink-2 text-lg font-medium">Page not found</p>
+            <p class="text-ink-3 max-w-sm text-sm">This address does not lead anywhere in the application.</p>
         </div>
 
         <Button label="Go to home" size="small" @click="router.push({ name: 'home' })" />

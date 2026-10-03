@@ -62,7 +62,7 @@ const defaultColumns: EntityTreeTableColumnDef[] = [
                 <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
 
                 <span>{{ row.title }}</span>
-                <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
+                <span v-if="row.has_children" class="text-xs text-ink-3">folder</span>
             </button>
 
             <RouterLink
@@ -73,12 +73,12 @@ const defaultColumns: EntityTreeTableColumnDef[] = [
                 <Icon :icon="row.has_children ? 'heroicons:folder' : 'heroicons:document-text'" class="text-lg" />
 
                 <span>{{ row.title }}</span>
-                <span v-if="row.has_children" class="text-xs text-surface-400">folder</span>
+                <span v-if="row.has_children" class="text-xs text-ink-3">folder</span>
             </RouterLink>
         </template>
 
         <template #column:key="{ row }">
-            <CopyToClipboard :text="row.key" class="text-surface-500" />
+            <CopyToClipboard :text="row.key" class="text-ink-3" />
         </template>
 
         <template #column:status="{ row }">
@@ -92,7 +92,7 @@ const defaultColumns: EntityTreeTableColumnDef[] = [
         <template #column:updated_by="{ row }">
             <div v-if="row.updated_by" class="gap-2 flex items-center">
                 <UserAvatar :initials="row.updated_by.initials" :avatar-url="row.updated_by.avatar_url" size="small" />
-                <span class="text-surface-700 dark:text-surface-300">{{ row.updated_by.name }}</span>
+                <span class="text-ink-2">{{ row.updated_by.name }}</span>
             </div>
         </template>
 

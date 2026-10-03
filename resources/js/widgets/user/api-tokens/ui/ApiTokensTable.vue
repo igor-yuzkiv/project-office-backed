@@ -19,7 +19,7 @@ const { mutateWithConfirm: revokeToken } = useDeleteApiTokenMutation()
         <Column field="name" header="Name" />
         <Column header="Expires At">
             <template #body="{ data }">
-                <span class="text-surface-500">{{ formatDate(data.expires_at) ?? '—' }}</span>
+                <span class="text-ink-3">{{ formatDate(data.expires_at) ?? '—' }}</span>
             </template>
         </Column>
         <Column header="" style="width: 4rem">
@@ -37,7 +37,7 @@ const { mutateWithConfirm: revokeToken } = useDeleteApiTokenMutation()
         </Column>
 
         <template #empty>
-            <div class="py-4 text-sm text-surface-400 text-center">No API tokens yet</div>
+            <div class="py-4 text-sm text-ink-3 text-center">No API tokens yet</div>
         </template>
     </DataTable>
 </template>

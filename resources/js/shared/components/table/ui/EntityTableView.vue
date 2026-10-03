@@ -116,7 +116,7 @@ function onPageChange(event: { page: number }) {
 
         <template #empty>
             <slot name="empty">
-                <div class="py-6 text-sm text-surface-400 text-center">No records found.</div>
+                <div class="py-6 text-sm text-ink-3 text-center">No records found.</div>
             </slot>
         </template>
 

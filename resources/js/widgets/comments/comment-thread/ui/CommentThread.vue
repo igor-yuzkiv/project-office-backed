@@ -110,11 +110,11 @@ function onPageChange(event: { page: number }) {
             <Divider />
         </template>
 
-        <div v-if="isPending" class="text-surface-400 text-sm">Loading comments...</div>
+        <div v-if="isPending" class="text-ink-3 text-sm">Loading comments...</div>
 
-        <div v-else-if="visibleComments.length === 0" class="text-surface-400 text-sm">{{ emptyLabel }}</div>
+        <div v-else-if="visibleComments.length === 0" class="text-ink-3 text-sm">{{ emptyLabel }}</div>
 
-        <div v-else class="divide-surface-200 dark:divide-surface-700 flex flex-col divide-y">
+        <div v-else class="divide-line flex flex-col divide-y">
             <CommentItem
                 v-for="comment in visibleComments"
                 :key="comment.id"

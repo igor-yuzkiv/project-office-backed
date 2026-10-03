@@ -2,7 +2,7 @@ import { STATUS_COLORS } from '@/shared/components/status-pill'
 import type { TaskPriorityMetadata, TaskPriorityMetadataMap } from '../types'
 
 // Urgent is the one pair outside STATUS_COLORS: a step darker than High so the two stay apart.
-const URGENT_COLORS = { light: { fg: '#991b1b', bg: '#fee2e2' }, dark: { fg: '#fca5a5', bg: '#4c1d1d' } } as const
+const URGENT_COLORS = { light: { fg: '#8e1f1b', bg: '#f8cfcd' }, dark: { fg: '#ffb3ae', bg: '#5c2321' } } as const
 
 export const TaskPriorityMap: TaskPriorityMetadataMap = {
     None: { label: 'None', value: 0, name: 'None', colors: STATUS_COLORS.open, icon: 'hugeicons:minus-sign' },

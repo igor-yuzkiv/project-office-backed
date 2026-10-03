@@ -106,8 +106,8 @@ watch(visible, (isVisible) => {
         <div class="gap-4 py-1 flex flex-col">
             <div class="gap-3 flex flex-col">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold tracking-wide text-surface-500 uppercase"> Selected Tags </span>
-                    <span class="text-xs text-surface-500"> {{ selectedTags.length }} selected </span>
+                    <span class="text-xs font-semibold tracking-wide text-ink-3 uppercase"> Selected Tags </span>
+                    <span class="text-xs text-ink-3"> {{ selectedTags.length }} selected </span>
                 </div>
 
                 <div v-if="selectedTags.length > 0" class="gap-2 max-h-40 flex flex-wrap overflow-y-auto">
@@ -121,7 +121,7 @@ watch(visible, (isVisible) => {
                     />
                 </div>
 
-                <p v-else class="text-sm text-surface-400">No tags selected</p>
+                <p v-else class="text-sm text-ink-3">No tags selected</p>
             </div>
 
             <div class="gap-2 flex items-center">
@@ -146,13 +146,13 @@ watch(visible, (isVisible) => {
             </div>
 
             <div class="gap-2 flex flex-col">
-                <span class="text-xs font-semibold tracking-wide text-surface-500 uppercase"> Available Tags </span>
+                <span class="text-xs font-semibold tracking-wide text-ink-3 uppercase"> Available Tags </span>
 
-                <div class="max-h-60 divide-surface-200 dark:divide-surface-700 flex flex-col divide-y overflow-y-auto">
+                <div class="max-h-60 divide-line flex flex-col divide-y overflow-y-auto">
                     <div
                         v-for="tag in availableTags"
                         :key="tag.id"
-                        class="gap-3 hover:bg-surface-50 dark:hover:bg-surface-800 px-1 py-2 flex cursor-pointer items-center"
+                        class="gap-3 hover:bg-hover px-1 py-2 flex cursor-pointer items-center"
                         @click="selectTag(tag)"
                     >
                         <span class="h-5 w-5 flex shrink-0 rounded-full" :style="{ backgroundColor: tag.color }" />
@@ -162,7 +162,7 @@ watch(visible, (isVisible) => {
                         </span>
                     </div>
 
-                    <div v-if="availableTags.length === 0" class="py-3 text-sm text-surface-400 text-center">
+                    <div v-if="availableTags.length === 0" class="py-3 text-sm text-ink-3 text-center">
                         <template v-if="isCreateMode">
                             <i class="pi pi-plus mr-1" />
                             Type a tag name above to create a new tag

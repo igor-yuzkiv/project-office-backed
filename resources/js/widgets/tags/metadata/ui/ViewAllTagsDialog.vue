@@ -23,6 +23,6 @@ const visible = defineModel<boolean>({ required: true })
         <div v-if="tags.length > 0" class="gap-2 py-1 flex flex-wrap">
             <TagBadge v-for="tag in tags" :key="tag.id" :tag="tag" />
         </div>
-        <p v-else class="text-surface-400 text-sm py-1">No tags yet</p>
+        <p v-else class="text-ink-3 text-sm py-1">No tags yet</p>
     </Dialog>
 </template>

@@ -1,18 +1,18 @@
 import type { ThemedStatusColors } from '@/shared/types'
 
 /**
- * The `--st-*` pairs of the redesign mockups (`design.css`), one entry per meaning. Entity status
+ * Status pairs on the Islands palette, one entry per meaning; the pill draws its border from `fg`. Entity status
  * configs point at these instead of carrying their own hex values.
  */
 export const STATUS_COLORS = {
-    backlog: { light: { fg: '#7c8797', bg: '#eef2f6' }, dark: { fg: '#8b97a6', bg: '#1b222b' } },
-    open: { light: { fg: '#7c8797', bg: '#eef2f6' }, dark: { fg: '#8b97a6', bg: '#1b222b' } },
-    ready: { light: { fg: '#6d5bd0', bg: '#efecfb' }, dark: { fg: '#a99cf5', bg: '#23244a' } },
-    progress: { light: { fg: '#2f6fe0', bg: '#e6efff' }, dark: { fg: '#7fb0ff', bg: '#163464' } },
-    test: { light: { fg: '#b45309', bg: '#fdf1e0' }, dark: { fg: '#e0a458', bg: '#3a2c16' } },
-    done: { light: { fg: '#15803d', bg: '#e6f4ea' }, dark: { fg: '#5cc98a', bg: '#14321f' } },
-    closed: { light: { fg: '#475569', bg: '#e2e8f0' }, dark: { fg: '#8b97a6', bg: '#1c232c' } },
-    declined: { light: { fg: '#b91c1c', bg: '#fdecec' }, dark: { fg: '#f28b8b', bg: '#41202a' } },
+    backlog: { light: { fg: '#4e5157', bg: '#ebecf0' }, dark: { fg: '#b4b8bf', bg: '#393b40' } },
+    open: { light: { fg: '#4e5157', bg: '#ebecf0' }, dark: { fg: '#b4b8bf', bg: '#393b40' } },
+    ready: { light: { fg: '#7a3ec8', bg: '#eee3fc' }, dark: { fg: '#c3a4f7', bg: '#352b4a' } },
+    progress: { light: { fg: '#2462d9', bg: '#d4e2ff' }, dark: { fg: '#8ab4ff', bg: '#25324d' } },
+    test: { light: { fg: '#a85c00', bg: '#fcebd3' }, dark: { fg: '#f0b060', bg: '#45331c' } },
+    done: { light: { fg: '#1e7b34', bg: '#dcf2df' }, dark: { fg: '#7dd08a', bg: '#253627' } },
+    closed: { light: { fg: '#3b3e44', bg: '#dfe1e5' }, dark: { fg: '#a8adb5', bg: '#2b2d30' } },
+    declined: { light: { fg: '#c4302b', bg: '#fbe0df' }, dark: { fg: '#ff8f8a', bg: '#4a2524' } },
 } as const satisfies Record<string, ThemedStatusColors>
 
 /** What a pill shows when the status is unknown or missing. */

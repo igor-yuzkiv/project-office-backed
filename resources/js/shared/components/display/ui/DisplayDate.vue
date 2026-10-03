@@ -28,11 +28,11 @@ const displayValue = computed(() => {
 
 <template>
     <div :class="inline ? 'gap-1 md:flex-row md:items-center md:gap-2 flex-col' : 'gap-1 flex-col'" class="flex">
-        <span v-if="label || $slots.label" class="text-surface-400 shrink-0">
+        <span v-if="label || $slots.label" class="text-ink-3 shrink-0">
             <slot name="label">{{ label }}</slot>
         </span>
         <slot>
-            <span class="text-surface-700 dark:text-surface-300">{{ displayValue }}</span>
+            <span class="text-ink-2">{{ displayValue }}</span>
         </slot>
     </div>
 </template>

@@ -33,18 +33,16 @@ function handleAvatarSelected(file: File) {
 <template>
     <div v-if="authStore.user" class="md:col-span-2 gap-4 p-2 flex flex-col overflow-auto">
         <Panel header="Profile Photo" :toggleable="true">
-            <p class="text-sm text-surface-500 mb-4">
-                Your photo will be visible to your teammates across the platform.
-            </p>
+            <p class="text-sm text-ink-3 mb-4">Your photo will be visible to your teammates across the platform.</p>
             <div class="gap-3 flex items-center">
                 <UserAvatar :initials="authStore.user.initials" :avatar-url="authStore.user.avatar_url" size="xlarge" />
                 <UploadAttachmentButton :is-uploading="isUploadingAvatar" @file-selected="handleAvatarSelected" />
             </div>
-            <p class="text-xs text-surface-400 mt-3">JPG, PNG or GIF. Maximum 5 MB. Recommended 256×256px.</p>
+            <p class="text-xs text-ink-3 mt-3">JPG, PNG or GIF. Maximum 5 MB. Recommended 256×256px.</p>
         </Panel>
 
         <Panel header="Personal Information" :toggleable="true">
-            <p class="text-sm text-surface-500 mb-4">
+            <p class="text-sm text-ink-3 mb-4">
                 This information is displayed across the platform. Use your real name for better collaboration.
             </p>
             <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
@@ -78,40 +76,40 @@ function handleAvatarSelected(file: File) {
         </Panel>
 
         <Panel header="Notifications" :toggleable="true">
-            <p class="text-sm text-surface-500 mb-4">Choose which events you want to be notified about by email.</p>
+            <p class="text-sm text-ink-3 mb-4">Choose which events you want to be notified about by email.</p>
             <div class="flex flex-col">
                 <div class="border-b-gray-100 gap-3 py-3 flex items-center justify-between border-b">
                     <div>
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Task assigned to me</p>
-                        <p class="text-xs text-surface-400">When a new task is assigned to your account</p>
+                        <p class="text-sm font-medium text-ink">Task assigned to me</p>
+                        <p class="text-xs text-ink-3">When a new task is assigned to your account</p>
                     </div>
                     <ToggleSwitch />
                 </div>
                 <div class="border-b-gray-100 gap-3 py-3 flex items-center justify-between border-b">
                     <div>
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Mentions & comments</p>
-                        <p class="text-xs text-surface-400">When someone mentions you or replies to your comment</p>
+                        <p class="text-sm font-medium text-ink">Mentions & comments</p>
+                        <p class="text-xs text-ink-3">When someone mentions you or replies to your comment</p>
                     </div>
                     <ToggleSwitch />
                 </div>
                 <div class="border-b-gray-100 gap-3 py-3 flex items-center justify-between border-b">
                     <div>
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Due date reminders</p>
-                        <p class="text-xs text-surface-400">24 hours before a task I own is due</p>
+                        <p class="text-sm font-medium text-ink">Due date reminders</p>
+                        <p class="text-xs text-ink-3">24 hours before a task I own is due</p>
                     </div>
                     <ToggleSwitch />
                 </div>
                 <div class="border-b-gray-100 gap-3 py-3 flex items-center justify-between border-b">
                     <div>
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Sprint updates</p>
-                        <p class="text-xs text-surface-400">When a sprint starts, ends, or is modified</p>
+                        <p class="text-sm font-medium text-ink">Sprint updates</p>
+                        <p class="text-xs text-ink-3">When a sprint starts, ends, or is modified</p>
                     </div>
                     <ToggleSwitch />
                 </div>
                 <div class="gap-3 py-3 flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Weekly digest</p>
-                        <p class="text-xs text-surface-400">Summary of activity across your projects every Monday</p>
+                        <p class="text-sm font-medium text-ink">Weekly digest</p>
+                        <p class="text-xs text-ink-3">Summary of activity across your projects every Monday</p>
                     </div>
                     <ToggleSwitch />
                 </div>

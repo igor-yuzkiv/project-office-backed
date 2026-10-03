@@ -34,12 +34,12 @@ function clear() {
     <div class="group w-11 relative shrink-0">
         <button
             type="button"
-            class="border-surface-300 dark:border-surface-600 hover:border-surface-400 h-11 w-11 rounded-lg flex items-center justify-center border transition-colors"
+            class="border-line-2 hover:border-surface-400 h-11 w-11 rounded-lg flex items-center justify-center border transition-colors"
             :aria-label="placeholder"
             @click="toggle"
         >
-            <Icon v-if="icon" :icon="icon" class="text-surface-700 dark:text-surface-200 text-2xl" />
-            <Icon v-else icon="tabler:square-rounded-plus" class="text-surface-400 text-xl" />
+            <Icon v-if="icon" :icon="icon" class="text-ink-2 text-2xl" />
+            <Icon v-else icon="tabler:square-rounded-plus" class="text-ink-3 text-xl" />
         </button>
 
         <!-- Clearing is a correction, not a field of its own: it appears over the icon

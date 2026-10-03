@@ -116,7 +116,9 @@ function isOwn(annotation: IAnnotation): boolean {
                 </button>
 
                 <template v-if="!readonly">
-                    <p v-if="anchor.block === null" class="type-meta-3 text-amber-600">Block not found</p>
+                    <p v-if="anchor.block === null" class="type-meta-3 text-amber-700 dark:text-amber-400">
+                        Block not found
+                    </p>
                     <p v-else-if="anchor.kind === 'position'" class="type-meta-3">Block content changed</p>
                 </template>
 

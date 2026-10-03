@@ -16,7 +16,7 @@ const errorMessage = computed(() => {
 
 <template>
     <div class="gap-1 flex flex-col">
-        <span v-if="label" class="text-xs font-medium text-surface-400 tracking-wide uppercase">
+        <span v-if="label" class="text-xs font-medium text-ink-3 tracking-wide uppercase">
             {{ label }}<span v-if="required" class="text-red-500 ml-0.5">*</span>
         </span>
         <slot />

@@ -49,6 +49,6 @@ watch(
 <template>
     <div class="gap-3 p-10 flex flex-1 flex-col items-center justify-center">
         <ProgressSpinner style="width: 2.5rem; height: 2.5rem" />
-        <p class="text-surface-500 text-sm">Opening the document…</p>
+        <p class="text-ink-3 text-sm">Opening the document…</p>
     </div>
 </template>

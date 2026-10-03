@@ -16,9 +16,13 @@ withDefaults(
 
 <template>
     <Tag
-        :style="{ backgroundColor: colors.bg, color: colors.fg }"
+        :style="{
+            backgroundColor: colors.bg,
+            color: colors.fg,
+            border: `1px solid color-mix(in srgb, ${colors.fg} 45%, transparent)`,
+        }"
         :pt="{
-            root: { class: '!gap-1.5 !rounded-full !px-2 !py-0.5 !text-[12.5px] !font-medium whitespace-nowrap' },
+            root: { class: '!gap-1.5 !rounded-[4px] !px-2 !py-0 !text-[12px] !font-semibold whitespace-nowrap' },
         }"
     >
         <Icon v-if="icon" :icon="icon" />

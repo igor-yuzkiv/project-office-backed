@@ -23,7 +23,7 @@ const status = defineModel<TaskStatusValue | undefined>('status')
 <template>
     <Dialog v-model:visible="visible" header="Update Status" modal :style="{ width: '25rem' }">
         <div class="gap-2 flex flex-col">
-            <span class="text-sm text-surface-500">{{ selectedCount }} task(s) selected</span>
+            <span class="text-sm text-ink-3">{{ selectedCount }} task(s) selected</span>
             <Select
                 v-model="status"
                 :options="statusOptions"

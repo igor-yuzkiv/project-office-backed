@@ -19,7 +19,7 @@ defineProps<{
 <template>
     <aside
         v-if="!panel.isCollapsed.value"
-        class="border-surface-200 dark:border-surface-700 shrink-0 overflow-hidden"
+        class="border-line shrink-0 overflow-hidden"
         :class="side === 'left' ? 'border-r' : 'border-l'"
         :style="{ width }"
     >
@@ -30,7 +30,7 @@ defineProps<{
          place. Hovering it peeks at the panel, clicking brings the column back. -->
     <div
         v-else
-        class="border-surface-200 dark:border-surface-700 py-1.5 w-11 flex shrink-0 flex-col items-center"
+        class="border-line py-1.5 w-11 flex shrink-0 flex-col items-center"
         :class="side === 'left' ? 'border-r' : 'border-l'"
         @mouseenter="panel.openDrawer"
     >
