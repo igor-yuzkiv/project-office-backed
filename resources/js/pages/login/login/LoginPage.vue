@@ -7,6 +7,7 @@ import Password from 'primevue/password'
 import { Icon } from '@iconify/vue'
 import { useAuthStore } from '@/app/stores/use.auth.store'
 import { APP_NAME } from '@/app/config'
+import { WorkbenchMark, WorkbenchWordmark } from '@/shared/components/brand'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -42,8 +43,8 @@ async function handleLogin() {
         <!-- Left panel -->
         <div class="bg-canvas border-line px-12 py-12 lg:flex hidden w-2/5 shrink-0 flex-col justify-between border-r">
             <div class="gap-2.5 flex items-center">
-                <img src="/logo.png" alt="Logo" class="h-8 w-auto" />
-                <span class="text-lg font-semibold text-ink">{{ APP_NAME }}</span>
+                <WorkbenchMark class="h-8 w-8" />
+                <WorkbenchWordmark class="text-lg text-ink" />
             </div>
 
             <div class="gap-8 flex flex-col">

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import type { SidebarNavItem } from '../../types'
-import { APP_NAME } from '@/app/config'
+import { WorkbenchMark, WorkbenchWordmark } from '@/shared/components/brand'
 import { useAppLayoutStore } from '@/app/stores/use.app-layout.store'
 import { useAppThemeStore } from '@/app/stores/use.app-theme-store'
 import { useAuthStore } from '@/app/stores/use.auth.store'
@@ -38,8 +38,8 @@ async function handleLogout() {
             :class="layoutStore.sidebarCollapsed ? 'gap-1.5 px-0 pt-2.5 pb-1.5 flex-col' : 'gap-1 px-2.5 pt-2.5 pb-1.5'"
         >
             <div class="gap-2 px-1.5 py-1 min-w-0 flex items-center">
-                <img src="/logo.png" alt="Logo" class="h-5 w-auto shrink-0" />
-                <span v-if="!layoutStore.sidebarCollapsed" class="text-ink font-semibold truncate">{{ APP_NAME }}</span>
+                <WorkbenchMark class="h-5 w-5 shrink-0" />
+                <WorkbenchWordmark v-if="!layoutStore.sidebarCollapsed" class="text-ink truncate" />
             </div>
             <button
                 v-tooltip.right="{
