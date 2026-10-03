@@ -49,12 +49,10 @@ async function handleLogin() {
 
             <div class="gap-8 flex flex-col">
                 <div class="gap-4 flex flex-col">
-                    <h1 class="text-3xl font-semibold leading-snug text-ink">
-                        Plan, track, and deliver with confidence.
-                    </h1>
+                    <h1 class="text-3xl font-semibold leading-snug text-ink">Your bench for working with agents.</h1>
                     <p class="text-sm leading-relaxed text-ink-2">
-                        Brings your projects, tasks, and teams into one unified workspace — built for teams that move
-                        fast.
+                        Projects, task lists and documents your agents read and write — in one place, with more tools to
+                        come.
                     </p>
                 </div>
 

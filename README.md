@@ -1,7 +1,8 @@
-# Project Office Backend
+# Workbench
 
-Laravel backend and Vue single-page application for Project Office, a project and task
-management system designed for both human users and agent-facing CLI workflows.
+Laravel backend and Vue single-page application for Workbench, a personal toolbox for working
+with agents. Its first tool is a project and task manager, designed for both human users and
+agent-facing CLI workflows.
 
 This repository owns:
 
